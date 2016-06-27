@@ -1,7 +1,7 @@
 package edu.cornell.med.icb.goby.alignments;
 
-import edu.cornell.med.icb.goby.R.GobyRengine;
 import edu.cornell.med.icb.goby.algorithmic.data.CovariateInfo;
+import edu.cornell.med.icb.goby.algorithmic.data.SomaticModel;
 import edu.cornell.med.icb.goby.modes.DiscoverSequenceVariantsMode;
 import edu.cornell.med.icb.goby.modes.SequenceVariationOutputFormat;
 import edu.cornell.med.icb.goby.readers.vcf.ColumnType;
@@ -12,14 +12,21 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import org.apache.log4j.Logger;
-import org.rosuda.JRI.Rengine;
+import org.campagnelab.dl.model.utils.ProtoPredictor;
+import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * File format to output genotypes for somatic variations. The format must be used together with the covariates option
@@ -60,6 +67,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     private int strictSomaticCandidateFieldIndex;
     /**
+     * A probability score for the somatic site. Larger values (closer to 1) indicate more confidence from
+     * the neural network that a variation is present.
+     */
+    private int[] GenotypeSomaticProbability;
+    /**
      * If a somatic candidate has more bases in a parent that this threshold, the candidate is not marked as
      * STRICT_SOMATIC. A reasonable default is 1.
      */
@@ -69,6 +81,14 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
      * not marked as STRICT_SOMATIC. A reasonable default is 10.
      */
     private int strictThresholdGermline = 10;
+
+    public SomaticVariationOutputFormat() {
+        try {
+            model = getModel(defaultModelPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected void setSomaticPValueIndex(int[] somaticPValueIndex) {
         this.somaticPValueIndex = somaticPValueIndex;
@@ -121,6 +141,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private VCFWriter statsWriter;
     String[] samples;
     private int igvFieldIndex;
+    private final String defaultModelPath = "batch=100-learningRate=0.1-time=1466805887521";
+    private SomaticModel model;
 
     /**
      * Hook to install the somatic sample indices for testing.
@@ -178,6 +200,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         somaticPValueIndex = new int[numSamples];
         candidateFrequencyIndex = new int[numSamples];
         maxGenotypeSomaticPriority = new int[numSamples];
+        GenotypeSomaticProbability = new int[numSamples];
         Arrays.fill(somaticPValueIndex, -1);
 
         for (String sample : somaticSampleIds) {
@@ -188,11 +211,16 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     1, ColumnType.Float,
                     "Frequency of a somatic variation (%), valid only when the p-value is significant.", "statistic", "indexed");
             maxGenotypeSomaticPriority[sampleIndex] = statsWriter.defineField("INFO",
-                    String.format("priority[%s]", sample),
+                    String.format("probability[%s]", sample),
                     1, ColumnType.Float,
                     "Somatic priority, larger numbers indicate more support for somatic variation in sample (%)", "statistic", "indexed");
+            GenotypeSomaticProbability[sampleIndex] = statsWriter.defineField("INFO",
+                    String.format("somatic-probability[%s]", sample),
+                    1, ColumnType.Float,
+                    "Probability score of a somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
 
         }
+
 
         sample2FatherSampleIndex = new int[numSamples];
         sample2MotherSampleIndex = new int[numSamples];
@@ -329,6 +357,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                             final int groupIndexA, final int groupIndexB) {
         updateSampleProportions();
         this.pos = position;
+        this.referenceIndex=referenceIndex;
         position = position + 1; // report  1-based position
         genotypeFormatter.fillVariantCountArrays(sampleCounts);
 
@@ -354,6 +383,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (isPossibleSomaticVariation(sampleCounts)) {
             estimateSomaticFrequencies(sampleCounts);
             estimatePriority(sampleCounts);
+            estimateProbabilty(sampleCounts,list);
             if (isSomaticCandidate()) {
                 statsWriter.writeRecord();
             }
@@ -361,6 +391,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
         updateSampleCumulativeCounts(sampleCounts);
     }
+
 
     void allocateIsSomaticCandidate(SampleCountInfo[] sampleCounts) {
         int maxGenotypeIndex = 0;
@@ -438,6 +469,14 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     protected void setSample2MotherSampleIndex(int[] sample2MotherSampleIndex) {
         this.sample2MotherSampleIndex = sample2MotherSampleIndex;
+    }
+
+    private void estimateProbabilty(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
+        for (int sampleIndex : somaticSampleIndices) {
+            ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,sample2GermlineSampleIndices[sampleIndex][0],sampleIndex);
+            statsWriter.setInfo(GenotypeSomaticProbability[sampleIndex], prediction.posProb);
+        }
+
     }
 
     public void estimatePriority(SampleCountInfo[] sampleCounts) {
@@ -697,5 +736,68 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     public void setupR() {
         // this method does nothing. Kept for compatibility with JUnit tests.
+    }
+
+    private SomaticModel getModel(String modelPath) throws IOException {
+
+        //get MAPPER
+        FeatureMapper featureMapper = null;
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream(modelPath + "/config.properties");
+            // load a properties file
+            prop.load(input);
+            // get the property value and print it out
+            String mapperName = prop.getProperty("mapper");
+
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            // Load the target class using its binary name
+            Class loadedMyClass = classLoader.loadClass(mapperName);
+            System.out.println("Loaded class name: " + loadedMyClass.getName());
+            // Create a new instance from the loaded class
+            Constructor constructor = loadedMyClass.getConstructor();
+            featureMapper = (FeatureMapper) constructor.newInstance();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+
+        //prefix specifies whether to use best or latest model in directory
+        String prefix = "best";
+
+        //get
+        //Load parameters from disk:
+        INDArray newParams;
+        DataInputStream dis = new DataInputStream(new FileInputStream(modelPath + String.format("/%sModelParams.bin",prefix)));
+        newParams = Nd4j.read(dis);
+
+        //Load network configuration from disk:
+        MultiLayerConfiguration confFromJson =
+                MultiLayerConfiguration.fromJson(FileUtils.readFileToString(new File(modelPath +  String.format("/%sModelConf.json",prefix))));
+
+        //Create a MultiLayerNetwork from the saved configuration and parameters
+        MultiLayerNetwork model = new MultiLayerNetwork(confFromJson);
+        model.init();
+        model.setParameters(newParams);
+
+        return new SomaticModel(model,featureMapper);
     }
 }
