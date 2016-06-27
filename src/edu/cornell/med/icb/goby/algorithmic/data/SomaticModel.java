@@ -31,9 +31,9 @@ public class SomaticModel {
     }
 
 
-    public boolean mutPrediction(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int sampleIdx1, int sampleIdx2){
+    public ProtoPredictor.Prediction mutPrediction(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int sampleIdx1, int sampleIdx2){
         BaseInformationRecords.BaseInformation proto = toProto(sampleCounts, referenceIndex,position,list,sampleIdx1,sampleIdx2);
-        return predictor.mutPrediction(proto).clas;
+        return predictor.mutPrediction(proto);
     }
 
     private BaseInformationRecords.BaseInformation toProto(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int sampleIdx1, int sampleIdx2){
