@@ -28,5 +28,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="model-utils-0.2.0-SNAPSHOT-all (3)" level="project" />
+    <orderEntry type="library" name="fastutil-6.5.15" level="project" />
+    <orderEntry type="library" name="lib (2)" level="project" />
   </component>
 </module>
