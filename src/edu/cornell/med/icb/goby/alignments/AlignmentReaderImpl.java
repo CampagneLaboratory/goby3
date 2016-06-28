@@ -24,6 +24,7 @@ import com.google.protobuf.CodedInputStream;
 import edu.cornell.med.icb.goby.compression.ChunkCodec;
 import edu.cornell.med.icb.goby.compression.FastBufferedMessageChunksReader;
 import edu.cornell.med.icb.goby.exception.GobyRuntimeException;
+import edu.cornell.med.icb.goby.util.AlignmentHelper;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -147,13 +148,17 @@ public class AlignmentReaderImpl extends AbstractAlignmentReader implements Alig
     public static boolean canRead(final String filename) {
 
         final String filenameNoExtension = FilenameUtils.removeExtension(filename);
-        String fileExtension = FilenameUtils.getExtension(filename);
-
-        if (!(ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_POSSIBLE_EXTS, "." + fileExtension) ||
-                ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_REQUIRED_EXTS, "." + fileExtension))) {
-            // the file does not contain any of the possible Goby extensions. It is not a supported file.
-            return false;
+        File[] inFiles = AlignmentHelper.buildResults(filenameNoExtension);
+        boolean none = true;
+        for (int i = 0; i < inFiles.length; i++){
+            if ((ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_POSSIBLE_EXTS, "." + FilenameUtils.getExtension(inFiles[i].getName())) ||
+                    ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_REQUIRED_EXTS, "." + FilenameUtils.getExtension(inFiles[i].getName())))) {
+                // the file does not contain any of the possible Goby extensions. It is not a supported file.
+                none = false;
+                break;
+            }
         }
+        if (none) return false;
         // the file contains a Goby alignment extension, we further check that each needed extension exists:
         int count = 0;
         for (final String extension : AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_REQUIRED_EXTS) {

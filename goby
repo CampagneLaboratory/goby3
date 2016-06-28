@@ -19,7 +19,7 @@ if [[ $OSTYPE == "cygwin" ]]; then
     WORKING_DIR=`cygpath -m "${WORKING_DIR}"`
 fi
 
-GOBY_HOME=${WORKING_DIR}
+export GOBY_HOME=${WORKING_DIR}
 GOBY_JAR=${GOBY_HOME}/goby.jar
 LOG4J_PROPS=file://${GOBY_HOME}/config/log4j-sample.properties
  

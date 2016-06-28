@@ -112,6 +112,11 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
      */
     private CovariateInfo covInfo;
 
+    /**
+     * Model path provided from the command line.
+     */
+    private String modelPath;
+
 
     public void setDisableAtLeastQuarterFilter(boolean disableAtLeastQuarterFilter) {
         this.disableAtLeastQuarterFilter = disableAtLeastQuarterFilter;
@@ -350,6 +355,10 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
             covInfo = CovariateInfo.parse(covInfoFilename);
         }
 
+        modelPath = jsapResult.getString("model-path");
+
+
+
         final RandomAccessSequenceInterface genome = configureGenome(testGenome, jsapResult);
 
         final int startFlapSize = jsapResult.getInt("start-flap-size", 100);
@@ -548,6 +557,21 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
     public boolean getCallIndels() {
         return callIndels;
     }
+
+
+    /**
+     * Return model path (parsed from the file provided with option --model-path).  If no --model-path
+     * option was provided, will return empty string
+     *
+     * @return A model path string for custom model probability calling
+     */
+    public String getModelPath() {
+        if (modelPath == null){
+            return "";
+        }
+        return modelPath;
+    }
+
 
     /**
      * Return information about covariates (parsed from the file provided with option --covariates).  If no --covariates

@@ -1,13 +1,17 @@
 package edu.cornell.med.icb.goby.alignments;
 
+import edu.cornell.med.icb.goby.algorithmic.algorithm.dmr.RegionAveragingWriter;
 import edu.cornell.med.icb.goby.algorithmic.data.CovariateInfo;
 import edu.cornell.med.icb.goby.algorithmic.data.SomaticModel;
 import edu.cornell.med.icb.goby.modes.DiscoverSequenceVariantsMode;
 import edu.cornell.med.icb.goby.modes.SequenceVariationOutputFormat;
 import edu.cornell.med.icb.goby.readers.vcf.ColumnType;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
+import edu.cornell.med.icb.goby.stats.EmpiricalPValueEstimator;
 import edu.cornell.med.icb.goby.stats.VCFWriter;
 import edu.cornell.med.icb.goby.util.OutputInfo;
+import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
+import edu.cornell.med.icb.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -54,6 +58,13 @@ import java.util.Properties;
  */
 public class SomaticVariationOutputFormat implements SequenceVariationOutputFormat {
 
+    public static final DynamicOptionClient doc() {
+        return doc;
+    }
+    @RegisterThis
+    public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-default"
+    );
     /**
      * We will store the largest candidate somatic frequency here.
      */
@@ -72,8 +83,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
      */
     private int[] GenotypeSomaticProbability;
     /**
-     * If a somatic candidate has more bases in a parent that this threshold, the candidate is not marked as
-     * STRICT_SOMATIC. A reasonable default is 1.
+     * If a somatic candidate has more bases in a parent that this threshold, the candidate is no1466805887521
      */
     private int strictThresholdParents = 0;
     /**
@@ -83,11 +93,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private int strictThresholdGermline = 10;
 
     public SomaticVariationOutputFormat() {
-        try {
-            model = getModel(defaultModelPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     protected void setSomaticPValueIndex(int[] somaticPValueIndex) {
@@ -141,7 +146,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private VCFWriter statsWriter;
     String[] samples;
     private int igvFieldIndex;
-    private final String defaultModelPath = "batch=100-learningRate=0.1-time=1466805887521";
+    private String modelPath = "/models/todo";
     private SomaticModel model;
 
     /**
@@ -167,6 +172,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         genotypeFormatter.defineGenotypeField(statsWriter);
 
         covInfo = covInfo != null ? covInfo : mode.getCovariateInfo();
+        String customPath = doc.getString("model-path");
+        modelPath = (customPath=="")?modelPath:customPath;
+        try {
+            model = getModel(modelPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         numSamples = samples.length;
         ObjectSet<String> allCovariates = covInfo.getCovariateKeys();
         if (!allCovariates.contains("patient-id") ||
