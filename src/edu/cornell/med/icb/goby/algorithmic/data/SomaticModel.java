@@ -7,8 +7,9 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
+import org.bytedeco.javacpp.opencv_ml;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
+import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
@@ -31,12 +32,19 @@ public class SomaticModel {
     }
 
 
-    public ProtoPredictor.Prediction mutPrediction(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int sampleIdx1, int sampleIdx2){
-        BaseInformationRecords.BaseInformation proto = toProto(sampleCounts, referenceIndex,position,list,sampleIdx1,sampleIdx2);
+    public ProtoPredictor.Prediction mutPrediction(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int germSampleId, int somSampleId){
+
+        BaseInformationRecords.BaseInformation proto = null;
+        try {
+            proto = toProto(sampleCounts, referenceIndex,position,list,germSampleId,somSampleId);
+        } catch (EmptyCountsException e) {
+            return predictor.getNullPrediction();
+        }
         return predictor.mutPrediction(proto);
     }
 
-    private BaseInformationRecords.BaseInformation toProto(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int sampleIdx1, int sampleIdx2){
+    private BaseInformationRecords.BaseInformation toProto(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int germSampleId, int somSampleId) throws EmptyCountsException {
+        int[] sampleIds = new int[]{germSampleId,somSampleId};
         int maxGenotypeIndex=0;
         for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
             maxGenotypeIndex=Math.max(sampleCounts[sampleIndex].getGenotypeMaxIndex(), maxGenotypeIndex);
@@ -46,7 +54,7 @@ public class SomaticModel {
         IntArrayList[][][] readIdxs = new IntArrayList[2][maxGenotypeIndex][2];
 
         for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
-            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
+            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIds[sampleIndex]];
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
             for (int genotypeIndex = 0; genotypeIndex < genotypeMaxIndex; genotypeIndex++) {
@@ -57,12 +65,20 @@ public class SomaticModel {
             }
         }
         for (PositionBaseInfo baseInfo : list) {
+            int sampleId = baseInfo.readerIndex;
+            int sampleIdx;
+            if (sampleId == germSampleId){
+                sampleIdx = 0;
+            } else if (sampleId == somSampleId) {
+                sampleIdx = 1;
+            } else {
+                continue;
+            }
             int baseInd = sampleCounts[0].baseIndex(baseInfo.to);
-            int sampleInd = baseInfo.readerIndex;
             int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
-            qualityScores[sampleInd][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
+            qualityScores[sampleIdx][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
             //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
-            readIdxs[sampleInd][baseInd][strandInd].add(baseInfo.readIndex);
+            readIdxs[sampleIdx][baseInd][strandInd].add(baseInfo.readIndex);
         }
 
 
@@ -76,15 +92,26 @@ public class SomaticModel {
 
         for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
             BaseInformationRecords.SampleInfo.Builder sampleBuilder = BaseInformationRecords.SampleInfo.newBuilder();
-            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
-
+            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIds[sampleIndex]];
+            if (sampleIndex == 1) {
+                sampleBuilder.setIsTumor(true);
+            } else {
+                sampleBuilder.setIsTumor(false);
+            }
+            boolean noCounts = true;
             for (int genotypeIndex = 0; genotypeIndex < sampleCountInfo.getGenotypeMaxIndex(); genotypeIndex++) {
                 BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
                 infoBuilder.setFromSequence(sampleCountInfo.getReferenceGenotype());
                 infoBuilder.setToSequence(sampleCountInfo.getGenotypeString(genotypeIndex));
                 infoBuilder.setMatchesReference(sampleCountInfo.isReferenceGenotype(genotypeIndex));
-                infoBuilder.setGenotypeCountForwardStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, true));
-                infoBuilder.setGenotypeCountReverseStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, false));
+
+                int forCount = sampleCountInfo.getGenotypeCount(genotypeIndex, true);
+                int revCount = sampleCountInfo.getGenotypeCount(genotypeIndex, false);
+                if ((forCount + revCount) > 0){
+                    noCounts = false;
+                }
+                infoBuilder.setGenotypeCountForwardStrand(forCount);
+                infoBuilder.setGenotypeCountReverseStrand(revCount);
 
                 infoBuilder.addAllQualityScoresForwardStrand(ProtoPredictor.compressFreq(qualityScores[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
                 infoBuilder.addAllQualityScoresReverseStrand(ProtoPredictor.compressFreq(qualityScores[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
@@ -93,11 +120,18 @@ public class SomaticModel {
                 infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
                 sampleBuilder.addCounts(infoBuilder.build());
             }
-            sampleBuilder.setFormattedCounts(sampleCounts[sampleIndex].toString());
+            if (noCounts) {
+                throw new EmptyCountsException();
+            }
+            sampleBuilder.setFormattedCounts(sampleCountInfo.toString());
             builder.addSamples(sampleBuilder.build());
         }
         return builder.build();
 
     }
+
+    private class EmptyCountsException extends Exception {}
+
+
 
 }
