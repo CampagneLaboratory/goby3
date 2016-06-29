@@ -227,7 +227,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     1, ColumnType.Float,
                     "Somatic priority, larger numbers indicate more support for somatic variation in sample (%)", "statistic", "indexed");
             GenotypeSomaticProbability[sampleIndex] = statsWriter.defineField("INFO",
-                    String.format("somatic-probability[%s]", sample),
+                    String.format("model-probability[%s]", sample),
                     1, ColumnType.Float,
                     "Probability score of a somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
 
@@ -484,9 +484,12 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
 
     private void estimateProbabilty(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
-        for (int sampleIndex : somaticSampleIndices) {
-            ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,sample2GermlineSampleIndices[sampleIndex][0],sampleIndex);
-            statsWriter.setInfo(GenotypeSomaticProbability[sampleIndex], prediction.posProb);
+        for (int somaticSampleIndex : somaticSampleIndices) {
+            int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
+            for (int germlineSampleIndex : germlineSampleIndices) {
+                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
+                statsWriter.setInfo(GenotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
+            }
         }
 
     }
