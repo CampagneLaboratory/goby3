@@ -37,13 +37,13 @@ public class SomaticModel {
         BaseInformationRecords.BaseInformation proto = null;
         try {
             proto = toProto(sampleCounts, referenceIndex,position,list,germSampleId,somSampleId);
-        } catch (EmptyCountsException e) {
+        } catch (TooFewCountsException e) {
             return predictor.getNullPrediction();
         }
         return predictor.mutPrediction(proto);
     }
 
-    private BaseInformationRecords.BaseInformation toProto(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int germSampleId, int somSampleId) throws EmptyCountsException {
+    private BaseInformationRecords.BaseInformation toProto(SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int germSampleId, int somSampleId) throws TooFewCountsException {
         int[] sampleIds = new int[]{germSampleId,somSampleId};
         int maxGenotypeIndex=0;
         for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
@@ -98,7 +98,7 @@ public class SomaticModel {
             } else {
                 sampleBuilder.setIsTumor(false);
             }
-            boolean noCounts = true;
+            int counts = 0;
             for (int genotypeIndex = 0; genotypeIndex < sampleCountInfo.getGenotypeMaxIndex(); genotypeIndex++) {
                 BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
                 infoBuilder.setFromSequence(sampleCountInfo.getReferenceGenotype());
@@ -107,9 +107,7 @@ public class SomaticModel {
 
                 int forCount = sampleCountInfo.getGenotypeCount(genotypeIndex, true);
                 int revCount = sampleCountInfo.getGenotypeCount(genotypeIndex, false);
-                if ((forCount + revCount) > 0){
-                    noCounts = false;
-                }
+                counts += (forCount + revCount);
                 infoBuilder.setGenotypeCountForwardStrand(forCount);
                 infoBuilder.setGenotypeCountReverseStrand(revCount);
 
@@ -120,8 +118,8 @@ public class SomaticModel {
                 infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
                 sampleBuilder.addCounts(infoBuilder.build());
             }
-            if (noCounts) {
-                throw new EmptyCountsException();
+            if (counts < 10) {
+                throw new TooFewCountsException();
             }
             sampleBuilder.setFormattedCounts(sampleCountInfo.toString());
             builder.addSamples(sampleBuilder.build());
@@ -130,7 +128,7 @@ public class SomaticModel {
 
     }
 
-    private class EmptyCountsException extends Exception {}
+    private class TooFewCountsException extends Exception {}
 
 
 
