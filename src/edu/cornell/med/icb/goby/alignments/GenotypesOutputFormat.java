@@ -59,6 +59,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
     public int baseCountFieldIndex;
     private int zygFieldIndex;
+    private int altCountsIndex;
 
     public int getFailBaseCountFieldIndex() {
         return failBaseCountFieldIndex;
@@ -75,6 +76,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     private int indelFlagFieldIndex = -1;
     private boolean siteObserved;
 
+    private boolean ALT_FORMAT = true;
+
 
     public void defineColumns(OutputInfo writer, DiscoverSequenceVariantsMode mode) {
         samples = mode.getSamples();
@@ -86,6 +89,10 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity","zygosity");
         statsWriter.defineSamples(samples);
         statsWriter.writeHeader();
+
+        if (ALT_FORMAT){
+            altCountsIndex = statsWriter.defineField("FORMAT", "AltCounts", 1, ColumnType.String, "AltCounts","altcounts");
+        }
     }
 
     public void defineInfoFields(VCFWriter statsWriter) {
@@ -141,6 +148,18 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         if (!alleleSet.isEmpty()) {
             // Do not write record if alleleSet is empty, IGV VCF track cannot handle that.
             statsWriter.writeRecord();
+        }
+
+        if (ALT_FORMAT){
+            writeAltCounts(sampleCounts);
+        }
+    }
+
+    protected void writeAltCounts(SampleCountInfo[] sampleCounts) {
+        for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
+            SampleCountInfo sci = sampleCounts[sampleIndex];
+            String alt = sci.toString();
+            statsWriter.setSampleValue(altCountsIndex, sampleIndex, alt);
         }
     }
 
