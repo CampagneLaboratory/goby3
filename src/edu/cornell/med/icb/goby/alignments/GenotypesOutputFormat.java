@@ -86,13 +86,14 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         defineInfoFields(statsWriter);
         defineGenotypeField(statsWriter);
 
+        if (ALT_FORMAT){
+            altCountsIndex = statsWriter.defineField("FORMAT", "AltCounts", 1, ColumnType.String, "AltCounts","altcounts");
+        }
         zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity","zygosity");
         statsWriter.defineSamples(samples);
         statsWriter.writeHeader();
 
-        if (ALT_FORMAT){
-            altCountsIndex = statsWriter.defineField("FORMAT", "AltCounts", 1, ColumnType.String, "AltCounts","altcounts");
-        }
+
     }
 
     public void defineInfoFields(VCFWriter statsWriter) {
@@ -158,7 +159,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     protected void writeAltCounts(SampleCountInfo[] sampleCounts) {
         for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
             SampleCountInfo sci = sampleCounts[sampleIndex];
-            String alt = sci.toString();
+            String alt = sci.toString().replace("\n","");
             statsWriter.setSampleValue(altCountsIndex, sampleIndex, alt);
         }
     }
