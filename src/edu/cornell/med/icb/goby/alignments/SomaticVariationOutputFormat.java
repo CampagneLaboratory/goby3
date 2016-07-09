@@ -63,7 +63,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-default"
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/1467827859191" //${GOBY_HOME}/models/todo
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -146,7 +146,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private VCFWriter statsWriter;
     String[] samples;
     private int igvFieldIndex;
-    private String modelPath = "/models/todo";
+    private String modelPath;
     private SomaticModel model;
 
     /**
