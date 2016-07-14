@@ -8,76 +8,180 @@ public final class Reads {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
-  public interface ReadCollectionOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // repeated .goby.ReadEntry reads = 1;
+  public interface ReadCollectionOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:goby.ReadCollection)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     java.util.List<edu.cornell.med.icb.goby.reads.Reads.ReadEntry> 
         getReadsList();
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     edu.cornell.med.icb.goby.reads.Reads.ReadEntry getReads(int index);
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     int getReadsCount();
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder> 
         getReadsOrBuilderList();
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder getReadsOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code goby.ReadCollection}
+   */
   public static final class ReadCollection extends
-      com.google.protobuf.GeneratedMessage
-      implements ReadCollectionOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:goby.ReadCollection)
+      ReadCollectionOrBuilder {
     // Use ReadCollection.newBuilder() to construct.
-    private ReadCollection(Builder builder) {
+    private ReadCollection(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private ReadCollection(boolean noInit) {}
-    
+    private ReadCollection(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final ReadCollection defaultInstance;
     public static ReadCollection getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public ReadCollection getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ReadCollection(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                reads_ = new java.util.ArrayList<edu.cornell.med.icb.goby.reads.Reads.ReadEntry>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              reads_.add(input.readMessage(edu.cornell.med.icb.goby.reads.Reads.ReadEntry.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          reads_ = java.util.Collections.unmodifiableList(reads_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_fieldAccessorTable;
+      return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              edu.cornell.med.icb.goby.reads.Reads.ReadCollection.class, edu.cornell.med.icb.goby.reads.Reads.ReadCollection.Builder.class);
     }
-    
-    // repeated .goby.ReadEntry reads = 1;
+
+    public static com.google.protobuf.Parser<ReadCollection> PARSER =
+        new com.google.protobuf.AbstractParser<ReadCollection>() {
+      public ReadCollection parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ReadCollection(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ReadCollection> getParserForType() {
+      return PARSER;
+    }
+
     public static final int READS_FIELD_NUMBER = 1;
     private java.util.List<edu.cornell.med.icb.goby.reads.Reads.ReadEntry> reads_;
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     public java.util.List<edu.cornell.med.icb.goby.reads.Reads.ReadEntry> getReadsList() {
       return reads_;
     }
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     public java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder> 
         getReadsOrBuilderList() {
       return reads_;
     }
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     public int getReadsCount() {
       return reads_.size();
     }
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     public edu.cornell.med.icb.goby.reads.Reads.ReadEntry getReads(int index) {
       return reads_.get(index);
     }
+    /**
+     * <code>repeated .goby.ReadEntry reads = 1;</code>
+     */
     public edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder getReadsOrBuilder(
         int index) {
       return reads_.get(index);
     }
-    
+
     private void initFields() {
       reads_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       for (int i = 0; i < getReadsCount(); i++) {
         if (!getReads(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -87,7 +191,7 @@ public final class Reads {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -96,12 +200,12 @@ public final class Reads {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       for (int i = 0; i < reads_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -111,113 +215,106 @@ public final class Reads {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.ReadCollection prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code goby.ReadCollection}
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.cornell.med.icb.goby.reads.Reads.ReadCollectionOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:goby.ReadCollection)
+        edu.cornell.med.icb.goby.reads.Reads.ReadCollectionOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_fieldAccessorTable;
+        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                edu.cornell.med.icb.goby.reads.Reads.ReadCollection.class, edu.cornell.med.icb.goby.reads.Reads.ReadCollection.Builder.class);
       }
-      
+
       // Construct using edu.cornell.med.icb.goby.reads.Reads.ReadCollection.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -229,7 +326,7 @@ public final class Reads {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         if (readsBuilder_ == null) {
@@ -240,20 +337,20 @@ public final class Reads {
         }
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.cornell.med.icb.goby.reads.Reads.ReadCollection.getDescriptor();
+        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_descriptor;
       }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.ReadCollection getDefaultInstanceForType() {
         return edu.cornell.med.icb.goby.reads.Reads.ReadCollection.getDefaultInstance();
       }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.ReadCollection build() {
         edu.cornell.med.icb.goby.reads.Reads.ReadCollection result = buildPartial();
         if (!result.isInitialized()) {
@@ -261,17 +358,7 @@ public final class Reads {
         }
         return result;
       }
-      
-      private edu.cornell.med.icb.goby.reads.Reads.ReadCollection buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        edu.cornell.med.icb.goby.reads.Reads.ReadCollection result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.ReadCollection buildPartial() {
         edu.cornell.med.icb.goby.reads.Reads.ReadCollection result = new edu.cornell.med.icb.goby.reads.Reads.ReadCollection(this);
         int from_bitField0_ = bitField0_;
@@ -287,7 +374,7 @@ public final class Reads {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof edu.cornell.med.icb.goby.reads.Reads.ReadCollection) {
           return mergeFrom((edu.cornell.med.icb.goby.reads.Reads.ReadCollection)other);
@@ -296,7 +383,7 @@ public final class Reads {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(edu.cornell.med.icb.goby.reads.Reads.ReadCollection other) {
         if (other == edu.cornell.med.icb.goby.reads.Reads.ReadCollection.getDefaultInstance()) return this;
         if (readsBuilder_ == null) {
@@ -328,7 +415,7 @@ public final class Reads {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         for (int i = 0; i < getReadsCount(); i++) {
           if (!getReads(i).isInitialized()) {
@@ -338,43 +425,26 @@ public final class Reads {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder subBuilder = edu.cornell.med.icb.goby.reads.Reads.ReadEntry.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addReads(subBuilder.buildPartial());
-              break;
-            }
+        edu.cornell.med.icb.goby.reads.Reads.ReadCollection parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (edu.cornell.med.icb.goby.reads.Reads.ReadCollection) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // repeated .goby.ReadEntry reads = 1;
+
       private java.util.List<edu.cornell.med.icb.goby.reads.Reads.ReadEntry> reads_ =
         java.util.Collections.emptyList();
       private void ensureReadsIsMutable() {
@@ -383,10 +453,13 @@ public final class Reads {
           bitField0_ |= 0x00000001;
          }
       }
-      
+
       private com.google.protobuf.RepeatedFieldBuilder<
           edu.cornell.med.icb.goby.reads.Reads.ReadEntry, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder, edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder> readsBuilder_;
-      
+
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public java.util.List<edu.cornell.med.icb.goby.reads.Reads.ReadEntry> getReadsList() {
         if (readsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(reads_);
@@ -394,6 +467,9 @@ public final class Reads {
           return readsBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public int getReadsCount() {
         if (readsBuilder_ == null) {
           return reads_.size();
@@ -401,6 +477,9 @@ public final class Reads {
           return readsBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry getReads(int index) {
         if (readsBuilder_ == null) {
           return reads_.get(index);
@@ -408,6 +487,9 @@ public final class Reads {
           return readsBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder setReads(
           int index, edu.cornell.med.icb.goby.reads.Reads.ReadEntry value) {
         if (readsBuilder_ == null) {
@@ -422,6 +504,9 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder setReads(
           int index, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder builderForValue) {
         if (readsBuilder_ == null) {
@@ -433,6 +518,9 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder addReads(edu.cornell.med.icb.goby.reads.Reads.ReadEntry value) {
         if (readsBuilder_ == null) {
           if (value == null) {
@@ -446,6 +534,9 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder addReads(
           int index, edu.cornell.med.icb.goby.reads.Reads.ReadEntry value) {
         if (readsBuilder_ == null) {
@@ -460,6 +551,9 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder addReads(
           edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder builderForValue) {
         if (readsBuilder_ == null) {
@@ -471,6 +565,9 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder addReads(
           int index, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder builderForValue) {
         if (readsBuilder_ == null) {
@@ -482,17 +579,24 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder addAllReads(
           java.lang.Iterable<? extends edu.cornell.med.icb.goby.reads.Reads.ReadEntry> values) {
         if (readsBuilder_ == null) {
           ensureReadsIsMutable();
-          super.addAll(values, reads_);
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, reads_);
           onChanged();
         } else {
           readsBuilder_.addAllMessages(values);
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder clearReads() {
         if (readsBuilder_ == null) {
           reads_ = java.util.Collections.emptyList();
@@ -503,6 +607,9 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public Builder removeReads(int index) {
         if (readsBuilder_ == null) {
           ensureReadsIsMutable();
@@ -513,10 +620,16 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder getReadsBuilder(
           int index) {
         return getReadsFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder getReadsOrBuilder(
           int index) {
         if (readsBuilder_ == null) {
@@ -524,6 +637,9 @@ public final class Reads {
           return readsBuilder_.getMessageOrBuilder(index);
         }
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder> 
            getReadsOrBuilderList() {
         if (readsBuilder_ != null) {
@@ -532,15 +648,24 @@ public final class Reads {
           return java.util.Collections.unmodifiableList(reads_);
         }
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder addReadsBuilder() {
         return getReadsFieldBuilder().addBuilder(
             edu.cornell.med.icb.goby.reads.Reads.ReadEntry.getDefaultInstance());
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder addReadsBuilder(
           int index) {
         return getReadsFieldBuilder().addBuilder(
             index, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.getDefaultInstance());
       }
+      /**
+       * <code>repeated .goby.ReadEntry reads = 1;</code>
+       */
       public java.util.List<edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder> 
            getReadsBuilderList() {
         return getReadsFieldBuilder().getBuilderList();
@@ -559,279 +684,995 @@ public final class Reads {
         }
         return readsBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:goby.ReadCollection)
     }
-    
+
     static {
       defaultInstance = new ReadCollection(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:goby.ReadCollection)
   }
-  
-  public interface ReadEntryOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required uint32 read_index = 1;
+
+  public interface ReadEntryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:goby.ReadEntry)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required uint32 read_index = 1;</code>
+     *
+     * <pre>
+     *Index of a read.
+     * </pre>
+     */
     boolean hasReadIndex();
+    /**
+     * <code>required uint32 read_index = 1;</code>
+     *
+     * <pre>
+     *Index of a read.
+     * </pre>
+     */
     int getReadIndex();
-    
-    // optional uint32 barcode_index = 10;
+
+    /**
+     * <code>optional uint32 barcode_index = 10;</code>
+     *
+     * <pre>
+     *Index of the barcode, if any.
+     * </pre>
+     */
     boolean hasBarcodeIndex();
+    /**
+     * <code>optional uint32 barcode_index = 10;</code>
+     *
+     * <pre>
+     *Index of the barcode, if any.
+     * </pre>
+     */
     int getBarcodeIndex();
-    
-    // optional string read_identifier = 23;
+
+    /**
+     * <code>optional string read_identifier = 23;</code>
+     *
+     * <pre>
+     *Read identifier/name may be present.
+     * </pre>
+     */
     boolean hasReadIdentifier();
-    String getReadIdentifier();
-    
-    // optional string description = 22;
+    /**
+     * <code>optional string read_identifier = 23;</code>
+     *
+     * <pre>
+     *Read identifier/name may be present.
+     * </pre>
+     */
+    java.lang.String getReadIdentifier();
+    /**
+     * <code>optional string read_identifier = 23;</code>
+     *
+     * <pre>
+     *Read identifier/name may be present.
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getReadIdentifierBytes();
+
+    /**
+     * <code>optional string description = 22;</code>
+     *
+     * <pre>
+     *Additional description about the read (from Fasta/Q format).
+     * </pre>
+     */
     boolean hasDescription();
-    String getDescription();
-    
-    // required uint32 read_length = 2;
+    /**
+     * <code>optional string description = 22;</code>
+     *
+     * <pre>
+     *Additional description about the read (from Fasta/Q format).
+     * </pre>
+     */
+    java.lang.String getDescription();
+    /**
+     * <code>optional string description = 22;</code>
+     *
+     * <pre>
+     *Additional description about the read (from Fasta/Q format).
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getDescriptionBytes();
+
+    /**
+     * <code>required uint32 read_length = 2;</code>
+     *
+     * <pre>
+     *Length of the sequence.
+     * </pre>
+     */
     boolean hasReadLength();
+    /**
+     * <code>required uint32 read_length = 2;</code>
+     *
+     * <pre>
+     *Length of the sequence.
+     * </pre>
+     */
     int getReadLength();
-    
-    // optional bytes sequence = 3;
+
+    /**
+     * <code>optional bytes sequence = 3;</code>
+     *
+     * <pre>
+     *Sequence, encoded as ascii characters stored in single bytes.
+     * </pre>
+     */
     boolean hasSequence();
+    /**
+     * <code>optional bytes sequence = 3;</code>
+     *
+     * <pre>
+     *Sequence, encoded as ascii characters stored in single bytes.
+     * </pre>
+     */
     com.google.protobuf.ByteString getSequence();
-    
-    // optional bytes sequence_pair = 5;
+
+    /**
+     * <code>optional bytes sequence_pair = 5;</code>
+     *
+     * <pre>
+     *The second sequence in a pair. Stored the same way as the sequence attribute.
+     * </pre>
+     */
     boolean hasSequencePair();
+    /**
+     * <code>optional bytes sequence_pair = 5;</code>
+     *
+     * <pre>
+     *The second sequence in a pair. Stored the same way as the sequence attribute.
+     * </pre>
+     */
     com.google.protobuf.ByteString getSequencePair();
-    
-    // optional uint32 read_length_pair = 6;
+
+    /**
+     * <code>optional uint32 read_length_pair = 6;</code>
+     *
+     * <pre>
+     *Length of the second sequence in a pair.
+     * </pre>
+     */
     boolean hasReadLengthPair();
+    /**
+     * <code>optional uint32 read_length_pair = 6;</code>
+     *
+     * <pre>
+     *Length of the second sequence in a pair.
+     * </pre>
+     */
     int getReadLengthPair();
-    
-    // optional bytes quality_scores = 4;
+
+    /**
+     * <code>optional bytes quality_scores = 4;</code>
+     *
+     * <pre>
+     *Quality scores in Phred units, stored as single bytes (0-255).
+     * </pre>
+     */
     boolean hasQualityScores();
+    /**
+     * <code>optional bytes quality_scores = 4;</code>
+     *
+     * <pre>
+     *Quality scores in Phred units, stored as single bytes (0-255).
+     * </pre>
+     */
     com.google.protobuf.ByteString getQualityScores();
-    
-    // optional bytes quality_scores_pair = 7;
+
+    /**
+     * <code>optional bytes quality_scores_pair = 7;</code>
+     *
+     * <pre>
+     *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+     * </pre>
+     */
     boolean hasQualityScoresPair();
+    /**
+     * <code>optional bytes quality_scores_pair = 7;</code>
+     *
+     * <pre>
+     *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+     * </pre>
+     */
     com.google.protobuf.ByteString getQualityScoresPair();
-    
-    // optional bytes compressed_data = 8;
+
+    /**
+     * <code>optional bytes compressed_data = 8;</code>
+     *
+     * <pre>
+     *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+     *content compressed with the codec.
+     * </pre>
+     */
     boolean hasCompressedData();
+    /**
+     * <code>optional bytes compressed_data = 8;</code>
+     *
+     * <pre>
+     *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+     *content compressed with the codec.
+     * </pre>
+     */
     com.google.protobuf.ByteString getCompressedData();
-    
-    // repeated .goby.MetaData meta_data = 25;
+
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> 
         getMetaDataList();
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     edu.cornell.med.icb.goby.reads.Reads.MetaData getMetaData(int index);
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     int getMetaDataCount();
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
         getMetaDataOrBuilderList();
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder getMetaDataOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code goby.ReadEntry}
+   */
   public static final class ReadEntry extends
-      com.google.protobuf.GeneratedMessage
-      implements ReadEntryOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:goby.ReadEntry)
+      ReadEntryOrBuilder {
     // Use ReadEntry.newBuilder() to construct.
-    private ReadEntry(Builder builder) {
+    private ReadEntry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private ReadEntry(boolean noInit) {}
-    
+    private ReadEntry(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final ReadEntry defaultInstance;
     public static ReadEntry getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public ReadEntry getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ReadEntry(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              readIndex_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000010;
+              readLength_ = input.readUInt32();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000020;
+              sequence_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000100;
+              qualityScores_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000040;
+              sequencePair_ = input.readBytes();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000080;
+              readLengthPair_ = input.readUInt32();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000200;
+              qualityScoresPair_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000400;
+              compressedData_ = input.readBytes();
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000002;
+              barcodeIndex_ = input.readUInt32();
+              break;
+            }
+            case 178: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000008;
+              description_ = bs;
+              break;
+            }
+            case 186: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              readIdentifier_ = bs;
+              break;
+            }
+            case 202: {
+              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+                metaData_ = new java.util.ArrayList<edu.cornell.med.icb.goby.reads.Reads.MetaData>();
+                mutable_bitField0_ |= 0x00000800;
+              }
+              metaData_.add(input.readMessage(edu.cornell.med.icb.goby.reads.Reads.MetaData.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+          metaData_ = java.util.Collections.unmodifiableList(metaData_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_fieldAccessorTable;
+      return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              edu.cornell.med.icb.goby.reads.Reads.ReadEntry.class, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<ReadEntry> PARSER =
+        new com.google.protobuf.AbstractParser<ReadEntry>() {
+      public ReadEntry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ReadEntry(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ReadEntry> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
-    // required uint32 read_index = 1;
     public static final int READ_INDEX_FIELD_NUMBER = 1;
     private int readIndex_;
+    /**
+     * <code>required uint32 read_index = 1;</code>
+     *
+     * <pre>
+     *Index of a read.
+     * </pre>
+     */
     public boolean hasReadIndex() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required uint32 read_index = 1;</code>
+     *
+     * <pre>
+     *Index of a read.
+     * </pre>
+     */
     public int getReadIndex() {
       return readIndex_;
     }
-    
-    // optional uint32 barcode_index = 10;
+
     public static final int BARCODE_INDEX_FIELD_NUMBER = 10;
     private int barcodeIndex_;
+    /**
+     * <code>optional uint32 barcode_index = 10;</code>
+     *
+     * <pre>
+     *Index of the barcode, if any.
+     * </pre>
+     */
     public boolean hasBarcodeIndex() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>optional uint32 barcode_index = 10;</code>
+     *
+     * <pre>
+     *Index of the barcode, if any.
+     * </pre>
+     */
     public int getBarcodeIndex() {
       return barcodeIndex_;
     }
-    
-    // optional string read_identifier = 23;
+
     public static final int READ_IDENTIFIER_FIELD_NUMBER = 23;
     private java.lang.Object readIdentifier_;
+    /**
+     * <code>optional string read_identifier = 23;</code>
+     *
+     * <pre>
+     *Read identifier/name may be present.
+     * </pre>
+     */
     public boolean hasReadIdentifier() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    public String getReadIdentifier() {
+    /**
+     * <code>optional string read_identifier = 23;</code>
+     *
+     * <pre>
+     *Read identifier/name may be present.
+     * </pre>
+     */
+    public java.lang.String getReadIdentifier() {
       java.lang.Object ref = readIdentifier_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           readIdentifier_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getReadIdentifierBytes() {
+    /**
+     * <code>optional string read_identifier = 23;</code>
+     *
+     * <pre>
+     *Read identifier/name may be present.
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getReadIdentifierBytes() {
       java.lang.Object ref = readIdentifier_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         readIdentifier_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // optional string description = 22;
+
     public static final int DESCRIPTION_FIELD_NUMBER = 22;
     private java.lang.Object description_;
+    /**
+     * <code>optional string description = 22;</code>
+     *
+     * <pre>
+     *Additional description about the read (from Fasta/Q format).
+     * </pre>
+     */
     public boolean hasDescription() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getDescription() {
+    /**
+     * <code>optional string description = 22;</code>
+     *
+     * <pre>
+     *Additional description about the read (from Fasta/Q format).
+     * </pre>
+     */
+    public java.lang.String getDescription() {
       java.lang.Object ref = description_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           description_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getDescriptionBytes() {
+    /**
+     * <code>optional string description = 22;</code>
+     *
+     * <pre>
+     *Additional description about the read (from Fasta/Q format).
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getDescriptionBytes() {
       java.lang.Object ref = description_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         description_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required uint32 read_length = 2;
+
     public static final int READ_LENGTH_FIELD_NUMBER = 2;
     private int readLength_;
+    /**
+     * <code>required uint32 read_length = 2;</code>
+     *
+     * <pre>
+     *Length of the sequence.
+     * </pre>
+     */
     public boolean hasReadLength() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
+    /**
+     * <code>required uint32 read_length = 2;</code>
+     *
+     * <pre>
+     *Length of the sequence.
+     * </pre>
+     */
     public int getReadLength() {
       return readLength_;
     }
-    
-    // optional bytes sequence = 3;
+
     public static final int SEQUENCE_FIELD_NUMBER = 3;
     private com.google.protobuf.ByteString sequence_;
+    /**
+     * <code>optional bytes sequence = 3;</code>
+     *
+     * <pre>
+     *Sequence, encoded as ascii characters stored in single bytes.
+     * </pre>
+     */
     public boolean hasSequence() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
+    /**
+     * <code>optional bytes sequence = 3;</code>
+     *
+     * <pre>
+     *Sequence, encoded as ascii characters stored in single bytes.
+     * </pre>
+     */
     public com.google.protobuf.ByteString getSequence() {
       return sequence_;
     }
-    
-    // optional bytes sequence_pair = 5;
+
     public static final int SEQUENCE_PAIR_FIELD_NUMBER = 5;
     private com.google.protobuf.ByteString sequencePair_;
+    /**
+     * <code>optional bytes sequence_pair = 5;</code>
+     *
+     * <pre>
+     *The second sequence in a pair. Stored the same way as the sequence attribute.
+     * </pre>
+     */
     public boolean hasSequencePair() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
+    /**
+     * <code>optional bytes sequence_pair = 5;</code>
+     *
+     * <pre>
+     *The second sequence in a pair. Stored the same way as the sequence attribute.
+     * </pre>
+     */
     public com.google.protobuf.ByteString getSequencePair() {
       return sequencePair_;
     }
-    
-    // optional uint32 read_length_pair = 6;
+
     public static final int READ_LENGTH_PAIR_FIELD_NUMBER = 6;
     private int readLengthPair_;
+    /**
+     * <code>optional uint32 read_length_pair = 6;</code>
+     *
+     * <pre>
+     *Length of the second sequence in a pair.
+     * </pre>
+     */
     public boolean hasReadLengthPair() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
+    /**
+     * <code>optional uint32 read_length_pair = 6;</code>
+     *
+     * <pre>
+     *Length of the second sequence in a pair.
+     * </pre>
+     */
     public int getReadLengthPair() {
       return readLengthPair_;
     }
-    
-    // optional bytes quality_scores = 4;
+
     public static final int QUALITY_SCORES_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString qualityScores_;
+    /**
+     * <code>optional bytes quality_scores = 4;</code>
+     *
+     * <pre>
+     *Quality scores in Phred units, stored as single bytes (0-255).
+     * </pre>
+     */
     public boolean hasQualityScores() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
+    /**
+     * <code>optional bytes quality_scores = 4;</code>
+     *
+     * <pre>
+     *Quality scores in Phred units, stored as single bytes (0-255).
+     * </pre>
+     */
     public com.google.protobuf.ByteString getQualityScores() {
       return qualityScores_;
     }
-    
-    // optional bytes quality_scores_pair = 7;
+
     public static final int QUALITY_SCORES_PAIR_FIELD_NUMBER = 7;
     private com.google.protobuf.ByteString qualityScoresPair_;
+    /**
+     * <code>optional bytes quality_scores_pair = 7;</code>
+     *
+     * <pre>
+     *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+     * </pre>
+     */
     public boolean hasQualityScoresPair() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
+    /**
+     * <code>optional bytes quality_scores_pair = 7;</code>
+     *
+     * <pre>
+     *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+     * </pre>
+     */
     public com.google.protobuf.ByteString getQualityScoresPair() {
       return qualityScoresPair_;
     }
-    
-    // optional bytes compressed_data = 8;
+
     public static final int COMPRESSED_DATA_FIELD_NUMBER = 8;
     private com.google.protobuf.ByteString compressedData_;
+    /**
+     * <code>optional bytes compressed_data = 8;</code>
+     *
+     * <pre>
+     *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+     *content compressed with the codec.
+     * </pre>
+     */
     public boolean hasCompressedData() {
       return ((bitField0_ & 0x00000400) == 0x00000400);
     }
+    /**
+     * <code>optional bytes compressed_data = 8;</code>
+     *
+     * <pre>
+     *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+     *content compressed with the codec.
+     * </pre>
+     */
     public com.google.protobuf.ByteString getCompressedData() {
       return compressedData_;
     }
-    
-    // repeated .goby.MetaData meta_data = 25;
+
     public static final int META_DATA_FIELD_NUMBER = 25;
     private java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> metaData_;
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     public java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> getMetaDataList() {
       return metaData_;
     }
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     public java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
         getMetaDataOrBuilderList() {
       return metaData_;
     }
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     public int getMetaDataCount() {
       return metaData_.size();
     }
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     public edu.cornell.med.icb.goby.reads.Reads.MetaData getMetaData(int index) {
       return metaData_.get(index);
     }
+    /**
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
+     *
+     * <pre>
+     *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+     *read collection, with the understanding that the meta-data applies to all the reads in the
+     *collection. Meta-data can be used to store information about when the sample was sequenced,
+     *or other information of interest. The key-value pair format is sufficiently flexible to
+     *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+     *keys so that automated tools can use metadata in relatively standard way. Please note that
+     *some keys provide a format for the value. This format should also be followed to garantee
+     *that meta data can be used computationally in fully automatic manner.
+     *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+     *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+     *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+     *Illumina GaIIx
+     *Illumina HiSeq 1000
+     *Illumina HiSeq 2000
+     *Helicos Heliscope
+     *LifeTech 5500 SOLiD
+     *LifeTech 5500xl SOLiD
+     *Roche 454 GS FLX Ti
+     *key="organism" value="species name"
+     *Since Goby 1.9.1
+     * </pre>
+     */
     public edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder getMetaDataOrBuilder(
         int index) {
       return metaData_.get(index);
     }
-    
+
     private void initFields() {
       readIndex_ = 0;
       barcodeIndex_ = 0;
@@ -849,8 +1690,9 @@ public final class Reads {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       if (!hasReadIndex()) {
         memoizedIsInitialized = 0;
         return false;
@@ -868,7 +1710,7 @@ public final class Reads {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -910,12 +1752,12 @@ public final class Reads {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -969,113 +1811,106 @@ public final class Reads {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.ReadEntry prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code goby.ReadEntry}
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:goby.ReadEntry)
+        edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_fieldAccessorTable;
+        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                edu.cornell.med.icb.goby.reads.Reads.ReadEntry.class, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder.class);
       }
-      
+
       // Construct using edu.cornell.med.icb.goby.reads.Reads.ReadEntry.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -1087,7 +1922,7 @@ public final class Reads {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         readIndex_ = 0;
@@ -1120,20 +1955,20 @@ public final class Reads {
         }
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.cornell.med.icb.goby.reads.Reads.ReadEntry.getDescriptor();
+        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadEntry_descriptor;
       }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry getDefaultInstanceForType() {
         return edu.cornell.med.icb.goby.reads.Reads.ReadEntry.getDefaultInstance();
       }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry build() {
         edu.cornell.med.icb.goby.reads.Reads.ReadEntry result = buildPartial();
         if (!result.isInitialized()) {
@@ -1141,17 +1976,7 @@ public final class Reads {
         }
         return result;
       }
-      
-      private edu.cornell.med.icb.goby.reads.Reads.ReadEntry buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        edu.cornell.med.icb.goby.reads.Reads.ReadEntry result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.ReadEntry buildPartial() {
         edu.cornell.med.icb.goby.reads.Reads.ReadEntry result = new edu.cornell.med.icb.goby.reads.Reads.ReadEntry(this);
         int from_bitField0_ = bitField0_;
@@ -1213,7 +2038,7 @@ public final class Reads {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof edu.cornell.med.icb.goby.reads.Reads.ReadEntry) {
           return mergeFrom((edu.cornell.med.icb.goby.reads.Reads.ReadEntry)other);
@@ -1222,7 +2047,7 @@ public final class Reads {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(edu.cornell.med.icb.goby.reads.Reads.ReadEntry other) {
         if (other == edu.cornell.med.icb.goby.reads.Reads.ReadEntry.getDefaultInstance()) return this;
         if (other.hasReadIndex()) {
@@ -1232,10 +2057,14 @@ public final class Reads {
           setBarcodeIndex(other.getBarcodeIndex());
         }
         if (other.hasReadIdentifier()) {
-          setReadIdentifier(other.getReadIdentifier());
+          bitField0_ |= 0x00000004;
+          readIdentifier_ = other.readIdentifier_;
+          onChanged();
         }
         if (other.hasDescription()) {
-          setDescription(other.getDescription());
+          bitField0_ |= 0x00000008;
+          description_ = other.description_;
+          onChanged();
         }
         if (other.hasReadLength()) {
           setReadLength(other.getReadLength());
@@ -1287,7 +2116,7 @@ public final class Reads {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasReadIndex()) {
           
@@ -1305,155 +2134,183 @@ public final class Reads {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              readIndex_ = input.readUInt32();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000010;
-              readLength_ = input.readUInt32();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000020;
-              sequence_ = input.readBytes();
-              break;
-            }
-            case 34: {
-              bitField0_ |= 0x00000100;
-              qualityScores_ = input.readBytes();
-              break;
-            }
-            case 42: {
-              bitField0_ |= 0x00000040;
-              sequencePair_ = input.readBytes();
-              break;
-            }
-            case 48: {
-              bitField0_ |= 0x00000080;
-              readLengthPair_ = input.readUInt32();
-              break;
-            }
-            case 58: {
-              bitField0_ |= 0x00000200;
-              qualityScoresPair_ = input.readBytes();
-              break;
-            }
-            case 66: {
-              bitField0_ |= 0x00000400;
-              compressedData_ = input.readBytes();
-              break;
-            }
-            case 80: {
-              bitField0_ |= 0x00000002;
-              barcodeIndex_ = input.readUInt32();
-              break;
-            }
-            case 178: {
-              bitField0_ |= 0x00000008;
-              description_ = input.readBytes();
-              break;
-            }
-            case 186: {
-              bitField0_ |= 0x00000004;
-              readIdentifier_ = input.readBytes();
-              break;
-            }
-            case 202: {
-              edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder subBuilder = edu.cornell.med.icb.goby.reads.Reads.MetaData.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addMetaData(subBuilder.buildPartial());
-              break;
-            }
+        edu.cornell.med.icb.goby.reads.Reads.ReadEntry parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (edu.cornell.med.icb.goby.reads.Reads.ReadEntry) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // required uint32 read_index = 1;
+
       private int readIndex_ ;
+      /**
+       * <code>required uint32 read_index = 1;</code>
+       *
+       * <pre>
+       *Index of a read.
+       * </pre>
+       */
       public boolean hasReadIndex() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required uint32 read_index = 1;</code>
+       *
+       * <pre>
+       *Index of a read.
+       * </pre>
+       */
       public int getReadIndex() {
         return readIndex_;
       }
+      /**
+       * <code>required uint32 read_index = 1;</code>
+       *
+       * <pre>
+       *Index of a read.
+       * </pre>
+       */
       public Builder setReadIndex(int value) {
         bitField0_ |= 0x00000001;
         readIndex_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required uint32 read_index = 1;</code>
+       *
+       * <pre>
+       *Index of a read.
+       * </pre>
+       */
       public Builder clearReadIndex() {
         bitField0_ = (bitField0_ & ~0x00000001);
         readIndex_ = 0;
         onChanged();
         return this;
       }
-      
-      // optional uint32 barcode_index = 10;
+
       private int barcodeIndex_ ;
+      /**
+       * <code>optional uint32 barcode_index = 10;</code>
+       *
+       * <pre>
+       *Index of the barcode, if any.
+       * </pre>
+       */
       public boolean hasBarcodeIndex() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>optional uint32 barcode_index = 10;</code>
+       *
+       * <pre>
+       *Index of the barcode, if any.
+       * </pre>
+       */
       public int getBarcodeIndex() {
         return barcodeIndex_;
       }
+      /**
+       * <code>optional uint32 barcode_index = 10;</code>
+       *
+       * <pre>
+       *Index of the barcode, if any.
+       * </pre>
+       */
       public Builder setBarcodeIndex(int value) {
         bitField0_ |= 0x00000002;
         barcodeIndex_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional uint32 barcode_index = 10;</code>
+       *
+       * <pre>
+       *Index of the barcode, if any.
+       * </pre>
+       */
       public Builder clearBarcodeIndex() {
         bitField0_ = (bitField0_ & ~0x00000002);
         barcodeIndex_ = 0;
         onChanged();
         return this;
       }
-      
-      // optional string read_identifier = 23;
+
       private java.lang.Object readIdentifier_ = "";
+      /**
+       * <code>optional string read_identifier = 23;</code>
+       *
+       * <pre>
+       *Read identifier/name may be present.
+       * </pre>
+       */
       public boolean hasReadIdentifier() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-      public String getReadIdentifier() {
+      /**
+       * <code>optional string read_identifier = 23;</code>
+       *
+       * <pre>
+       *Read identifier/name may be present.
+       * </pre>
+       */
+      public java.lang.String getReadIdentifier() {
         java.lang.Object ref = readIdentifier_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          readIdentifier_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            readIdentifier_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setReadIdentifier(String value) {
+      /**
+       * <code>optional string read_identifier = 23;</code>
+       *
+       * <pre>
+       *Read identifier/name may be present.
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getReadIdentifierBytes() {
+        java.lang.Object ref = readIdentifier_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          readIdentifier_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string read_identifier = 23;</code>
+       *
+       * <pre>
+       *Read identifier/name may be present.
+       * </pre>
+       */
+      public Builder setReadIdentifier(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1462,34 +2319,98 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string read_identifier = 23;</code>
+       *
+       * <pre>
+       *Read identifier/name may be present.
+       * </pre>
+       */
       public Builder clearReadIdentifier() {
         bitField0_ = (bitField0_ & ~0x00000004);
         readIdentifier_ = getDefaultInstance().getReadIdentifier();
         onChanged();
         return this;
       }
-      void setReadIdentifier(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
+      /**
+       * <code>optional string read_identifier = 23;</code>
+       *
+       * <pre>
+       *Read identifier/name may be present.
+       * </pre>
+       */
+      public Builder setReadIdentifierBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         readIdentifier_ = value;
         onChanged();
+        return this;
       }
-      
-      // optional string description = 22;
+
       private java.lang.Object description_ = "";
+      /**
+       * <code>optional string description = 22;</code>
+       *
+       * <pre>
+       *Additional description about the read (from Fasta/Q format).
+       * </pre>
+       */
       public boolean hasDescription() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getDescription() {
+      /**
+       * <code>optional string description = 22;</code>
+       *
+       * <pre>
+       *Additional description about the read (from Fasta/Q format).
+       * </pre>
+       */
+      public java.lang.String getDescription() {
         java.lang.Object ref = description_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          description_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            description_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setDescription(String value) {
+      /**
+       * <code>optional string description = 22;</code>
+       *
+       * <pre>
+       *Additional description about the read (from Fasta/Q format).
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getDescriptionBytes() {
+        java.lang.Object ref = description_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          description_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string description = 22;</code>
+       *
+       * <pre>
+       *Additional description about the read (from Fasta/Q format).
+       * </pre>
+       */
+      public Builder setDescription(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1498,47 +2419,113 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string description = 22;</code>
+       *
+       * <pre>
+       *Additional description about the read (from Fasta/Q format).
+       * </pre>
+       */
       public Builder clearDescription() {
         bitField0_ = (bitField0_ & ~0x00000008);
         description_ = getDefaultInstance().getDescription();
         onChanged();
         return this;
       }
-      void setDescription(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000008;
+      /**
+       * <code>optional string description = 22;</code>
+       *
+       * <pre>
+       *Additional description about the read (from Fasta/Q format).
+       * </pre>
+       */
+      public Builder setDescriptionBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
         description_ = value;
         onChanged();
+        return this;
       }
-      
-      // required uint32 read_length = 2;
+
       private int readLength_ ;
+      /**
+       * <code>required uint32 read_length = 2;</code>
+       *
+       * <pre>
+       *Length of the sequence.
+       * </pre>
+       */
       public boolean hasReadLength() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
+      /**
+       * <code>required uint32 read_length = 2;</code>
+       *
+       * <pre>
+       *Length of the sequence.
+       * </pre>
+       */
       public int getReadLength() {
         return readLength_;
       }
+      /**
+       * <code>required uint32 read_length = 2;</code>
+       *
+       * <pre>
+       *Length of the sequence.
+       * </pre>
+       */
       public Builder setReadLength(int value) {
         bitField0_ |= 0x00000010;
         readLength_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required uint32 read_length = 2;</code>
+       *
+       * <pre>
+       *Length of the sequence.
+       * </pre>
+       */
       public Builder clearReadLength() {
         bitField0_ = (bitField0_ & ~0x00000010);
         readLength_ = 0;
         onChanged();
         return this;
       }
-      
-      // optional bytes sequence = 3;
+
       private com.google.protobuf.ByteString sequence_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes sequence = 3;</code>
+       *
+       * <pre>
+       *Sequence, encoded as ascii characters stored in single bytes.
+       * </pre>
+       */
       public boolean hasSequence() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
+      /**
+       * <code>optional bytes sequence = 3;</code>
+       *
+       * <pre>
+       *Sequence, encoded as ascii characters stored in single bytes.
+       * </pre>
+       */
       public com.google.protobuf.ByteString getSequence() {
         return sequence_;
       }
+      /**
+       * <code>optional bytes sequence = 3;</code>
+       *
+       * <pre>
+       *Sequence, encoded as ascii characters stored in single bytes.
+       * </pre>
+       */
       public Builder setSequence(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -1548,21 +2535,48 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional bytes sequence = 3;</code>
+       *
+       * <pre>
+       *Sequence, encoded as ascii characters stored in single bytes.
+       * </pre>
+       */
       public Builder clearSequence() {
         bitField0_ = (bitField0_ & ~0x00000020);
         sequence_ = getDefaultInstance().getSequence();
         onChanged();
         return this;
       }
-      
-      // optional bytes sequence_pair = 5;
+
       private com.google.protobuf.ByteString sequencePair_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes sequence_pair = 5;</code>
+       *
+       * <pre>
+       *The second sequence in a pair. Stored the same way as the sequence attribute.
+       * </pre>
+       */
       public boolean hasSequencePair() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
+      /**
+       * <code>optional bytes sequence_pair = 5;</code>
+       *
+       * <pre>
+       *The second sequence in a pair. Stored the same way as the sequence attribute.
+       * </pre>
+       */
       public com.google.protobuf.ByteString getSequencePair() {
         return sequencePair_;
       }
+      /**
+       * <code>optional bytes sequence_pair = 5;</code>
+       *
+       * <pre>
+       *The second sequence in a pair. Stored the same way as the sequence attribute.
+       * </pre>
+       */
       public Builder setSequencePair(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -1572,42 +2586,96 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional bytes sequence_pair = 5;</code>
+       *
+       * <pre>
+       *The second sequence in a pair. Stored the same way as the sequence attribute.
+       * </pre>
+       */
       public Builder clearSequencePair() {
         bitField0_ = (bitField0_ & ~0x00000040);
         sequencePair_ = getDefaultInstance().getSequencePair();
         onChanged();
         return this;
       }
-      
-      // optional uint32 read_length_pair = 6;
+
       private int readLengthPair_ ;
+      /**
+       * <code>optional uint32 read_length_pair = 6;</code>
+       *
+       * <pre>
+       *Length of the second sequence in a pair.
+       * </pre>
+       */
       public boolean hasReadLengthPair() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
+      /**
+       * <code>optional uint32 read_length_pair = 6;</code>
+       *
+       * <pre>
+       *Length of the second sequence in a pair.
+       * </pre>
+       */
       public int getReadLengthPair() {
         return readLengthPair_;
       }
+      /**
+       * <code>optional uint32 read_length_pair = 6;</code>
+       *
+       * <pre>
+       *Length of the second sequence in a pair.
+       * </pre>
+       */
       public Builder setReadLengthPair(int value) {
         bitField0_ |= 0x00000080;
         readLengthPair_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional uint32 read_length_pair = 6;</code>
+       *
+       * <pre>
+       *Length of the second sequence in a pair.
+       * </pre>
+       */
       public Builder clearReadLengthPair() {
         bitField0_ = (bitField0_ & ~0x00000080);
         readLengthPair_ = 0;
         onChanged();
         return this;
       }
-      
-      // optional bytes quality_scores = 4;
+
       private com.google.protobuf.ByteString qualityScores_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes quality_scores = 4;</code>
+       *
+       * <pre>
+       *Quality scores in Phred units, stored as single bytes (0-255).
+       * </pre>
+       */
       public boolean hasQualityScores() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
+      /**
+       * <code>optional bytes quality_scores = 4;</code>
+       *
+       * <pre>
+       *Quality scores in Phred units, stored as single bytes (0-255).
+       * </pre>
+       */
       public com.google.protobuf.ByteString getQualityScores() {
         return qualityScores_;
       }
+      /**
+       * <code>optional bytes quality_scores = 4;</code>
+       *
+       * <pre>
+       *Quality scores in Phred units, stored as single bytes (0-255).
+       * </pre>
+       */
       public Builder setQualityScores(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -1617,21 +2685,48 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional bytes quality_scores = 4;</code>
+       *
+       * <pre>
+       *Quality scores in Phred units, stored as single bytes (0-255).
+       * </pre>
+       */
       public Builder clearQualityScores() {
         bitField0_ = (bitField0_ & ~0x00000100);
         qualityScores_ = getDefaultInstance().getQualityScores();
         onChanged();
         return this;
       }
-      
-      // optional bytes quality_scores_pair = 7;
+
       private com.google.protobuf.ByteString qualityScoresPair_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes quality_scores_pair = 7;</code>
+       *
+       * <pre>
+       *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+       * </pre>
+       */
       public boolean hasQualityScoresPair() {
         return ((bitField0_ & 0x00000200) == 0x00000200);
       }
+      /**
+       * <code>optional bytes quality_scores_pair = 7;</code>
+       *
+       * <pre>
+       *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+       * </pre>
+       */
       public com.google.protobuf.ByteString getQualityScoresPair() {
         return qualityScoresPair_;
       }
+      /**
+       * <code>optional bytes quality_scores_pair = 7;</code>
+       *
+       * <pre>
+       *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+       * </pre>
+       */
       public Builder setQualityScoresPair(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -1641,21 +2736,51 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional bytes quality_scores_pair = 7;</code>
+       *
+       * <pre>
+       *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
+       * </pre>
+       */
       public Builder clearQualityScoresPair() {
         bitField0_ = (bitField0_ & ~0x00000200);
         qualityScoresPair_ = getDefaultInstance().getQualityScoresPair();
         onChanged();
         return this;
       }
-      
-      // optional bytes compressed_data = 8;
+
       private com.google.protobuf.ByteString compressedData_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes compressed_data = 8;</code>
+       *
+       * <pre>
+       *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+       *content compressed with the codec.
+       * </pre>
+       */
       public boolean hasCompressedData() {
         return ((bitField0_ & 0x00000400) == 0x00000400);
       }
+      /**
+       * <code>optional bytes compressed_data = 8;</code>
+       *
+       * <pre>
+       *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+       *content compressed with the codec.
+       * </pre>
+       */
       public com.google.protobuf.ByteString getCompressedData() {
         return compressedData_;
       }
+      /**
+       * <code>optional bytes compressed_data = 8;</code>
+       *
+       * <pre>
+       *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+       *content compressed with the codec.
+       * </pre>
+       */
       public Builder setCompressedData(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -1665,14 +2790,21 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional bytes compressed_data = 8;</code>
+       *
+       * <pre>
+       *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
+       *content compressed with the codec.
+       * </pre>
+       */
       public Builder clearCompressedData() {
         bitField0_ = (bitField0_ & ~0x00000400);
         compressedData_ = getDefaultInstance().getCompressedData();
         onChanged();
         return this;
       }
-      
-      // repeated .goby.MetaData meta_data = 25;
+
       private java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> metaData_ =
         java.util.Collections.emptyList();
       private void ensureMetaDataIsMutable() {
@@ -1681,10 +2813,36 @@ public final class Reads {
           bitField0_ |= 0x00000800;
          }
       }
-      
+
       private com.google.protobuf.RepeatedFieldBuilder<
           edu.cornell.med.icb.goby.reads.Reads.MetaData, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder, edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> metaDataBuilder_;
-      
+
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> getMetaDataList() {
         if (metaDataBuilder_ == null) {
           return java.util.Collections.unmodifiableList(metaData_);
@@ -1692,6 +2850,32 @@ public final class Reads {
           return metaDataBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public int getMetaDataCount() {
         if (metaDataBuilder_ == null) {
           return metaData_.size();
@@ -1699,6 +2883,32 @@ public final class Reads {
           return metaDataBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData getMetaData(int index) {
         if (metaDataBuilder_ == null) {
           return metaData_.get(index);
@@ -1706,6 +2916,32 @@ public final class Reads {
           return metaDataBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder setMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData value) {
         if (metaDataBuilder_ == null) {
@@ -1720,6 +2956,32 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder setMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder builderForValue) {
         if (metaDataBuilder_ == null) {
@@ -1731,6 +2993,32 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder addMetaData(edu.cornell.med.icb.goby.reads.Reads.MetaData value) {
         if (metaDataBuilder_ == null) {
           if (value == null) {
@@ -1744,6 +3032,32 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder addMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData value) {
         if (metaDataBuilder_ == null) {
@@ -1758,6 +3072,32 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder addMetaData(
           edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder builderForValue) {
         if (metaDataBuilder_ == null) {
@@ -1769,6 +3109,32 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder addMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder builderForValue) {
         if (metaDataBuilder_ == null) {
@@ -1780,17 +3146,70 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder addAllMetaData(
           java.lang.Iterable<? extends edu.cornell.med.icb.goby.reads.Reads.MetaData> values) {
         if (metaDataBuilder_ == null) {
           ensureMetaDataIsMutable();
-          super.addAll(values, metaData_);
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, metaData_);
           onChanged();
         } else {
           metaDataBuilder_.addAllMessages(values);
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder clearMetaData() {
         if (metaDataBuilder_ == null) {
           metaData_ = java.util.Collections.emptyList();
@@ -1801,6 +3220,32 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public Builder removeMetaData(int index) {
         if (metaDataBuilder_ == null) {
           ensureMetaDataIsMutable();
@@ -1811,10 +3256,62 @@ public final class Reads {
         }
         return this;
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder getMetaDataBuilder(
           int index) {
         return getMetaDataFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder getMetaDataOrBuilder(
           int index) {
         if (metaDataBuilder_ == null) {
@@ -1822,6 +3319,32 @@ public final class Reads {
           return metaDataBuilder_.getMessageOrBuilder(index);
         }
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
            getMetaDataOrBuilderList() {
         if (metaDataBuilder_ != null) {
@@ -1830,15 +3353,93 @@ public final class Reads {
           return java.util.Collections.unmodifiableList(metaData_);
         }
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder addMetaDataBuilder() {
         return getMetaDataFieldBuilder().addBuilder(
             edu.cornell.med.icb.goby.reads.Reads.MetaData.getDefaultInstance());
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder addMetaDataBuilder(
           int index) {
         return getMetaDataFieldBuilder().addBuilder(
             index, edu.cornell.med.icb.goby.reads.Reads.MetaData.getDefaultInstance());
       }
+      /**
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
+       *
+       * <pre>
+       *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
+       *read collection, with the understanding that the meta-data applies to all the reads in the
+       *collection. Meta-data can be used to store information about when the sample was sequenced,
+       *or other information of interest. The key-value pair format is sufficiently flexible to
+       *accomodate a variety of needs. The following keys are pre-defined. Please use pre-defined
+       *keys so that automated tools can use metadata in relatively standard way. Please note that
+       *some keys provide a format for the value. This format should also be followed to garantee
+       *that meta data can be used computationally in fully automatic manner.
+       *key="sequencing-run-start-date" value="MM/DD/YYYY" Used to record when the sequencing run
+       *was initiated on the instrument. Can be used to detect batch effect in a large set of samples.
+       *key="platform" value="&lt;free-text&gt;". Value is free text, but the following terms are pre-defined.
+       *Illumina GaIIx
+       *Illumina HiSeq 1000
+       *Illumina HiSeq 2000
+       *Helicos Heliscope
+       *LifeTech 5500 SOLiD
+       *LifeTech 5500xl SOLiD
+       *Roche 454 GS FLX Ti
+       *key="organism" value="species name"
+       *Since Goby 1.9.1
+       * </pre>
+       */
       public java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder> 
            getMetaDataBuilderList() {
         return getMetaDataFieldBuilder().getBuilderList();
@@ -1857,122 +3458,291 @@ public final class Reads {
         }
         return metaDataBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:goby.ReadEntry)
     }
-    
+
     static {
       defaultInstance = new ReadEntry(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:goby.ReadEntry)
   }
-  
-  public interface MetaDataOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required string key = 1;
+
+  public interface MetaDataOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:goby.MetaData)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required string key = 1;</code>
+     *
+     * <pre>
+     *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
     boolean hasKey();
-    String getKey();
-    
-    // required string value = 2;
+    /**
+     * <code>required string key = 1;</code>
+     *
+     * <pre>
+     *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    java.lang.String getKey();
+    /**
+     * <code>required string key = 1;</code>
+     *
+     * <pre>
+     *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getKeyBytes();
+
+    /**
+     * <code>required string value = 2;</code>
+     *
+     * <pre>
+     *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
     boolean hasValue();
-    String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     *
+     * <pre>
+     *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    java.lang.String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     *
+     * <pre>
+     *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getValueBytes();
   }
+  /**
+   * Protobuf type {@code goby.MetaData}
+   *
+   * <pre>
+   *A message to store a key/value pair and represent metadata about reads.
+   *Since Goby 1.9.1
+   * </pre>
+   */
   public static final class MetaData extends
-      com.google.protobuf.GeneratedMessage
-      implements MetaDataOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:goby.MetaData)
+      MetaDataOrBuilder {
     // Use MetaData.newBuilder() to construct.
-    private MetaData(Builder builder) {
+    private MetaData(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private MetaData(boolean noInit) {}
-    
+    private MetaData(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final MetaData defaultInstance;
     public static MetaData getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public MetaData getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private MetaData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              key_ = bs;
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              value_ = bs;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_fieldAccessorTable;
+      return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              edu.cornell.med.icb.goby.reads.Reads.MetaData.class, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<MetaData> PARSER =
+        new com.google.protobuf.AbstractParser<MetaData>() {
+      public MetaData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new MetaData(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MetaData> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
-    // required string key = 1;
     public static final int KEY_FIELD_NUMBER = 1;
     private java.lang.Object key_;
+    /**
+     * <code>required string key = 1;</code>
+     *
+     * <pre>
+     *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
     public boolean hasKey() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getKey() {
+    /**
+     * <code>required string key = 1;</code>
+     *
+     * <pre>
+     *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    public java.lang.String getKey() {
       java.lang.Object ref = key_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           key_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getKeyBytes() {
+    /**
+     * <code>required string key = 1;</code>
+     *
+     * <pre>
+     *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getKeyBytes() {
       java.lang.Object ref = key_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         key_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required string value = 2;
+
     public static final int VALUE_FIELD_NUMBER = 2;
     private java.lang.Object value_;
+    /**
+     * <code>required string value = 2;</code>
+     *
+     * <pre>
+     *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
     public boolean hasValue() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getValue() {
+    /**
+     * <code>required string value = 2;</code>
+     *
+     * <pre>
+     *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    public java.lang.String getValue() {
       java.lang.Object ref = value_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           value_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getValueBytes() {
+    /**
+     * <code>required string value = 2;</code>
+     *
+     * <pre>
+     *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getValueBytes() {
       java.lang.Object ref = value_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         value_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     private void initFields() {
       key_ = "";
       value_ = "";
@@ -1980,8 +3750,9 @@ public final class Reads {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       if (!hasKey()) {
         memoizedIsInitialized = 0;
         return false;
@@ -1993,7 +3764,7 @@ public final class Reads {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -2005,12 +3776,12 @@ public final class Reads {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2024,113 +3795,111 @@ public final class Reads {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.MetaData prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code goby.MetaData}
+     *
+     * <pre>
+     *A message to store a key/value pair and represent metadata about reads.
+     *Since Goby 1.9.1
+     * </pre>
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:goby.MetaData)
+        edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_fieldAccessorTable;
+        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                edu.cornell.med.icb.goby.reads.Reads.MetaData.class, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder.class);
       }
-      
+
       // Construct using edu.cornell.med.icb.goby.reads.Reads.MetaData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -2141,7 +3910,7 @@ public final class Reads {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         key_ = "";
@@ -2150,20 +3919,20 @@ public final class Reads {
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.cornell.med.icb.goby.reads.Reads.MetaData.getDescriptor();
+        return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_MetaData_descriptor;
       }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.MetaData getDefaultInstanceForType() {
         return edu.cornell.med.icb.goby.reads.Reads.MetaData.getDefaultInstance();
       }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.MetaData build() {
         edu.cornell.med.icb.goby.reads.Reads.MetaData result = buildPartial();
         if (!result.isInitialized()) {
@@ -2171,17 +3940,7 @@ public final class Reads {
         }
         return result;
       }
-      
-      private edu.cornell.med.icb.goby.reads.Reads.MetaData buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        edu.cornell.med.icb.goby.reads.Reads.MetaData result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public edu.cornell.med.icb.goby.reads.Reads.MetaData buildPartial() {
         edu.cornell.med.icb.goby.reads.Reads.MetaData result = new edu.cornell.med.icb.goby.reads.Reads.MetaData(this);
         int from_bitField0_ = bitField0_;
@@ -2198,7 +3957,7 @@ public final class Reads {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof edu.cornell.med.icb.goby.reads.Reads.MetaData) {
           return mergeFrom((edu.cornell.med.icb.goby.reads.Reads.MetaData)other);
@@ -2207,19 +3966,23 @@ public final class Reads {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(edu.cornell.med.icb.goby.reads.Reads.MetaData other) {
         if (other == edu.cornell.med.icb.goby.reads.Reads.MetaData.getDefaultInstance()) return this;
         if (other.hasKey()) {
-          setKey(other.getKey());
+          bitField0_ |= 0x00000001;
+          key_ = other.key_;
+          onChanged();
         }
         if (other.hasValue()) {
-          setValue(other.getValue());
+          bitField0_ |= 0x00000002;
+          value_ = other.value_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasKey()) {
           
@@ -2231,62 +3994,87 @@ public final class Reads {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              key_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              value_ = input.readBytes();
-              break;
-            }
+        edu.cornell.med.icb.goby.reads.Reads.MetaData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (edu.cornell.med.icb.goby.reads.Reads.MetaData) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // required string key = 1;
+
       private java.lang.Object key_ = "";
+      /**
+       * <code>required string key = 1;</code>
+       *
+       * <pre>
+       *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
       public boolean hasKey() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getKey() {
+      /**
+       * <code>required string key = 1;</code>
+       *
+       * <pre>
+       *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public java.lang.String getKey() {
         java.lang.Object ref = key_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          key_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            key_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setKey(String value) {
+      /**
+       * <code>required string key = 1;</code>
+       *
+       * <pre>
+       *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getKeyBytes() {
+        java.lang.Object ref = key_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          key_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string key = 1;</code>
+       *
+       * <pre>
+       *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public Builder setKey(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2295,34 +4083,98 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string key = 1;</code>
+       *
+       * <pre>
+       *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
       public Builder clearKey() {
         bitField0_ = (bitField0_ & ~0x00000001);
         key_ = getDefaultInstance().getKey();
         onChanged();
         return this;
       }
-      void setKey(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+      /**
+       * <code>required string key = 1;</code>
+       *
+       * <pre>
+       *Provides the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public Builder setKeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
         onChanged();
+        return this;
       }
-      
-      // required string value = 2;
+
       private java.lang.Object value_ = "";
+      /**
+       * <code>required string value = 2;</code>
+       *
+       * <pre>
+       *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
       public boolean hasValue() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getValue() {
+      /**
+       * <code>required string value = 2;</code>
+       *
+       * <pre>
+       *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public java.lang.String getValue() {
         java.lang.Object ref = value_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          value_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            value_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setValue(String value) {
+      /**
+       * <code>required string value = 2;</code>
+       *
+       * <pre>
+       *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getValueBytes() {
+        java.lang.Object ref = value_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          value_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       *
+       * <pre>
+       *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public Builder setValue(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2331,45 +4183,64 @@ public final class Reads {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string value = 2;</code>
+       *
+       * <pre>
+       *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
       public Builder clearValue() {
         bitField0_ = (bitField0_ & ~0x00000002);
         value_ = getDefaultInstance().getValue();
         onChanged();
         return this;
       }
-      void setValue(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+      /**
+       * <code>required string value = 2;</code>
+       *
+       * <pre>
+       *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
+       * </pre>
+       */
+      public Builder setValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         value_ = value;
         onChanged();
+        return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:goby.MetaData)
     }
-    
+
     static {
       defaultInstance = new MetaData(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:goby.MetaData)
   }
-  
-  private static com.google.protobuf.Descriptors.Descriptor
+
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_goby_ReadCollection_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_goby_ReadCollection_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_goby_ReadEntry_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_goby_ReadEntry_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_goby_MetaData_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_goby_MetaData_fieldAccessorTable;
-  
+
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -2392,42 +4263,36 @@ public final class Reads {
       "y.readsH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        public com.google.protobuf.ExtensionRegistry assignDescriptors(
-            com.google.protobuf.Descriptors.FileDescriptor root) {
-          descriptor = root;
-          internal_static_goby_ReadCollection_descriptor =
-            getDescriptor().getMessageTypes().get(0);
-          internal_static_goby_ReadCollection_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_goby_ReadCollection_descriptor,
-              new java.lang.String[] { "Reads", },
-              edu.cornell.med.icb.goby.reads.Reads.ReadCollection.class,
-              edu.cornell.med.icb.goby.reads.Reads.ReadCollection.Builder.class);
-          internal_static_goby_ReadEntry_descriptor =
-            getDescriptor().getMessageTypes().get(1);
-          internal_static_goby_ReadEntry_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_goby_ReadEntry_descriptor,
-              new java.lang.String[] { "ReadIndex", "BarcodeIndex", "ReadIdentifier", "Description", "ReadLength", "Sequence", "SequencePair", "ReadLengthPair", "QualityScores", "QualityScoresPair", "CompressedData", "MetaData", },
-              edu.cornell.med.icb.goby.reads.Reads.ReadEntry.class,
-              edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder.class);
-          internal_static_goby_MetaData_descriptor =
-            getDescriptor().getMessageTypes().get(2);
-          internal_static_goby_MetaData_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_goby_MetaData_descriptor,
-              new java.lang.String[] { "Key", "Value", },
-              edu.cornell.med.icb.goby.reads.Reads.MetaData.class,
-              edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder.class);
-          return null;
-        }
-      };
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
+        };
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
+    internal_static_goby_ReadCollection_descriptor =
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_goby_ReadCollection_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_goby_ReadCollection_descriptor,
+        new java.lang.String[] { "Reads", });
+    internal_static_goby_ReadEntry_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_goby_ReadEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_goby_ReadEntry_descriptor,
+        new java.lang.String[] { "ReadIndex", "BarcodeIndex", "ReadIdentifier", "Description", "ReadLength", "Sequence", "SequencePair", "ReadLengthPair", "QualityScores", "QualityScoresPair", "CompressedData", "MetaData", });
+    internal_static_goby_MetaData_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_goby_MetaData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_goby_MetaData_descriptor,
+        new java.lang.String[] { "Key", "Value", });
   }
-  
+
   // @@protoc_insertion_point(outer_class_scope)
 }
