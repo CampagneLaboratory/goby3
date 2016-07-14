@@ -21,6 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
+import org.deeplearning4j.earlystopping.saver.LocalFileModelSaver;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -63,7 +64,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/1467827859191" //${GOBY_HOME}/models/todo
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/1468513158124" //${GOBY_HOME}/models/todo
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -798,20 +799,24 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //prefix specifies whether to use best or latest model in directory
         String prefix = "best";
 
-        //get
-        //Load parameters from disk:
-        INDArray newParams;
-        DataInputStream dis = new DataInputStream(new FileInputStream(modelPath + String.format("/%sModelParams.bin",prefix)));
-        newParams = Nd4j.read(dis);
+        MultiLayerNetwork model;
+        if (! new File(modelPath + String.format("/%sModelParams.bin",prefix)).isFile()){
+            model = new LocalFileModelSaver(modelPath).getBestModel();
+        } else {
+            //Load parameters from disk:
+            INDArray newParams;
+            DataInputStream dis = new DataInputStream(new FileInputStream(modelPath + String.format("/%sModelParams.bin", prefix)));
+            newParams = Nd4j.read(dis);
 
-        //Load network configuration from disk:
-        MultiLayerConfiguration confFromJson =
-                MultiLayerConfiguration.fromJson(FileUtils.readFileToString(new File(modelPath +  String.format("/%sModelConf.json",prefix))));
+            //Load network configuration from disk:
+            MultiLayerConfiguration confFromJson =
+                    MultiLayerConfiguration.fromJson(FileUtils.readFileToString(new File(modelPath + String.format("/%sModelConf.json", prefix))));
 
-        //Create a MultiLayerNetwork from the saved configuration and parameters
-        MultiLayerNetwork model = new MultiLayerNetwork(confFromJson);
-        model.init();
-        model.setParameters(newParams);
+            //Create a MultiLayerNetwork from the saved configuration and parameters
+            model = new MultiLayerNetwork(confFromJson);
+            model.init();
+            model.setParameters(newParams);
+        }
 
         return new SomaticModel(model,featureMapper);
     }
