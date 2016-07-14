@@ -137,7 +137,7 @@
                 <include name="icb-utils.jar"/>
                 <include name="JSAP-2.1.jar"/>
                 <include name="log4j-1.2.15.jar"/>
-                <include name="protobuf-java-2.4.1.jar"/>
+                <include name="protobuf-java-2.6.1.jar"/>
                 <include name="htsjdk-2.2.4.jar"/>
                 <include name="lib/picard-lib-2.2.4.jar"/>
                 <include name="squil.jar"/>
