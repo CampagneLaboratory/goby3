@@ -119,7 +119,7 @@ public class SomaticModel {
                 sampleBuilder.addCounts(infoBuilder.build());
             }
             if (counts < 10) {
-                throw new TooFewCountsException();
+                //throw new TooFewCountsException();
             }
             sampleBuilder.setFormattedCounts(sampleCountInfo.toString());
             builder.addSamples(sampleBuilder.build());
