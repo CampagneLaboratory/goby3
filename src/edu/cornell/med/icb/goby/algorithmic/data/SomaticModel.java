@@ -118,8 +118,8 @@ public class SomaticModel {
                 infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
                 sampleBuilder.addCounts(infoBuilder.build());
             }
-            if (counts < 10) {
-                //throw new TooFewCountsException();
+            if (counts < 1) {
+                throw new TooFewCountsException();
             }
             sampleBuilder.setFormattedCounts(sampleCountInfo.toString());
             builder.addSamples(sampleBuilder.build());
