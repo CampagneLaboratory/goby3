@@ -1,18 +1,17 @@
 package edu.cornell.med.icb.goby.alignments;
 
-import edu.cornell.med.icb.goby.algorithmic.algorithm.dmr.RegionAveragingWriter;
 import edu.cornell.med.icb.goby.algorithmic.data.CovariateInfo;
 import edu.cornell.med.icb.goby.algorithmic.data.SomaticModel;
 import edu.cornell.med.icb.goby.modes.DiscoverSequenceVariantsMode;
 import edu.cornell.med.icb.goby.modes.SequenceVariationOutputFormat;
 import edu.cornell.med.icb.goby.readers.vcf.ColumnType;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
-import edu.cornell.med.icb.goby.stats.EmpiricalPValueEstimator;
 import edu.cornell.med.icb.goby.stats.VCFWriter;
 import edu.cornell.med.icb.goby.util.OutputInfo;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import edu.cornell.med.icb.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.floats.FloatAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -32,6 +31,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.SortedSet;
 
 /**
  * File format to output genotypes for somatic variations. The format must be used together with the covariates option
@@ -59,12 +59,14 @@ import java.util.Properties;
  */
 public class SomaticVariationOutputFormat implements SequenceVariationOutputFormat {
 
+    private final double PRIOR_MUT_RATE = 4/(2e6);
+    private boolean ADD_BAYES = false;
     public static final DynamicOptionClient doc() {
         return doc;
     }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/1468513158124" //${GOBY_HOME}/models/todo
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/model_sets_count_test" //${GOBY_HOME}/models/todo
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -82,7 +84,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
      * A probability score for the somatic site. Larger values (closer to 1) indicate more confidence from
      * the neural network that a variation is present.
      */
-    private int[] GenotypeSomaticProbability;
+    private int[] genotypeSomaticProbability;
+    /**
+     * An adjusted probability score for the somatic site. Intended to provide a true prediction probability with bayes theorem.
+     */
+    private int[] bayesProbability;
     /**
      * If a somatic candidate has more bases in a parent that this threshold, the candidate is no1466805887521
      */
@@ -149,6 +155,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private int igvFieldIndex;
     private String modelPath;
     private SomaticModel model;
+    private SortedSet<Float> allRecSet;
+    private SortedSet<Float> plantedMutSet;
 
     /**
      * Hook to install the somatic sample indices for testing.
@@ -173,6 +181,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         genotypeFormatter.defineGenotypeField(statsWriter);
 
         covInfo = covInfo != null ? covInfo : mode.getCovariateInfo();
+
+        //get model ready
         String customPath = doc.getString("model-path");
         modelPath = (customPath=="")?modelPath:customPath;
         try {
@@ -180,6 +190,31 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        if (ADD_BAYES){
+            //load running sums
+            try {
+                //deserialize the sortedset
+                InputStream file = new FileInputStream(modelPath + "/stats" + "/plantedMutSet");
+                InputStream buffer = new BufferedInputStream(file);
+                ObjectInput input = new ObjectInputStream (buffer);
+                plantedMutSet = (SortedSet<Float>) input.readObject();
+                file = new FileInputStream(modelPath + "/stats" + "/allRecSet");
+                buffer = new BufferedInputStream(file);
+                input = new ObjectInputStream (buffer);
+                allRecSet = (SortedSet<Float>)input.readObject();
+            }
+            catch(ClassNotFoundException e){
+                throw new RuntimeException(e);
+            }
+            catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        }
+
+
+
+
+
         numSamples = samples.length;
         ObjectSet<String> allCovariates = covInfo.getCovariateKeys();
         if (!allCovariates.contains("patient-id") ||
@@ -213,7 +248,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         somaticPValueIndex = new int[numSamples];
         candidateFrequencyIndex = new int[numSamples];
         maxGenotypeSomaticPriority = new int[numSamples];
-        GenotypeSomaticProbability = new int[numSamples];
+        genotypeSomaticProbability = new int[numSamples];
+        bayesProbability = new int[numSamples];
         Arrays.fill(somaticPValueIndex, -1);
 
         for (String sample : somaticSampleIds) {
@@ -227,10 +263,17 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     String.format("probability[%s]", sample),
                     1, ColumnType.Float,
                     "Somatic priority, larger numbers indicate more support for somatic variation in sample (%)", "statistic", "indexed");
-            GenotypeSomaticProbability[sampleIndex] = statsWriter.defineField("INFO",
+            genotypeSomaticProbability[sampleIndex] = statsWriter.defineField("INFO",
                     String.format("model-probability[%s]", sample),
                     1, ColumnType.Float,
                     "Probability score of a somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
+            if (ADD_BAYES){
+                genotypeSomaticProbability[sampleIndex] = statsWriter.defineField("INFO",
+                        String.format("model-bayes[%s]", sample),
+                        1, ColumnType.Float,
+                        "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
+
+            }
 
         }
 
@@ -400,6 +443,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             if (isSomaticCandidate()) {
                 statsWriter.writeRecord();
             }
+            if (ADD_BAYES){
+                calculateBayes(sampleCounts,list);
+            }
         }
 
         updateSampleCumulativeCounts(sampleCounts);
@@ -489,7 +535,24 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
-                statsWriter.setInfo(GenotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
+                statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
+            }
+        }
+
+    }
+
+
+    private void calculateBayes(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
+        for (int somaticSampleIndex : somaticSampleIndices) {
+            int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
+            for (int germlineSampleIndex : germlineSampleIndices) {
+                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
+                float prob = prediction.posProb;
+                double plantedGreater = plantedMutSet.subSet(prob,1f).size()/plantedMutSet.size();
+                double anyGreater = allRecSet.subSet(prob,1f).size()/allRecSet.size();
+                double bayes = plantedGreater*PRIOR_MUT_RATE/anyGreater;
+                statsWriter.setInfo(bayesProbability[somaticSampleIndex], bayes
+                );
             }
         }
 
