@@ -12,6 +12,7 @@ import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import edu.cornell.med.icb.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.floats.FloatAVLTreeSet;
+import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -31,7 +32,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.SortedSet;
 
 /**
  * File format to output genotypes for somatic variations. The format must be used together with the covariates option
@@ -66,7 +66,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/model_sets_count_test" //${GOBY_HOME}/models/todo
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/sortedmapstest" //${GOBY_HOME}/models/todo
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -155,8 +155,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private int igvFieldIndex;
     private String modelPath;
     private SomaticModel model;
-    private SortedSet<Float> allRecSet;
-    private SortedSet<Float> plantedMutSet;
+    private FloatAVLTreeSet allRecSet;
+    private FloatAVLTreeSet plantedMutSet;
 
     /**
      * Hook to install the somatic sample indices for testing.
@@ -197,11 +197,17 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 InputStream file = new FileInputStream(modelPath + "/stats" + "/plantedMutSet");
                 InputStream buffer = new BufferedInputStream(file);
                 ObjectInput input = new ObjectInputStream (buffer);
-                plantedMutSet = (SortedSet<Float>) input.readObject();
+                plantedMutSet = (FloatAVLTreeSet) input.readObject();
+                input.close();
+                buffer.close();
+                file.close();
                 file = new FileInputStream(modelPath + "/stats" + "/allRecSet");
                 buffer = new BufferedInputStream(file);
                 input = new ObjectInputStream (buffer);
-                allRecSet = (SortedSet<Float>)input.readObject();
+                allRecSet = (FloatAVLTreeSet)input.readObject();
+                input.close();
+                buffer.close();
+                file.close();
             }
             catch(ClassNotFoundException e){
                 throw new RuntimeException(e);
@@ -268,11 +274,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     1, ColumnType.Float,
                     "Probability score of a somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
             if (ADD_BAYES){
-                genotypeSomaticProbability[sampleIndex] = statsWriter.defineField("INFO",
+                bayesProbability[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-bayes[%s]", sample),
                         1, ColumnType.Float,
                         "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
-
             }
 
         }
@@ -440,12 +445,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             estimateSomaticFrequencies(sampleCounts);
             estimatePriority(sampleCounts);
             estimateProbabilty(sampleCounts,list);
-            if (isSomaticCandidate()) {
-                statsWriter.writeRecord();
-            }
             if (ADD_BAYES){
                 calculateBayes(sampleCounts,list);
             }
+            if (isSomaticCandidate()) {
+                statsWriter.writeRecord();
+            }
+
         }
 
         updateSampleCumulativeCounts(sampleCounts);
