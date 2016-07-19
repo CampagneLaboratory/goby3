@@ -11,14 +11,15 @@ import edu.cornell.med.icb.goby.util.OutputInfo;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import edu.cornell.med.icb.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.floats.FloatAVLTreeSet;
-import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.aopalliance.reflect.Class;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.campagnelab.dl.model.utils.BayesCalibrator;
+import org.campagnelab.dl.model.utils.CalcCalibrator;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.deeplearning4j.earlystopping.saver.LocalFileModelSaver;
@@ -59,8 +60,8 @@ import java.util.Properties;
  */
 public class SomaticVariationOutputFormat implements SequenceVariationOutputFormat {
 
-    private final double PRIOR_MUT_RATE = 4/(2e6);
-    private boolean ADD_BAYES = false;
+
+    private boolean ADD_BAYES = true;
     public static final DynamicOptionClient doc() {
         return doc;
     }
@@ -88,7 +89,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     /**
      * An adjusted probability score for the somatic site. Intended to provide a true prediction probability with bayes theorem.
      */
-    private int[] bayesProbability;
+    private int[] calibrateProbability;
     /**
      * If a somatic candidate has more bases in a parent that this threshold, the candidate is no1466805887521
      */
@@ -155,8 +156,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private int igvFieldIndex;
     private String modelPath;
     private SomaticModel model;
-    private FloatAVLTreeSet allRecSet;
-    private FloatAVLTreeSet plantedMutSet;
+    private CalcCalibrator calcCalibrator;
 
     /**
      * Hook to install the somatic sample indices for testing.
@@ -191,29 +191,12 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             throw new RuntimeException(e);
         }
         if (ADD_BAYES){
-            //load running sums
             try {
-                //deserialize the sortedset
-                InputStream file = new FileInputStream(modelPath + "/stats" + "/plantedMutSet");
-                InputStream buffer = new BufferedInputStream(file);
-                ObjectInput input = new ObjectInputStream (buffer);
-                plantedMutSet = (FloatAVLTreeSet) input.readObject();
-                input.close();
-                buffer.close();
-                file.close();
-                file = new FileInputStream(modelPath + "/stats" + "/allRecSet");
-                buffer = new BufferedInputStream(file);
-                input = new ObjectInputStream (buffer);
-                allRecSet = (FloatAVLTreeSet)input.readObject();
-                input.close();
-                buffer.close();
-                file.close();
-            }
-            catch(ClassNotFoundException e){
-                throw new RuntimeException(e);
-            }
-            catch(IOException e){
-                throw new RuntimeException(e);
+                calcCalibrator = new BayesCalibrator(modelPath,true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
 
@@ -255,7 +238,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         candidateFrequencyIndex = new int[numSamples];
         maxGenotypeSomaticPriority = new int[numSamples];
         genotypeSomaticProbability = new int[numSamples];
-        bayesProbability = new int[numSamples];
+        calibrateProbability = new int[numSamples];
         Arrays.fill(somaticPValueIndex, -1);
 
         for (String sample : somaticSampleIds) {
@@ -274,7 +257,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     1, ColumnType.Float,
                     "Probability score of a somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
             if (ADD_BAYES){
-                bayesProbability[sampleIndex] = statsWriter.defineField("INFO",
+                calibrateProbability[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-bayes[%s]", sample),
                         1, ColumnType.Float,
                         "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
@@ -554,11 +537,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             for (int germlineSampleIndex : germlineSampleIndices) {
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
                 float prob = prediction.posProb;
-                double plantedGreater = plantedMutSet.subSet(prob,1f).size()/plantedMutSet.size();
-                double anyGreater = allRecSet.subSet(prob,1f).size()/allRecSet.size();
-                double bayes = plantedGreater*PRIOR_MUT_RATE/anyGreater;
-                statsWriter.setInfo(bayesProbability[somaticSampleIndex], bayes
-                );
+                float bayes = calcCalibrator.calibrateProb(prob);
+                statsWriter.setInfo(calibrateProbability[somaticSampleIndex], bayes);
             }
         }
 
@@ -838,7 +818,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
             ClassLoader classLoader = this.getClass().getClassLoader();
             // Load the target class using its binary name
-            Class loadedMyClass = classLoader.loadClass(mapperName);
+            java.lang.Class loadedMyClass = classLoader.loadClass(mapperName);
             System.out.println("Loaded class name: " + loadedMyClass.getName());
             // Create a new instance from the loaded class
             Constructor constructor = loadedMyClass.getConstructor();
