@@ -22,6 +22,7 @@ import org.campagnelab.dl.model.utils.CalcCalibrator;
 import org.campagnelab.dl.model.utils.FDREstimator;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
+import org.campagnelab.dl.model.utils.models.ModelLoader;
 import org.deeplearning4j.earlystopping.saver.LocalFileModelSaver;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -70,16 +71,15 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         return doc;
     }
     static {
-        //GOBY_HOME = System.getenv("GOBY_HOME");
-        GOBY_HOME="/Users/fac2003/IdeaProjects/git/goby";
+        GOBY_HOME = System.getenv("GOBY_HOME");
         if (GOBY_HOME == null){
             System.out.println("Goby can't find the GOBY_HOME folder. Are you running goby with the goby bash script?");
-            throw new RuntimeException("Unable to load probability model with path %s. GOBY_HOME path variable not defined in java environment. Please run goby with its bash script or specify another model.");
+            throw new RuntimeException("GOBY_HOME path variable not defined in java environment. Please run goby with its bash script.");
         }
     }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:" + GOBY_HOME + "/models/somatic-variation/traditional-1469226748641"
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -207,17 +207,31 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             System.err.println("A covariate file must be provided.");
             System.exit(1);
         }
-        //get model ready
+        //replace model path GOBY_HOME env variable if necessary
         String customPath = doc.getString("model-path");
-        modelPath = (customPath=="")?modelPath:customPath;
+        if (customPath.contains("${GOBY_HOME}")){
+            GOBY_HOME = System.getenv("GOBY_HOME");
+            if (GOBY_HOME == null){
+                System.out.println("Goby can't find the GOBY_HOME folder. Are you running goby with the goby bash script?");
+                throw new RuntimeException("GOBY_HOME path variable not defined in java environment. Please run goby with its bash script.");
+            }
+            customPath = customPath.replace("${GOBY_HOME}",GOBY_HOME);
+        }
+
+        //extract prefix and model directory from model path input.
+        String[] modelPathSplit = customPath.split("/");
+        String modelName = modelPathSplit[modelPathSplit.length-1];
+        modelPrefix = modelName.substring(0,modelName.length()-"Model.bin".length());
+        modelPathSplit[modelPathSplit.length-1] = "";
+        modelPath = customPath.substring(0,customPath.length()-modelName.length());
         try {
-            model = getModel(modelPath);
+            model = getModel(modelPath,modelPrefix);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         if (ADD_BAYES){
             try {
-                bayesCalculator = new BayesCalibrator(modelPath,true);
+                bayesCalculator = new BayesCalibrator(modelPath, modelPrefix, true);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -226,14 +240,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         }
         if (ADD_FDR){
             try {
-                fdrEstimator = new FDREstimator(modelPath,true);
+                fdrEstimator = new FDREstimator(modelPath, modelPrefix, true);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
-
 
         numSamples = samples.length;
         ObjectSet<String> allCovariates = covInfo.getCovariateKeys();
@@ -593,6 +606,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 statsWriter.setInfo(fieldIdxArray[somaticSampleIndex], bayes);
             }
         }
+
     }
 
 
@@ -854,7 +868,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     public void setupR() {
         // this method does nothing. Kept for compatibility with JUnit tests.
     }
-
     private SomaticModel getModel(String modelPath) throws IOException {
 
         //get MAPPER
@@ -896,28 +909,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         }
 
 
-
-        //prefix specifies whether to use best or latest model in directory
-        String prefix = "best";
-
-        MultiLayerNetwork model;
-        if (! new File(modelPath + String.format("/%sModelParams.bin",prefix)).isFile()){
-            model = new LocalFileModelSaver(modelPath).getBestModel();
-        } else {
-            //Load parameters from disk:
-            INDArray newParams;
-            DataInputStream dis = new DataInputStream(new FileInputStream(modelPath + String.format("/%sModelParams.bin", prefix)));
-            newParams = Nd4j.read(dis);
-
-            //Load network configuration from disk:
-            MultiLayerConfiguration confFromJson =
-                    MultiLayerConfiguration.fromJson(FileUtils.readFileToString(new File(modelPath + String.format("/%sModelConf.json", prefix))));
-
-            //Create a MultiLayerNetwork from the saved configuration and parameters
-            model = new MultiLayerNetwork(confFromJson);
-            model.init();
-            model.setParameters(newParams);
-        }
+        ModelLoader modelLoader = new ModelLoader(modelPath);
+        MultiLayerNetwork model = modelLoader.loadModel(prefix);
 
         return new SomaticModel(model,featureMapper);
     }
