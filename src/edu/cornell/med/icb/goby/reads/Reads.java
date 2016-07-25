@@ -6,7 +6,13 @@ package edu.cornell.med.icb.goby.reads;
 public final class Reads {
   private Reads() {}
   public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistryLite registry) {
+  }
+
+  public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   public interface ReadCollectionOrBuilder extends
       // @@protoc_insertion_point(interface_extends:goby.ReadCollection)
@@ -39,37 +45,28 @@ public final class Reads {
   /**
    * Protobuf type {@code goby.ReadCollection}
    */
-  public static final class ReadCollection extends
+  public  static final class ReadCollection extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:goby.ReadCollection)
       ReadCollectionOrBuilder {
     // Use ReadCollection.newBuilder() to construct.
     private ReadCollection(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
-      this.unknownFields = builder.getUnknownFields();
     }
-    private ReadCollection(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final ReadCollection defaultInstance;
-    public static ReadCollection getDefaultInstance() {
-      return defaultInstance;
+    private ReadCollection() {
+      reads_ = java.util.Collections.emptyList();
     }
 
-    public ReadCollection getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
+    getUnknownFields() {
       return this.unknownFields;
     }
     private ReadCollection(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
+      this();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -93,7 +90,8 @@ public final class Reads {
                 reads_ = new java.util.ArrayList<edu.cornell.med.icb.goby.reads.Reads.ReadEntry>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              reads_.add(input.readMessage(edu.cornell.med.icb.goby.reads.Reads.ReadEntry.PARSER, extensionRegistry));
+              reads_.add(
+                  input.readMessage(edu.cornell.med.icb.goby.reads.Reads.ReadEntry.PARSER, extensionRegistry));
               break;
             }
           }
@@ -102,7 +100,7 @@ public final class Reads {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+            e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
           reads_ = java.util.Collections.unmodifiableList(reads_);
@@ -121,21 +119,6 @@ public final class Reads {
       return edu.cornell.med.icb.goby.reads.Reads.internal_static_goby_ReadCollection_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               edu.cornell.med.icb.goby.reads.Reads.ReadCollection.class, edu.cornell.med.icb.goby.reads.Reads.ReadCollection.Builder.class);
-    }
-
-    public static com.google.protobuf.Parser<ReadCollection> PARSER =
-        new com.google.protobuf.AbstractParser<ReadCollection>() {
-      public ReadCollection parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ReadCollection(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ReadCollection> getParserForType() {
-      return PARSER;
     }
 
     public static final int READS_FIELD_NUMBER = 1;
@@ -173,9 +156,6 @@ public final class Reads {
       return reads_.get(index);
     }
 
-    private void initFields() {
-      reads_ = java.util.Collections.emptyList();
-    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -194,16 +174,14 @@ public final class Reads {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
       for (int i = 0; i < reads_.size(); i++) {
         output.writeMessage(1, reads_.get(i));
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSerializedSize;
+      int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
@@ -211,16 +189,43 @@ public final class Reads {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, reads_.get(i));
       }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof edu.cornell.med.icb.goby.reads.Reads.ReadCollection)) {
+        return super.equals(obj);
+      }
+      edu.cornell.med.icb.goby.reads.Reads.ReadCollection other = (edu.cornell.med.icb.goby.reads.Reads.ReadCollection) obj;
+
+      boolean result = true;
+      result = result && getReadsList()
+          .equals(other.getReadsList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (getReadsCount() > 0) {
+        hash = (37 * hash) + READS_FIELD_NUMBER;
+        hash = (53 * hash) + getReadsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
@@ -246,42 +251,53 @@ public final class Reads {
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.ReadCollection prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.ReadCollection prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -323,10 +339,6 @@ public final class Reads {
           getReadsFieldBuilder();
         }
       }
-      private static Builder create() {
-        return new Builder();
-      }
-
       public Builder clear() {
         super.clear();
         if (readsBuilder_ == null) {
@@ -336,10 +348,6 @@ public final class Reads {
           readsBuilder_.clear();
         }
         return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -375,6 +383,32 @@ public final class Reads {
         return result;
       }
 
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof edu.cornell.med.icb.goby.reads.Reads.ReadCollection) {
           return mergeFrom((edu.cornell.med.icb.goby.reads.Reads.ReadCollection)other);
@@ -412,14 +446,14 @@ public final class Reads {
             }
           }
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
         return this;
       }
 
       public final boolean isInitialized() {
         for (int i = 0; i < getReadsCount(); i++) {
           if (!getReads(i).isInitialized()) {
-            
             return false;
           }
         }
@@ -435,7 +469,7 @@ public final class Reads {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (edu.cornell.med.icb.goby.reads.Reads.ReadCollection) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -454,7 +488,7 @@ public final class Reads {
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           edu.cornell.med.icb.goby.reads.Reads.ReadEntry, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder, edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder> readsBuilder_;
 
       /**
@@ -670,11 +704,11 @@ public final class Reads {
            getReadsBuilderList() {
         return getReadsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           edu.cornell.med.icb.goby.reads.Reads.ReadEntry, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder, edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder> 
           getReadsFieldBuilder() {
         if (readsBuilder_ == null) {
-          readsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          readsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               edu.cornell.med.icb.goby.reads.Reads.ReadEntry, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder, edu.cornell.med.icb.goby.reads.Reads.ReadEntryOrBuilder>(
                   reads_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
@@ -684,16 +718,53 @@ public final class Reads {
         }
         return readsBuilder_;
       }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:goby.ReadCollection)
     }
 
+    // @@protoc_insertion_point(class_scope:goby.ReadCollection)
+    private static final edu.cornell.med.icb.goby.reads.Reads.ReadCollection DEFAULT_INSTANCE;
     static {
-      defaultInstance = new ReadCollection(true);
-      defaultInstance.initFields();
+      DEFAULT_INSTANCE = new edu.cornell.med.icb.goby.reads.Reads.ReadCollection();
     }
 
-    // @@protoc_insertion_point(class_scope:goby.ReadCollection)
+    public static edu.cornell.med.icb.goby.reads.Reads.ReadCollection getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<ReadCollection>
+        PARSER = new com.google.protobuf.AbstractParser<ReadCollection>() {
+      public ReadCollection parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ReadCollection(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ReadCollection> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ReadCollection> getParserForType() {
+      return PARSER;
+    }
+
+    public edu.cornell.med.icb.goby.reads.Reads.ReadCollection getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public interface ReadEntryOrBuilder extends
@@ -701,215 +772,213 @@ public final class Reads {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required uint32 read_index = 1;</code>
-     *
      * <pre>
      *Index of a read.
      * </pre>
+     *
+     * <code>required uint32 read_index = 1;</code>
      */
     boolean hasReadIndex();
     /**
-     * <code>required uint32 read_index = 1;</code>
-     *
      * <pre>
      *Index of a read.
      * </pre>
+     *
+     * <code>required uint32 read_index = 1;</code>
      */
     int getReadIndex();
 
     /**
-     * <code>optional uint32 barcode_index = 10;</code>
-     *
      * <pre>
      *Index of the barcode, if any.
      * </pre>
+     *
+     * <code>optional uint32 barcode_index = 10;</code>
      */
     boolean hasBarcodeIndex();
     /**
-     * <code>optional uint32 barcode_index = 10;</code>
-     *
      * <pre>
      *Index of the barcode, if any.
      * </pre>
+     *
+     * <code>optional uint32 barcode_index = 10;</code>
      */
     int getBarcodeIndex();
 
     /**
-     * <code>optional string read_identifier = 23;</code>
-     *
      * <pre>
      *Read identifier/name may be present.
      * </pre>
+     *
+     * <code>optional string read_identifier = 23;</code>
      */
     boolean hasReadIdentifier();
     /**
-     * <code>optional string read_identifier = 23;</code>
-     *
      * <pre>
      *Read identifier/name may be present.
      * </pre>
+     *
+     * <code>optional string read_identifier = 23;</code>
      */
     java.lang.String getReadIdentifier();
     /**
-     * <code>optional string read_identifier = 23;</code>
-     *
      * <pre>
      *Read identifier/name may be present.
      * </pre>
+     *
+     * <code>optional string read_identifier = 23;</code>
      */
     com.google.protobuf.ByteString
         getReadIdentifierBytes();
 
     /**
-     * <code>optional string description = 22;</code>
-     *
      * <pre>
      *Additional description about the read (from Fasta/Q format).
      * </pre>
+     *
+     * <code>optional string description = 22;</code>
      */
     boolean hasDescription();
     /**
-     * <code>optional string description = 22;</code>
-     *
      * <pre>
      *Additional description about the read (from Fasta/Q format).
      * </pre>
+     *
+     * <code>optional string description = 22;</code>
      */
     java.lang.String getDescription();
     /**
-     * <code>optional string description = 22;</code>
-     *
      * <pre>
      *Additional description about the read (from Fasta/Q format).
      * </pre>
+     *
+     * <code>optional string description = 22;</code>
      */
     com.google.protobuf.ByteString
         getDescriptionBytes();
 
     /**
-     * <code>required uint32 read_length = 2;</code>
-     *
      * <pre>
      *Length of the sequence.
      * </pre>
+     *
+     * <code>required uint32 read_length = 2;</code>
      */
     boolean hasReadLength();
     /**
-     * <code>required uint32 read_length = 2;</code>
-     *
      * <pre>
      *Length of the sequence.
      * </pre>
+     *
+     * <code>required uint32 read_length = 2;</code>
      */
     int getReadLength();
 
     /**
-     * <code>optional bytes sequence = 3;</code>
-     *
      * <pre>
      *Sequence, encoded as ascii characters stored in single bytes.
      * </pre>
+     *
+     * <code>optional bytes sequence = 3;</code>
      */
     boolean hasSequence();
     /**
-     * <code>optional bytes sequence = 3;</code>
-     *
      * <pre>
      *Sequence, encoded as ascii characters stored in single bytes.
      * </pre>
+     *
+     * <code>optional bytes sequence = 3;</code>
      */
     com.google.protobuf.ByteString getSequence();
 
     /**
-     * <code>optional bytes sequence_pair = 5;</code>
-     *
      * <pre>
      *The second sequence in a pair. Stored the same way as the sequence attribute.
      * </pre>
+     *
+     * <code>optional bytes sequence_pair = 5;</code>
      */
     boolean hasSequencePair();
     /**
-     * <code>optional bytes sequence_pair = 5;</code>
-     *
      * <pre>
      *The second sequence in a pair. Stored the same way as the sequence attribute.
      * </pre>
+     *
+     * <code>optional bytes sequence_pair = 5;</code>
      */
     com.google.protobuf.ByteString getSequencePair();
 
     /**
-     * <code>optional uint32 read_length_pair = 6;</code>
-     *
      * <pre>
      *Length of the second sequence in a pair.
      * </pre>
+     *
+     * <code>optional uint32 read_length_pair = 6;</code>
      */
     boolean hasReadLengthPair();
     /**
-     * <code>optional uint32 read_length_pair = 6;</code>
-     *
      * <pre>
      *Length of the second sequence in a pair.
      * </pre>
+     *
+     * <code>optional uint32 read_length_pair = 6;</code>
      */
     int getReadLengthPair();
 
     /**
-     * <code>optional bytes quality_scores = 4;</code>
-     *
      * <pre>
      *Quality scores in Phred units, stored as single bytes (0-255).
      * </pre>
+     *
+     * <code>optional bytes quality_scores = 4;</code>
      */
     boolean hasQualityScores();
     /**
-     * <code>optional bytes quality_scores = 4;</code>
-     *
      * <pre>
      *Quality scores in Phred units, stored as single bytes (0-255).
      * </pre>
+     *
+     * <code>optional bytes quality_scores = 4;</code>
      */
     com.google.protobuf.ByteString getQualityScores();
 
     /**
-     * <code>optional bytes quality_scores_pair = 7;</code>
-     *
      * <pre>
      *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
      * </pre>
+     *
+     * <code>optional bytes quality_scores_pair = 7;</code>
      */
     boolean hasQualityScoresPair();
     /**
-     * <code>optional bytes quality_scores_pair = 7;</code>
-     *
      * <pre>
      *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
      * </pre>
+     *
+     * <code>optional bytes quality_scores_pair = 7;</code>
      */
     com.google.protobuf.ByteString getQualityScoresPair();
 
     /**
-     * <code>optional bytes compressed_data = 8;</code>
-     *
      * <pre>
      *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
      *content compressed with the codec.
      * </pre>
+     *
+     * <code>optional bytes compressed_data = 8;</code>
      */
     boolean hasCompressedData();
     /**
-     * <code>optional bytes compressed_data = 8;</code>
-     *
      * <pre>
      *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
      *content compressed with the codec.
      * </pre>
+     *
+     * <code>optional bytes compressed_data = 8;</code>
      */
     com.google.protobuf.ByteString getCompressedData();
 
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -932,12 +1001,12 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> 
         getMetaDataList();
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -960,11 +1029,11 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     edu.cornell.med.icb.goby.reads.Reads.MetaData getMetaData(int index);
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -987,11 +1056,11 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     int getMetaDataCount();
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1014,12 +1083,12 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
         getMetaDataOrBuilderList();
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1042,6 +1111,8 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder getMetaDataOrBuilder(
         int index);
@@ -1049,37 +1120,39 @@ public final class Reads {
   /**
    * Protobuf type {@code goby.ReadEntry}
    */
-  public static final class ReadEntry extends
+  public  static final class ReadEntry extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:goby.ReadEntry)
       ReadEntryOrBuilder {
     // Use ReadEntry.newBuilder() to construct.
     private ReadEntry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
-      this.unknownFields = builder.getUnknownFields();
     }
-    private ReadEntry(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final ReadEntry defaultInstance;
-    public static ReadEntry getDefaultInstance() {
-      return defaultInstance;
+    private ReadEntry() {
+      readIndex_ = 0;
+      barcodeIndex_ = 0;
+      readIdentifier_ = "";
+      description_ = "";
+      readLength_ = 0;
+      sequence_ = com.google.protobuf.ByteString.EMPTY;
+      sequencePair_ = com.google.protobuf.ByteString.EMPTY;
+      readLengthPair_ = 0;
+      qualityScores_ = com.google.protobuf.ByteString.EMPTY;
+      qualityScoresPair_ = com.google.protobuf.ByteString.EMPTY;
+      compressedData_ = com.google.protobuf.ByteString.EMPTY;
+      metaData_ = java.util.Collections.emptyList();
     }
 
-    public ReadEntry getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
+    getUnknownFields() {
       return this.unknownFields;
     }
     private ReadEntry(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
+      this();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -1160,7 +1233,8 @@ public final class Reads {
                 metaData_ = new java.util.ArrayList<edu.cornell.med.icb.goby.reads.Reads.MetaData>();
                 mutable_bitField0_ |= 0x00000800;
               }
-              metaData_.add(input.readMessage(edu.cornell.med.icb.goby.reads.Reads.MetaData.PARSER, extensionRegistry));
+              metaData_.add(
+                  input.readMessage(edu.cornell.med.icb.goby.reads.Reads.MetaData.PARSER, extensionRegistry));
               break;
             }
           }
@@ -1169,7 +1243,7 @@ public final class Reads {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+            e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
           metaData_ = java.util.Collections.unmodifiableList(metaData_);
@@ -1190,40 +1264,25 @@ public final class Reads {
               edu.cornell.med.icb.goby.reads.Reads.ReadEntry.class, edu.cornell.med.icb.goby.reads.Reads.ReadEntry.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<ReadEntry> PARSER =
-        new com.google.protobuf.AbstractParser<ReadEntry>() {
-      public ReadEntry parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ReadEntry(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ReadEntry> getParserForType() {
-      return PARSER;
-    }
-
     private int bitField0_;
     public static final int READ_INDEX_FIELD_NUMBER = 1;
     private int readIndex_;
     /**
-     * <code>required uint32 read_index = 1;</code>
-     *
      * <pre>
      *Index of a read.
      * </pre>
+     *
+     * <code>required uint32 read_index = 1;</code>
      */
     public boolean hasReadIndex() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required uint32 read_index = 1;</code>
-     *
      * <pre>
      *Index of a read.
      * </pre>
+     *
+     * <code>required uint32 read_index = 1;</code>
      */
     public int getReadIndex() {
       return readIndex_;
@@ -1232,44 +1291,44 @@ public final class Reads {
     public static final int BARCODE_INDEX_FIELD_NUMBER = 10;
     private int barcodeIndex_;
     /**
-     * <code>optional uint32 barcode_index = 10;</code>
-     *
      * <pre>
      *Index of the barcode, if any.
      * </pre>
+     *
+     * <code>optional uint32 barcode_index = 10;</code>
      */
     public boolean hasBarcodeIndex() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional uint32 barcode_index = 10;</code>
-     *
      * <pre>
      *Index of the barcode, if any.
      * </pre>
+     *
+     * <code>optional uint32 barcode_index = 10;</code>
      */
     public int getBarcodeIndex() {
       return barcodeIndex_;
     }
 
     public static final int READ_IDENTIFIER_FIELD_NUMBER = 23;
-    private java.lang.Object readIdentifier_;
+    private volatile java.lang.Object readIdentifier_;
     /**
-     * <code>optional string read_identifier = 23;</code>
-     *
      * <pre>
      *Read identifier/name may be present.
      * </pre>
+     *
+     * <code>optional string read_identifier = 23;</code>
      */
     public boolean hasReadIdentifier() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional string read_identifier = 23;</code>
-     *
      * <pre>
      *Read identifier/name may be present.
      * </pre>
+     *
+     * <code>optional string read_identifier = 23;</code>
      */
     public java.lang.String getReadIdentifier() {
       java.lang.Object ref = readIdentifier_;
@@ -1286,11 +1345,11 @@ public final class Reads {
       }
     }
     /**
-     * <code>optional string read_identifier = 23;</code>
-     *
      * <pre>
      *Read identifier/name may be present.
      * </pre>
+     *
+     * <code>optional string read_identifier = 23;</code>
      */
     public com.google.protobuf.ByteString
         getReadIdentifierBytes() {
@@ -1307,23 +1366,23 @@ public final class Reads {
     }
 
     public static final int DESCRIPTION_FIELD_NUMBER = 22;
-    private java.lang.Object description_;
+    private volatile java.lang.Object description_;
     /**
-     * <code>optional string description = 22;</code>
-     *
      * <pre>
      *Additional description about the read (from Fasta/Q format).
      * </pre>
+     *
+     * <code>optional string description = 22;</code>
      */
     public boolean hasDescription() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string description = 22;</code>
-     *
      * <pre>
      *Additional description about the read (from Fasta/Q format).
      * </pre>
+     *
+     * <code>optional string description = 22;</code>
      */
     public java.lang.String getDescription() {
       java.lang.Object ref = description_;
@@ -1340,11 +1399,11 @@ public final class Reads {
       }
     }
     /**
-     * <code>optional string description = 22;</code>
-     *
      * <pre>
      *Additional description about the read (from Fasta/Q format).
      * </pre>
+     *
+     * <code>optional string description = 22;</code>
      */
     public com.google.protobuf.ByteString
         getDescriptionBytes() {
@@ -1363,21 +1422,21 @@ public final class Reads {
     public static final int READ_LENGTH_FIELD_NUMBER = 2;
     private int readLength_;
     /**
-     * <code>required uint32 read_length = 2;</code>
-     *
      * <pre>
      *Length of the sequence.
      * </pre>
+     *
+     * <code>required uint32 read_length = 2;</code>
      */
     public boolean hasReadLength() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required uint32 read_length = 2;</code>
-     *
      * <pre>
      *Length of the sequence.
      * </pre>
+     *
+     * <code>required uint32 read_length = 2;</code>
      */
     public int getReadLength() {
       return readLength_;
@@ -1386,21 +1445,21 @@ public final class Reads {
     public static final int SEQUENCE_FIELD_NUMBER = 3;
     private com.google.protobuf.ByteString sequence_;
     /**
-     * <code>optional bytes sequence = 3;</code>
-     *
      * <pre>
      *Sequence, encoded as ascii characters stored in single bytes.
      * </pre>
+     *
+     * <code>optional bytes sequence = 3;</code>
      */
     public boolean hasSequence() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional bytes sequence = 3;</code>
-     *
      * <pre>
      *Sequence, encoded as ascii characters stored in single bytes.
      * </pre>
+     *
+     * <code>optional bytes sequence = 3;</code>
      */
     public com.google.protobuf.ByteString getSequence() {
       return sequence_;
@@ -1409,21 +1468,21 @@ public final class Reads {
     public static final int SEQUENCE_PAIR_FIELD_NUMBER = 5;
     private com.google.protobuf.ByteString sequencePair_;
     /**
-     * <code>optional bytes sequence_pair = 5;</code>
-     *
      * <pre>
      *The second sequence in a pair. Stored the same way as the sequence attribute.
      * </pre>
+     *
+     * <code>optional bytes sequence_pair = 5;</code>
      */
     public boolean hasSequencePair() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional bytes sequence_pair = 5;</code>
-     *
      * <pre>
      *The second sequence in a pair. Stored the same way as the sequence attribute.
      * </pre>
+     *
+     * <code>optional bytes sequence_pair = 5;</code>
      */
     public com.google.protobuf.ByteString getSequencePair() {
       return sequencePair_;
@@ -1432,21 +1491,21 @@ public final class Reads {
     public static final int READ_LENGTH_PAIR_FIELD_NUMBER = 6;
     private int readLengthPair_;
     /**
-     * <code>optional uint32 read_length_pair = 6;</code>
-     *
      * <pre>
      *Length of the second sequence in a pair.
      * </pre>
+     *
+     * <code>optional uint32 read_length_pair = 6;</code>
      */
     public boolean hasReadLengthPair() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>optional uint32 read_length_pair = 6;</code>
-     *
      * <pre>
      *Length of the second sequence in a pair.
      * </pre>
+     *
+     * <code>optional uint32 read_length_pair = 6;</code>
      */
     public int getReadLengthPair() {
       return readLengthPair_;
@@ -1455,21 +1514,21 @@ public final class Reads {
     public static final int QUALITY_SCORES_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString qualityScores_;
     /**
-     * <code>optional bytes quality_scores = 4;</code>
-     *
      * <pre>
      *Quality scores in Phred units, stored as single bytes (0-255).
      * </pre>
+     *
+     * <code>optional bytes quality_scores = 4;</code>
      */
     public boolean hasQualityScores() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>optional bytes quality_scores = 4;</code>
-     *
      * <pre>
      *Quality scores in Phred units, stored as single bytes (0-255).
      * </pre>
+     *
+     * <code>optional bytes quality_scores = 4;</code>
      */
     public com.google.protobuf.ByteString getQualityScores() {
       return qualityScores_;
@@ -1478,21 +1537,21 @@ public final class Reads {
     public static final int QUALITY_SCORES_PAIR_FIELD_NUMBER = 7;
     private com.google.protobuf.ByteString qualityScoresPair_;
     /**
-     * <code>optional bytes quality_scores_pair = 7;</code>
-     *
      * <pre>
      *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
      * </pre>
+     *
+     * <code>optional bytes quality_scores_pair = 7;</code>
      */
     public boolean hasQualityScoresPair() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
-     * <code>optional bytes quality_scores_pair = 7;</code>
-     *
      * <pre>
      *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
      * </pre>
+     *
+     * <code>optional bytes quality_scores_pair = 7;</code>
      */
     public com.google.protobuf.ByteString getQualityScoresPair() {
       return qualityScoresPair_;
@@ -1501,23 +1560,23 @@ public final class Reads {
     public static final int COMPRESSED_DATA_FIELD_NUMBER = 8;
     private com.google.protobuf.ByteString compressedData_;
     /**
-     * <code>optional bytes compressed_data = 8;</code>
-     *
      * <pre>
      *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
      *content compressed with the codec.
      * </pre>
+     *
+     * <code>optional bytes compressed_data = 8;</code>
      */
     public boolean hasCompressedData() {
       return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
-     * <code>optional bytes compressed_data = 8;</code>
-     *
      * <pre>
      *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
      *content compressed with the codec.
      * </pre>
+     *
+     * <code>optional bytes compressed_data = 8;</code>
      */
     public com.google.protobuf.ByteString getCompressedData() {
       return compressedData_;
@@ -1526,8 +1585,6 @@ public final class Reads {
     public static final int META_DATA_FIELD_NUMBER = 25;
     private java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> metaData_;
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1550,13 +1607,13 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     public java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> getMetaDataList() {
       return metaData_;
     }
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1579,14 +1636,14 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     public java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
         getMetaDataOrBuilderList() {
       return metaData_;
     }
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1609,13 +1666,13 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     public int getMetaDataCount() {
       return metaData_.size();
     }
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1638,13 +1695,13 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     public edu.cornell.med.icb.goby.reads.Reads.MetaData getMetaData(int index) {
       return metaData_.get(index);
     }
     /**
-     * <code>repeated .goby.MetaData meta_data = 25;</code>
-     *
      * <pre>
      *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
      *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -1667,26 +1724,14 @@ public final class Reads {
      *key="organism" value="species name"
      *Since Goby 1.9.1
      * </pre>
+     *
+     * <code>repeated .goby.MetaData meta_data = 25;</code>
      */
     public edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder getMetaDataOrBuilder(
         int index) {
       return metaData_.get(index);
     }
 
-    private void initFields() {
-      readIndex_ = 0;
-      barcodeIndex_ = 0;
-      readIdentifier_ = "";
-      description_ = "";
-      readLength_ = 0;
-      sequence_ = com.google.protobuf.ByteString.EMPTY;
-      sequencePair_ = com.google.protobuf.ByteString.EMPTY;
-      readLengthPair_ = 0;
-      qualityScores_ = com.google.protobuf.ByteString.EMPTY;
-      qualityScoresPair_ = com.google.protobuf.ByteString.EMPTY;
-      compressedData_ = com.google.protobuf.ByteString.EMPTY;
-      metaData_ = java.util.Collections.emptyList();
-    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -1713,7 +1758,6 @@ public final class Reads {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeUInt32(1, readIndex_);
       }
@@ -1742,20 +1786,19 @@ public final class Reads {
         output.writeUInt32(10, barcodeIndex_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(22, getDescriptionBytes());
+        com.google.protobuf.GeneratedMessage.writeString(output, 22, description_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(23, getReadIdentifierBytes());
+        com.google.protobuf.GeneratedMessage.writeString(output, 23, readIdentifier_);
       }
       for (int i = 0; i < metaData_.size(); i++) {
         output.writeMessage(25, metaData_.get(i));
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSerializedSize;
+      int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
@@ -1796,27 +1839,151 @@ public final class Reads {
           .computeUInt32Size(10, barcodeIndex_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(22, getDescriptionBytes());
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(22, description_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(23, getReadIdentifierBytes());
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(23, readIdentifier_);
       }
       for (int i = 0; i < metaData_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(25, metaData_.get(i));
       }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof edu.cornell.med.icb.goby.reads.Reads.ReadEntry)) {
+        return super.equals(obj);
+      }
+      edu.cornell.med.icb.goby.reads.Reads.ReadEntry other = (edu.cornell.med.icb.goby.reads.Reads.ReadEntry) obj;
+
+      boolean result = true;
+      result = result && (hasReadIndex() == other.hasReadIndex());
+      if (hasReadIndex()) {
+        result = result && (getReadIndex()
+            == other.getReadIndex());
+      }
+      result = result && (hasBarcodeIndex() == other.hasBarcodeIndex());
+      if (hasBarcodeIndex()) {
+        result = result && (getBarcodeIndex()
+            == other.getBarcodeIndex());
+      }
+      result = result && (hasReadIdentifier() == other.hasReadIdentifier());
+      if (hasReadIdentifier()) {
+        result = result && getReadIdentifier()
+            .equals(other.getReadIdentifier());
+      }
+      result = result && (hasDescription() == other.hasDescription());
+      if (hasDescription()) {
+        result = result && getDescription()
+            .equals(other.getDescription());
+      }
+      result = result && (hasReadLength() == other.hasReadLength());
+      if (hasReadLength()) {
+        result = result && (getReadLength()
+            == other.getReadLength());
+      }
+      result = result && (hasSequence() == other.hasSequence());
+      if (hasSequence()) {
+        result = result && getSequence()
+            .equals(other.getSequence());
+      }
+      result = result && (hasSequencePair() == other.hasSequencePair());
+      if (hasSequencePair()) {
+        result = result && getSequencePair()
+            .equals(other.getSequencePair());
+      }
+      result = result && (hasReadLengthPair() == other.hasReadLengthPair());
+      if (hasReadLengthPair()) {
+        result = result && (getReadLengthPair()
+            == other.getReadLengthPair());
+      }
+      result = result && (hasQualityScores() == other.hasQualityScores());
+      if (hasQualityScores()) {
+        result = result && getQualityScores()
+            .equals(other.getQualityScores());
+      }
+      result = result && (hasQualityScoresPair() == other.hasQualityScoresPair());
+      if (hasQualityScoresPair()) {
+        result = result && getQualityScoresPair()
+            .equals(other.getQualityScoresPair());
+      }
+      result = result && (hasCompressedData() == other.hasCompressedData());
+      if (hasCompressedData()) {
+        result = result && getCompressedData()
+            .equals(other.getCompressedData());
+      }
+      result = result && getMetaDataList()
+          .equals(other.getMetaDataList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasReadIndex()) {
+        hash = (37 * hash) + READ_INDEX_FIELD_NUMBER;
+        hash = (53 * hash) + getReadIndex();
+      }
+      if (hasBarcodeIndex()) {
+        hash = (37 * hash) + BARCODE_INDEX_FIELD_NUMBER;
+        hash = (53 * hash) + getBarcodeIndex();
+      }
+      if (hasReadIdentifier()) {
+        hash = (37 * hash) + READ_IDENTIFIER_FIELD_NUMBER;
+        hash = (53 * hash) + getReadIdentifier().hashCode();
+      }
+      if (hasDescription()) {
+        hash = (37 * hash) + DESCRIPTION_FIELD_NUMBER;
+        hash = (53 * hash) + getDescription().hashCode();
+      }
+      if (hasReadLength()) {
+        hash = (37 * hash) + READ_LENGTH_FIELD_NUMBER;
+        hash = (53 * hash) + getReadLength();
+      }
+      if (hasSequence()) {
+        hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
+        hash = (53 * hash) + getSequence().hashCode();
+      }
+      if (hasSequencePair()) {
+        hash = (37 * hash) + SEQUENCE_PAIR_FIELD_NUMBER;
+        hash = (53 * hash) + getSequencePair().hashCode();
+      }
+      if (hasReadLengthPair()) {
+        hash = (37 * hash) + READ_LENGTH_PAIR_FIELD_NUMBER;
+        hash = (53 * hash) + getReadLengthPair();
+      }
+      if (hasQualityScores()) {
+        hash = (37 * hash) + QUALITY_SCORES_FIELD_NUMBER;
+        hash = (53 * hash) + getQualityScores().hashCode();
+      }
+      if (hasQualityScoresPair()) {
+        hash = (37 * hash) + QUALITY_SCORES_PAIR_FIELD_NUMBER;
+        hash = (53 * hash) + getQualityScoresPair().hashCode();
+      }
+      if (hasCompressedData()) {
+        hash = (37 * hash) + COMPRESSED_DATA_FIELD_NUMBER;
+        hash = (53 * hash) + getCompressedData().hashCode();
+      }
+      if (getMetaDataCount() > 0) {
+        hash = (37 * hash) + META_DATA_FIELD_NUMBER;
+        hash = (53 * hash) + getMetaDataList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
@@ -1842,42 +2009,53 @@ public final class Reads {
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.ReadEntry prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.ReadEntry prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -1919,10 +2097,6 @@ public final class Reads {
           getMetaDataFieldBuilder();
         }
       }
-      private static Builder create() {
-        return new Builder();
-      }
-
       public Builder clear() {
         super.clear();
         readIndex_ = 0;
@@ -1954,10 +2128,6 @@ public final class Reads {
           metaDataBuilder_.clear();
         }
         return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -2039,6 +2209,32 @@ public final class Reads {
         return result;
       }
 
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof edu.cornell.med.icb.goby.reads.Reads.ReadEntry) {
           return mergeFrom((edu.cornell.med.icb.goby.reads.Reads.ReadEntry)other);
@@ -2113,22 +2309,20 @@ public final class Reads {
             }
           }
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasReadIndex()) {
-          
           return false;
         }
         if (!hasReadLength()) {
-          
           return false;
         }
         for (int i = 0; i < getMetaDataCount(); i++) {
           if (!getMetaData(i).isInitialized()) {
-            
             return false;
           }
         }
@@ -2144,7 +2338,7 @@ public final class Reads {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (edu.cornell.med.icb.goby.reads.Reads.ReadEntry) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -2156,31 +2350,31 @@ public final class Reads {
 
       private int readIndex_ ;
       /**
-       * <code>required uint32 read_index = 1;</code>
-       *
        * <pre>
        *Index of a read.
        * </pre>
+       *
+       * <code>required uint32 read_index = 1;</code>
        */
       public boolean hasReadIndex() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required uint32 read_index = 1;</code>
-       *
        * <pre>
        *Index of a read.
        * </pre>
+       *
+       * <code>required uint32 read_index = 1;</code>
        */
       public int getReadIndex() {
         return readIndex_;
       }
       /**
-       * <code>required uint32 read_index = 1;</code>
-       *
        * <pre>
        *Index of a read.
        * </pre>
+       *
+       * <code>required uint32 read_index = 1;</code>
        */
       public Builder setReadIndex(int value) {
         bitField0_ |= 0x00000001;
@@ -2189,11 +2383,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>required uint32 read_index = 1;</code>
-       *
        * <pre>
        *Index of a read.
        * </pre>
+       *
+       * <code>required uint32 read_index = 1;</code>
        */
       public Builder clearReadIndex() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -2204,31 +2398,31 @@ public final class Reads {
 
       private int barcodeIndex_ ;
       /**
-       * <code>optional uint32 barcode_index = 10;</code>
-       *
        * <pre>
        *Index of the barcode, if any.
        * </pre>
+       *
+       * <code>optional uint32 barcode_index = 10;</code>
        */
       public boolean hasBarcodeIndex() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional uint32 barcode_index = 10;</code>
-       *
        * <pre>
        *Index of the barcode, if any.
        * </pre>
+       *
+       * <code>optional uint32 barcode_index = 10;</code>
        */
       public int getBarcodeIndex() {
         return barcodeIndex_;
       }
       /**
-       * <code>optional uint32 barcode_index = 10;</code>
-       *
        * <pre>
        *Index of the barcode, if any.
        * </pre>
+       *
+       * <code>optional uint32 barcode_index = 10;</code>
        */
       public Builder setBarcodeIndex(int value) {
         bitField0_ |= 0x00000002;
@@ -2237,11 +2431,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional uint32 barcode_index = 10;</code>
-       *
        * <pre>
        *Index of the barcode, if any.
        * </pre>
+       *
+       * <code>optional uint32 barcode_index = 10;</code>
        */
       public Builder clearBarcodeIndex() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -2252,21 +2446,21 @@ public final class Reads {
 
       private java.lang.Object readIdentifier_ = "";
       /**
-       * <code>optional string read_identifier = 23;</code>
-       *
        * <pre>
        *Read identifier/name may be present.
        * </pre>
+       *
+       * <code>optional string read_identifier = 23;</code>
        */
       public boolean hasReadIdentifier() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string read_identifier = 23;</code>
-       *
        * <pre>
        *Read identifier/name may be present.
        * </pre>
+       *
+       * <code>optional string read_identifier = 23;</code>
        */
       public java.lang.String getReadIdentifier() {
         java.lang.Object ref = readIdentifier_;
@@ -2283,11 +2477,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>optional string read_identifier = 23;</code>
-       *
        * <pre>
        *Read identifier/name may be present.
        * </pre>
+       *
+       * <code>optional string read_identifier = 23;</code>
        */
       public com.google.protobuf.ByteString
           getReadIdentifierBytes() {
@@ -2303,11 +2497,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>optional string read_identifier = 23;</code>
-       *
        * <pre>
        *Read identifier/name may be present.
        * </pre>
+       *
+       * <code>optional string read_identifier = 23;</code>
        */
       public Builder setReadIdentifier(
           java.lang.String value) {
@@ -2320,11 +2514,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional string read_identifier = 23;</code>
-       *
        * <pre>
        *Read identifier/name may be present.
        * </pre>
+       *
+       * <code>optional string read_identifier = 23;</code>
        */
       public Builder clearReadIdentifier() {
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -2333,11 +2527,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional string read_identifier = 23;</code>
-       *
        * <pre>
        *Read identifier/name may be present.
        * </pre>
+       *
+       * <code>optional string read_identifier = 23;</code>
        */
       public Builder setReadIdentifierBytes(
           com.google.protobuf.ByteString value) {
@@ -2352,21 +2546,21 @@ public final class Reads {
 
       private java.lang.Object description_ = "";
       /**
-       * <code>optional string description = 22;</code>
-       *
        * <pre>
        *Additional description about the read (from Fasta/Q format).
        * </pre>
+       *
+       * <code>optional string description = 22;</code>
        */
       public boolean hasDescription() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional string description = 22;</code>
-       *
        * <pre>
        *Additional description about the read (from Fasta/Q format).
        * </pre>
+       *
+       * <code>optional string description = 22;</code>
        */
       public java.lang.String getDescription() {
         java.lang.Object ref = description_;
@@ -2383,11 +2577,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>optional string description = 22;</code>
-       *
        * <pre>
        *Additional description about the read (from Fasta/Q format).
        * </pre>
+       *
+       * <code>optional string description = 22;</code>
        */
       public com.google.protobuf.ByteString
           getDescriptionBytes() {
@@ -2403,11 +2597,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>optional string description = 22;</code>
-       *
        * <pre>
        *Additional description about the read (from Fasta/Q format).
        * </pre>
+       *
+       * <code>optional string description = 22;</code>
        */
       public Builder setDescription(
           java.lang.String value) {
@@ -2420,11 +2614,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional string description = 22;</code>
-       *
        * <pre>
        *Additional description about the read (from Fasta/Q format).
        * </pre>
+       *
+       * <code>optional string description = 22;</code>
        */
       public Builder clearDescription() {
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -2433,11 +2627,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional string description = 22;</code>
-       *
        * <pre>
        *Additional description about the read (from Fasta/Q format).
        * </pre>
+       *
+       * <code>optional string description = 22;</code>
        */
       public Builder setDescriptionBytes(
           com.google.protobuf.ByteString value) {
@@ -2452,31 +2646,31 @@ public final class Reads {
 
       private int readLength_ ;
       /**
-       * <code>required uint32 read_length = 2;</code>
-       *
        * <pre>
        *Length of the sequence.
        * </pre>
+       *
+       * <code>required uint32 read_length = 2;</code>
        */
       public boolean hasReadLength() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required uint32 read_length = 2;</code>
-       *
        * <pre>
        *Length of the sequence.
        * </pre>
+       *
+       * <code>required uint32 read_length = 2;</code>
        */
       public int getReadLength() {
         return readLength_;
       }
       /**
-       * <code>required uint32 read_length = 2;</code>
-       *
        * <pre>
        *Length of the sequence.
        * </pre>
+       *
+       * <code>required uint32 read_length = 2;</code>
        */
       public Builder setReadLength(int value) {
         bitField0_ |= 0x00000010;
@@ -2485,11 +2679,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>required uint32 read_length = 2;</code>
-       *
        * <pre>
        *Length of the sequence.
        * </pre>
+       *
+       * <code>required uint32 read_length = 2;</code>
        */
       public Builder clearReadLength() {
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -2500,31 +2694,31 @@ public final class Reads {
 
       private com.google.protobuf.ByteString sequence_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes sequence = 3;</code>
-       *
        * <pre>
        *Sequence, encoded as ascii characters stored in single bytes.
        * </pre>
+       *
+       * <code>optional bytes sequence = 3;</code>
        */
       public boolean hasSequence() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional bytes sequence = 3;</code>
-       *
        * <pre>
        *Sequence, encoded as ascii characters stored in single bytes.
        * </pre>
+       *
+       * <code>optional bytes sequence = 3;</code>
        */
       public com.google.protobuf.ByteString getSequence() {
         return sequence_;
       }
       /**
-       * <code>optional bytes sequence = 3;</code>
-       *
        * <pre>
        *Sequence, encoded as ascii characters stored in single bytes.
        * </pre>
+       *
+       * <code>optional bytes sequence = 3;</code>
        */
       public Builder setSequence(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2536,11 +2730,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional bytes sequence = 3;</code>
-       *
        * <pre>
        *Sequence, encoded as ascii characters stored in single bytes.
        * </pre>
+       *
+       * <code>optional bytes sequence = 3;</code>
        */
       public Builder clearSequence() {
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -2551,31 +2745,31 @@ public final class Reads {
 
       private com.google.protobuf.ByteString sequencePair_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes sequence_pair = 5;</code>
-       *
        * <pre>
        *The second sequence in a pair. Stored the same way as the sequence attribute.
        * </pre>
+       *
+       * <code>optional bytes sequence_pair = 5;</code>
        */
       public boolean hasSequencePair() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional bytes sequence_pair = 5;</code>
-       *
        * <pre>
        *The second sequence in a pair. Stored the same way as the sequence attribute.
        * </pre>
+       *
+       * <code>optional bytes sequence_pair = 5;</code>
        */
       public com.google.protobuf.ByteString getSequencePair() {
         return sequencePair_;
       }
       /**
-       * <code>optional bytes sequence_pair = 5;</code>
-       *
        * <pre>
        *The second sequence in a pair. Stored the same way as the sequence attribute.
        * </pre>
+       *
+       * <code>optional bytes sequence_pair = 5;</code>
        */
       public Builder setSequencePair(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2587,11 +2781,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional bytes sequence_pair = 5;</code>
-       *
        * <pre>
        *The second sequence in a pair. Stored the same way as the sequence attribute.
        * </pre>
+       *
+       * <code>optional bytes sequence_pair = 5;</code>
        */
       public Builder clearSequencePair() {
         bitField0_ = (bitField0_ & ~0x00000040);
@@ -2602,31 +2796,31 @@ public final class Reads {
 
       private int readLengthPair_ ;
       /**
-       * <code>optional uint32 read_length_pair = 6;</code>
-       *
        * <pre>
        *Length of the second sequence in a pair.
        * </pre>
+       *
+       * <code>optional uint32 read_length_pair = 6;</code>
        */
       public boolean hasReadLengthPair() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>optional uint32 read_length_pair = 6;</code>
-       *
        * <pre>
        *Length of the second sequence in a pair.
        * </pre>
+       *
+       * <code>optional uint32 read_length_pair = 6;</code>
        */
       public int getReadLengthPair() {
         return readLengthPair_;
       }
       /**
-       * <code>optional uint32 read_length_pair = 6;</code>
-       *
        * <pre>
        *Length of the second sequence in a pair.
        * </pre>
+       *
+       * <code>optional uint32 read_length_pair = 6;</code>
        */
       public Builder setReadLengthPair(int value) {
         bitField0_ |= 0x00000080;
@@ -2635,11 +2829,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional uint32 read_length_pair = 6;</code>
-       *
        * <pre>
        *Length of the second sequence in a pair.
        * </pre>
+       *
+       * <code>optional uint32 read_length_pair = 6;</code>
        */
       public Builder clearReadLengthPair() {
         bitField0_ = (bitField0_ & ~0x00000080);
@@ -2650,31 +2844,31 @@ public final class Reads {
 
       private com.google.protobuf.ByteString qualityScores_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes quality_scores = 4;</code>
-       *
        * <pre>
        *Quality scores in Phred units, stored as single bytes (0-255).
        * </pre>
+       *
+       * <code>optional bytes quality_scores = 4;</code>
        */
       public boolean hasQualityScores() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>optional bytes quality_scores = 4;</code>
-       *
        * <pre>
        *Quality scores in Phred units, stored as single bytes (0-255).
        * </pre>
+       *
+       * <code>optional bytes quality_scores = 4;</code>
        */
       public com.google.protobuf.ByteString getQualityScores() {
         return qualityScores_;
       }
       /**
-       * <code>optional bytes quality_scores = 4;</code>
-       *
        * <pre>
        *Quality scores in Phred units, stored as single bytes (0-255).
        * </pre>
+       *
+       * <code>optional bytes quality_scores = 4;</code>
        */
       public Builder setQualityScores(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2686,11 +2880,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional bytes quality_scores = 4;</code>
-       *
        * <pre>
        *Quality scores in Phred units, stored as single bytes (0-255).
        * </pre>
+       *
+       * <code>optional bytes quality_scores = 4;</code>
        */
       public Builder clearQualityScores() {
         bitField0_ = (bitField0_ & ~0x00000100);
@@ -2701,31 +2895,31 @@ public final class Reads {
 
       private com.google.protobuf.ByteString qualityScoresPair_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes quality_scores_pair = 7;</code>
-       *
        * <pre>
        *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
        * </pre>
+       *
+       * <code>optional bytes quality_scores_pair = 7;</code>
        */
       public boolean hasQualityScoresPair() {
         return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
-       * <code>optional bytes quality_scores_pair = 7;</code>
-       *
        * <pre>
        *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
        * </pre>
+       *
+       * <code>optional bytes quality_scores_pair = 7;</code>
        */
       public com.google.protobuf.ByteString getQualityScoresPair() {
         return qualityScoresPair_;
       }
       /**
-       * <code>optional bytes quality_scores_pair = 7;</code>
-       *
        * <pre>
        *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
        * </pre>
+       *
+       * <code>optional bytes quality_scores_pair = 7;</code>
        */
       public Builder setQualityScoresPair(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2737,11 +2931,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional bytes quality_scores_pair = 7;</code>
-       *
        * <pre>
        *Quality scores for the second sequence in a pair. Stored as the 'qualityScores' attribute.
        * </pre>
+       *
+       * <code>optional bytes quality_scores_pair = 7;</code>
        */
       public Builder clearQualityScoresPair() {
         bitField0_ = (bitField0_ & ~0x00000200);
@@ -2752,34 +2946,34 @@ public final class Reads {
 
       private com.google.protobuf.ByteString compressedData_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes compressed_data = 8;</code>
-       *
        * <pre>
        *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
        *content compressed with the codec.
        * </pre>
+       *
+       * <code>optional bytes compressed_data = 8;</code>
        */
       public boolean hasCompressedData() {
         return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
-       * <code>optional bytes compressed_data = 8;</code>
-       *
        * <pre>
        *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
        *content compressed with the codec.
        * </pre>
+       *
+       * <code>optional bytes compressed_data = 8;</code>
        */
       public com.google.protobuf.ByteString getCompressedData() {
         return compressedData_;
       }
       /**
-       * <code>optional bytes compressed_data = 8;</code>
-       *
        * <pre>
        *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
        *content compressed with the codec.
        * </pre>
+       *
+       * <code>optional bytes compressed_data = 8;</code>
        */
       public Builder setCompressedData(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2791,12 +2985,12 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>optional bytes compressed_data = 8;</code>
-       *
        * <pre>
        *Compressed stream of data. The first byte indicates the compression/decompression method (codec). The remaining bytes are
        *content compressed with the codec.
        * </pre>
+       *
+       * <code>optional bytes compressed_data = 8;</code>
        */
       public Builder clearCompressedData() {
         bitField0_ = (bitField0_ & ~0x00000400);
@@ -2814,12 +3008,10 @@ public final class Reads {
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           edu.cornell.med.icb.goby.reads.Reads.MetaData, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder, edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> metaDataBuilder_;
 
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -2842,6 +3034,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData> getMetaDataList() {
         if (metaDataBuilder_ == null) {
@@ -2851,8 +3045,6 @@ public final class Reads {
         }
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -2875,6 +3067,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public int getMetaDataCount() {
         if (metaDataBuilder_ == null) {
@@ -2884,8 +3078,6 @@ public final class Reads {
         }
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -2908,6 +3100,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData getMetaData(int index) {
         if (metaDataBuilder_ == null) {
@@ -2917,8 +3111,6 @@ public final class Reads {
         }
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -2941,6 +3133,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder setMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData value) {
@@ -2957,8 +3151,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -2981,6 +3173,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder setMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder builderForValue) {
@@ -2994,8 +3188,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3018,6 +3210,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder addMetaData(edu.cornell.med.icb.goby.reads.Reads.MetaData value) {
         if (metaDataBuilder_ == null) {
@@ -3033,8 +3227,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3057,6 +3249,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder addMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData value) {
@@ -3073,8 +3267,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3097,6 +3289,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder addMetaData(
           edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder builderForValue) {
@@ -3110,8 +3304,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3134,6 +3326,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder addMetaData(
           int index, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder builderForValue) {
@@ -3147,8 +3341,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3171,6 +3363,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder addAllMetaData(
           java.lang.Iterable<? extends edu.cornell.med.icb.goby.reads.Reads.MetaData> values) {
@@ -3185,8 +3379,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3209,6 +3401,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder clearMetaData() {
         if (metaDataBuilder_ == null) {
@@ -3221,8 +3415,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3245,6 +3437,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public Builder removeMetaData(int index) {
         if (metaDataBuilder_ == null) {
@@ -3257,8 +3451,6 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3281,14 +3473,14 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder getMetaDataBuilder(
           int index) {
         return getMetaDataFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3311,6 +3503,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder getMetaDataOrBuilder(
           int index) {
@@ -3320,8 +3514,6 @@ public final class Reads {
         }
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3344,6 +3536,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public java.util.List<? extends edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
            getMetaDataOrBuilderList() {
@@ -3354,8 +3548,6 @@ public final class Reads {
         }
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3378,14 +3570,14 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder addMetaDataBuilder() {
         return getMetaDataFieldBuilder().addBuilder(
             edu.cornell.med.icb.goby.reads.Reads.MetaData.getDefaultInstance());
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3408,6 +3600,8 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder addMetaDataBuilder(
           int index) {
@@ -3415,8 +3609,6 @@ public final class Reads {
             index, edu.cornell.med.icb.goby.reads.Reads.MetaData.getDefaultInstance());
       }
       /**
-       * <code>repeated .goby.MetaData meta_data = 25;</code>
-       *
        * <pre>
        *Stores meta-data about the reads. Typically meta-data is stored in the very first read of a
        *read collection, with the understanding that the meta-data applies to all the reads in the
@@ -3439,16 +3631,18 @@ public final class Reads {
        *key="organism" value="species name"
        *Since Goby 1.9.1
        * </pre>
+       *
+       * <code>repeated .goby.MetaData meta_data = 25;</code>
        */
       public java.util.List<edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder> 
            getMetaDataBuilderList() {
         return getMetaDataFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           edu.cornell.med.icb.goby.reads.Reads.MetaData, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder, edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder> 
           getMetaDataFieldBuilder() {
         if (metaDataBuilder_ == null) {
-          metaDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          metaDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               edu.cornell.med.icb.goby.reads.Reads.MetaData, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder, edu.cornell.med.icb.goby.reads.Reads.MetaDataOrBuilder>(
                   metaData_,
                   ((bitField0_ & 0x00000800) == 0x00000800),
@@ -3458,16 +3652,53 @@ public final class Reads {
         }
         return metaDataBuilder_;
       }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:goby.ReadEntry)
     }
 
+    // @@protoc_insertion_point(class_scope:goby.ReadEntry)
+    private static final edu.cornell.med.icb.goby.reads.Reads.ReadEntry DEFAULT_INSTANCE;
     static {
-      defaultInstance = new ReadEntry(true);
-      defaultInstance.initFields();
+      DEFAULT_INSTANCE = new edu.cornell.med.icb.goby.reads.Reads.ReadEntry();
     }
 
-    // @@protoc_insertion_point(class_scope:goby.ReadEntry)
+    public static edu.cornell.med.icb.goby.reads.Reads.ReadEntry getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<ReadEntry>
+        PARSER = new com.google.protobuf.AbstractParser<ReadEntry>() {
+      public ReadEntry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ReadEntry(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ReadEntry> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ReadEntry> getParserForType() {
+      return PARSER;
+    }
+
+    public edu.cornell.med.icb.goby.reads.Reads.ReadEntry getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public interface MetaDataOrBuilder extends
@@ -3475,96 +3706,88 @@ public final class Reads {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required string key = 1;</code>
-     *
      * <pre>
      *Provides the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string key = 1;</code>
      */
     boolean hasKey();
     /**
-     * <code>required string key = 1;</code>
-     *
      * <pre>
      *Provides the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string key = 1;</code>
      */
     java.lang.String getKey();
     /**
-     * <code>required string key = 1;</code>
-     *
      * <pre>
      *Provides the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string key = 1;</code>
      */
     com.google.protobuf.ByteString
         getKeyBytes();
 
     /**
-     * <code>required string value = 2;</code>
-     *
      * <pre>
      *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string value = 2;</code>
      */
     boolean hasValue();
     /**
-     * <code>required string value = 2;</code>
-     *
      * <pre>
      *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string value = 2;</code>
      */
     java.lang.String getValue();
     /**
-     * <code>required string value = 2;</code>
-     *
      * <pre>
      *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string value = 2;</code>
      */
     com.google.protobuf.ByteString
         getValueBytes();
   }
   /**
-   * Protobuf type {@code goby.MetaData}
-   *
    * <pre>
    *A message to store a key/value pair and represent metadata about reads.
    *Since Goby 1.9.1
    * </pre>
+   *
+   * Protobuf type {@code goby.MetaData}
    */
-  public static final class MetaData extends
+  public  static final class MetaData extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:goby.MetaData)
       MetaDataOrBuilder {
     // Use MetaData.newBuilder() to construct.
     private MetaData(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
-      this.unknownFields = builder.getUnknownFields();
     }
-    private MetaData(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final MetaData defaultInstance;
-    public static MetaData getDefaultInstance() {
-      return defaultInstance;
+    private MetaData() {
+      key_ = "";
+      value_ = "";
     }
 
-    public MetaData getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
+    getUnknownFields() {
       return this.unknownFields;
     }
     private MetaData(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
+      this();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -3601,7 +3824,7 @@ public final class Reads {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+            e).setUnfinishedMessage(this);
       } finally {
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -3619,40 +3842,25 @@ public final class Reads {
               edu.cornell.med.icb.goby.reads.Reads.MetaData.class, edu.cornell.med.icb.goby.reads.Reads.MetaData.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<MetaData> PARSER =
-        new com.google.protobuf.AbstractParser<MetaData>() {
-      public MetaData parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MetaData(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<MetaData> getParserForType() {
-      return PARSER;
-    }
-
     private int bitField0_;
     public static final int KEY_FIELD_NUMBER = 1;
-    private java.lang.Object key_;
+    private volatile java.lang.Object key_;
     /**
-     * <code>required string key = 1;</code>
-     *
      * <pre>
      *Provides the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string key = 1;</code>
      */
     public boolean hasKey() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string key = 1;</code>
-     *
      * <pre>
      *Provides the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string key = 1;</code>
      */
     public java.lang.String getKey() {
       java.lang.Object ref = key_;
@@ -3669,11 +3877,11 @@ public final class Reads {
       }
     }
     /**
-     * <code>required string key = 1;</code>
-     *
      * <pre>
      *Provides the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string key = 1;</code>
      */
     public com.google.protobuf.ByteString
         getKeyBytes() {
@@ -3690,23 +3898,23 @@ public final class Reads {
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
-    private java.lang.Object value_;
+    private volatile java.lang.Object value_;
     /**
-     * <code>required string value = 2;</code>
-     *
      * <pre>
      *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string value = 2;</code>
      */
     public boolean hasValue() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required string value = 2;</code>
-     *
      * <pre>
      *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string value = 2;</code>
      */
     public java.lang.String getValue() {
       java.lang.Object ref = value_;
@@ -3723,11 +3931,11 @@ public final class Reads {
       }
     }
     /**
-     * <code>required string value = 2;</code>
-     *
      * <pre>
      *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
      * </pre>
+     *
+     * <code>required string value = 2;</code>
      */
     public com.google.protobuf.ByteString
         getValueBytes() {
@@ -3743,10 +3951,6 @@ public final class Reads {
       }
     }
 
-    private void initFields() {
-      key_ = "";
-      value_ = "";
-    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -3767,40 +3971,75 @@ public final class Reads {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getKeyBytes());
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, key_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getValueBytes());
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, value_);
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSerializedSize;
+      int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getKeyBytes());
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, key_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getValueBytes());
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, value_);
       }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof edu.cornell.med.icb.goby.reads.Reads.MetaData)) {
+        return super.equals(obj);
+      }
+      edu.cornell.med.icb.goby.reads.Reads.MetaData other = (edu.cornell.med.icb.goby.reads.Reads.MetaData) obj;
+
+      boolean result = true;
+      result = result && (hasKey() == other.hasKey());
+      if (hasKey()) {
+        result = result && getKey()
+            .equals(other.getKey());
+      }
+      result = result && (hasValue() == other.hasValue());
+      if (hasValue()) {
+        result = result && getValue()
+            .equals(other.getValue());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasKey()) {
+        hash = (37 * hash) + KEY_FIELD_NUMBER;
+        hash = (53 * hash) + getKey().hashCode();
+      }
+      if (hasValue()) {
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValue().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
@@ -3826,42 +4065,53 @@ public final class Reads {
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static edu.cornell.med.icb.goby.reads.Reads.MetaData parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.MetaData prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(edu.cornell.med.icb.goby.reads.Reads.MetaData prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -3870,12 +4120,12 @@ public final class Reads {
       return builder;
     }
     /**
-     * Protobuf type {@code goby.MetaData}
-     *
      * <pre>
      *A message to store a key/value pair and represent metadata about reads.
      *Since Goby 1.9.1
      * </pre>
+     *
+     * Protobuf type {@code goby.MetaData}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
@@ -3907,10 +4157,6 @@ public final class Reads {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
         }
       }
-      private static Builder create() {
-        return new Builder();
-      }
-
       public Builder clear() {
         super.clear();
         key_ = "";
@@ -3918,10 +4164,6 @@ public final class Reads {
         value_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -3958,6 +4200,32 @@ public final class Reads {
         return result;
       }
 
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof edu.cornell.med.icb.goby.reads.Reads.MetaData) {
           return mergeFrom((edu.cornell.med.icb.goby.reads.Reads.MetaData)other);
@@ -3979,17 +4247,16 @@ public final class Reads {
           value_ = other.value_;
           onChanged();
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasKey()) {
-          
           return false;
         }
         if (!hasValue()) {
-          
           return false;
         }
         return true;
@@ -4004,7 +4271,7 @@ public final class Reads {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (edu.cornell.med.icb.goby.reads.Reads.MetaData) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -4016,21 +4283,21 @@ public final class Reads {
 
       private java.lang.Object key_ = "";
       /**
-       * <code>required string key = 1;</code>
-       *
        * <pre>
        *Provides the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string key = 1;</code>
        */
       public boolean hasKey() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string key = 1;</code>
-       *
        * <pre>
        *Provides the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string key = 1;</code>
        */
       public java.lang.String getKey() {
         java.lang.Object ref = key_;
@@ -4047,11 +4314,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>required string key = 1;</code>
-       *
        * <pre>
        *Provides the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string key = 1;</code>
        */
       public com.google.protobuf.ByteString
           getKeyBytes() {
@@ -4067,11 +4334,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>required string key = 1;</code>
-       *
        * <pre>
        *Provides the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string key = 1;</code>
        */
       public Builder setKey(
           java.lang.String value) {
@@ -4084,11 +4351,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>required string key = 1;</code>
-       *
        * <pre>
        *Provides the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string key = 1;</code>
        */
       public Builder clearKey() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -4097,11 +4364,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>required string key = 1;</code>
-       *
        * <pre>
        *Provides the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string key = 1;</code>
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
@@ -4116,21 +4383,21 @@ public final class Reads {
 
       private java.lang.Object value_ = "";
       /**
-       * <code>required string value = 2;</code>
-       *
        * <pre>
        *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string value = 2;</code>
        */
       public boolean hasValue() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required string value = 2;</code>
-       *
        * <pre>
        *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string value = 2;</code>
        */
       public java.lang.String getValue() {
         java.lang.Object ref = value_;
@@ -4147,11 +4414,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>required string value = 2;</code>
-       *
        * <pre>
        *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string value = 2;</code>
        */
       public com.google.protobuf.ByteString
           getValueBytes() {
@@ -4167,11 +4434,11 @@ public final class Reads {
         }
       }
       /**
-       * <code>required string value = 2;</code>
-       *
        * <pre>
        *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string value = 2;</code>
        */
       public Builder setValue(
           java.lang.String value) {
@@ -4184,11 +4451,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>required string value = 2;</code>
-       *
        * <pre>
        *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string value = 2;</code>
        */
       public Builder clearValue() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -4197,11 +4464,11 @@ public final class Reads {
         return this;
       }
       /**
-       * <code>required string value = 2;</code>
-       *
        * <pre>
        *Describes the value associated with the key. See examples in the documentation of meta_data for ReadEntry.
        * </pre>
+       *
+       * <code>required string value = 2;</code>
        */
       public Builder setValueBytes(
           com.google.protobuf.ByteString value) {
@@ -4213,31 +4480,68 @@ public final class Reads {
         onChanged();
         return this;
       }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:goby.MetaData)
     }
 
+    // @@protoc_insertion_point(class_scope:goby.MetaData)
+    private static final edu.cornell.med.icb.goby.reads.Reads.MetaData DEFAULT_INSTANCE;
     static {
-      defaultInstance = new MetaData(true);
-      defaultInstance.initFields();
+      DEFAULT_INSTANCE = new edu.cornell.med.icb.goby.reads.Reads.MetaData();
     }
 
-    // @@protoc_insertion_point(class_scope:goby.MetaData)
+    public static edu.cornell.med.icb.goby.reads.Reads.MetaData getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<MetaData>
+        PARSER = new com.google.protobuf.AbstractParser<MetaData>() {
+      public MetaData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new MetaData(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<MetaData> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MetaData> getParserForType() {
+      return PARSER;
+    }
+
+    public edu.cornell.med.icb.goby.reads.Reads.MetaData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_goby_ReadCollection_descriptor;
-  private static
+  private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_goby_ReadCollection_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_goby_ReadEntry_descriptor;
-  private static
+  private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_goby_ReadEntry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_goby_MetaData_descriptor;
-  private static
+  private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_goby_MetaData_fieldAccessorTable;
 
@@ -4245,7 +4549,7 @@ public final class Reads {
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {

@@ -134,11 +134,11 @@
                 <include name="edu.mssm.crover.cli.jar"/>
                 <include name="bzip2.jar"/>
                 <include name="fastutil-6.5.15.jar"/>
-                <include name="dsiutils-2.0.14.jar"/>
+                <include name="dsiutils-2.3.2.jar"/>
                 <include name="icb-utils.jar"/>
                 <include name="JSAP-2.1.jar"/>
                 <include name="log4j-1.2.15.jar"/>
-                <include name="protobuf-java-2.6.1.jar"/>
+                <include name="protobuf-java-3.0.0-beta-4.jar"/>
                 <include name="htsjdk-2.2.4.jar"/>
                 <include name="lib/picard-lib-2.2.4.jar"/>
                 <include name="squil.jar"/>
@@ -152,6 +152,8 @@
                 <include name="JRI.jar"/>
                 <include name="mg4j-3.0.1.jar"/>
                 <include name="xstream-1.4.9.jar"/>
+                <include name="slf4j-api-1.7.21.jar"/>
+                <include name="slf4j-log4j12-1.7.21.jar"/>
                 <include name="model-utils-1.0.1-SNAPSHOT.jar"/>
                 <include name="dl4j/*.jar"/>
                 <!-- Required by JSAP -->

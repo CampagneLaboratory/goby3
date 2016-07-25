@@ -1,3 +1,4 @@
+syntax = "proto2";
 package goby;
 
 option java_package = "edu.cornell.med.icb.goby.alignments";
