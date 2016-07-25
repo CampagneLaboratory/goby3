@@ -20,7 +20,8 @@ package edu.cornell.med.icb.goby.util.dynoptions;
 
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dynamic option clients are used by classes that need to obtain parameters from the command line without
@@ -36,7 +37,7 @@ public class DynamicOptionClient implements Comparable {
     String[] defaultValues;
     String[] values;
     Class enclosingClass;
-    private static final Logger LOG = Logger.getLogger(DynamicOptionClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DynamicOptionClient.class);
 
     public DynamicOptionClient(final Class enclosingClass, final String[] otherDefinitions, final String... optionDefinition) {
 

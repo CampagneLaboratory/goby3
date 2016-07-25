@@ -33,7 +33,8 @@ import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,7 +51,7 @@ public class SamExtractReadsMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SamExtractReadsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SamExtractReadsMode.class);
 
     /**
      * Flag to indicate if log4j was configured.
@@ -132,7 +133,7 @@ public class SamExtractReadsMode extends AbstractGobyMode {
      */
     @Override
     public void execute() throws IOException {
-        debug = Util.log4JIsConfigured();
+        debug = false;
         final ReadsWriter writer = new ReadsWriterImpl(new FileOutputStream(outputFilename));
         boolean finishEarly = false;
 

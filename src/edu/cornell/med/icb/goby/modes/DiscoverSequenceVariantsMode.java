@@ -41,7 +41,8 @@ import it.unimi.dsi.fastutil.objects.*;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +73,7 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
                     "or methylation rates (RRBS or methyl-seq datasets)." +
                     " This mode requires sorted/indexed alignments as input. (Since Goby 1.8) ";
 
-    private static final Logger LOG = Logger.getLogger(DiscoverSequenceVariantsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoverSequenceVariantsMode.class);
     private String[] inputFilenames;
 
     private int[] readerIndexToGroupIndex;

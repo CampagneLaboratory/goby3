@@ -24,7 +24,8 @@ import edu.cornell.med.icb.goby.util.WarningCounter;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import edu.cornell.med.icb.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabien Campagne
@@ -58,7 +59,7 @@ public abstract class IterateSortedAlignmentsListImpl
      * Used to log debug and informational messages.
      */
 
-    private static final Logger LOG = Logger.getLogger(IterateSortedAlignmentsListImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IterateSortedAlignmentsListImpl.class);
 
     /**
      * Process a list of bases at a given reference position.

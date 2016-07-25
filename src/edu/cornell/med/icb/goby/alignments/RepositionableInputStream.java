@@ -19,7 +19,8 @@
 package edu.cornell.med.icb.goby.alignments;
 
 import it.unimi.dsi.fastutil.io.RepositionableStream;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.*;
@@ -151,7 +152,7 @@ public class RepositionableInputStream extends InputStream implements Reposition
         return getStream(resource, 0);
     }
 
-    private static Logger LOG = Logger.getLogger(RepositionableInputStream.class);
+    private static Logger LOG = LoggerFactory.getLogger(RepositionableInputStream.class);
 
     public static InputStream getStream(String resource, long startOffset) throws IOException {
 

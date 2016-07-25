@@ -27,7 +27,8 @@ import edu.cornell.med.icb.goby.util.OutputInfo;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.lang.MutableString;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -402,7 +403,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(GenotypesOutputFormat.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenotypesOutputFormat.class);
 
 
 }

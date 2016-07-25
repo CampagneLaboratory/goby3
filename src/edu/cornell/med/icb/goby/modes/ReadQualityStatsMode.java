@@ -30,6 +30,8 @@ import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math.random.MersenneTwister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,7 +49,7 @@ import java.util.List;
  */
 public class ReadQualityStatsMode extends AbstractGobyMode {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadQualityStatsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReadQualityStatsMode.class);
     /**
      * The mode name.
      */

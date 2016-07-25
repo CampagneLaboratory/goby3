@@ -20,7 +20,8 @@ package edu.cornell.med.icb.goby.algorithmic.algorithm.dmr;
 
 import edu.cornell.med.icb.goby.stats.FormatFieldCounter;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabien Campagne
@@ -32,7 +33,7 @@ public abstract class AbstractMethylationAdapter implements StatisticAdaptor {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(AbstractMethylationAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractMethylationAdapter.class);
     private boolean ignorePair;
 
 

@@ -21,7 +21,8 @@ package edu.cornell.med.icb.goby.alignments;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -40,7 +41,7 @@ public class BufferedSortingAlignmentWriter implements AlignmentWriter {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(BufferedSortingAlignmentWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BufferedSortingAlignmentWriter.class);
 
     private final AlignmentWriter delegate;
     private final ObjectHeapPriorityQueue<Alignments.AlignmentEntry> heap;

@@ -20,9 +20,10 @@ package edu.cornell.med.icb.goby.util.dynoptions;
 
 import com.martiansoftware.jsap.JSAPResult;
 import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class DynamicOptionRegistry {
     /**
         * Used to log debug and informational messages.
         */
-       private static final Logger LOG = Logger.getLogger(DynamicOptionRegistry.class);
+       private static final Logger LOG = LoggerFactory.getLogger(DynamicOptionRegistry.class);
 
     private DynamicOptionRegistry() {
     }

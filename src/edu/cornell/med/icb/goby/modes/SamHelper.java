@@ -19,6 +19,7 @@
 package edu.cornell.med.icb.goby.modes;
 
 import edu.cornell.med.icb.goby.reads.QualityEncoding;
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.goby.util.pool.Resettable;
 import it.unimi.dsi.Util;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -27,7 +28,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.lang.MutableString;
 import htsjdk.samtools.SAMRecord;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +56,7 @@ public class SamHelper implements Resettable {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SamHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SamHelper.class);
 
     private byte minQualValue;
     private final MutableString cigar = new MutableString();
@@ -91,7 +93,7 @@ public class SamHelper implements Resettable {
     public SamHelper() {
         // don't even dare go through the debugging code if log4j was not configured. The debug code
         // is way too slow to run unintentionally in production!
-        debug = debug && Util.log4JIsConfigured();
+        debug = debug && LogIsConfigured.isConfigured();
     }
 
     @Override
@@ -679,7 +681,7 @@ public class SamHelper implements Resettable {
         } else {
             logval.append(":: qual=none");
         }
-        LOG.debug(logval);
+        LOG.debug(logval.toString());
 
         logval.setLength(0);
         logval.append(":: ref =");

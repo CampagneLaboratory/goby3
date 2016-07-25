@@ -35,7 +35,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -51,7 +52,7 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(BarcodeDecoderMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BarcodeDecoderMode.class);
 
     /**
      * For logging progress.

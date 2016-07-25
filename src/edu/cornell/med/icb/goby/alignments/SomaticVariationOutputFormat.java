@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.campagnelab.dl.model.utils.BayesCalibrator;
 import org.campagnelab.dl.model.utils.CalcCalibrator;
 import org.campagnelab.dl.model.utils.FDREstimator;
@@ -27,6 +27,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -130,7 +131,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private CovariateInfo covInfo;
     private ObjectArraySet<String> somaticSampleIds;
     GenotypesOutputFormat genotypeFormatter = new GenotypesOutputFormat();
-    private static final Logger LOG = Logger.getLogger(SomaticVariationOutputFormat.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SomaticVariationOutputFormat.class);
 
     /**
      * Given the index of a somatic sample, provides the index of the patient's father sample in sampleCounts.

@@ -36,8 +36,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.rosuda.JRI.Rengine;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -85,7 +86,7 @@ public class AnnotationAveragingWriter extends VCFWriter implements RegionWriter
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(AnnotationAveragingWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AnnotationAveragingWriter.class);
 
 
     /**

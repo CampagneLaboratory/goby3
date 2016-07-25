@@ -34,7 +34,8 @@ import it.unimi.dsi.logging.ProgressLogger;
 import htsjdk.samtools.util.BlockCompressedOutputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -55,7 +56,7 @@ public class VCFSubsetMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(VCFSubsetMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VCFSubsetMode.class);
 
     /**
      * The output filename.

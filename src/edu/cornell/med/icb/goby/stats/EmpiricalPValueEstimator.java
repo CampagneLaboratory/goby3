@@ -25,7 +25,8 @@ import edu.cornell.med.icb.goby.algorithmic.data.SamplePairEnumerator;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to derive empirical p-values from discrete observed null distributions.
@@ -40,7 +41,7 @@ public class EmpiricalPValueEstimator {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(EmpiricalPValueEstimator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmpiricalPValueEstimator.class);
 
     private StatisticAdaptor statAdaptor;
     private String serializedFilename;

@@ -24,11 +24,12 @@ import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Random;
@@ -41,7 +42,7 @@ import static junit.framework.Assert.*;
  *         Time: 6:53 PM
  */
 public class TestCountsReader {
-    private static final Logger LOG = Logger.getLogger(TestCountsReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestCountsReader.class);
     private static final String BASE_TEST_DIR = "test-results/counts/";
     private CountsReader reader;
 
@@ -214,8 +215,7 @@ public class TestCountsReader {
         int lastSkipToPos = -1;
         try {
             ProgressLogger pg = new ProgressLogger(LOG);
-            pg.priority= Level.INFO;
-            final double start = maxPos * .95;
+              final double start = maxPos * .95;
             final int end = maxPos + 10;
             pg.expectedUpdates = (long) (end - start)/99;
 

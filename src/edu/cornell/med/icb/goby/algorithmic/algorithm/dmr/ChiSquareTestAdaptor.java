@@ -26,8 +26,9 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.stat.inference.ChiSquareTest;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.rosuda.JRI.Rengine;
+import org.slf4j.LoggerFactory;
 
 /**
  * Computes -log10(chi square p-value)
@@ -41,7 +42,7 @@ public class ChiSquareTestAdaptor extends AbstractMethylationAdapter {
     private static final long serialVersionUID = -4127089751953478896L;
 
     boolean ignorePair = false;
-    private static final Logger LOG = Logger.getLogger(ChiSquareTestAdaptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ChiSquareTestAdaptor.class);
 
     public ChiSquareTestAdaptor() {
 
@@ -81,7 +82,7 @@ public class ChiSquareTestAdaptor extends AbstractMethylationAdapter {
 
             LOG.error("expected:" + DoubleArrayList.wrap(expectedCounts).toString());
             LOG.error("observed:" + LongArrayList.wrap(observedCounts).toString());
-            LOG.error(e);
+            LOG.error(e.getMessage());
             pValue = 1.0;
             setIgnorePair(true);
         } catch (MathException e) {

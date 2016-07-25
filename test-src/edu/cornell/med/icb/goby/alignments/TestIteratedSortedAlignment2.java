@@ -26,7 +26,7 @@ import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.File;
@@ -36,6 +36,7 @@ import java.util.Arrays;
 import edu.cornell.med.icb.io.TsvToFromMap;
 import edu.cornell.med.icb.maps.LinkedHashToMultiTypeMap;
 import edu.cornell.med.icb.iterators.TsvLineIterator;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -59,7 +60,7 @@ public class TestIteratedSortedAlignment2 {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(TestIteratedSortedAlignment2.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestIteratedSortedAlignment2.class);
 
     // TODO: test the refPositions in an insertion that the refPositions within the insertion
     // TODO: are constant AND that it matches the refPosition just before the insertion, if

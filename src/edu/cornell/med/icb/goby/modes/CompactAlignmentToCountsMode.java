@@ -35,7 +35,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -84,7 +85,7 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
     private String countArchiveModifier = COUNT_ARCHIVE_MODIFIER_DEFAULT;
 
     private WeightParameters weightParams;
-    private static final Logger LOG = Logger.getLogger(CompactAlignmentToCountsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CompactAlignmentToCountsMode.class);
     private boolean verbose;
     private boolean filterAmbiguousReads;
 
@@ -173,7 +174,7 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
     @Override
     public void execute() throws IOException {
         final ProgressLogger progress = new ProgressLogger(LOG);
-        progress.priority = Level.INFO;
+
         progress.expectedUpdates = basenames.length;
         progress.itemsName = "basenames";
         progress.start();

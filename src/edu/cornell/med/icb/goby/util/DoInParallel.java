@@ -19,7 +19,8 @@
 package edu.cornell.med.icb.goby.util;
 
 import edu.rit.pj.ParallelTeam;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to support parallel processing of a set of files.
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
 public abstract class DoInParallel {
     private ParallelTeam team;
     private boolean parallel;
-    protected static final Logger LOG = Logger.getLogger(DoInParallel.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(DoInParallel.class);
     private int currentlyActive;
     private int numThreads = -1;
 

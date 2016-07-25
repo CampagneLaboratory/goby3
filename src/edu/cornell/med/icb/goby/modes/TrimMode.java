@@ -33,7 +33,8 @@ import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -58,7 +59,7 @@ public class TrimMode extends AbstractGobyMode {
 
     private String inputFilename;
     private String outputFilename;
-    private static final Logger LOG = Logger.getLogger(TrimMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrimMode.class);
     private byte[] buffer = new byte[10000];
     private String adapterFilename;
     private boolean complementAdapters;

@@ -23,7 +23,8 @@ import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMRecord;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 
@@ -39,7 +40,7 @@ public class BufferedSortingSamBamWriter implements SAMFileWriter {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(BufferedSortingSamBamWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BufferedSortingSamBamWriter.class);
 
     private final SAMFileWriter delegate;
     private final ObjectHeapPriorityQueue<SAMRecord> heap;

@@ -25,7 +25,8 @@ import edu.cornell.med.icb.goby.modes.ConcatenateAlignmentMode;
 import edu.cornell.med.icb.util.VersionUtils;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Date;
@@ -215,7 +216,7 @@ public class UpgradeTo1_9_8_2 {
 /**
  * Used to log debug and informational messages.
  */
-private static final Logger LOG = Logger.getLogger(AlignmentReaderImpl.class);
+private static final Logger LOG = LoggerFactory.getLogger(AlignmentReaderImpl.class);
 
     public void setSilent(boolean silent) {
         this.verbose = !silent;

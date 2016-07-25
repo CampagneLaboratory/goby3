@@ -30,9 +30,10 @@ import junit.framework.Assert;
 import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +49,7 @@ import static org.junit.Assert.*;
  */
 public class TestSamRecordParser {
 
-    private static final Logger LOG = Logger.getLogger(TestSamRecordParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestSamRecordParser.class);
 
     private static final String BASE_TEST_INPUT_DIR = "test-data/splicedsamhelper";
     private static final String BASE_TEST_OUTPUT_DIR = "test-results/splicedsamhelper";

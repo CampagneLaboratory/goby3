@@ -23,7 +23,8 @@ import com.martiansoftware.jsap.JSAPResult;
 import edu.cornell.med.icb.goby.alignments.IterateSortedAlignmentsToPileup;
 import edu.cornell.med.icb.goby.alignments.AlignmentReaderImpl;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceCache;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,7 +46,7 @@ public class AlignmentToPileupMode extends AbstractGobyMode {
     private static final String MODE_DESCRIPTION =
             "This mode writes a region of an alignment as a sequence alignemnt in FASTA or other outputFormat. (Since Goby 1.9.2).";
 
-    private static final Logger LOG = Logger.getLogger(AlignmentToPileupMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AlignmentToPileupMode.class);
     private String[] inputFilenames;
     private String outputFile;
     private int[] readerIndexToGroupIndex;

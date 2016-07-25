@@ -22,7 +22,8 @@ import com.martiansoftware.jsap.JSAPException;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionRegistry;
 import edu.cornell.med.icb.util.VersionUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -35,7 +36,7 @@ public class GobyDriver extends GenericToolsDriver {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(GobyDriver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GobyDriver.class);
 
     private static final String DRIVER_JAR_NAME = "goby.jar";
 

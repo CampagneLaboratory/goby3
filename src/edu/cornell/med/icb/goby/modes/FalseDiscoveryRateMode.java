@@ -32,7 +32,8 @@ import it.unimi.dsi.fastutil.objects.*;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Collections;
@@ -106,9 +107,8 @@ public class FalseDiscoveryRateMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args)
@@ -286,8 +286,6 @@ public class FalseDiscoveryRateMode extends AbstractGobyMode {
                     selectedInfoFieldGlobalIndices.add(selectedField.globalFieldIndex);
                 }
                 ProgressLogger pg = new ProgressLogger(LOG);
-
-                pg.priority = org.apache.log4j.Level.INFO;
                 pg.itemsName = "line";
                 pg.displayFreeMemory = true;
                 pg.start();
@@ -782,7 +780,7 @@ public class FalseDiscoveryRateMode extends AbstractGobyMode {
         printer.flush();
     }
 
-    private static final Logger LOG = Logger.getLogger(FalseDiscoveryRateMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FalseDiscoveryRateMode.class);
 
     private ObjectList<String> getTSVColumns(final String[] inputFiles) throws IOException {
         ObjectArrayList<String> columns = new ObjectArrayList<String>();
@@ -815,9 +813,8 @@ public class FalseDiscoveryRateMode extends AbstractGobyMode {
      * Main method.
      *
      * @param args command line args.
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
-     * @throws java.io.IOException error parsing or executing.
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
+     * @throws java.io.IOException                    error parsing or executing.
      */
 
     public static void main

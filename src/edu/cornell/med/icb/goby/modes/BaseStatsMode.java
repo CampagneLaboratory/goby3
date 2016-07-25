@@ -28,7 +28,8 @@ import edu.cornell.med.icb.goby.util.motifs.SubSequenceMotifMatcher;
 import it.unimi.dsi.fastutil.io.FastBufferedOutputStream;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
@@ -74,7 +75,7 @@ public class BaseStatsMode extends AbstractGobyMode {
         return MODE_DESCRIPTION;
     }
 
-    private static final Logger LOG = Logger.getLogger(BaseStatsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseStatsMode.class);
 
     /**
      * Configure.
