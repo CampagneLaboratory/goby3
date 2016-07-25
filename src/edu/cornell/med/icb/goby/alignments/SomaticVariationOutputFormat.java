@@ -19,6 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.campagnelab.dl.model.utils.BayesCalibrator;
 import org.campagnelab.dl.model.utils.CalcCalibrator;
+import org.campagnelab.dl.model.utils.FDREstimator;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.deeplearning4j.earlystopping.saver.LocalFileModelSaver;
@@ -61,12 +62,22 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
 
     private boolean ADD_BAYES = true;
+    private boolean ADD_FDR = true;
+
+    private static String GOBY_HOME;
     public static final DynamicOptionClient doc() {
         return doc;
     }
+    static {
+        GOBY_HOME = System.getenv("GOBY_HOME");
+        if (GOBY_HOME == null){
+            System.out.println("Goby can't find the GOBY_HOME folder. Are you running goby with the goby bash script?");
+            throw new RuntimeException("GOBY_HOME path variable not defined in java environment. Please run goby with its bash script.");
+        }
+    }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:/Users/rct66/lab_repos/VariationAnalysis/models/sortedmapstest" //${GOBY_HOME}/models/todo
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:" + GOBY_HOME + "/models/somatic-variation/traditional-1469226748641"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -86,9 +97,18 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
      */
     private int[] genotypeSomaticProbability;
     /**
+     * A probability score for the somatic site. Larger values (closer to 1) indicate more confidence from
+     * the neural network that a variation is not present.
+     */
+    private int[] genotypeSomaticProbabilityUnMut;
+    /**
+     * A false discovery estimate for the somatic site. Provides error rate if threshold is placed at the site's model probability.
+     */
+    private int[] fdrProbabilityIdxs;
+    /**
      * An adjusted probability score for the somatic site. Intended to provide a true prediction probability with bayes theorem.
      */
-    private int[] calibrateProbability;
+    private int[] bayesProbabilityIdxs;
     /**
      * If a somatic candidate has more bases in a parent that this threshold, the candidate is no1466805887521
      */
@@ -155,7 +175,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private int igvFieldIndex;
     private String modelPath;
     private SomaticModel model;
-    private CalcCalibrator calcCalibrator;
+    private CalcCalibrator bayesCalculator;
+    private CalcCalibrator fdrEstimator;
 
     /**
      * Hook to install the somatic sample indices for testing.
@@ -191,7 +212,16 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         }
         if (ADD_BAYES){
             try {
-                calcCalibrator = new BayesCalibrator(modelPath,true);
+                bayesCalculator = new BayesCalibrator(modelPath,true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if (ADD_FDR){
+            try {
+                fdrEstimator = new FDREstimator(modelPath,true);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -237,7 +267,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         candidateFrequencyIndex = new int[numSamples];
         maxGenotypeSomaticPriority = new int[numSamples];
         genotypeSomaticProbability = new int[numSamples];
-        calibrateProbability = new int[numSamples];
+        genotypeSomaticProbabilityUnMut = new int[numSamples];
+        bayesProbabilityIdxs = new int[numSamples];
+        fdrProbabilityIdxs = new int[numSamples];
         Arrays.fill(somaticPValueIndex, -1);
 
         for (String sample : somaticSampleIds) {
@@ -255,11 +287,21 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     String.format("model-probability[%s]", sample),
                     1, ColumnType.Float,
                     "Probability score of a somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
+            genotypeSomaticProbabilityUnMut[sampleIndex] = statsWriter.defineField("INFO",
+                    String.format("model-unmut-probability[%s]", sample),
+                    1, ColumnType.Float,
+                    "Probability score of no somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
             if (ADD_BAYES){
-                calibrateProbability[sampleIndex] = statsWriter.defineField("INFO",
+                bayesProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-bayes[%s]", sample),
                         1, ColumnType.Float,
                         "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
+            }
+            if (ADD_FDR){
+                fdrProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
+                        String.format("model-fdr[%s]", sample),
+                        1, ColumnType.Float,
+                        "False discovery rate at threshold defined by the model probability of this record.", "statistic", "indexed");
             }
 
         }
@@ -428,7 +470,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             estimatePriority(sampleCounts);
             estimateProbabilty(sampleCounts,list);
             if (ADD_BAYES){
-                calculateBayes(sampleCounts,list);
+                calculate(sampleCounts,list, bayesCalculator, bayesProbabilityIdxs);
+            }
+            if (ADD_FDR){
+                calculate(sampleCounts,list,fdrEstimator, fdrProbabilityIdxs);
             }
             if (isSomaticCandidate()) {
                 statsWriter.writeRecord();
@@ -524,24 +569,26 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             for (int germlineSampleIndex : germlineSampleIndices) {
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
+                statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
             }
         }
 
     }
 
 
-    private void calculateBayes(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
+    private void calculate(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list, CalcCalibrator calculator, int[] fieldIdxArray) {
         for (int somaticSampleIndex : somaticSampleIndices) {
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
                 float prob = prediction.posProb;
-                float bayes = calcCalibrator.calibrateProb(prob);
-                statsWriter.setInfo(calibrateProbability[somaticSampleIndex], bayes);
+                float bayes = calculator.calibrateProb(prob);
+                statsWriter.setInfo(fieldIdxArray[somaticSampleIndex], bayes);
             }
         }
 
     }
+
 
     public void estimatePriority(SampleCountInfo[] sampleCounts) {
 

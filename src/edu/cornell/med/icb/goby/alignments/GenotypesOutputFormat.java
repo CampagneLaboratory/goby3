@@ -29,6 +29,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
+
 /**
  * @author Fabien Campagne
  *         Date: Mar 21, 2011
@@ -60,6 +62,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     public int baseCountFieldIndex;
     private int zygFieldIndex;
     private int altCountsIndex;
+    private int arrayCountsIndex;
 
     public int getFailBaseCountFieldIndex() {
         return failBaseCountFieldIndex;
@@ -88,6 +91,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
         if (ALT_FORMAT){
             altCountsIndex = statsWriter.defineField("FORMAT", "AltCounts", 1, ColumnType.String, "AltCounts","altcounts");
+            arrayCountsIndex = statsWriter.defineField("FORMAT", "ArrayCounts", 1, ColumnType.String, "ArrayCounts","arraycounts");
         }
         zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity","zygosity");
         statsWriter.defineSamples(samples);
@@ -153,6 +157,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
         if (ALT_FORMAT){
             writeAltCounts(sampleCounts);
+            writeCountsArray(sampleCounts);
         }
     }
 
@@ -161,6 +166,19 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             SampleCountInfo sci = sampleCounts[sampleIndex];
             String alt = sci.toString().replace("\n","");
             statsWriter.setSampleValue(altCountsIndex, sampleIndex, alt);
+        }
+    }
+
+
+    protected void writeCountsArray(SampleCountInfo[] sampleCounts) {
+        for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
+            SampleCountInfo sci = sampleCounts[sampleIndex];
+            int numCounts = sci.getGenotypeMaxIndex();
+            int[] counts = new int[numCounts];
+            for (int genotypeIndex = 0; genotypeIndex < numCounts; genotypeIndex++) {
+                counts[genotypeIndex] += sci.getGenotypeCount(genotypeIndex, true) + sci.getGenotypeCount(genotypeIndex, false);
+            }
+            statsWriter.setSampleValue(arrayCountsIndex, sampleIndex, Arrays.toString(counts));
         }
     }
 
