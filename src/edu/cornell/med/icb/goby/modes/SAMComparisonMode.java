@@ -37,7 +37,6 @@ import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import org.apache.log4j.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -272,7 +271,7 @@ public class SAMComparisonMode extends AbstractGobyMode {
     @Override
     public void execute() throws IOException {
         // don't even dare go through the debugging code if log4j was not configured. The debug code
-        debug = Util.log4JIsConfigured();
+        debug =false;
 
         if (!sourceBamFile.exists()) {
             System.err.println("--source-bam SAM/BAM file couldn't be found " + sourceBamFile.toString());
