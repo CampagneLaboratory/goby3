@@ -70,10 +70,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         return doc;
     }
     static {
-        GOBY_HOME = System.getenv("GOBY_HOME");
+        //GOBY_HOME = System.getenv("GOBY_HOME");
+        GOBY_HOME="/Users/fac2003/IdeaProjects/git/goby";
         if (GOBY_HOME == null){
             System.out.println("Goby can't find the GOBY_HOME folder. Are you running goby with the goby bash script?");
-            throw new RuntimeException("GOBY_HOME path variable not defined in java environment. Please run goby with its bash script.");
+            throw new RuntimeException("Unable to load probability model with path %s. GOBY_HOME path variable not defined in java environment. Please run goby with its bash script or specify another model.");
         }
     }
     @RegisterThis
@@ -202,7 +203,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         genotypeFormatter.defineGenotypeField(statsWriter);
 
         covInfo = covInfo != null ? covInfo : mode.getCovariateInfo();
-
+        if( covInfo==null) {
+            System.err.println("A covariate file must be provided.");
+            System.exit(1);
+        }
         //get model ready
         String customPath = doc.getString("model-path");
         modelPath = (customPath=="")?modelPath:customPath;
@@ -229,9 +233,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 e.printStackTrace();
             }
         }
-
-
-
 
 
         numSamples = samples.length;
