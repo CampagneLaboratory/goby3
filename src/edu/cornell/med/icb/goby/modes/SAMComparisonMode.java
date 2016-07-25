@@ -36,7 +36,9 @@ import it.unimi.dsi.logging.ProgressLogger;
 import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,7 +54,7 @@ public class SAMComparisonMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SAMComparisonMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SAMComparisonMode.class);
 
     /**
      * The mode name.

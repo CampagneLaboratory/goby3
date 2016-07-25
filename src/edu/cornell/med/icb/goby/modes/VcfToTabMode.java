@@ -28,7 +28,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.zip.GZIPOutputStream;
@@ -59,7 +60,7 @@ public class VcfToTabMode extends AbstractGobyMode {
     private String[] inputFiles;
     private String[] selectedColumns;
 
-    private static final Logger LOG = Logger.getLogger(VcfToTabMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VcfToTabMode.class);
     private final ObjectArraySet<String> selectedInfoFieldIds = new ObjectArraySet<String>();
     private final ObjectArraySet<String> selectedFormatFieldIds = new ObjectArraySet<String>();
 
@@ -171,7 +172,7 @@ public class VcfToTabMode extends AbstractGobyMode {
                     IntSet selectedCombinedFieldGlobalIndices = new IntArraySet();
                     selectedCombinedFieldGlobalIndices.addAll(selectedInfoFieldGlobalIndices);
                     selectedCombinedFieldGlobalIndices.addAll(selectedFormatFieldGlobalIndices);
-                    pg.priority = org.apache.log4j.Level.INFO;
+
                     pg.itemsName = "line";
                     pg.displayFreeMemory = true;
                     pg.start();

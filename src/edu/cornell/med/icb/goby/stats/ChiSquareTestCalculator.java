@@ -26,7 +26,8 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.stat.inference.ChiSquareTest;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the two-tailed chi square test P-value for an observed count difference between comparison groups
@@ -37,7 +38,7 @@ import org.apache.log4j.Logger;
  *         Time: 7:06:31 PM
  */
 public class ChiSquareTestCalculator extends StatisticCalculator {
-    private static final Logger LOG = Logger.getLogger(ChiSquareTestCalculator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ChiSquareTestCalculator.class);
 
     public ChiSquareTestCalculator(final DifferentialExpressionResults results) {
         this();
@@ -119,7 +120,7 @@ public class ChiSquareTestCalculator extends StatisticCalculator {
             LOG.error("elementId:" + info.getElementId());
             LOG.error("expected:" + DoubleArrayList.wrap(expectedCounts).toString());
             LOG.error("observed:" + LongArrayList.wrap(observedCounts).toString());
-            LOG.error(e);
+            LOG.error(e.getMessage());
             pValue = 1;
         } catch (MathException e) {
             e.printStackTrace();

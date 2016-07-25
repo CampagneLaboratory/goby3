@@ -24,6 +24,7 @@ import edu.cornell.med.icb.goby.alignments.*;
 import edu.cornell.med.icb.goby.reads.DualRandomAccessSequenceCache;
 import edu.cornell.med.icb.goby.reads.QualityEncoding;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import edu.cornell.med.icb.util.VersionUtils;
@@ -33,7 +34,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.logging.ProgressLogger;
 import htsjdk.samtools.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class CompactToSAMMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(CompactToSAMMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CompactToSAMMode.class);
 
     private static final DateFormat GOBY_DATE_FORMAT = new SimpleDateFormat("dd:MMM:yyyy");
 
@@ -251,7 +253,7 @@ public class CompactToSAMMode extends AbstractGobyMode {
 
     @Override
     public void execute() throws IOException {
-        debug = Util.log4JIsConfigured();
+        debug = LogIsConfigured.isConfigured();
         queryIndexToFragmentsMap = new Int2ObjectAVLTreeMap<Int2ObjectMap<ExportableAlignmentEntryData>>();
 
         final AlignmentReader gobyReader = new AlignmentReaderImpl(inputBasename);

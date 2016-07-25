@@ -28,7 +28,8 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class InferSexFromAlignmentsMode extends AbstractGobyMode {
     private String optionalOutputFile;
 
 
-    private static final Logger LOG = Logger.getLogger(InferSexFromAlignmentsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InferSexFromAlignmentsMode.class);
     private boolean verbose;
 
 
@@ -125,7 +126,6 @@ public class InferSexFromAlignmentsMode extends AbstractGobyMode {
     @Override
     public void execute() throws IOException {
         final ProgressLogger progress = new ProgressLogger(LOG);
-        progress.priority = Level.INFO;
         progress.expectedUpdates = basenames.length;
         progress.itemsName = "basenames";
         progress.start();

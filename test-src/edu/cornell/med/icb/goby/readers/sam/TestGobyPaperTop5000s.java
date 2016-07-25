@@ -19,9 +19,10 @@
 package edu.cornell.med.icb.goby.readers.sam;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.io.IOException;
  */
 public class TestGobyPaperTop5000s {
 
-    private static final Logger LOG = Logger.getLogger(TestGobyPaperTop5000s.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestGobyPaperTop5000s.class);
 
     private static final String BASE_TEST_INPUT_DIR = "test-data/goby-paper-top-5000s";
     private static final String BASE_TEST_OUTPUT_DIR = "test-results/goby-paper-top-5000s";

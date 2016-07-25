@@ -18,13 +18,15 @@
 
 package edu.cornell.med.icb.goby.readers.sam;
 
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.goby.util.pool.QueueResettableObjectPool;
 import edu.cornell.med.icb.goby.util.pool.Resettable;
 import edu.cornell.med.icb.goby.util.pool.ResettableObjectPoolInterface;
 import it.unimi.dsi.Util;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.lang.MutableString;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ public class GobySamRecord implements Resettable {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(GobySamRecord.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GobySamRecord.class);
 
     private final ResettableObjectPoolInterface<GobySamSegment> gobySamSegmentPool;
     private final ResettableObjectPoolInterface<GobyQuickSeqvar> gobyQuickSeqvarPool;
@@ -72,7 +74,7 @@ public class GobySamRecord implements Resettable {
      * Not for use.
      */
     public GobySamRecord() {
-        debug = Util.log4JIsConfigured();
+        debug = LogIsConfigured.isConfigured();
         gobySamSegmentPool = new QueueResettableObjectPool<GobySamSegment>() {
             @Override
             public GobySamSegment makeObject() {

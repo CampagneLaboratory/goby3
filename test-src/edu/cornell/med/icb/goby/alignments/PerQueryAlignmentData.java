@@ -26,7 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class used to assist with observing sequence variations for an
@@ -38,7 +39,7 @@ public class PerQueryAlignmentData {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(PerQueryAlignmentData.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PerQueryAlignmentData.class);
 
     public String query;           // From compact-reads file
     public int queryLength;        // From compact-reads file, verified against alignment

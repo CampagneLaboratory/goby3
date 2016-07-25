@@ -22,7 +22,8 @@ import edu.cornell.med.icb.goby.alignments.*;
 import edu.cornell.med.icb.goby.util.HeaderUtil;
 import edu.cornell.med.icb.goby.util.WarningCounter;
 import it.unimi.dsi.fastutil.ints.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class HiCMerge {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(HiCMerge.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HiCMerge.class);
 
     public void merge(List<File> inputFiles, String outputFile) throws IOException {
         if (inputFiles.size() != 2) {

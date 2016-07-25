@@ -19,13 +19,14 @@
 package edu.cornell.med.icb.goby.modes;
 
 import edu.cornell.med.icb.goby.reads.QualityEncoding;
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.goby.util.pool.NullResettableObjectPool;
 import edu.cornell.med.icb.goby.util.pool.ResettableObjectPoolInterface;
-import it.unimi.dsi.Util;
+import htsjdk.samtools.SAMRecord;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
-import htsjdk.samtools.SAMRecord;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
  *         Time: 10:51 AM
  */
 public class SplicedSamHelper {
-    private static final Logger LOG = Logger.getLogger(SplicedSamHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SplicedSamHelper.class);
 
     private final boolean debug;
 
@@ -190,7 +191,7 @@ public class SplicedSamHelper {
     public SplicedSamHelper() {
         // don't even dare go through the debugging code if log4j was not configured. The debug code
         // is way too slow to run unintentionally in production!
-        debug = Util.log4JIsConfigured();
+        debug = LogIsConfigured.isConfigured();
         helpers = new ObjectArrayList<SamHelper>();
         reset();
 

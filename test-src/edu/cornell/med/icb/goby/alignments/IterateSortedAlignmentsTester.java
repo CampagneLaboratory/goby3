@@ -25,7 +25,8 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +40,7 @@ public class IterateSortedAlignmentsTester extends IterateSortedAlignments<Objec
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(IterateSortedAlignmentsTester.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IterateSortedAlignmentsTester.class);
 
     public PositionToBasesMap<PerQueryAlignmentData> queryIndexToAlignmentDataMap;
 

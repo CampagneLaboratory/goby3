@@ -40,7 +40,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import htsjdk.samtools.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class SAMToCompactMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SAMToCompactMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SAMToCompactMode.class);
 
     /**
      * The mode name.
@@ -203,7 +204,7 @@ public class SAMToCompactMode extends AbstractGobyMode {
         config.smallestQueryIndex = 0;
         // don't even dare go through the debugging code if log4j was not configured. The debug code
         // is way too slow to run unintentionally in production!
-        config.debug = Util.log4JIsConfigured();
+        config.debug = false;
         DynamicOptionRegistry.register(MessageChunksWriter.doc());
         DynamicOptionRegistry.register(AlignmentWriterImpl.doc());
         DynamicOptionRegistry.register(QueryIndexPermutation.doc());

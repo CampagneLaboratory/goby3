@@ -24,7 +24,8 @@ import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.BitSet;
@@ -42,7 +43,7 @@ import java.util.Properties;
  *         Time: 4:09:55 PM
  */
 public class NonAmbiguousAlignmentReader implements AlignmentReader {
-    private static final Logger LOG = Logger.getLogger(NonAmbiguousAlignmentReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NonAmbiguousAlignmentReader.class);
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(NonAmbiguousAlignmentReader.class,
             "ambiguity-threshold: integer, maximum number of locations (inclusive) a read can match in the genome to be loaded:1"
@@ -114,7 +115,6 @@ public class NonAmbiguousAlignmentReader implements AlignmentReader {
                 numQueries = tmh.getQueryIndices().size();
                 ambiguousQueryIndices = new BitSet(numQueries);
                 pg.expectedUpdates = tmh.getQueryIndices().size();
-                pg.priority = Level.DEBUG;
                 pg.info = "processed %d items";
                 pg.start("start reading TMH for " + basename);
 

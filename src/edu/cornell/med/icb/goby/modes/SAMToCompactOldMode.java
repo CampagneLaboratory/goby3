@@ -34,7 +34,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import htsjdk.samtools.util.CloseableIterator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class SAMToCompactOldMode extends AbstractAlignmentToCompactMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SAMToCompactOldMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SAMToCompactOldMode.class);
 
     /**
      * The mode name.

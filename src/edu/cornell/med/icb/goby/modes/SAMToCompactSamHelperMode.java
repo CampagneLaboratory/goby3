@@ -32,6 +32,7 @@ import edu.cornell.med.icb.goby.compression.MessageChunksWriter;
 import edu.cornell.med.icb.goby.reads.DualRandomAccessSequenceCache;
 import edu.cornell.med.icb.goby.reads.QualityEncoding;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionRegistry;
 import edu.cornell.med.icb.goby.util.dynoptions.RegisterThis;
@@ -43,7 +44,8 @@ import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -63,7 +65,7 @@ public class SAMToCompactSamHelperMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SAMToCompactSamHelperMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SAMToCompactSamHelperMode.class);
 
     /**
      * The mode name.
@@ -195,7 +197,7 @@ public class SAMToCompactSamHelperMode extends AbstractGobyMode {
         this.smallestQueryIndex = 0;
         // don't even dare go through the debugging code if log4j was not configured. The debug code
         // is way too slow to run unintentionally in production!
-        debug = Util.log4JIsConfigured();
+        debug = LogIsConfigured.isConfigured();
         DynamicOptionRegistry.register(MessageChunksWriter.doc());
         DynamicOptionRegistry.register(AlignmentWriterImpl.doc());
         DynamicOptionRegistry.register(QueryIndexPermutation.doc());

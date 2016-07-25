@@ -18,6 +18,8 @@
 
 package edu.cornell.med.icb.goby.util;
 
+import org.slf4j.Logger;
+
 /**
  * Counter to print a specific message up to maxWarnings times.
  *
@@ -57,8 +59,19 @@ public class WarningCounter {
             log.warn(String.format(format, option));
         }
     }
+    public void warn(Logger log, String format, Object... option) {
+        if (warnAgain()) {
+            log.warn(String.format(format, option));
+        }
+    }
 
     public void info(org.apache.commons.logging.Log log, String format, Object... option) {
+        if (warnAgain()) {
+            log.info(String.format(format, option));
+        }
+    }
+
+    public void info(Logger log, String format, Object... option) {
         if (warnAgain()) {
             log.info(String.format(format, option));
         }

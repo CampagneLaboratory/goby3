@@ -20,7 +20,8 @@ package edu.cornell.med.icb.goby.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,30 +35,41 @@ import java.io.OutputStream;
  */
 public class LoggingOutputStream extends OutputStream {
 
-    /** Store data until end of line. */
+    /**
+     * Store data until end of line.
+     */
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-    /** Start of line prefixes of output. */
+    /**
+     * Start of line prefixes of output.
+     */
     private byte[] prefix;
 
-    /** Start of line prefixes of output. */
+    /**
+     * Start of line prefixes of output.
+     */
     private final String prefixStr;
 
-    /** The log level to write logs at. */
+    /**
+     * The log level to write logs at.
+     */
     private final Level logLevel;
 
-    /** The logger to log to. */
+    /**
+     * The logger to log to.
+     */
     private final Logger log;
 
     /**
      * Construct.
+     *
      * @param logAsClass the class to log as
-     * @param logLevel the log level to log at
-     * @param prefixStr the optional prefix that will be put at the front of each log line.
+     * @param logLevel   the log level to log at
+     * @param prefixStr  the optional prefix that will be put at the front of each log line.
      */
     public LoggingOutputStream(
             final Class logAsClass, final Level logLevel, final String prefixStr) {
-        log = Logger.getLogger(logAsClass);
+        log = LoggerFactory.getLogger(logAsClass);
         if (StringUtils.isBlank(prefixStr)) {
             this.prefix = null;
             this.prefixStr = null;
@@ -70,6 +82,7 @@ public class LoggingOutputStream extends OutputStream {
 
     /**
      * Replace __OUTPUT_TAG__ in prefix with this output tag.
+     *
      * @param outputTag the tag to put in the prefix (if the prefix contains "__OUTPUT_TAG__")
      */
     final void setOutputTag(final String outputTag) {
@@ -80,11 +93,14 @@ public class LoggingOutputStream extends OutputStream {
         this.prefix = newPrefixStr.getBytes();
     }
 
-    /** Last character received. */
+    /**
+     * Last character received.
+     */
     private int lastb;
 
     /**
      * Write a character to the output stream. At the end of the line this will log the output.
+     *
      * @param b the character written to the output stream.
      */
     @Override
@@ -96,7 +112,8 @@ public class LoggingOutputStream extends OutputStream {
         if (b == 10) {
             // Ignore blank lines (and if we get CR/LF treat it as one character instead of 2)
             if (lastb != 10) {
-                log.log(logLevel, buffer.toString());
+                // TODO slf4j does not support setting the level programmatically. Default to INFO instead: TRANSITIONALCODE
+                log.info(buffer.toString());
                 buffer.reset();
                 try {
                     if (prefix != null) {

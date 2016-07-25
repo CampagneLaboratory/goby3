@@ -26,7 +26,8 @@ import edu.cornell.med.icb.goby.util.WarningCounter;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class SequenceVariationStats2Mode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SequenceVariationStats2Mode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SequenceVariationStats2Mode.class);
 
 
     /**

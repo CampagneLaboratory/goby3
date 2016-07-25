@@ -27,8 +27,9 @@ import edu.cornell.med.icb.goby.util.motifs.MotifMatcher;
 import edu.cornell.med.icb.goby.util.motifs.SubSequenceMotifMatcher;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.rosuda.JRI.Rengine;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,7 +69,7 @@ public class TestRConnectionMode extends AbstractGobyMode {
         return MODE_DESCRIPTION;
     }
 
-    private static final Logger LOG = Logger.getLogger(TestRConnectionMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestRConnectionMode.class);
 
     /**
      * Configure.

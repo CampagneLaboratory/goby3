@@ -26,7 +26,8 @@ import edu.cornell.med.icb.util.ICBStringUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class SortMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final org.apache.log4j.Logger LOG = Logger.getLogger(SortMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SortMode.class);
 
     /**
      * The mode name.
@@ -516,7 +517,7 @@ public class SortMode extends AbstractGobyMode {
         } else {
             LOG.error("Potentially multiple exceptions follow");
             for (final Throwable t : exceptions) {
-                LOG.error(t);
+                LOG.error(t.getMessage());
             }
         }
 

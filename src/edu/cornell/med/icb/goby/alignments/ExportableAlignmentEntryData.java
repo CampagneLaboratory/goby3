@@ -22,6 +22,7 @@ import com.google.protobuf.ByteString;
 import edu.cornell.med.icb.goby.modes.SamHelper;
 import edu.cornell.med.icb.goby.reads.QualityEncoding;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import it.unimi.dsi.Util;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
@@ -30,7 +31,8 @@ import it.unimi.dsi.fastutil.chars.CharArrayList;
 import it.unimi.dsi.fastutil.chars.CharList;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,7 +48,7 @@ public class ExportableAlignmentEntryData {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(ExportableAlignmentEntryData.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExportableAlignmentEntryData.class);
 
     // This was the maximum acceptable value
     private static final byte UNKNOWN_MAPPING_VALUE = 93;
@@ -102,7 +104,7 @@ public class ExportableAlignmentEntryData {
     public ExportableAlignmentEntryData(final RandomAccessSequenceInterface genome,
                                         final QualityEncoding qualityEncoding,
                                         final DoubleIndexedIdentifier targetIdentifiers) {
-        debug = Util.log4JIsConfigured() && LOG.isDebugEnabled();
+        debug = LogIsConfigured.isConfigured() && LOG.isDebugEnabled();
         this.genome = genome;
         this.qualityEncoding = qualityEncoding;
         this.targetIdentifiers = targetIdentifiers;

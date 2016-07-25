@@ -34,7 +34,8 @@ import it.unimi.dsi.io.FastBufferedReader;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Random;
@@ -70,7 +71,7 @@ public class EmpiricalPMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(EmpiricalPValueEstimator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmpiricalPValueEstimator.class);
 
     private String inputFilename;
     private String outputFilename;

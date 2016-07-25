@@ -22,7 +22,8 @@ import edu.cornell.med.icb.goby.algorithmic.data.EquivalentIndelRegion;
 import edu.cornell.med.icb.goby.alignments.processors.ObservedIndel;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
 import it.unimi.dsi.lang.MutableString;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -40,7 +41,7 @@ public class EquivalentIndelRegionCalculator {
     private static final String GAPS = "----------------------------------------------------------------";
     private int flankRightSize = 4;
     public int flankLeftSize = 4;
-    private static final Logger LOG = Logger.getLogger(EquivalentIndelRegionCalculator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EquivalentIndelRegionCalculator.class);
 
     /**
      * Set an array with the permutation to convert alignment reference indices to genome reference indices.

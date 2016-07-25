@@ -40,7 +40,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
@@ -56,7 +57,7 @@ public class CompactFileStatsMode extends AbstractGobyMode {
     /**
      * Used to log informational and debug messages.
      */
-    private static final Logger LOG = Logger.getLogger(CompactFileStatsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CompactFileStatsMode.class);
     /**
      * The mode name.
      */

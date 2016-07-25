@@ -36,7 +36,8 @@ import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +51,7 @@ import static org.junit.Assert.fail;
  * Configuration for round trip comparison.
  */
 public class RoundTripAlignment {
-    private static final Logger LOG = Logger.getLogger(RoundTripAlignment.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RoundTripAlignment.class);
 
     // make true to quickly debug code (the read sequences will be made of Ns only)
     boolean FAST_GENOME = false;

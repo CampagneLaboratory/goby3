@@ -24,7 +24,8 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -76,7 +77,6 @@ public class UpgradeTo1_9_6 {
         long previousAbsolutePosition = -1;
         ProgressLogger progress = new ProgressLogger(LOG);
         progress.expectedUpdates = indexOffsets.size();
-        progress.priority = Level.INFO;
         progress.start();
         // push the very first entry to the index at offset zero. This is necessary because 1.9.5 did not include
         // offset information and absolute position for the very first entry of the alignment.
@@ -141,7 +141,7 @@ public class UpgradeTo1_9_6 {
 
         Alignments.AlignmentHeader.Builder upgradedHeader = Alignments.AlignmentHeader.newBuilder(header);
         upgradedHeader.setVersion(VersionUtils.getImplementationVersion(UpgradeTo1_9_6.class));
-        FileUtils.moveFile(new File(basename + ".header"), new File(makeBackFilename(basename + ".header",".bak")));
+        FileUtils.moveFile(new File(basename + ".header"), new File(makeBackFilename(basename + ".header", ".bak")));
         GZIPOutputStream headerOutput = new GZIPOutputStream(new FileOutputStream(basename + ".header"));
         try {
             upgradedHeader.build().writeTo(headerOutput);
@@ -153,7 +153,7 @@ public class UpgradeTo1_9_6 {
     private void writeIndex(String basename, LongArrayList indexOffsets, LongArrayList indexAbsolutePositions) throws IOException {
         GZIPOutputStream indexOutput = null;
         try {
-            FileUtils.moveFile(new File(basename + ".index"), new File(makeBackFilename(basename + ".index",".bak")));
+            FileUtils.moveFile(new File(basename + ".index"), new File(makeBackFilename(basename + ".index", ".bak")));
             indexOutput = new GZIPOutputStream(new FileOutputStream(basename + ".index"));
             final Alignments.AlignmentIndex.Builder indexBuilder = Alignments.AlignmentIndex.newBuilder();
             assert (indexOffsets.size() == indexAbsolutePositions.size()) : "index sizes must be consistent.";
@@ -167,14 +167,14 @@ public class UpgradeTo1_9_6 {
     }
 
     private String makeBackFilename(String filename, String ext) {
-            int counter=1;
-            String extCount=ext;
-            while (new File(filename+extCount).exists()) {
-                counter++;
-                extCount=ext+Integer.toString(counter);
-            }
-            return filename+extCount;
+        int counter = 1;
+        String extCount = ext;
+        while (new File(filename + extCount).exists()) {
+            counter++;
+            extCount = ext + Integer.toString(counter);
         }
+        return filename + extCount;
+    }
 
 
     private Alignments.AlignmentEntry fetchFirstEntry(AlignmentReaderImpl reader, long indexOffset) throws IOException {
@@ -186,7 +186,7 @@ public class UpgradeTo1_9_6 {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(AlignmentReaderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AlignmentReaderImpl.class);
 
     public void setSilent(boolean silent) {
         this.verbose = !silent;

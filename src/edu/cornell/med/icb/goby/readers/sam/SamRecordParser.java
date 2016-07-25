@@ -20,6 +20,7 @@ package edu.cornell.med.icb.goby.readers.sam;
 
 import edu.cornell.med.icb.goby.reads.QualityEncoding;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceInterface;
+import edu.cornell.med.icb.goby.util.LogIsConfigured;
 import edu.cornell.med.icb.goby.util.WarningCounter;
 import edu.cornell.med.icb.goby.util.pool.Resettable;
 import htsjdk.samtools.SAMTag;
@@ -31,7 +32,8 @@ import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.util.SequenceUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class SamRecordParser implements Resettable {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SamRecordParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SamRecordParser.class);
 WarningCounter warnOnce=new WarningCounter(1);
     private final GobySamRecord gobySamRecord;
     private final MutableString diffBases;
@@ -59,7 +61,7 @@ WarningCounter warnOnce=new WarningCounter(1);
     private RandomAccessSequenceInterface genome;
 
     public SamRecordParser() {
-        debug = Util.log4JIsConfigured();
+        debug = LogIsConfigured.isConfigured();
 
         qualityEncoding = QualityEncoding.SANGER;
         gobySamRecord = new GobySamRecord();

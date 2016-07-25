@@ -29,7 +29,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -73,7 +74,7 @@ public class LastToCompactMode extends AbstractAlignmentToCompactMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(LastToCompactMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LastToCompactMode.class);
 
     /**
      * Default behavior is to convert both maf and count files.

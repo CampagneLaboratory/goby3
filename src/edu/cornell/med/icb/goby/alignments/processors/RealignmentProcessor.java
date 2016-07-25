@@ -30,7 +30,8 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import it.unimi.dsi.lang.MutableString;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -543,5 +544,5 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         this.genome = genome;
     }
 
-    private static final Logger LOG = Logger.getLogger(RealignmentProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RealignmentProcessor.class);
 }

@@ -36,7 +36,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.io.OutputBitStream;
 import it.unimi.dsi.lang.MutableString;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Random;
@@ -56,7 +57,7 @@ public class RandomAccessSequenceCache implements RandomAccessSequenceInterface 
     private Int2ObjectMap<String> indexToNameMap;
     private ObjectArrayList<byte[]> compressedData;
     private IntList sizes;
-    private static final Logger LOG = Logger.getLogger(RandomAccessSequenceCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RandomAccessSequenceCache.class);
     private String basename;
     /**
      * All queries must be contained within   minRefIndex and maxRefIndex (inclusive).

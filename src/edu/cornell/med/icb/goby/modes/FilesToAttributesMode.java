@@ -21,7 +21,8 @@ package edu.cornell.med.icb.goby.modes;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -51,7 +52,7 @@ public class FilesToAttributesMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(FilesToAttributesMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FilesToAttributesMode.class);
     private String delimiter;
     private String[] attributeNames;
     private String[] filenames;

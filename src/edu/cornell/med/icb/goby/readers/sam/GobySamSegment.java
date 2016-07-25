@@ -24,7 +24,8 @@ import edu.cornell.med.icb.goby.util.pool.ResettableObjectPoolInterface;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.lang.MutableString;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class GobySamSegment implements Resettable {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(GobySamSegment.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GobySamSegment.class);
 
     private ResettableObjectPoolInterface<GobyQuickSeqvar> gobyQuickSeqvarPool;
 
@@ -154,7 +155,7 @@ public class GobySamSegment implements Resettable {
                 debugMessage.append(seqvar);
             }
         }
-        LOG.debug(debugMessage);
+        LOG.debug(debugMessage.toString());
     }
 
     public MutableString debugOutputQuals() {

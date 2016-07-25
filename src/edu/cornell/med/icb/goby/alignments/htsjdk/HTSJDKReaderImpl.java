@@ -21,7 +21,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -40,7 +41,7 @@ public class HTSJDKReaderImpl implements AlignmentReader {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(SAMToCompactMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SAMToCompactMode.class);
 
     DateFormat dateFormatter = new SimpleDateFormat("dd:MMM:yyyy");
     private boolean sorted;

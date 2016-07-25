@@ -29,10 +29,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.bdval.io.compound.CompoundDataInput;
 import org.bdval.io.compound.CompoundDirectoryEntry;
 import org.bdval.io.compound.CompoundFileReader;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Collection;
@@ -224,7 +225,7 @@ public class CountsArchiveReader implements Closeable {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(CountsArchiveReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CountsArchiveReader.class);
 
     private void parseSpecialFile(CompoundDirectoryEntry entry) {
         if ("#stats".equals(entry.getName())) {

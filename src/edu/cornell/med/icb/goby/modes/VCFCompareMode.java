@@ -31,7 +31,8 @@ import it.unimi.dsi.fastutil.objects.*;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -55,7 +56,7 @@ public class VCFCompareMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(VCFCompareMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VCFCompareMode.class);
 
     /**
      * The input files.
@@ -103,9 +104,8 @@ public class VCFCompareMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args)
@@ -254,7 +254,6 @@ public class VCFCompareMode extends AbstractGobyMode {
             int index = 0;
             ProgressLogger pg = new ProgressLogger(LOG);
             pg.displayFreeMemory = true;
-            pg.priority = Level.INFO;
             pg.start();
             try {
 
@@ -400,7 +399,7 @@ public class VCFCompareMode extends AbstractGobyMode {
             }
         }
         System.out.printf("# common positions across files: %d (overlap with larger set: %g %%) " +
-                "(overlap with smaller set: %g%%) %n", commonPositions.size(),
+                        "(overlap with smaller set: %g%%) %n", commonPositions.size(),
                 fraction(commonPositions.size(), maxSize(lines)), fraction(commonPositions.size(), minSize(lines)));
         int sampleIndex = 0;
         for (final SampleStats sampleStat : sampleStats) {
@@ -420,11 +419,11 @@ public class VCFCompareMode extends AbstractGobyMode {
             long numGenotypeAgreements = sampleStat.counters().get("numGenotypeAgreements", 0).getCount();
             long numGenotypeDisagreements = sampleStat.counters().get("numGenotypeDisagreements", 0).getCount();
             System.out.printf("Among the common positions, %d positions (%g %%) had the same genotype, " +
-                    "while %d positions (%g %%) had some disagreements (site not found in the other file, " +
-                    "failure to call one or more alleles, or different genotype called: hard error). \n" +
-                    "Among the differences, %g %% were sites that were not in the other file for that sample, %g %% were failures to call one " +
-                    "allele, %g %% to call two, and %g %% to call more than two. %g %% sites had differences in genotypes " +
-                    "that could not be explained by a failure to call an allele (e.g., G/G vs G/T when the reference is A/A)%n",
+                            "while %d positions (%g %%) had some disagreements (site not found in the other file, " +
+                            "failure to call one or more alleles, or different genotype called: hard error). \n" +
+                            "Among the differences, %g %% were sites that were not in the other file for that sample, %g %% were failures to call one " +
+                            "allele, %g %% to call two, and %g %% to call more than two. %g %% sites had differences in genotypes " +
+                            "that could not be explained by a failure to call an allele (e.g., G/G vs G/T when the reference is A/A)%n",
                     numGenotypeAgreements, fractionCumul(numGenotypeAgreements, numGenotypeDisagreements),
                     numGenotypeDisagreements, fractionCumul(numGenotypeDisagreements, numGenotypeAgreements),
 
@@ -588,9 +587,8 @@ public class VCFCompareMode extends AbstractGobyMode {
      * to and end position.
      *
      * @param args command line arguments
-     * @throws java.io.IOException IO error
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             command line parsing error.
+     * @throws java.io.IOException                    IO error
+     * @throws com.martiansoftware.jsap.JSAPException command line parsing error.
      */
     public static void main(final String[] args) throws IOException, JSAPException {
         new VCFCompareMode().configure(args).execute();

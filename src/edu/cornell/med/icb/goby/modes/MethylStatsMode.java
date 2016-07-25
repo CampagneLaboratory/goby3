@@ -29,7 +29,8 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -69,7 +70,7 @@ public class MethylStatsMode extends AbstractGobyMode {
     private int[] depths = new int[]{5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 300, 500};
     private RandomAccessSequenceCache genome;
     private int[] fragmentLengthBins = new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 350, 400, 450, 500};
-    private static final Logger LOG = Logger.getLogger(MethylStatsMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethylStatsMode.class);
     private String[] inputFilenames;
     private static final boolean QUICK = false;
 
@@ -101,9 +102,8 @@ public class MethylStatsMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args) throws IOException, JSAPException {
@@ -187,7 +187,6 @@ public class MethylStatsMode extends AbstractGobyMode {
             fileProgress.itemsName = "files";
             fileProgress.displayFreeMemory = false;
             fileProgress.count = inputFilenames.length;
-            fileProgress.priority = Level.INFO;
             fileProgress.start("Starting to scan input files..");
             for (String vcfFilename : inputFilenames) {
 
@@ -234,7 +233,6 @@ public class MethylStatsMode extends AbstractGobyMode {
 
                     MethylStats stats = backgroundStats.copy();
                     ProgressLogger pg = new ProgressLogger(LOG);
-                    pg.priority = org.apache.log4j.Level.INFO;
                     pg.itemsName = "sites";
                     pg.displayFreeMemory = true;
                     pg.start("Scanning sites in file " + vcfFilename);
@@ -401,8 +399,6 @@ public class MethylStatsMode extends AbstractGobyMode {
 
     private void scanOneStrand(MethylStats backgroundStats, char strand) {
         ProgressLogger pg = new ProgressLogger(LOG);
-
-        pg.priority = org.apache.log4j.Level.INFO;
         pg.itemsName = "bases";
         pg.displayFreeMemory = true;
         pg.start(String.format("counting genome CpG sites on %c strand.", strand));
@@ -419,7 +415,7 @@ public class MethylStatsMode extends AbstractGobyMode {
             int fragmentLength = -1;
             for (int position = strand == '+' ? 0 :
                     genomeSequenceSize - 1; strand == '+' ? position < genomeSequenceSize :
-                    position >= 0; position += strand == '+' ? 1 : -1) {
+                         position >= 0; position += strand == '+' ? 1 : -1) {
 
                 currentBase = genome.get(sequenceIndex, position);
                 pg.lightUpdate();
@@ -784,9 +780,8 @@ public class MethylStatsMode extends AbstractGobyMode {
      * Main method.
      *
      * @param args command line args.
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
-     * @throws java.io.IOException error parsing or executing.
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
+     * @throws java.io.IOException                    error parsing or executing.
      */
     public static void main
     (

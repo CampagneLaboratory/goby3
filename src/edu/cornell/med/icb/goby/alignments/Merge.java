@@ -32,7 +32,8 @@ import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -65,7 +66,7 @@ public class Merge {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(Merge.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Merge.class);
     private String geneTranscriptMapFile;
     private boolean verbose;
     private int k;
@@ -356,7 +357,6 @@ public class Merge {
         boolean foundDepth = false;
 
         ProgressLogger pg = new ProgressLogger(LOG);
-        pg.priority = Level.DEBUG;
         pg.expectedUpdates = basenames.length;
         pg.start("TMH third pass");
 

@@ -11,7 +11,8 @@ import it.unimi.dsi.fastutil.ints.Int2ByteMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.logging.impl.Log4JLogger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ public class ConvertSamBAMReadToGobyAlignment {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(ConvertSamBAMReadToGobyAlignment.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConvertSamBAMReadToGobyAlignment.class);
 
     private boolean hasResult;
     private AlignmentTooManyHitsWriter tmhWriter;

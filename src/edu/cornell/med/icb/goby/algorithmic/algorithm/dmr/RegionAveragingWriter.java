@@ -31,7 +31,8 @@ import edu.cornell.med.icb.goby.util.dynoptions.DynamicOptionClient;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.NullWriter;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.plaf.synth.Region;
 import java.io.FileWriter;
@@ -67,7 +68,7 @@ public class RegionAveragingWriter extends VCFWriter implements RegionWriter {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = Logger.getLogger(RegionAveragingWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RegionAveragingWriter.class);
 
 
     public static final DynamicOptionClient doc() {
