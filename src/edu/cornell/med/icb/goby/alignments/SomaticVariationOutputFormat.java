@@ -471,13 +471,14 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             estimateSomaticFrequencies(sampleCounts);
             estimatePriority(sampleCounts);
             estimateProbabilty(sampleCounts,list);
-            if (ADD_BAYES){
-                calculate(sampleCounts,list, bayesCalculator, bayesProbabilityIdxs);
-            }
-            if (ADD_FDR){
-                calculate(sampleCounts,list,fdrEstimator, fdrProbabilityIdxs);
-            }
+
             if (isSomaticCandidate()) {
+                if (ADD_BAYES){
+                    calculate(sampleCounts,list, bayesCalculator, bayesProbabilityIdxs);
+                }
+                if (ADD_FDR){
+                    calculate(sampleCounts,list,fdrEstimator, fdrProbabilityIdxs);
+                }
                 statsWriter.writeRecord();
             }
 
@@ -572,6 +573,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
+               // do not write the site if it is predicted not somatic.
+                if (prediction.posProb<0.5) {
+                   Arrays.fill( isSomaticCandidate[somaticSampleIndex],false);
+                }
             }
         }
 
@@ -588,7 +593,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 statsWriter.setInfo(fieldIdxArray[somaticSampleIndex], bayes);
             }
         }
-
     }
 
 
