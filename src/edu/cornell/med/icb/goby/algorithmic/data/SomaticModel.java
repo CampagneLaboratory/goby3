@@ -3,19 +3,11 @@ package edu.cornell.med.icb.goby.algorithmic.data;
 import edu.cornell.med.icb.goby.alignments.DiscoverVariantPositionData;
 import edu.cornell.med.icb.goby.alignments.PositionBaseInfo;
 import edu.cornell.med.icb.goby.alignments.SampleCountInfo;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.bytedeco.javacpp.opencv_ml;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-
-
-import java.io.PrintWriter;
-import java.util.List;
 
 /**
  * Created by rct66 on 6/23/16.
