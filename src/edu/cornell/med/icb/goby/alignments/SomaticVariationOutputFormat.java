@@ -176,6 +176,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     String[] samples;
     private int igvFieldIndex;
     private String modelPath;
+    private String modelPrefix;
     private SomaticModel model;
     private CalcCalibrator bayesCalculator;
     private CalcCalibrator fdrEstimator;
@@ -207,7 +208,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             System.err.println("A covariate file must be provided.");
             System.exit(1);
         }
-        //replace model path GOBY_HOME env variable if necessary
+        //get model ready
         String customPath = doc.getString("model-path");
         if (customPath.contains("${GOBY_HOME}")){
             GOBY_HOME = System.getenv("GOBY_HOME");
@@ -247,6 +248,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 e.printStackTrace();
             }
         }
+
 
         numSamples = samples.length;
         ObjectSet<String> allCovariates = covInfo.getCovariateKeys();
@@ -606,7 +608,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 statsWriter.setInfo(fieldIdxArray[somaticSampleIndex], bayes);
             }
         }
-
     }
 
 
@@ -868,7 +869,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     public void setupR() {
         // this method does nothing. Kept for compatibility with JUnit tests.
     }
-    private SomaticModel getModel(String modelPath) throws IOException {
+
+    //prefix specifies whether to use best or latest model in directory
+    private SomaticModel getModel(String modelPath,String prefix) throws IOException {
 
         //get MAPPER
         FeatureMapper featureMapper = null;
