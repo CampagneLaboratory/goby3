@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.campagnelab.dl.model.utils.BayesCalibrator;
@@ -62,20 +63,20 @@ import java.util.Properties;
 public class SomaticVariationOutputFormat implements SequenceVariationOutputFormat {
 
 
-    private boolean ADD_BAYES = true;
-    private boolean ADD_FDR = true;
+    private boolean addBayes;
+    private boolean addFdr;
+    private double bayesPrior;
 
     private static String GOBY_HOME;
-    private float modelPThreshold;
-
     public static final DynamicOptionClient doc() {
         return doc;
     }
-
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin",
-            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin"
+            "include_fdr:boolean, experimental option to include a False Discovery Rate column in vcf output. For each position, outputs estimated proportion of false positives to all positions with a higher somatic variation likelihood.:false",
+            "include_bayes:boolean, experimental option to produce a true probability of somatic variation with bayes' rule, using a rate of mutation prior.:false",
+            "bayes_prior:double, expected rate of mutation at the somatic site.:2.5e-7"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -174,7 +175,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private String modelPath;
     private String modelPrefix;
     private SomaticModel model;
-    private CalcCalibrator bayesCalculator;
+    private BayesCalibrator bayesCalculator;
     private CalcCalibrator fdrEstimator;
 
     /**
@@ -214,7 +215,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             }
             customPath = customPath.replace("${GOBY_HOME}",GOBY_HOME);
         }
-        this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
+
+        //set optional column vars from doc
+        addBayes = doc.getBoolean("include_bayes");
+        addFdr = doc.getBoolean("include_fdr");
+        bayesPrior = doc.getDouble("bayes_prior");
+
+
         //extract prefix and model directory from model path input.
         String[] modelPathSplit = customPath.split("/");
         String modelName = modelPathSplit[modelPathSplit.length-1];
@@ -229,17 +236,19 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (ADD_BAYES){
             try {
                 bayesCalculator = new BayesCalibrator(modelPath, modelPrefix, true);
-            } catch (Exception e) {
-                LOG.error("Unable to initialize BayesCalibrator.", e);
-                System.exit(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
         if (ADD_FDR){
             try {
                 fdrEstimator = new FDREstimator(modelPath, modelPrefix, true);
-            } catch (Exception e) {
-                LOG.error("Unable to initialize FDREstimator.", e);
-                System.exit(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
 
