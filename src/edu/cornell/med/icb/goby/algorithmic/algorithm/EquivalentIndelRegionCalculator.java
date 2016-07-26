@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class EquivalentIndelRegionCalculator {
 
     RandomAccessSequenceInterface genome;
-    private static final String GAPS = "----------------------------------------------------------------";
+    private static final MutableString GAPS = new MutableString("----------------------------------------------------------------");
     private int flankRightSize = 4;
     public int flankLeftSize = 4;
     private static final Logger LOG = LoggerFactory.getLogger(EquivalentIndelRegionCalculator.class);
@@ -189,15 +189,16 @@ public class EquivalentIndelRegionCalculator {
             // construct the read sequence in the insertion region of the eir:
             to.append(roll(leftExtensions, indel.to()));
             to.append(from);
-
-            from.insert(0, GAPS.subSequence(0, Math.min(indelSize,GAPS.length())));
+            ensureGAPLongEnough(indelSize);
+            from.insert(0, GAPS.subSequence(0, indelSize));
 
         } else
 
         {
             // construct the read sequence in the deletion region of the eir:
             final int length = from.length();
-            to.append(GAPS.subSequence(0, Math.min(GAPS.length(),indelSize)));
+            ensureGAPLongEnough(indelSize);
+            to.append(GAPS.subSequence(0, indelSize));
             to.append(from.subSequence(Math.min(indelSize, length), length));
 
         }
@@ -225,6 +226,12 @@ public class EquivalentIndelRegionCalculator {
         //              debug("flanks: ", result);
         return result;
 
+    }
+
+    private void ensureGAPLongEnough(int indelSize) {
+        while (GAPS.length() < indelSize) {
+            GAPS.append("-");
+        }
     }
 
     final MutableString rollBuffer = new MutableString();
