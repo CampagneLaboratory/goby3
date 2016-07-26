@@ -80,7 +80,9 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     private int indelFlagFieldIndex = -1;
     private boolean siteObserved;
 
-    private boolean ALT_FORMAT = true;
+
+    //only for internal use
+    private boolean ALT_FORMAT = false;
 
 
     public void defineColumns(OutputInfo writer, DiscoverSequenceVariantsMode mode) {
