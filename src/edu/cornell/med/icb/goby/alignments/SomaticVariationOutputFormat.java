@@ -14,7 +14,6 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.campagnelab.dl.model.utils.BayesCalibrator;
@@ -67,19 +66,16 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private boolean ADD_FDR = true;
 
     private static String GOBY_HOME;
+    private float modelPThreshold;
+
     public static final DynamicOptionClient doc() {
         return doc;
     }
-    static {
-        GOBY_HOME = System.getenv("GOBY_HOME");
-        if (GOBY_HOME == null){
-            System.out.println("Goby can't find the GOBY_HOME folder. Are you running goby with the goby bash script?");
-            throw new RuntimeException("GOBY_HOME path variable not defined in java environment. Please run goby with its bash script.");
-        }
-    }
+
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin"
+            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin",
+            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -218,7 +214,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             }
             customPath = customPath.replace("${GOBY_HOME}",GOBY_HOME);
         }
-
+        this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
         //extract prefix and model directory from model path input.
         String[] modelPathSplit = customPath.split("/");
         String modelName = modelPathSplit[modelPathSplit.length-1];
@@ -233,19 +229,17 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (ADD_BAYES){
             try {
                 bayesCalculator = new BayesCalibrator(modelPath, modelPrefix, true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LOG.error("Unable to initialize BayesCalibrator.", e);
+                System.exit(1);
             }
         }
         if (ADD_FDR){
             try {
                 fdrEstimator = new FDREstimator(modelPath, modelPrefix, true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LOG.error("Unable to initialize FDREstimator.", e);
+                System.exit(1);
             }
         }
 
@@ -588,9 +582,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
-               // do not write the site if it is predicted not somatic.
-                if (prediction.posProb<0.5) {
-                   Arrays.fill( isSomaticCandidate[somaticSampleIndex],false);
+                // do not write the site if it is predicted not somatic.
+                if (prediction.posProb < modelPThreshold) {
+                    Arrays.fill(isSomaticCandidate[somaticSampleIndex], false);
                 }
             }
         }
