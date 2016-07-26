@@ -190,7 +190,7 @@ public class EquivalentIndelRegionCalculator {
             to.append(roll(leftExtensions, indel.to()));
             to.append(from);
 
-            from.insert(0, GAPS.subSequence(0, indelSize));
+            from.insert(0, GAPS.subSequence(0, Math.min(indelSize,GAPS.length())));
 
         } else
 
