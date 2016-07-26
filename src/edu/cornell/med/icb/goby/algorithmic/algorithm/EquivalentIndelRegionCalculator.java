@@ -136,7 +136,7 @@ public class EquivalentIndelRegionCalculator {
         result.startPosition = indel.getStart();
         result.endPosition = indel.getEnd();
         result.referenceIndex = referenceIndex;
-        result.readIndices.add( indel.readIndex);
+        result.readIndices.add(indel.readIndex);
         p.setLength(0);
         final boolean insertion = insertionInRead(indel);
         p.append(insertion ? indel.to() : indel.from());
@@ -197,7 +197,7 @@ public class EquivalentIndelRegionCalculator {
         {
             // construct the read sequence in the deletion region of the eir:
             final int length = from.length();
-            to.append(GAPS.subSequence(0, indelSize));
+            to.append(GAPS.subSequence(0, Math.min(GAPS.length(),indelSize)));
             to.append(from.subSequence(Math.min(indelSize, length), length));
 
         }
