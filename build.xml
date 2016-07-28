@@ -115,7 +115,19 @@
 
     <target name="jar-goby" depends="compile"
             description="Create the goby.jar file. Gobies are a large species of fish that include some of the smallest fish. Now, isn't that fitting?">
+        <condition property="isMac">
+            <os family="mac" />
+        </condition>
+
+        <condition property="isWindows">
+            <os family="windows" />
+        </condition>
+
+        <condition property="isUnix">
+            <os family="unix" />
+        </condition>
         <!-- Standalone jar file. -->
+
         <copy file="${config}/log4j-sample.properties" tofile="${classes}/log4j.properties" overwrite="true"
               failonerror="true"/>
         <jar jarfile="${goby-jarfile}">
@@ -156,6 +168,9 @@
                 <include name="slf4j-log4j12-1.7.21.jar"/>
                 <include name="model-utils-1.0.1-SNAPSHOT.jar"/>
                 <include name="dl4j/*.jar"/>
+                <include name="dl4j/native-libs/nd4j-native-0.4.0-windows-x86_64.jar" if="isWindows"/>
+                <include name="dl4j/native-libs/nd4j-native-0.4.0-linux-x86_64.jar" if="isUnix"/>
+                <include name="dl4j/native-libs/nd4j-native-0.4.0-macosx-x86_64.jar" if="isMac"/>
                 <!-- Required by JSAP -->
             </zipgroupfileset>
 
