@@ -24,4 +24,6 @@ grep -v "0/0" mutated-snp-indels.vcf |grep -v '##' |cut -f 1,2,4,5 >true-mutatio
 NUM_READS=10000000
 randomreads.sh build=2 ref=sample.fasta  out=germline-reads.fq reads=${NUM_READS} seed=9484 maxq=40 midq=35 minq=28
 randomreads.sh build=3 ref=mutated-snp-indels.fasta  out=somatic-reads.fq reads=${NUM_READS} seed=232323 maxq=40 midq=35 minq=28
-gzip *-reads.fq
+
+# convert to Goby read format to support parallel alignment:
+goby 1g fasta-to-compact *-reads.fq  --quality-encoding  SANGER --parallel
