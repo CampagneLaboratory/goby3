@@ -66,17 +66,20 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private boolean addBayes;
     private boolean addFdr;
     private double bayesPrior;
-
+    private float modelPThreshold;
     private static String GOBY_HOME;
+
+
     public static final DynamicOptionClient doc() {
         return doc;
     }
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin"
+           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin",
             "include_fdr:boolean, experimental option to include a False Discovery Rate column in vcf output. For each position, outputs estimated proportion of false positives to all positions with a higher somatic variation likelihood.:false",
             "include_bayes:boolean, experimental option to produce a true probability of somatic variation with bayes' rule, using a rate of mutation prior.:false",
-            "bayes_prior:double, expected rate of mutation at the somatic site.:2.5e-7"
+            "bayes_prior:double, expected rate of mutation at the somatic site.:2.5e-7",
+            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -205,6 +208,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             System.err.println("A covariate file must be provided.");
             System.exit(1);
         }
+        this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
         //get model ready
         String customPath = doc.getString("model-path");
         if (customPath.contains("${GOBY_HOME}")){
@@ -233,7 +237,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (ADD_BAYES){
+        if (addBayes){
             try {
                 bayesCalculator = new BayesCalibrator(modelPath, modelPrefix, true);
             } catch (IOException e) {
@@ -242,7 +246,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 e.printStackTrace();
             }
         }
-        if (ADD_FDR){
+        if (addFdr){
             try {
                 fdrEstimator = new FDREstimator(modelPath, modelPrefix, true);
             } catch (IOException e) {
@@ -311,13 +315,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     String.format("model-unmut-probability[%s]", sample),
                     1, ColumnType.Float,
                     "Probability score of no somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
-            if (ADD_BAYES){
+            if (addBayes){
                 bayesProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-bayes[%s]", sample),
                         1, ColumnType.Float,
                         "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
             }
-            if (ADD_FDR){
+            if (addFdr){
                 fdrProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-fdr[%s]", sample),
                         1, ColumnType.Float,
@@ -491,10 +495,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             estimateProbabilty(sampleCounts,list);
 
             if (isSomaticCandidate()) {
-                if (ADD_BAYES){
+                if (addBayes){
                     calculate(sampleCounts,list, bayesCalculator, bayesProbabilityIdxs);
                 }
-                if (ADD_FDR){
+                if (addFdr){
                     calculate(sampleCounts,list,fdrEstimator, fdrProbabilityIdxs);
                 }
                 statsWriter.writeRecord();
