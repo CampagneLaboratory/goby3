@@ -324,15 +324,8 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
                 }
                 break;
             case SOMATIC_VARIATIONS:
-                //TODO: reenable filters?
-                /*genotypeFilters.add(new QualityScoreFilter());
-                genotypeFilters.add(new StrandBiasFilter());
-                if (callIndels) {
-                    genotypeFilters.add(new EntropicIndelArtifactFilter());
-                    genotypeFilters.add(new RemoveIndelArtifactsFilter());
-                    genotypeFilters.add(new CommonIndelArtifactFilter());
-                }
-                */
+                // the deep learning proabilistic model was trained  without ad-hoc filters. Also apply no filters when
+                // predicting.
                 break;
             case INDEL_COUNTS:
                 genotypeFilters.add(new QualityScoreFilter());
