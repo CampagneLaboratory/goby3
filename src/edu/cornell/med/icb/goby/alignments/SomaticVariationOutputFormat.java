@@ -14,23 +14,21 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
+import org.apache.commons.io.IOUtils;
 import org.campagnelab.dl.model.utils.BayesCalibrator;
 import org.campagnelab.dl.model.utils.CalcCalibrator;
 import org.campagnelab.dl.model.utils.FDREstimator;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.model.utils.models.ModelLoader;
-import org.deeplearning4j.earlystopping.saver.LocalFileModelSaver;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -66,20 +64,21 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private boolean addBayes;
     private boolean addFdr;
     private double bayesPrior;
-    private float modelPThreshold;
-    private static String GOBY_HOME;
 
+    private static String GOBY_HOME;
+    private float modelPThreshold;
 
     public static final DynamicOptionClient doc() {
         return doc;
     }
+
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-           "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin",
+            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin",
+            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99",
             "include_fdr:boolean, experimental option to include a False Discovery Rate column in vcf output. For each position, outputs estimated proportion of false positives to all positions with a higher somatic variation likelihood.:false",
-            "include_bayes:boolean, experimental option to produce a true probability of somatic variation with bayes' rule, using a rate of mutation prior.:false",
-            "bayes_prior:double, expected rate of mutation at the somatic site.:2.5e-7",
-            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
+            "include_bayes:boolean, experimental option to produce a true probability of somatic variation with bayes' rule, using a rate of mutation prior.:false"
+         // TODO  not present in variation-analysis 1.0.1 jar, reenable if needed when new jar in Goby:    "bayes_prior:double, expected rate of mutation at the somatic site.:2.5e-7"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -204,55 +203,55 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         genotypeFormatter.defineGenotypeField(statsWriter);
 
         covInfo = covInfo != null ? covInfo : mode.getCovariateInfo();
-        if( covInfo==null) {
+        if (covInfo == null) {
             System.err.println("A covariate file must be provided.");
             System.exit(1);
         }
-        this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
         //get model ready
         String customPath = doc.getString("model-path");
-        if (customPath.contains("${GOBY_HOME}")){
+        if (customPath.contains("${GOBY_HOME}")) {
             GOBY_HOME = System.getenv("GOBY_HOME");
-            if (GOBY_HOME == null){
+            if (GOBY_HOME == null) {
                 System.out.println("Goby can't find the GOBY_HOME folder. Are you running goby with the goby bash script?");
                 throw new RuntimeException("GOBY_HOME path variable not defined in java environment. Please run goby with its bash script.");
             }
-            customPath = customPath.replace("${GOBY_HOME}",GOBY_HOME);
+            customPath = customPath.replace("${GOBY_HOME}", GOBY_HOME);
         }
 
         //set optional column vars from doc
-        addBayes = doc.getBoolean("include_bayes");
-        addFdr = doc.getBoolean("include_fdr");
-        bayesPrior = doc.getDouble("bayes_prior");
+        this.addBayes = doc.getBoolean("include_bayes");
+        this.addFdr = doc.getBoolean("include_fdr");
+        this.bayesPrior = doc.getDouble("bayes_prior");
+        this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
 
         //extract prefix and model directory from model path input.
         String[] modelPathSplit = customPath.split("/");
-        String modelName = modelPathSplit[modelPathSplit.length-1];
-        modelPrefix = modelName.substring(0,modelName.length()-"Model.bin".length());
-        modelPathSplit[modelPathSplit.length-1] = "";
-        modelPath = customPath.substring(0,customPath.length()-modelName.length());
+        String modelName = modelPathSplit[modelPathSplit.length - 1];
+        modelPrefix = modelName.substring(0, modelName.length() - "Model.bin".length());
+        modelPathSplit[modelPathSplit.length - 1] = "";
+        modelPath = customPath.substring(0, customPath.length() - modelName.length());
         try {
-            model = getModel(modelPath,modelPrefix);
+            model = getModel(modelPath, modelPrefix);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (addBayes){
+
+
+        if (addBayes) {
             try {
                 bayesCalculator = new BayesCalibrator(modelPath, modelPrefix, true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                         } catch (Exception e) {
+                LOG.error("Unable to initialize BayesCalibrator.", e);
+                System.exit(1);
             }
         }
-        if (addFdr){
+        if (addFdr) {
             try {
                 fdrEstimator = new FDREstimator(modelPath, modelPrefix, true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LOG.error("Unable to initialize FDREstimator.", e);
+                System.exit(1);
             }
         }
 
@@ -315,13 +314,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     String.format("model-unmut-probability[%s]", sample),
                     1, ColumnType.Float,
                     "Probability score of no somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
-            if (addBayes){
+            if (addBayes) {
                 bayesProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-bayes[%s]", sample),
                         1, ColumnType.Float,
                         "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
             }
-            if (addFdr){
+            if (addFdr) {
                 fdrProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
                         String.format("model-fdr[%s]", sample),
                         1, ColumnType.Float,
@@ -466,7 +465,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                             final int groupIndexA, final int groupIndexB) {
         updateSampleProportions();
         this.pos = position;
-        this.referenceIndex=referenceIndex;
+        this.referenceIndex = referenceIndex;
         position = position + 1; // report  1-based position
         genotypeFormatter.fillVariantCountArrays(sampleCounts);
 
@@ -492,14 +491,14 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (isPossibleSomaticVariation(sampleCounts)) {
             estimateSomaticFrequencies(sampleCounts);
             estimatePriority(sampleCounts);
-            estimateProbabilty(sampleCounts,list);
+            estimateProbabilty(sampleCounts, list);
 
             if (isSomaticCandidate()) {
-                if (addBayes){
-                    calculate(sampleCounts,list, bayesCalculator, bayesProbabilityIdxs);
+                if (addBayes) {
+                    calculate(sampleCounts, list, bayesCalculator, bayesProbabilityIdxs);
                 }
-                if (addFdr){
-                    calculate(sampleCounts,list,fdrEstimator, fdrProbabilityIdxs);
+                if (addFdr) {
+                    calculate(sampleCounts, list, fdrEstimator, fdrProbabilityIdxs);
                 }
                 statsWriter.writeRecord();
             }
@@ -592,7 +591,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         for (int somaticSampleIndex : somaticSampleIndices) {
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
-                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
+                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts, referenceIndex, pos, list, germlineSampleIndex, somaticSampleIndex);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
                 // do not write the site if it is predicted not somatic.
@@ -609,7 +608,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         for (int somaticSampleIndex : somaticSampleIndices) {
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
-                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts,referenceIndex,pos,list,germlineSampleIndex,somaticSampleIndex);
+                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts, referenceIndex, pos, list, germlineSampleIndex, somaticSampleIndex);
                 float prob = prediction.posProb;
                 float bayes = calculator.calibrateProb(prob);
                 statsWriter.setInfo(fieldIdxArray[somaticSampleIndex], bayes);
@@ -878,7 +877,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
 
     //prefix specifies whether to use best or latest model in directory
-    private SomaticModel getModel(String modelPath,String prefix) throws IOException {
+    private SomaticModel getModel(String modelPath, String prefix) throws IOException {
 
         //get MAPPER
         FeatureMapper featureMapper = null;
@@ -898,30 +897,17 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             // Create a new instance from the loaded class
             Constructor constructor = loadedMyClass.getConstructor();
             featureMapper = (FeatureMapper) constructor.newInstance();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Unable to load class: ", e);
+            return null;
         } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            IOUtils.closeQuietly(input);
         }
 
 
         ModelLoader modelLoader = new ModelLoader(modelPath);
         MultiLayerNetwork model = modelLoader.loadModel(prefix);
 
-        return new SomaticModel(model,featureMapper);
+        return new SomaticModel(model, featureMapper);
     }
 }
