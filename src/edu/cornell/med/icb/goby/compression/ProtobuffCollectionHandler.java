@@ -36,6 +36,7 @@ import java.io.InputStream;
 public interface ProtobuffCollectionHandler {
     public final int TYPE_READS = 0;
     public final int TYPE_ALIGNMENTS = 1;
+    public final int TYPE_SEQUENCE_BASE_INFO = 2;
 
     /**
      * Returns the type of the collection elements.
