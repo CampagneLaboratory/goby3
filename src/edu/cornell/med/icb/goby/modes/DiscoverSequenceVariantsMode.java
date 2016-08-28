@@ -255,6 +255,9 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
             case SOMATIC_VARIATIONS:
                 formatter = new SomaticVariationOutputFormat();
                 break;
+            case SEQUENCE_BASE_INFORMATION:
+                formatter = new SequenceBaseInformationOutputFormat();
+                break;
             case METHYLATION_REGIONS:
                 formatter = new MethylationRegionsOutputFormat();
                 methylFormat((MethylationFormat) formatter);
@@ -323,6 +326,7 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
                     genotypeFilters.add(new DiploidFilter());
                 }
                 break;
+            case SEQUENCE_BASE_INFORMATION:
             case SOMATIC_VARIATIONS:
                 // the deep learning proabilistic model was trained  without ad-hoc filters. Also apply no filters when
                 // predicting.
@@ -593,6 +597,7 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
         INDEL_COUNTS,
         METHYLATION_REGIONS,
         SOMATIC_VARIATIONS,
+        SEQUENCE_BASE_INFORMATION,
     }
 
     enum AlignmentProcessorNames {

@@ -166,7 +166,7 @@
                 <include name="xstream-1.4.9.jar"/>
                 <include name="slf4j-api-1.7.21.jar"/>
                 <include name="slf4j-log4j12-1.7.21.jar"/>
-                <include name="model-utils-1.0.1-SNAPSHOT.jar"/>
+                <include name="model-utils-1.0.2-SNAPSHOT.jar"/>
                 <include name="dl4j/*.jar"/>
                 <include name="dl4j/native-libs/nd4j-native-0.4.0-windows-x86_64.jar" if="isWindows"/>
                 <include name="dl4j/native-libs/nd4j-native-0.4.0-linux-x86_64.jar" if="isUnix"/>
@@ -273,6 +273,7 @@
                 <include name="edu/cornell/med/icb/goby/reads/**"/>
                 <include name="edu/cornell/med/icb/goby/readers/**"/>
                 <include name="edu/cornell/med/icb/goby/alignments/**"/>
+                <include name="edu/cornell/med/icb/goby/baseinfo/**"/>
                 <include name="edu/cornell/med/icb/goby/counts/**"/>
                 <include name="edu/cornell/med/icb/goby/modes/UpgradeMode*"/>
                 <include name="edu/cornell/med/icb/goby/modes/AbstractGobyMode*"/>
@@ -338,6 +339,7 @@
                 <include name="edu/cornell/med/icb/goby/reads/**"/>
                 <include name="edu/cornell/med/icb/goby/readers/**"/>
                 <include name="edu/cornell/med/icb/goby/alignments/**"/>
+                <include name="edu/cornell/med/icb/goby/baseinfo/**"/>
                 <include name="edu/cornell/med/icb/goby/counts/**"/>
                 <include name="edu/cornell/med/icb/goby/modes/UpgradeMode*"/>
                 <include name="edu/cornell/med/icb/goby/modes/AbstractGobyMode*"/>

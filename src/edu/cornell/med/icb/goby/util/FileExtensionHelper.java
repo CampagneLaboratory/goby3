@@ -51,8 +51,13 @@ public final class FileExtensionHelper {
             ".entries", ".header", ".tmh", ".stats", ".counts", ".index"
     };
 
-   
 
+    /**
+     * File extenstion for sequence base information data.
+     */
+    public static final String[] COMPACT_SEQUENCE_BASE_INFORMATION = {
+            ".sbi"
+    };
 
     /**
      * Possible types for compact files.
