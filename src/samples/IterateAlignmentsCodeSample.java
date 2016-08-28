@@ -18,9 +18,9 @@
 
 package samples;
 
-import edu.cornell.med.icb.goby.alignments.Alignments;
-import edu.cornell.med.icb.goby.alignments.IterateAlignments;
-import edu.cornell.med.icb.goby.alignments.AlignmentReader;
+import org.campagnelab.goby.alignments.Alignments;
+import org.campagnelab.goby.alignments.IterateAlignments;
+import org.campagnelab.goby.alignments.AlignmentReader;
 
 import java.io.IOException;
 

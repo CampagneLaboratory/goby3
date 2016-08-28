@@ -839,7 +839,7 @@
      Goby 1.4 (CAC, normalize by the number of alignment record in a sample)
      See the --normalization-methods argument. New normalization methods
      can be used with Goby by creating an implementation of the
-     edu.cornell.med.icb.goby.stats.NormalizationMethod interface,
+     NormalizationMethod interface,
      and adding a jar on the classpath that defines a ServiceProvider
      (see build.xml goby-jar target for an example of how this is done).
      When several normalization methods are given as an argument

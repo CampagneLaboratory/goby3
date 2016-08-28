@@ -19,7 +19,6 @@
 package edu.cornell.med.icb.goby.algorithmic.algorithm;
 
 import edu.cornell.med.icb.goby.algorithmic.data.Read;
-import edu.cornell.med.icb.goby.alignments.*;
 import edu.cornell.med.icb.goby.counts.CountsReader;
 import edu.cornell.med.icb.goby.counts.CountsWriter;
 import edu.cornell.med.icb.goby.counts.CountsWriterI;

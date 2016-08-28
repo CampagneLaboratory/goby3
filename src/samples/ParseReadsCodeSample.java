@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package samples;import edu.cornell.med.icb.goby.reads.Reads;
-import edu.cornell.med.icb.goby.reads.ReadsReader;
+package samples;import org.campagnelab.goby.reads.Reads;
+import org.campagnelab.goby.reads.ReadsReader;
 import it.unimi.dsi.lang.MutableString;
 
 import java.io.FileInputStream;

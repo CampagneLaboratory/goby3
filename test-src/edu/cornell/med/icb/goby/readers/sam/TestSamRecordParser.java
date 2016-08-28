@@ -18,7 +18,6 @@
 
 package edu.cornell.med.icb.goby.readers.sam;
 
-import edu.cornell.med.icb.goby.alignments.*;
 import edu.cornell.med.icb.goby.modes.SAMToCompactMode;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceTestSupport;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;

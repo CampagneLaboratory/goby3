@@ -22,7 +22,6 @@ import com.google.protobuf.ByteString;
 import com.martiansoftware.jsap.JSAPException;
 import edu.cornell.med.icb.goby.R.GobyRengine;
 import edu.cornell.med.icb.goby.algorithmic.data.CovariateInfo;
-import edu.cornell.med.icb.goby.alignments.*;
 import edu.cornell.med.icb.goby.reads.RandomAccessSequenceTestSupport;
 import edu.cornell.med.icb.goby.reads.ReadsWriter;
 import edu.cornell.med.icb.goby.reads.ReadsWriterImpl;

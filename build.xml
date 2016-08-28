@@ -54,15 +54,15 @@
 
     <fileset dir="${src}" id="pmd-fileset">
         <include name="**/*.java"/>
-        <exclude name="edu/cornell/med/icb/goby/alignments/Alignments.java"/>
-        <exclude name="edu/cornell/med/icb/goby/reads/Reads.java"/>
+        <exclude name="org/campagnelab/goby/alignments/Alignments.java"/>
+        <exclude name="org/campagnelab/goby/reads/Reads.java"/>
     </fileset>
 
     <fileset dir="${src}" id="checkstyle-fileset">
         <include name="**/*.java"/>
         <exclude name="**/package-info.java"/>
-        <exclude name="edu/cornell/med/icb/goby/alignments/Alignments.java"/>
-        <exclude name="edu/cornell/med/icb/goby/reads/Reads.java"/>
+        <exclude name="org/campagnelab/goby/alignments/Alignments.java"/>
+        <exclude name="org/campagnelab/goby/reads/Reads.java"/>
     </fileset>
 
     <target name="init" depends="buildsupport.init, testsupport.init"/>
@@ -182,26 +182,26 @@
                 <attribute name="Implementation-Version" value="${label} (${buildstamp})"/>
                 <attribute name="Implementation-Vendor"
                            value="Institute for Computational Biomedicine (ICB), Weill Medical College of Cornell University"/>
-                <attribute name="Main-Class" value="edu.cornell.med.icb.goby.modes.GobyDriver"/>
+                <attribute name="Main-Class" value="org.campagnelab.goby.modes.GobyDriver"/>
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
 
-            <service type="edu.cornell.med.icb.goby.reads.ReadCodec">
-                <provider classname="edu.cornell.med.icb.goby.reads.ReadCodecImpl"/>
-                <provider classname="edu.cornell.med.icb.goby.reads.ReadCodec2"/>
+            <service type="org.campagnelab.goby.reads.ReadCodec">
+                <provider classname="org.campagnelab.goby.reads.ReadCodecImpl"/>
+                <provider classname="org.campagnelab.goby.reads.ReadCodec2"/>
             </service>
-            <service type="edu.cornell.med.icb.goby.compression.ChunkCodec">
-                <provider classname="edu.cornell.med.icb.goby.compression.NullChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.NotCompressedChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.GZipChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.BZip2ChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.HybridChunkCodec1"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.HybridChunkCodec2"/>
+            <service type="org.campagnelab.goby.compression.ChunkCodec">
+                <provider classname="org.campagnelab.goby.compression.NullChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.NotCompressedChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.GZipChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.BZip2ChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.HybridChunkCodec1"/>
+                <provider classname="org.campagnelab.goby.compression.HybridChunkCodec2"/>
             </service>
             <!-- define the implementation of NormalizationMethods as Java ServiceProviders: -->
-            <service type="edu.cornell.med.icb.goby.stats.NormalizationMethod">
-                <provider classname="edu.cornell.med.icb.goby.stats.BullardUpperQuartileNormalization"/>
-                <provider classname="edu.cornell.med.icb.goby.stats.AlignedCountNormalization"/>
+            <service type="org.campagnelab.goby.stats.NormalizationMethod">
+                <provider classname="org.campagnelab.goby.stats.BullardUpperQuartileNormalization"/>
+                <provider classname="org.campagnelab.goby.stats.AlignedCountNormalization"/>
             </service>
         </jar>
         <!-- Set executable permissions on the goby wrapper scrip -->
@@ -224,9 +224,9 @@
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
             <!-- define the implementation of NormalizationMethods as Java ServiceProviders: -->
-            <service type="edu.cornell.med.icb.goby.stats.NormalizationMethod">
-                <provider classname="edu.cornell.med.icb.goby.stats.BullardUpperQuartileNormalization"/>
-                <provider classname="edu.cornell.med.icb.goby.stats.AlignedCountNormalization"/>
+            <service type="org.campagnelab.goby.stats.NormalizationMethod">
+                <provider classname="org.campagnelab.goby.stats.BullardUpperQuartileNormalization"/>
+                <provider classname="org.campagnelab.goby.stats.AlignedCountNormalization"/>
             </service>
         </jar>
     </target>
@@ -243,22 +243,22 @@
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
             <!-- define the implementation of NormalizationMethods as Java ServiceProviders: -->
-            <service type="edu.cornell.med.icb.goby.stats.NormalizationMethod">
-                <provider classname="edu.cornell.med.icb.goby.stats.BullardUpperQuartileNormalization"/>
-                <provider classname="edu.cornell.med.icb.goby.stats.AlignedCountNormalization"/>
+            <service type="org.campagnelab.goby.stats.NormalizationMethod">
+                <provider classname="org.campagnelab.goby.stats.BullardUpperQuartileNormalization"/>
+                <provider classname="org.campagnelab.goby.stats.AlignedCountNormalization"/>
             </service>
 
-            <service type="edu.cornell.med.icb.goby.reads.ReadCodec">
-                <provider classname="edu.cornell.med.icb.goby.reads.ReadCodecImpl"/>
-                <provider classname="edu.cornell.med.icb.goby.reads.ReadCodec2"/>
+            <service type="org.campagnelab.goby.reads.ReadCodec">
+                <provider classname="org.campagnelab.goby.reads.ReadCodecImpl"/>
+                <provider classname="org.campagnelab.goby.reads.ReadCodec2"/>
             </service>
-            <service type="edu.cornell.med.icb.goby.compression.ChunkCodec">
-                <provider classname="edu.cornell.med.icb.goby.compression.NullChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.NotCompressedChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.GZipChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.BZip2ChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.HybridChunkCodec1"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.HybridChunkCodec2"/>
+            <service type="org.campagnelab.goby.compression.ChunkCodec">
+                <provider classname="org.campagnelab.goby.compression.NullChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.NotCompressedChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.GZipChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.BZip2ChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.HybridChunkCodec1"/>
+                <provider classname="org.campagnelab.goby.compression.HybridChunkCodec2"/>
             </service>
 
         </jar>
@@ -268,23 +268,23 @@
         <!-- Standalone jar file. -->
         <jar jarfile="${goby-io-jarfile}">
             <fileset dir="${classes}">
-                <include name="edu/cornell/med/icb/goby/algorithmic/compression/**"/>
-                <include name="edu/cornell/med/icb/goby/compression/**"/>
-                <include name="edu/cornell/med/icb/goby/reads/**"/>
-                <include name="edu/cornell/med/icb/goby/readers/**"/>
-                <include name="edu/cornell/med/icb/goby/alignments/**"/>
-                <include name="edu/cornell/med/icb/goby/baseinfo/**"/>
-                <include name="edu/cornell/med/icb/goby/counts/**"/>
-                <include name="edu/cornell/med/icb/goby/modes/UpgradeMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/AbstractGobyMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/AbstractCommandLineMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/TabToColumnInfoMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/GenericToolsDriver*"/>
-                <include name="edu/cornell/med/icb/goby/util/**"/>
-                <include name="edu/cornell/med/icb/goby/exception/**"/>
-                <include name="edu/cornell/med/icb/goby/identifier/**"/>
-                <include name="edu/cornell/med/icb/goby/counts/**"/>
-                <include name="edu/cornell/med/icb/goby/GobyVersion*"/>
+                <include name="org/campagnelab/goby/algorithmic/compression/**"/>
+                <include name="org/campagnelab/goby/compression/**"/>
+                <include name="org/campagnelab/goby/reads/**"/>
+                <include name="org/campagnelab/goby/readers/**"/>
+                <include name="org/campagnelab/goby/alignments/**"/>
+                <include name="org/campagnelab/goby/baseinfo/**"/>
+                <include name="org/campagnelab/goby/counts/**"/>
+                <include name="org/campagnelab/goby/modes/UpgradeMode*"/>
+                <include name="org/campagnelab/goby/modes/AbstractGobyMode*"/>
+                <include name="org/campagnelab/goby/modes/AbstractCommandLineMode*"/>
+                <include name="org/campagnelab/goby/modes/TabToColumnInfoMode*"/>
+                <include name="org/campagnelab/goby/modes/GenericToolsDriver*"/>
+                <include name="org/campagnelab/goby/util/**"/>
+                <include name="org/campagnelab/goby/exception/**"/>
+                <include name="org/campagnelab/goby/identifier/**"/>
+                <include name="org/campagnelab/goby/counts/**"/>
+                <include name="org/campagnelab/goby/GobyVersion*"/>
             </fileset>
             <zipgroupfileset dir="${lib}">
                 <include name="bzip2.jar"/>
@@ -319,11 +319,11 @@
                            value="Institute for Computational Biomedicine (ICB), Weill Medical College of Cornell University"/>
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
-            <service type="edu.cornell.med.icb.goby.compression.ChunkCodec">
-                <provider classname="edu.cornell.med.icb.goby.compression.NullChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.GZipChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.BZip2ChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.HybridChunkCodec1"/>
+            <service type="org.campagnelab.goby.compression.ChunkCodec">
+                <provider classname="org.campagnelab.goby.compression.NullChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.GZipChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.BZip2ChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.HybridChunkCodec1"/>
             </service>
         </jar>
         <chmod file="scripts/autojar/run-autojar.sh" perm="744"/>
@@ -335,22 +335,22 @@
         <jar jarfile="${goby-io-api-jarfile}">
             <fileset dir="${classes}">
 
-                <include name="edu/cornell/med/icb/goby/compression/**"/>
-                <include name="edu/cornell/med/icb/goby/reads/**"/>
-                <include name="edu/cornell/med/icb/goby/readers/**"/>
-                <include name="edu/cornell/med/icb/goby/alignments/**"/>
-                <include name="edu/cornell/med/icb/goby/baseinfo/**"/>
-                <include name="edu/cornell/med/icb/goby/counts/**"/>
-                <include name="edu/cornell/med/icb/goby/modes/UpgradeMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/AbstractGobyMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/AbstractCommandLineMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/TabToColumnInfoMode*"/>
-                <include name="edu/cornell/med/icb/goby/modes/GenericToolsDriver*"/>
-                <include name="edu/cornell/med/icb/goby/util/**"/>
-                <include name="edu/cornell/med/icb/goby/exception/**"/>
-                <include name="edu/cornell/med/icb/goby/identifier/**"/>
-                <include name="edu/cornell/med/icb/goby/counts/**"/>
-                <include name="edu/cornell/med/icb/goby/GobyVersion*"/>
+                <include name="org/campagnelab/goby/compression/**"/>
+                <include name="org/campagnelab/goby/reads/**"/>
+                <include name="org/campagnelab/goby/readers/**"/>
+                <include name="org/campagnelab/goby/alignments/**"/>
+                <include name="org/campagnelab/goby/baseinfo/**"/>
+                <include name="org/campagnelab/goby/counts/**"/>
+                <include name="org/campagnelab/goby/modes/UpgradeMode*"/>
+                <include name="org/campagnelab/goby/modes/AbstractGobyMode*"/>
+                <include name="org/campagnelab/goby/modes/AbstractCommandLineMode*"/>
+                <include name="org/campagnelab/goby/modes/TabToColumnInfoMode*"/>
+                <include name="org/campagnelab/goby/modes/GenericToolsDriver*"/>
+                <include name="org/campagnelab/goby/util/**"/>
+                <include name="org/campagnelab/goby/exception/**"/>
+                <include name="org/campagnelab/goby/identifier/**"/>
+                <include name="org/campagnelab/goby/counts/**"/>
+                <include name="org/campagnelab/goby/GobyVersion*"/>
             </fileset>
             <manifest>
                 <attribute name="Specification-Title" value="Goby IO-API (LGPL compatible)"/>
@@ -361,15 +361,15 @@
                            value="Institute for Computational Biomedicine (ICB), Weill Medical College of Cornell University"/>
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
-            <service type="edu.cornell.med.icb.goby.alignments.AlignmentCodec">
-                <provider classname="edu.cornell.med.icb.goby.alignments.AlignmentCodecDummy"/>
+            <service type="org.campagnelab.goby.alignments.AlignmentCodec">
+                <provider classname="org.campagnelab.goby.alignments.AlignmentCodecDummy"/>
             </service>
-            <service type="edu.cornell.med.icb.goby.compression.ChunkCodec">
-                <provider classname="edu.cornell.med.icb.goby.compression.NullChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.NotCompressedChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.GZipChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.BZip2ChunkCodec"/>
-                <provider classname="edu.cornell.med.icb.goby.compression.HybridChunkCodec1"/>
+            <service type="org.campagnelab.goby.compression.ChunkCodec">
+                <provider classname="org.campagnelab.goby.compression.NullChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.NotCompressedChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.GZipChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.BZip2ChunkCodec"/>
+                <provider classname="org.campagnelab.goby.compression.HybridChunkCodec1"/>
             </service>
         </jar>
     </target>

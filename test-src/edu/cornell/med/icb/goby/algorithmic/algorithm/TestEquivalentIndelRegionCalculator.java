@@ -18,7 +18,7 @@
 
 package edu.cornell.med.icb.goby.algorithmic.algorithm;
 
-//import edu.cornell.med.icb.goby.algorithmic.data.EquivalentIndelRegion;
+//import EquivalentIndelRegion;
 
 import edu.cornell.med.icb.goby.algorithmic.data.EquivalentIndelRegion;
 import edu.cornell.med.icb.goby.alignments.processors.ObservedIndel;
