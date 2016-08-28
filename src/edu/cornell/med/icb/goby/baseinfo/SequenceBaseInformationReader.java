@@ -34,25 +34,25 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
 /**
  * Reads sequence base information files produced by the SBI output format of the discover sequence variation mode.
+ *
  * @author Fabien Campagne
  *         Date: Aug 27, 2016
- *
  */
-public class SequenceBaseInformationReader implements Iterator<BaseInformationRecords.BaseInformation >, Iterable<BaseInformationRecords.BaseInformation >,
+public class SequenceBaseInformationReader implements Iterator<BaseInformationRecords.BaseInformation>, Iterable<BaseInformationRecords.BaseInformation>,
         Closeable {
     private final MessageChunksReader reader;
+    private String basename;
     private BaseInformationRecords.BaseInformationCollection collection;
-    private final Properties metaData = new Properties();
+    private final Properties properties  = new Properties();
+    private int recordLoadedSoFar;
+    private long totalRecords;
 
     /**
      * Initialize the reader.
@@ -61,7 +61,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @throws IOException If an error occurs reading the input
      */
     public SequenceBaseInformationReader(final String path) throws IOException {
-        this(FileUtils.openInputStream(new File(path)));
+        this(getBasename(path), FileUtils.openInputStream(new File(getBasename(path) + ".sbi")));
     }
 
     /**
@@ -71,19 +71,46 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @throws IOException If an error occurs reading the input
      */
     public SequenceBaseInformationReader(final File file) throws IOException {
-        this(FileUtils.openInputStream(file));
+        this(getBasename(file.getCanonicalPath()), FileUtils.openInputStream(file));
     }
 
     /**
      * Initialize the reader.
      *
-     * @param stream Stream over the input
+     * @param basename
+     * @param stream   Stream over the input
      */
-    public SequenceBaseInformationReader(final InputStream stream) {
+    public SequenceBaseInformationReader(String basename, final InputStream stream) {
         super();
+        this.basename = basename;
         reader = new MessageChunksReader(stream);
         reader.setHandler(new SequenceBaseInfoCollectionHandler());
         codec = null;
+
+        try {
+            properties.load(new FileInputStream(basename + ".sbip"));
+            totalRecords=Integer.parseInt(properties.getProperty("numRecords"));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load properties for " + basename);
+        }
+    }
+
+    /**
+     * Gets the number of records read so far.
+     *
+     * @return records loaded
+     */
+    public long getRecordsLoadedSoFar() {
+        return this.recordLoadedSoFar;
+    }
+
+    /**
+     * Gets the total number of records.
+     *
+     * @return total records
+     */
+    public long getTotalRecords() {
+        return this.totalRecords;
     }
 
     /**
@@ -126,7 +153,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
         final boolean hasNext =
                 reader.hasNext(collection, collection != null ? collection.getRecordsCount() : 0);
         final byte[] compressedBytes = reader.getCompressedBytes();
-        final ChunkCodec chunkCodec=reader.getChunkCodec();
+        final ChunkCodec chunkCodec = reader.getChunkCodec();
         try {
             if (compressedBytes != null) {
 
@@ -134,7 +161,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
                 if (codec != null) {
                     codec.newChunk();
                 }
-                if (collection==null || collection.getRecordsCount() == 0) {
+                if (collection == null || collection.getRecordsCount() == 0) {
                     return false;
                 }
             }
@@ -149,12 +176,12 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      *
      * @return the next read entry from the input stream.
      */
-    public final BaseInformationRecords.BaseInformation  next() {
+    public final BaseInformationRecords.BaseInformation next() {
         if (!reader.hasNext(collection, collection.getRecordsCount())) {
             throw new NoSuchElementException();
         }
         final BaseInformationRecords.BaseInformation record = collection.getRecords(reader.incrementEntryIndex());
-
+        recordLoadedSoFar+=1;
         return record;
     }
 
@@ -173,13 +200,12 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
     }
 
 
-
     /**
      * Make the reader "iterable" for java "for each" loops and such.
      *
      * @return this object
      */
-    public Iterator<BaseInformationRecords.BaseInformation > iterator() {
+    public Iterator<BaseInformationRecords.BaseInformation> iterator() {
         return this;
     }
 
