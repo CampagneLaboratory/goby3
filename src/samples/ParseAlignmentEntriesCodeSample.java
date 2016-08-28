@@ -18,9 +18,9 @@
 
 package samples;
 
-import edu.cornell.med.icb.goby.alignments.AlignmentReader;
-import edu.cornell.med.icb.goby.alignments.Alignments;
-import edu.cornell.med.icb.goby.alignments.AlignmentReaderImpl;
+import org.campagnelab.goby.alignments.AlignmentReader;
+import org.campagnelab.goby.alignments.Alignments;
+import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
