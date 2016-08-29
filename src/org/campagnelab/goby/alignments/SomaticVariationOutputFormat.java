@@ -220,9 +220,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //set optional column vars from doc
         this.addBayes = doc.getBoolean("include_bayes");
         this.addFdr = doc.getBoolean("include_fdr");
-        this.bayesPrior = doc.getDouble("bayes_prior");
+     //   this.bayesPrior = doc.getDouble("bayes_prior");
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
-
 
         //extract prefix and model directory from model path input.
         String[] modelPathSplit = customPath.split("/");
