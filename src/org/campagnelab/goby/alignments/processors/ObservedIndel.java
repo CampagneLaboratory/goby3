@@ -171,9 +171,9 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
         if (this.startPosition > other.startPosition) return AFTER;
         if (this.endPosition < other.endPosition) return BEFORE;
         if (this.endPosition > other.endPosition) return AFTER;
-        int a = this.from.compareTo(other.to);
+        int a = this.from.compareTo(other.from);
         if (a != 0) return a;
-        a = this.from.compareTo(other.to);
+        a = this.to.compareTo(other.to);
         return a;
 
     }
