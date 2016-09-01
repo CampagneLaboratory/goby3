@@ -61,19 +61,21 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
-       // pgReadWrite.update();
+        int numSamples = sampleCounts.length;
+
+        // pgReadWrite.update();
         //if (minCountsFilter(sampleCounts)) return;
         int maxGenotypeIndex=0;
-        for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
+        for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
 
             maxGenotypeIndex=Math.max(sampleCountInfo.getGenotypeMaxIndex(), maxGenotypeIndex);
         }
 
-        IntArrayList[][][] qualityScores = new IntArrayList[2][maxGenotypeIndex][2];
-        IntArrayList[][][] readIdxs = new IntArrayList[2][maxGenotypeIndex][2];
+        IntArrayList[][][] qualityScores = new IntArrayList[numSamples][maxGenotypeIndex][2];
+        IntArrayList[][][] readIdxs = new IntArrayList[numSamples][maxGenotypeIndex][2];
 
-        for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
+        for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
@@ -92,8 +94,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
             readIdxs[sampleInd][baseInd][strandInd].add(baseInfo.readIndex);
         }
-
-
         BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
         builder.setMutated(false);
         builder.setPosition(position);
@@ -102,7 +102,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         }
         builder.setReferenceIndex(referenceIndex);
 
-        for (int sampleIndex = 0; sampleIndex < 2; sampleIndex++) {
+        for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             BaseInformationRecords.SampleInfo.Builder sampleBuilder = BaseInformationRecords.SampleInfo.newBuilder();
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
 
