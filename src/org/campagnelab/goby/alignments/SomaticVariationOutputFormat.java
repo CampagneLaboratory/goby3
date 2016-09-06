@@ -73,7 +73,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/traditional-1469226748641/bestAUCModel.bin",
+            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/rna-seq-1472848302343/bestAUCModel.bin",
             "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99",
             "include_fdr:boolean, experimental option to include a False Discovery Rate column in vcf output. For each position, outputs estimated proportion of false positives to all positions with a higher somatic variation likelihood.:false",
             "include_bayes:boolean, experimental option to produce a true probability of somatic variation with bayes' rule, using a rate of mutation prior.:false"
