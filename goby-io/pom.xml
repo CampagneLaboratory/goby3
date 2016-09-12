@@ -74,7 +74,7 @@
                         <configuration>
 
                             <target>
-                                <chmod file="${project.build.directory}/protoc-${protobuf.version}-osx-x86_64.exe" perm="ugo+rx"/>
+                                <chmod file="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe" perm="ugo+rx"/>
                                 <mkdir dir="${protobuf.output.directory}" />
                                 <path id="protobuf.input.filepaths.path">
                                     <fileset dir="${protobuf.input.directory}">
@@ -82,7 +82,7 @@
                                     </fileset>
                                 </path>
                                 <pathconvert pathsep=" " property="protobuf.input.filepaths" refid="protobuf.input.filepaths.path"/>
-                                <exec executable="${project.build.directory}/protoc-3.0.0-beta-4-osx-x86_64.exe" failonerror="true">
+                                <exec executable="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe" failonerror="true">
                                     <arg value="-I"/>
                                     <arg value="${protobuf.input.directory}"/>
                                     <arg value="--java_out"/>
