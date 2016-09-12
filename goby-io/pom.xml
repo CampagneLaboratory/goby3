@@ -168,6 +168,20 @@
          <artifactId>protobuf-java</artifactId>
          <version>${protobuf.version}</version>
      </dependency>
+     <dependency>
+         <groupId>edu.cornell.med.icb</groupId>
+         <artifactId>icb-util</artifactId>
+         <version>1.1.6</version>
+         <scope>system</scope>
+         <systemPath>${basedir}/../lib/icb-utils.jar</systemPath>
+     </dependency>
+     <dependency>
+         <groupId>it.unimi.dsi</groupId>
+         <artifactId>fastutil</artifactId>
+         <version>7.0.12</version>
+         <scope>system</scope>
+         <systemPath>${basedir}/../lib/fastutil-6.5.15.jar</systemPath>
+     </dependency>
  </dependencies>
 
 </project>
