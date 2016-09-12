@@ -162,6 +162,12 @@
             <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
+ <dependencies>
+     <dependency>
+         <groupId>com.google.protobuf</groupId>
+         <artifactId>protobuf-java</artifactId>
+         <version>${protobuf.version}</version>
+     </dependency>
+ </dependencies>
 
 </project>
