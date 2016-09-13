@@ -19,7 +19,6 @@
 package org.campagnelab.goby.alignments.processors;
 
 import com.google.protobuf.ByteString;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.WarningCounter;

@@ -18,7 +18,6 @@
 
 package org.campagnelab.goby.readers.sam;
 
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.modes.SamHelper;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.lang.MutableString;

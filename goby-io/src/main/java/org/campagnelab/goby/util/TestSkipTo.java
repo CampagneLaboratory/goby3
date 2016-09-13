@@ -20,7 +20,6 @@ package org.campagnelab.goby.util;
 
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
-import org.campagnelab.goby.alignments.Alignments;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.apache.commons.logging.Log;

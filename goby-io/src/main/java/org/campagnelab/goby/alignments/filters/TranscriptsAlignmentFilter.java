@@ -20,7 +20,6 @@
 
 package org.campagnelab.goby.alignments.filters;
 
-import org.campagnelab.goby.alignments.Alignments;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import edu.cornell.med.icb.tissueinfo.similarity.GeneTranscriptRelationships;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

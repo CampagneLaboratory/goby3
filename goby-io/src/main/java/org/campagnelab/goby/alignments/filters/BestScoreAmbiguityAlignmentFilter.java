@@ -21,7 +21,6 @@
 package org.campagnelab.goby.alignments.filters;
 
 import org.campagnelab.goby.alignments.AlignmentReader;
-import org.campagnelab.goby.alignments.Alignments;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.ints.*;
 

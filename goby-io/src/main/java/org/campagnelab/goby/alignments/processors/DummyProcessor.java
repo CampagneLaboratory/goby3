@@ -20,7 +20,6 @@ package org.campagnelab.goby.alignments.processors;
 
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
-import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.IOException;
 

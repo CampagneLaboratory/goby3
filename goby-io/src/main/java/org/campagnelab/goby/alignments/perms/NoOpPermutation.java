@@ -18,8 +18,6 @@
 
 package org.campagnelab.goby.alignments.perms;
 
-import org.campagnelab.goby.alignments.Alignments;
-
 /**
  * A class that does not permutation query indices to small values.
  *
