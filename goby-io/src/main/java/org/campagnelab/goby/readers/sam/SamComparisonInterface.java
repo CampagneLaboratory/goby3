@@ -19,6 +19,7 @@
 package org.campagnelab.goby.readers.sam;
 
 import htsjdk.samtools.SAMRecord;
+import org.campagnelab.goby.alignments.Alignments;
 
 /**
  * Interface for comparing SAM records.

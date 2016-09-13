@@ -19,6 +19,7 @@
 package org.campagnelab.goby.alignments.perms;
 
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.ints.*;

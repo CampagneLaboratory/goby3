@@ -18,6 +18,8 @@
 
 package org.campagnelab.goby.alignments.perms;
 
+import org.campagnelab.goby.alignments.Alignments;
+
 /**
  * An interface for implementations that replace query indices with small values. Some of these implementations will
  * keep a record of all associations made, others will just discard them.
