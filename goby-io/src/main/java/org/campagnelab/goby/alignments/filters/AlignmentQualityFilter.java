@@ -20,8 +20,6 @@
 
 package org.campagnelab.goby.alignments.filters;
 
-import org.campagnelab.goby.alignments.Alignments;
-
 import java.io.PrintStream;
 
 /**

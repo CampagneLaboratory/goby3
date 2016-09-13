@@ -18,7 +18,6 @@
 
 package org.campagnelab.goby.alignments.processors;
 
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import it.unimi.dsi.fastutil.AbstractPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;

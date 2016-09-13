@@ -20,7 +20,6 @@
 
 package org.campagnelab.goby.alignments.filters;
 
-import org.campagnelab.goby.alignments.Alignments;
 import edu.mssm.crover.cli.CLI;
 import org.apache.commons.lang.StringUtils;
 

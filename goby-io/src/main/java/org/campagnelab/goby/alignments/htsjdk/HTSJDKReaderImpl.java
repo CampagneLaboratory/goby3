@@ -1,7 +1,6 @@
 package org.campagnelab.goby.alignments.htsjdk;
 
 import org.campagnelab.goby.alignments.AlignmentReader;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ReadOriginInfo;
 import org.campagnelab.goby.alignments.ReferenceLocation;
 import org.campagnelab.goby.modes.SAMToCompactMode;

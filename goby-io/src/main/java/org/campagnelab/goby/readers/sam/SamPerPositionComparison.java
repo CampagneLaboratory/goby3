@@ -18,7 +18,6 @@
 
 package org.campagnelab.goby.readers.sam;
 
-import org.campagnelab.goby.alignments.Alignments;
 import htsjdk.samtools.SAMRecord;
 
 import java.util.ArrayList;

@@ -18,7 +18,6 @@
 
 package org.campagnelab.goby.alignments.processors;
 
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ConcatAlignmentReader;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 
