@@ -18,6 +18,7 @@
 
 package org.campagnelab.goby.alignments.processors;
 
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 
 import java.io.IOException;
