@@ -23,13 +23,17 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: it.unimi.dsi:fastutil:7.0.12">
+      <library name="Maven: org.campagnelab.dl:variation-analysis:1.0.2-SNAPSHO">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/fastutil-6.5.15.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/model-utils-1.0.2-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.12" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
   </component>
 </module>
