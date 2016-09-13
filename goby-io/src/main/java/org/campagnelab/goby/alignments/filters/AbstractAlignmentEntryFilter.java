@@ -21,6 +21,7 @@
 package org.campagnelab.goby.alignments.filters;
 
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
+import org.campagnelab.goby.alignments.Alignments;
 
 /**
  * Abstract class for AlignmentEntryFilter. These assist with merging alignment files.
