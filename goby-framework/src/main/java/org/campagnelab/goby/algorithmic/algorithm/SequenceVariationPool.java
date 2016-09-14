@@ -20,6 +20,7 @@ package org.campagnelab.goby.algorithmic.algorithm;
 
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.campagnelab.goby.alignments.Alignments;
 
 /**
  * @author Fabien Campagne
