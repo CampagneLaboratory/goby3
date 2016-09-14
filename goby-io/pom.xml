@@ -255,6 +255,13 @@
          <scope>system</scope>
          <systemPath>${basedir}/../lib/pj20091226.jar</systemPath>
      </dependency>
+     <dependency>
+         <groupId>edu.mssm.crover</groupId>
+         <artifactId>cli</artifactId>
+         <version>1.0</version>
+         <scope>system</scope>
+         <systemPath>${basedir}/../lib/edu.mssm.crover.cli.jar</systemPath>
+     </dependency>
 
 
  </dependencies>
