@@ -18,6 +18,7 @@
 
 package samples;
 
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.IterateAlignments;
 import org.campagnelab.goby.alignments.AlignmentReader;
 

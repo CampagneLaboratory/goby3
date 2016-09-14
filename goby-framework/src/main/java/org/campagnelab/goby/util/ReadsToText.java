@@ -18,6 +18,7 @@
 
 package org.campagnelab.goby.util;
 
+import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import it.unimi.dsi.lang.MutableString;
 

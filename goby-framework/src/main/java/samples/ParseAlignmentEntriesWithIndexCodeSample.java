@@ -20,6 +20,7 @@ package samples;
 
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
