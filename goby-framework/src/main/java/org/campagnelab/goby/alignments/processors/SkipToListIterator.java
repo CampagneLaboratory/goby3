@@ -19,6 +19,7 @@
 package org.campagnelab.goby.alignments.processors;
 
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import org.campagnelab.goby.alignments.Alignments;
 
 /**
  * Provide a skipTo interface around an iterator over alignment entries. Useful for testing.

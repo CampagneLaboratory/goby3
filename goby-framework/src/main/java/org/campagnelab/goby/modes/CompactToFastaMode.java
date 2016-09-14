@@ -20,10 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.reads.ColorSpaceConverter;
-import org.campagnelab.goby.reads.QualityEncoding;
-import org.campagnelab.goby.reads.ReadSet;
-import org.campagnelab.goby.reads.ReadsReader;
+import org.campagnelab.goby.reads.*;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.io.FastBufferedOutputStream;

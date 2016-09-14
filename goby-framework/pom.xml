@@ -228,9 +228,9 @@
             <version>2.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.rosuda.REngine</groupId>
-            <artifactId>Rserve</artifactId>
-            <version>1.8.1</version>
+            <groupId>com.github.lucarosellini.rJava</groupId>
+            <artifactId>JRI</artifactId>
+            <version>0.9-7</version>
         </dependency>
         <!-- local dependencies -->
         <dependency>

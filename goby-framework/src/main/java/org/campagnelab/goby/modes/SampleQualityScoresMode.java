@@ -23,6 +23,7 @@ import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.readers.FastXEntry;
 import org.campagnelab.goby.readers.FastXReader;
 import org.campagnelab.goby.readers.sam.SAMRecordIterable;
+import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import htsjdk.samtools.ValidationStringency;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

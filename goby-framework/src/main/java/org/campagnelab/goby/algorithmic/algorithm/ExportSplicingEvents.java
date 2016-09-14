@@ -26,6 +26,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FilenameUtils;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.IOException;
 import java.io.PrintWriter;

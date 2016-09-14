@@ -25,6 +25,7 @@ import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.alignments.filters.AlignmentQualityFilter;
 import org.campagnelab.goby.alignments.filters.PercentMismatchesQualityFilter;
 import org.campagnelab.goby.reads.ReadSet;
+import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import org.campagnelab.goby.util.WarningCounter;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
