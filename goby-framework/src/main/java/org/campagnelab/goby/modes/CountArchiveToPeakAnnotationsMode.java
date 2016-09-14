@@ -20,8 +20,8 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.algorithmic.data.Annotation;
 import org.campagnelab.goby.algorithmic.data.Segment;
+import org.campagnelab.goby.algorithmic.data.Annotation;
 import org.campagnelab.goby.alignments.ConcatAlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.counts.AnyTransitionCountsIterator;

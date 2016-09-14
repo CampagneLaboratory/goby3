@@ -21,8 +21,8 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.algorithmic.data.Annotation;
 import org.campagnelab.goby.algorithmic.data.Segment;
+import org.campagnelab.goby.algorithmic.data.Annotation;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

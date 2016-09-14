@@ -9,6 +9,7 @@
     <version>3.0.0-SNAPSHOT</version>
     <modules>
         <module>goby-io</module>
+        <module>goby-framework</module>
     </modules>
     <name>Goby 3</name>
     <description>Goby is a data management framework designed to facilitate the implementation of efficient data analysis pipelines for high-throughput sequencing data.</description>

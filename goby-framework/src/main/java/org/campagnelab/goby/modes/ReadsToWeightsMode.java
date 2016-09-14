@@ -20,13 +20,13 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import org.campagnelab.goby.algorithmic.algorithm.WeightCalculator;
+import org.campagnelab.goby.algorithmic.data.HeptamerInfo;
 import org.campagnelab.goby.algorithmic.algorithm.ATGCCorrectionWeight;
 import org.campagnelab.goby.algorithmic.algorithm.ATProportionWeight;
 import org.campagnelab.goby.algorithmic.algorithm.BaseProportionWeight;
 import org.campagnelab.goby.algorithmic.algorithm.GCProportionWeight;
 import org.campagnelab.goby.algorithmic.algorithm.HeptamerWeight;
-import org.campagnelab.goby.algorithmic.algorithm.WeightCalculator;
-import org.campagnelab.goby.algorithmic.data.HeptamerInfo;
 import org.campagnelab.goby.algorithmic.data.WeightsInfo;
 import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;

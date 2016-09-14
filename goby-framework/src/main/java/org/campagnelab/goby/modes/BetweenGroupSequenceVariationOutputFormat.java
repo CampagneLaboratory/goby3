@@ -19,13 +19,13 @@
 package org.campagnelab.goby.modes;
 
 import org.campagnelab.goby.R.GobyRengine;
+import org.campagnelab.goby.stats.DifferentialExpressionAnalysis;
+import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
+import org.campagnelab.goby.stats.TSVWriter;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.readers.vcf.ColumnType;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.stats.DifferentialExpressionAnalysis;
-import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
 import org.campagnelab.goby.stats.FisherExactRCalculator;
-import org.campagnelab.goby.stats.TSVWriter;
 import org.campagnelab.goby.util.OutputInfo;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;

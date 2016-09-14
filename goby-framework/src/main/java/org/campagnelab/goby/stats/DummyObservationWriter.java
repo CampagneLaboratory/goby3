@@ -18,8 +18,8 @@
 
 package org.campagnelab.goby.stats;
 
-import org.campagnelab.goby.algorithmic.algorithm.dmr.ObservationWriter;
 import org.campagnelab.goby.algorithmic.data.GroupComparison;
+import org.campagnelab.goby.algorithmic.algorithm.dmr.ObservationWriter;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.apache.commons.io.output.NullWriter;
 

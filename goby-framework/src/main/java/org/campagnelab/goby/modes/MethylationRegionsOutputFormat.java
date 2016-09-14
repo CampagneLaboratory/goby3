@@ -19,13 +19,13 @@
 package org.campagnelab.goby.modes;
 
 import org.campagnelab.goby.algorithmic.data.GroupComparison;
+import org.campagnelab.goby.stats.AnnotationAveragingWriter;
 import org.campagnelab.goby.algorithmic.data.MethylCountInfo;
 import org.campagnelab.goby.alignments.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.alignments.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.ReadIndexStats;
 import org.campagnelab.goby.alignments.SampleCountInfo;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.stats.AnnotationAveragingWriter;
 import org.campagnelab.goby.stats.MethylCountProviderFromRegionsOutputFormat;
 import org.campagnelab.goby.stats.RegionWriter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
