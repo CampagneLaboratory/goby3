@@ -22,6 +22,7 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.algorithmic.data.HeptamerInfo;
 import org.campagnelab.goby.algorithmic.data.WeightsInfo;
+import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

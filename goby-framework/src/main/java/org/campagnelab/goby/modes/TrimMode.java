@@ -21,6 +21,7 @@ package org.campagnelab.goby.modes;
 import com.google.protobuf.ByteString;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import org.campagnelab.goby.reads.ReadsWriter;
 import org.campagnelab.goby.reads.ReadsWriterImpl;

@@ -22,6 +22,7 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.alignments.AlignmentWriterImpl;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.perms.QueryIndexPermutation;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.readers.sam.SamComparisonInterface;

@@ -22,6 +22,7 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.alignments.AlignmentTooManyHitsWriter;
 import org.campagnelab.goby.alignments.AlignmentWriter;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.ReadSet;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import htsjdk.samtools.*;

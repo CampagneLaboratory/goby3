@@ -22,6 +22,7 @@ package org.campagnelab.goby.alignments.filters;
 
 import edu.mssm.crover.cli.CLI;
 import org.apache.commons.lang.StringUtils;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.PrintStream;
 

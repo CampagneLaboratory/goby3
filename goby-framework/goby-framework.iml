@@ -50,7 +50,7 @@
     <orderEntry type="library" name="Maven: org.beanshell:bsh:2.0b4" level="project" />
     <orderEntry type="library" name="Maven: com.beust:jcommander:1.27" level="project" />
     <orderEntry type="library" name="Maven: org.rosuda.REngine:REngine:2.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.rosuda.REngine:Rserve:1.8.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.lucarosellini.rJava:JRI:0.9-7" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: org.campagnelab.bdval:bdval-api:1.0.0">
         <CLASSES>

@@ -3,6 +3,7 @@ package org.campagnelab.goby.readers.sam;
 import com.google.protobuf.ByteString;
 import org.campagnelab.goby.alignments.AlignmentTooManyHitsWriter;
 import org.campagnelab.goby.alignments.AlignmentWriter;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.modes.SAMToCompactMode;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import htsjdk.samtools.SAMRecord;
