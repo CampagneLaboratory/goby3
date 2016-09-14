@@ -31,7 +31,6 @@ import java.io.IOException;
 
 import org.campagnelab.goby.reads.ReadsWriter;
 import org.campagnelab.goby.reads.ReadsReader;
-import org.campagnelab.goby.reads.Reads;
 
 /**
  * Convert sequences to mimick bisulfite conversion. Every cytosine is assumed to be unmethylated and is therefore

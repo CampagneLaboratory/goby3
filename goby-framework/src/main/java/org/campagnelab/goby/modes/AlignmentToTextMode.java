@@ -23,7 +23,6 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.EntryFlagHelper;
 import org.campagnelab.goby.alignments.FileSlice;
 import org.campagnelab.goby.alignments.IterateAlignments;

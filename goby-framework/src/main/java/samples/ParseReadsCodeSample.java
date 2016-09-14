@@ -16,7 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package samples;import org.campagnelab.goby.reads.Reads;
+package samples;
+
 import org.campagnelab.goby.reads.ReadsReader;
 import it.unimi.dsi.lang.MutableString;
 

@@ -24,7 +24,6 @@ import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.alignments.AlignmentTooManyHitsWriter;
 import org.campagnelab.goby.alignments.AlignmentWriter;
 import org.campagnelab.goby.alignments.AlignmentWriterImpl;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.BufferedSortingAlignmentWriter;
 import org.campagnelab.goby.alignments.perms.QueryIndexPermutation;
 import org.campagnelab.goby.alignments.perms.ReadNameToIndex;

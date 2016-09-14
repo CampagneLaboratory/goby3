@@ -20,7 +20,6 @@ package org.campagnelab.goby.algorithmic.algorithm;
 
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
-import org.campagnelab.goby.alignments.Alignments;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;

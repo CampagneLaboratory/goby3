@@ -19,7 +19,6 @@
 package samples;
 
 import org.campagnelab.goby.alignments.AlignmentReader;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.IterateAlignments;
 
 import java.io.IOException;
