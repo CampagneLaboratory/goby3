@@ -23,7 +23,6 @@ import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.reads.ColorSpaceConverter;
 import org.campagnelab.goby.reads.QualityEncoding;
 import org.campagnelab.goby.reads.ReadSet;
-import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;

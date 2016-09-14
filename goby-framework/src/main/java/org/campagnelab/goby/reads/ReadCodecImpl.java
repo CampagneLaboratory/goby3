@@ -19,8 +19,8 @@
 package org.campagnelab.goby.reads;
 
 import com.google.protobuf.ByteString;
-import org.campagnelab.goby.algorithmic.compression.FastArithmeticCoder;
-import org.campagnelab.goby.algorithmic.compression.FastArithmeticDecoder;
+import org.campagnelab.goby.compression.FastArithmeticCoder;
+import org.campagnelab.goby.compression.FastArithmeticDecoder;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import it.unimi.dsi.io.InputBitStream;

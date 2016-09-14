@@ -25,7 +25,6 @@ import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
 import org.campagnelab.goby.stats.DifferentialExpressionResults;
 import org.campagnelab.goby.stats.NormalizationMethod;
 import org.campagnelab.goby.algorithmic.data.WeightsInfo;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;

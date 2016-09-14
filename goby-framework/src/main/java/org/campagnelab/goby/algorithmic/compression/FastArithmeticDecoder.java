@@ -18,7 +18,7 @@
  *
  */
 
-package org.campagnelab.goby.algorithmic.compression;
+package org.campagnelab.goby.compression;
 
 import it.unimi.dsi.io.InputBitStream;
 import java.io.IOException;

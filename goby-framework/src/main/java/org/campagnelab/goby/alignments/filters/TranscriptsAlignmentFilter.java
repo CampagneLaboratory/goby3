@@ -30,12 +30,13 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.FileNotFoundException;
 
 /**
  * This class assists with filtering
- * {@link Alignments.AlignmentEntry} values when merging
+ * {@link org.campagnelab.goby.alignments.Alignments.AlignmentEntry} values when merging
  * transcript-based alignments.
  *
  * @author Kevin Dorff

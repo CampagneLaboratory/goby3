@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.algorithmic.compression;
+package org.campagnelab.goby.compression;
 
 /*
  * MG4J: Managing Gigabytes for Java (big)

@@ -28,7 +28,6 @@ import org.campagnelab.goby.algorithmic.algorithm.BaseProportionWeight;
 import org.campagnelab.goby.algorithmic.algorithm.GCProportionWeight;
 import org.campagnelab.goby.algorithmic.algorithm.HeptamerWeight;
 import org.campagnelab.goby.algorithmic.data.WeightsInfo;
-import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;

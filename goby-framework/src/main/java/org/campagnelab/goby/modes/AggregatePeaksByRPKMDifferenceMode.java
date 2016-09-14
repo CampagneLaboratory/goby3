@@ -25,7 +25,6 @@ import org.campagnelab.goby.algorithmic.data.Annotation;
 import org.campagnelab.goby.algorithmic.data.AnnotationRPKM;
 import org.campagnelab.goby.algorithmic.data.Segment;
 import org.campagnelab.goby.alignments.AlignmentReader;
-import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.util.Timer;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;

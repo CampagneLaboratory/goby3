@@ -18,7 +18,6 @@
 
 package org.campagnelab.goby.algorithmic.algorithm;
 
-import org.campagnelab.goby.alignments.Alignments;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
