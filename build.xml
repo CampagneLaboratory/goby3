@@ -182,7 +182,7 @@
                 <attribute name="Implementation-Version" value="${label} (${buildstamp})"/>
                 <attribute name="Implementation-Vendor"
                            value="Institute for Computational Biomedicine (ICB), Weill Medical College of Cornell University"/>
-                <attribute name="Main-Class" value="org.campagnelab.goby.modes.GobyDriver"/>
+                <attribute name="Main-Class" value="goby.modes.GobyDriver"/>
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
 
@@ -199,9 +199,9 @@
                 <provider classname="org.campagnelab.goby.compression.HybridChunkCodec2"/>
             </service>
             <!-- define the implementation of NormalizationMethods as Java ServiceProviders: -->
-            <service type="org.campagnelab.goby.stats.NormalizationMethod">
-                <provider classname="org.campagnelab.goby.stats.BullardUpperQuartileNormalization"/>
-                <provider classname="org.campagnelab.goby.stats.AlignedCountNormalization"/>
+            <service type="goby.stats.NormalizationMethod">
+                <provider classname="goby.stats.BullardUpperQuartileNormalization"/>
+                <provider classname="goby.stats.AlignedCountNormalization"/>
             </service>
         </jar>
         <!-- Set executable permissions on the goby wrapper scrip -->
@@ -224,9 +224,9 @@
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
             <!-- define the implementation of NormalizationMethods as Java ServiceProviders: -->
-            <service type="org.campagnelab.goby.stats.NormalizationMethod">
-                <provider classname="org.campagnelab.goby.stats.BullardUpperQuartileNormalization"/>
-                <provider classname="org.campagnelab.goby.stats.AlignedCountNormalization"/>
+            <service type="goby.stats.NormalizationMethod">
+                <provider classname="goby.stats.BullardUpperQuartileNormalization"/>
+                <provider classname="goby.stats.AlignedCountNormalization"/>
             </service>
         </jar>
     </target>
@@ -243,9 +243,9 @@
                 <attribute name="Built-By" value="${user.name}"/>
             </manifest>
             <!-- define the implementation of NormalizationMethods as Java ServiceProviders: -->
-            <service type="org.campagnelab.goby.stats.NormalizationMethod">
-                <provider classname="org.campagnelab.goby.stats.BullardUpperQuartileNormalization"/>
-                <provider classname="org.campagnelab.goby.stats.AlignedCountNormalization"/>
+            <service type="goby.stats.NormalizationMethod">
+                <provider classname="goby.stats.BullardUpperQuartileNormalization"/>
+                <provider classname="goby.stats.AlignedCountNormalization"/>
             </service>
 
             <service type="org.campagnelab.goby.reads.ReadCodec">

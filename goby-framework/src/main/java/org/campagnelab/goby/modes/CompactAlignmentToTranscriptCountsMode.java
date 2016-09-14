@@ -20,13 +20,13 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.algorithmic.data.WeightsInfo;
-import org.campagnelab.goby.alignments.Alignments;
-import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.stats.DifferentialExpressionAnalysis;
 import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
 import org.campagnelab.goby.stats.DifferentialExpressionResults;
 import org.campagnelab.goby.stats.NormalizationMethod;
+import org.campagnelab.goby.algorithmic.data.WeightsInfo;
+import org.campagnelab.goby.alignments.Alignments;
+import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;

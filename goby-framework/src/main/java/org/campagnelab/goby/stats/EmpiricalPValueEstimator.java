@@ -19,9 +19,9 @@
 package org.campagnelab.goby.stats;
 
 import org.campagnelab.goby.algorithmic.algorithm.*;
-import org.campagnelab.goby.algorithmic.algorithm.dmr.*;
 import org.campagnelab.goby.algorithmic.data.GroupComparison;
 import org.campagnelab.goby.algorithmic.data.SamplePairEnumerator;
+import org.campagnelab.goby.algorithmic.algorithm.dmr.*;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

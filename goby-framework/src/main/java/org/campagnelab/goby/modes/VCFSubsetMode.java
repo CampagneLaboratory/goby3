@@ -20,11 +20,11 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import org.campagnelab.goby.stats.VCFWriter;
 import org.campagnelab.goby.readers.vcf.ColumnField;
 import org.campagnelab.goby.readers.vcf.ColumnInfo;
 import org.campagnelab.goby.readers.vcf.Columns;
 import org.campagnelab.goby.readers.vcf.VCFParser;
-import org.campagnelab.goby.stats.VCFWriter;
 import org.campagnelab.goby.util.DoInParallel;
 import org.campagnelab.goby.util.GrepReader;
 import it.unimi.dsi.fastutil.ints.*;

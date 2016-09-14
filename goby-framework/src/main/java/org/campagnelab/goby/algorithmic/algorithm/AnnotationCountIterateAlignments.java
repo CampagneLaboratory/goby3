@@ -18,10 +18,10 @@
 
 package org.campagnelab.goby.algorithmic.algorithm;
 
+import org.campagnelab.goby.modes.WeightParameters;
 import org.campagnelab.goby.algorithmic.data.WeightsInfo;
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.IterateAlignments;
-import org.campagnelab.goby.modes.WeightParameters;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.campagnelab.goby.alignments.Alignments;

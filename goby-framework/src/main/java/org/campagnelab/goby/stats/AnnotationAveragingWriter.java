@@ -18,12 +18,12 @@
 
 package org.campagnelab.goby.stats;
 
-import org.campagnelab.goby.R.GobyRengine;
 import org.campagnelab.goby.algorithmic.algorithm.SortedAnnotations;
+import org.campagnelab.goby.algorithmic.data.GroupComparison;
+import org.campagnelab.goby.R.GobyRengine;
 import org.campagnelab.goby.algorithmic.algorithm.dmr.EstimatedDistribution;
 import org.campagnelab.goby.algorithmic.algorithm.dmr.ObservationWriter;
 import org.campagnelab.goby.algorithmic.data.Annotation;
-import org.campagnelab.goby.algorithmic.data.GroupComparison;
 import org.campagnelab.goby.algorithmic.data.SamplePairEnumerator;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
