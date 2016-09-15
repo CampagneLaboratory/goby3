@@ -69,14 +69,14 @@ public final class GobyConfiguration {
     /**
      * Path to the directory that contains the lastag executables (lastdb, lastag).
      *
-     * @see edu.cornell.med.icb.goby.aligners.LastagAligner
+     * @see org.campagnelab.goby.aligners.LastagAligner
      */
     public static final String EXECUTABLE_PATH_LASTAG = "executables.path.lastag";
 
     /**
      * Path to the directory that contains the last executables (lastdb, lastal).
      *
-     * @see edu.cornell.med.icb.goby.aligners.LastAligner
+     * @see org.campagnelab.goby.aligners.LastAligner
      * @see <a href="http://last.cbrc.jp/">http://last.cbrc.jp/</a>
      */
     public static final String EXECUTABLE_PATH_LAST = "executables.path.last";
@@ -84,7 +84,7 @@ public final class GobyConfiguration {
     /**
      * Path to the directory that contains the BWA executable.
      *
-     * @see edu.cornell.med.icb.goby.aligners.BWAAligner
+     * @see org.campagnelab.goby.aligners.BWAAligner
      * @see <a href="http://bio-bwa.sourceforge.net/">http://bio-bwa.sourceforge.net/</a>
      */
     public static final String EXECUTABLE_PATH_BWA = "executables.path.bwa";
@@ -92,7 +92,7 @@ public final class GobyConfiguration {
     /**
      * Path to the directory that contains the GSNAP executable.
      *
-     * @see edu.cornell.med.icb.goby.aligners.GSnapAligner
+     * @see org.campagnelab.goby.aligners.GSnapAligner
      * @see <a href="http://research-pub.gene.com/gmap/">http://research-pub.gene.com/gmap//</a>
      */
     public static final String EXECUTABLE_PATH_GSNAP = "executables.path.gsnap";
