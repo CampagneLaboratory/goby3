@@ -83,7 +83,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: org.campagnelab.dl:variation-analysis:1.0.2-SNAPSHO">
+      <library name="Maven: org.campagnelab.dl:variation-analysis:1.0.2-SNAPSHOT">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/model-utils-1.0.2-SNAPSHOT.jar!/" />
         </CLASSES>
