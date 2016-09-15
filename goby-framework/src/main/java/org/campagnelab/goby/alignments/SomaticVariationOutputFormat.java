@@ -231,6 +231,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         modelPath = customPath.substring(0, customPath.length() - modelName.length());
         try {
             model = getModel(modelPath, modelPrefix);
+            System.out.println("model at " +modelPath + " loaded");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
