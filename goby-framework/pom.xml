@@ -31,7 +31,14 @@
                 <version>${os-maven-plugin.version}</version>
             </extension>
         </extensions>
-
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.jsap</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <!-- copy protoc binary into build directory -->
             <plugin>
