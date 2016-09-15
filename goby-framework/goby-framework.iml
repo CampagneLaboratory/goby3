@@ -25,18 +25,12 @@
     <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:dsiutils:2.0.6" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: com.martiansoftware:jsap:2.1.2">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../goby-io/../lib/jsap-2.1.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-configuration:commons-configuration:1.8" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math:2.2" level="project" />
+    <orderEntry type="library" name="Maven: commons-configuration:commons-configuration:1.6" level="project" />
+    <orderEntry type="library" name="Maven: commons-digester:commons-digester:1.8" level="project" />
+    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils-core:1.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-exec:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.samtools:htsjdk:2.2.4" level="project" />
     <orderEntry type="library" name="Maven: gov.nih.nlm.ncbi:ngs-java:1.2.2" level="project" />
@@ -73,6 +67,15 @@
       <library name="Maven: org.campagnelab.dl:variation-analysis:1.0.2-SNAPSHO">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/model-utils-1.0.2-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: com.martiansoftware:jsap:2.1.2">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../goby-io/../lib/jsap-2.1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
