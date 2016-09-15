@@ -237,6 +237,11 @@
             <artifactId>JRI</artifactId>
             <version>0.9-7</version>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.5</version>
+        </dependency>
         <!-- local dependencies -->
         <dependency>
             <groupId>org.campagnelab.bdval</groupId>
