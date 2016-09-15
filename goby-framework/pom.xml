@@ -298,5 +298,14 @@
             <scope>system</scope>
             <systemPath>${basedir}/../lib/squil.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>edu.cornell.med.icb</groupId>
+            <artifactId>tisim-api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../lib/tisim-api.jar</systemPath>
+        </dependency>
+
     </dependencies>
 </project>
