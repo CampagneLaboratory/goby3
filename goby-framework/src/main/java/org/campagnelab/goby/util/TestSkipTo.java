@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.IOException;
 import java.util.Random;

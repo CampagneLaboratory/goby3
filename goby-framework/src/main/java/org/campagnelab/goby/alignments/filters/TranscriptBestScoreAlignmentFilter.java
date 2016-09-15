@@ -21,6 +21,7 @@
 package org.campagnelab.goby.alignments.filters;
 
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.FileNotFoundException;
 
