@@ -103,7 +103,7 @@ public class DynamicOptionRegistry {
      * Scan classes for annotations and register Dynamic option clients.
      */
     public static void autoRegister() {
-        final Reflections reflections = new Reflections("edu.cornell.med.icb.goby", new FieldAnnotationsScanner());
+        final Reflections reflections = new Reflections("org.campagnelab.goby", new FieldAnnotationsScanner());
         Set<Field> result = reflections.getFieldsAnnotatedWith(RegisterThis.class);
 
         for (Field field : result) {

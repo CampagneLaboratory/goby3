@@ -695,7 +695,7 @@ public class MethylStatsMode extends AbstractGobyMode {
 
     private void writeXml(PrintWriter output, String[] samples, MethylStats[] methylStats) throws JAXBException {
         int i;
-        final JAXBContext jc = JAXBContext.newInstance("edu.cornell.med.icb.goby.xml");
+        final JAXBContext jc = JAXBContext.newInstance("org.campagnelab.goby.xml");
         final Marshaller m = jc.createMarshaller();
         i = 0;
         for (String sample : samples) {
