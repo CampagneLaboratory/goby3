@@ -73,15 +73,18 @@
                         <configuration>
 
                             <target>
-                                <chmod file="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe" perm="ugo+rx"/>
-                                <mkdir dir="${protobuf.output.directory}" />
+                                <chmod file="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe"
+                                       perm="ugo+rx"/>
+                                <mkdir dir="${protobuf.output.directory}"/>
                                 <path id="protobuf.input.filepaths.path">
                                     <fileset dir="${protobuf.input.directory}">
                                         <include name="*.proto"/>
                                     </fileset>
                                 </path>
-                                <pathconvert pathsep=" " property="protobuf.input.filepaths" refid="protobuf.input.filepaths.path"/>
-                                <exec executable="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe" failonerror="true">
+                                <pathconvert pathsep=" " property="protobuf.input.filepaths"
+                                             refid="protobuf.input.filepaths.path"/>
+                                <exec executable="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe"
+                                      failonerror="true">
                                     <arg value="-I"/>
                                     <arg value="${protobuf.input.directory}"/>
                                     <arg value="--java_out"/>
@@ -298,7 +301,6 @@
             <scope>system</scope>
             <systemPath>${basedir}/../lib/squil.jar</systemPath>
         </dependency>
-
         <dependency>
             <groupId>edu.cornell.med.icb</groupId>
             <artifactId>tisim-api</artifactId>
@@ -306,6 +308,10 @@
             <scope>system</scope>
             <systemPath>${basedir}/../lib/tisim-api.jar</systemPath>
         </dependency>
-
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-core</artifactId>
+            <version>0.5.0</version>
+        </dependency>
     </dependencies>
 </project>
