@@ -29,6 +29,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.logging.ProgressLogger;
 import it.unimi.dsi.lang.MutableString;
+import org.campagnelab.goby.alignments.Alignments;
 
 import java.io.IOException;
 import java.util.Collections;

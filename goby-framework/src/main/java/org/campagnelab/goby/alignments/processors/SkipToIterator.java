@@ -18,6 +18,8 @@
 
 package org.campagnelab.goby.alignments.processors;
 
+import org.campagnelab.goby.alignments.Alignments;
+
 import java.io.IOException;
 
 /**
