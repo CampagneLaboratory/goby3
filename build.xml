@@ -148,7 +148,7 @@
                 <include name="fastutil-6.5.15.jar"/>
                 <include name="dsiutils-2.3.2.jar"/>
                 <include name="icb-utils.jar"/>
-                <include name="JSAP-2.1.jar"/>
+                <include name="jsap-2.1.2.jar"/>
                 <include name="log4j-1.2.15.jar"/>
                 <include name="protobuf-java-3.0.0-beta-4.jar"/>
                 <include name="htsjdk-2.2.4.jar"/>
@@ -305,7 +305,7 @@
                 <!-- Apache version 2 license -->
                 <include name="bdval-api.jar"/>
                 <!-- LGPL -->
-                <include name="JSAP-2.1.jar"/>
+                <include name="jsap-2.1.2.jar"/>
                 <!-- LGPL -->
                 <include name="xstream-1.4.3.jar"/>
                 <!-- Required by JSAP, BSD. -->
