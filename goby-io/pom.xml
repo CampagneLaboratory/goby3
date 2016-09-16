@@ -22,7 +22,23 @@
                 <version>3.0.2</version>
                 <configuration>
                     <includes>
-                        <include>**/reads/**</include>
+                        <include>org/campagnelab/goby/algorithmic/compression/**</include>
+                        <include>org/campagnelab/goby/compression/**</include>
+                        <include>org/campagnelab/goby/reads/**</include>
+                        <include>org/campagnelab/goby/readers/**</include>
+                        <include>org/campagnelab/goby/alignments/**</include>
+                        <include>org/campagnelab/goby/baseinfo/**</include>
+                        <include>org/campagnelab/goby/counts/**</include>
+                        <include>org/campagnelab/goby/modes/UpgradeMode*</include>
+                        <include>org/campagnelab/goby/modes/AbstractGobyMode*</include>
+                        <include>org/campagnelab/goby/modes/AbstractCommandLineMode*</include>
+                        <include>org/campagnelab/goby/modes/TabToColumnInfoMode*</include>
+                        <include>org/campagnelab/goby/modes/GenericToolsDriver*</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/identifier/**</include>
+                        <include>org/campagnelab/goby/counts/**</include>
+                        <include>org/campagnelab/goby/GobyVersion*</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -34,7 +50,7 @@
                         </goals>
                         <configuration>
                             <classifier>io</classifier>
-                            <classesDirectory>${basedir}/../goby-framework/src/main/java</classesDirectory>
+                            <classesDirectory>${basedir}/../goby-distribution/src/main/java</classesDirectory>
                         </configuration>
                     </execution>
                 </executions>
