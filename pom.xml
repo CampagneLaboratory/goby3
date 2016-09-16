@@ -8,10 +8,10 @@
     <packaging>pom</packaging>
     <version>3.0.0-SNAPSHOT</version>
     <modules>
-        <module>goby-framework</module>
+        <module>goby-distribution</module>
         <module>goby-io</module>
     </modules>
-    <name>Goby Base Framework</name>
+    <name>Goby Framework</name>
     <description>Goby is a data management framework designed to facilitate the implementation of efficient data analysis pipelines for high-throughput sequencing data.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
