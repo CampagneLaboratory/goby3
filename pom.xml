@@ -12,6 +12,14 @@
         <module>goby-io</module>
     </modules>
     <name>Goby Framework</name>
+    <url>http://goby.campagnelab.org</url>
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <description>Goby is a data management framework designed to facilitate the implementation of efficient data analysis pipelines for high-throughput sequencing data.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

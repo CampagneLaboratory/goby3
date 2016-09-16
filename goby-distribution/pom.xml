@@ -11,7 +11,14 @@
 
     <artifactId>goby</artifactId>
     <name>Goby</name>
-
+    <url>http://goby.campagnelab.org</url>
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <properties>
         <protobuf.input.directory>${project.basedir}/protobuf</protobuf.input.directory>
         <protobuf.output.directory>${project.build.directory}/generated-sources</protobuf.output.directory>
