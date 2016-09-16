@@ -148,10 +148,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <phase>site</phase>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <phase>site</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -168,6 +168,9 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
