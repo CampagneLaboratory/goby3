@@ -11,7 +11,11 @@
 
     <artifactId>goby</artifactId>
     <name>Goby</name>
-    <url>http://goby.campagnelab.org</url>
+
+    <organization>
+        <name></name>
+        <url>http://goby.campagnelab.org</url>
+    </organization>
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
@@ -183,6 +187,7 @@
                     <archive>
                         <manifest>
                             <mainClass>org.campagnelab.goby.modes.GobyDriver</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
                     <descriptors>
