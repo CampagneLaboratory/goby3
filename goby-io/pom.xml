@@ -11,6 +11,7 @@
 
     <artifactId>goby-io</artifactId>
     <name>Goby I/O</name>
+    <description>I/O core of the Goby Framework</description>
     <build>
         <resources>
             <resource>
@@ -97,7 +98,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
                     <descriptors>
