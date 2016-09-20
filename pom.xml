@@ -23,6 +23,14 @@
         <name>Campagne Laboratory</name>
         <url>http://campagnelab.org</url>
     </organization>
+    <developers>
+        <developer>
+            <name>Fabien Campagne</name>
+            <email>fac2003@campagnelab.org</email>
+            <organization>Campagne Laboratory</organization>
+            <organizationUrl>http://campagnelab.org</organizationUrl>
+        </developer>
+    </developers>
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
