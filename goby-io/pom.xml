@@ -13,6 +13,7 @@
     <name>Goby I/O</name>
     <description>I/O core of the Goby Framework</description>
     <build>
+        <sourceDirectory>${basedir}/../goby-distribution/src/main/java</sourceDirectory>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -24,8 +25,42 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <includes>
+                        <include>org/campagnelab/goby/algorithmic/compression/**</include>
+                        <include>org/campagnelab/goby/compression/**</include>
+                        <include>org/campagnelab/goby/reads/**</include>
+                        <include>org/campagnelab/goby/readers/**</include>
+                        <include>org/campagnelab/goby/alignments/**</include>
+                        <include>org/campagnelab/goby/baseinfo/**</include>
+                        <include>org/campagnelab/goby/counts/**</include>
+                        <include>org/campagnelab/goby/modes/UpgradeMode*</include>
+                        <include>org/campagnelab/goby/modes/AbstractGobyMode*</include>
+                        <include>org/campagnelab/goby/modes/AbstractCommandLineMode*</include>
+                        <include>org/campagnelab/goby/modes/TabToColumnInfoMode*</include>
+                        <include>org/campagnelab/goby/modes/GenericToolsDriver*</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/identifier/**</include>
+                        <include>org/campagnelab/goby/counts/**</include>
+                        <include>org/campagnelab/goby/GobyVersion*</include>
+                    </includes>
+
+                    <excludes>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.jsap</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
                 <configuration>
                     <includes>
                         <include>org/campagnelab/goby/algorithmic/compression/**</include>
@@ -47,24 +82,6 @@
                         <include>org/campagnelab/goby/GobyVersion*</include>
                     </includes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>io</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>io</classifier>
-                            <classesDirectory>${basedir}/../goby-distribution/src/main/java</classesDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -108,9 +125,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <classifier>javadoc</classifier>
                             <additionalparam>-Xdoclint:none</additionalparam>
-                            <javadocDirectory>${basedir}/../goby-distribution/src/main/java</javadocDirectory>
                         </configuration>
                     </execution>
                 </executions>
