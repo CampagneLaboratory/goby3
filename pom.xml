@@ -19,6 +19,10 @@
     </modules>
     <name>Goby Framework</name>
     <url>http://goby.campagnelab.org</url>
+    <organization>
+        <name>Campagne Laboratory</name>
+        <url>http://campagnelab.org</url>
+    </organization>
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
@@ -26,52 +30,43 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <description>Goby is a data management framework designed to facilitate the implementation of efficient data analysis pipelines for high-throughput sequencing data.</description>
+    <description>Goby is a data management framework designed to facilitate the implementation of efficient data
+        analysis pipelines for high-throughput sequencing data.
+    </description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <protobuf.version>3.0.0-beta-4</protobuf.version>
-
     </properties>
 
     <build>
-        <extensions>
-            <!-- provides os.detected.classifier (i.e. linux-x86_64, osx-x86_64) property -->
-            <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>${os-maven-plugin.version}</version>
-            </extension>
-        </extensions>
         <plugins>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <executable>java</executable>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.5.1</version>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                    </configuration>
-                </plugin>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
