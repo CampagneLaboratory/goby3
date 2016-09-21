@@ -25,6 +25,15 @@ import it.unimi.dsi.io.DebugOutputBitStream;
 import it.unimi.dsi.io.InputBitStream;
 import it.unimi.dsi.io.OutputBitStream;
 import junit.framework.TestCase;
+import org.campagnelab.goby.compression.*;
+import org.campagnelab.goby.compression.FastArithmeticCoder;
+import org.campagnelab.goby.compression.FastArithmeticCoderI;
+import org.campagnelab.goby.compression.FastArithmeticCoderOrder1;
+import org.campagnelab.goby.compression.FastArithmeticCoderPlus;
+import org.campagnelab.goby.compression.FastArithmeticDecoder;
+import org.campagnelab.goby.compression.FastArithmeticDecoderI;
+import org.campagnelab.goby.compression.FastArithmeticDecoderOrder1;
+import org.campagnelab.goby.compression.FastArithmeticDecoderPlus;
 import org.junit.Test;
 
 import java.io.IOException;
