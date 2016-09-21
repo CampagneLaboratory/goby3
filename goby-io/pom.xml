@@ -165,7 +165,7 @@
          <artifactId>goby-framework</artifactId>
          <version>3.0.0-SNAPSHOT</version>
          <scope>system</scope>
-         <systemPath>${basedir}/../goby-distribution/target/goby-3.0.0-SNAPSHOT-bin.jar</systemPath>
+         <systemPath>${basedir}/../goby-distribution/target/goby-distribution-3.0.0-SNAPSHOT-bin.jar</systemPath>
      </dependency>
 
  </dependencies>
