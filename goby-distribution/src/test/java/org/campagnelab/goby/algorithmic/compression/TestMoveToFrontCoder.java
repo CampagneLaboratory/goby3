@@ -18,6 +18,7 @@
 
 package org.campagnelab.goby.algorithmic.compression;
 
+import org.campagnelab.goby.compression.MoveToFrontCoder;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

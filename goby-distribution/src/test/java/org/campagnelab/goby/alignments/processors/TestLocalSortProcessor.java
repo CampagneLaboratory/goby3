@@ -19,7 +19,6 @@
 package org.campagnelab.goby.alignments.processors;
 
 import org.campagnelab.goby.alignments.Alignments;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
