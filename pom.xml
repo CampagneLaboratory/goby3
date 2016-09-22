@@ -16,6 +16,7 @@
     <modules>
         <module>goby-distribution</module>
         <module>goby-io</module>
+        <module>goby-spi</module>
     </modules>
     <name>Goby Framework</name>
     <url>http://goby.campagnelab.org</url>

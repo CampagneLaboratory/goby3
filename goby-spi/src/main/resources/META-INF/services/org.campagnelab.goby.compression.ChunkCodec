@@ -1,0 +1,6 @@
+org.campagnelab.goby.compression.NullChunkCodec
+org.campagnelab.goby.compression.NotCompressedChunkCodec
+org.campagnelab.goby.compression.GZipChunkCodec
+org.campagnelab.goby.compression.BZip2ChunkCodec
+org.campagnelab.goby.compression.HybridChunkCodec1
+org.campagnelab.goby.compression.HybridChunkCodec2
