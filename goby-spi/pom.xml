@@ -10,7 +10,7 @@
     <artifactId>goby-spi</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <description>A manifest only jar file for Goby services</description>
-
+    <url>http://goby.campagnelab.org</url>
     <build>
         <plugins>
             <plugin>

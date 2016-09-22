@@ -11,7 +11,7 @@
 
     <artifactId>goby-distribution</artifactId>
     <name>Goby Full Distribution</name>
-
+    <url>http://goby.campagnelab.org</url>
     <properties>
         <protobuf.input.directory>${project.basedir}/protobuf</protobuf.input.directory>
         <protobuf.output.directory>${project.build.directory}/generated-sources</protobuf.output.directory>

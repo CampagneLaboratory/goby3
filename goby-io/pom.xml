@@ -12,6 +12,7 @@
     <artifactId>goby-io</artifactId>
     <name>Goby I/O</name>
     <description>I/O core of the Goby Framework</description>
+    <url>http://goby.campagnelab.org</url>
     <build>
         <sourceDirectory>${basedir}/../goby-distribution/src/main/java</sourceDirectory>
         <resources>
