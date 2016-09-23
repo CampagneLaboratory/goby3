@@ -188,6 +188,7 @@
                     <descriptors>
                         <descriptor>assembly/assembly.xml</descriptor>
                     </descriptors>
+                    <finalName>goby</finalName>
                 </configuration>
                 <executions>
                     <execution>
