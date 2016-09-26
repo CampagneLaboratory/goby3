@@ -591,10 +591,7 @@ public abstract class IterateSortedAlignments<T> {
                         targetId, targetIndex));
             } else {
                 // substracts from genome length because the size is recorded longer by one base in loadFasta
-                //TODO: 9/19/2016 manuele: temporary removing the subtraction because it seems that alignments and genome are shifted
-                //TODO: by 1 position after the migration to goby 3. Should we leave like this? May this be caused by alignments
-                //TODO: generated with a previous version?
-                final int genomeLength = genome.getLength(genomeTargetIndex);
+                final int genomeLength = genome.getLength(genomeTargetIndex) - 1;
                 final int alignmentTargetLength = alignmentTargetLengths[targetIndex];
                 if (alignmentTargetLength != genomeLength) {
 
