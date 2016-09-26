@@ -3,7 +3,7 @@ The software has been under development and released since 2010.
 
 In June 2012, we released Goby 2.0, a version with compression methods that provide state of the art compression of High-Throughput Sequencing (HTS) alignment data.
 
-In August 2016, we released Goby 3.0, which incorporates probabilistic models trained with deep learning approaches.
+In September 2016, we released Goby 3.0, which incorporates probabilistic models trained with deep learning approaches.
 
 ### Goby 1 and 2
 You found the Goby3 repository. This repository was cut from the first
@@ -21,20 +21,19 @@ Goby is currently being developed by the members of the [Campagne laboratory](ht
 ### Source code
 Goby source code is now on GitHub.  You can obtain and build the project as follows:
    ```
-   git clone git://github.com/CampagneLaboratory/goby.git
-   cd goby
+   git clone git://github.com/CampagneLaboratory/goby3.git
+   cd goby3
    ```
 #### Compilation:
    ```
-   ant -f build.xml jar
+   mvn install
    ```
-
-   This should create a goby.jar file, which can be used to run goby.
+   This should create a goby.jar file in the goby3 folder, which can be used to run goby.
 #### Running
    After compilation, we recommend running goby with the wrapper:
-```
+   ```
    <installation directory>/goby 1g --help
-```
+   ```
 The wrapper sets some variables, and runs the jar file. You can also run goby directly from the JAR file:
    ```
    java -jar goby.jar -Xmx1g --help
