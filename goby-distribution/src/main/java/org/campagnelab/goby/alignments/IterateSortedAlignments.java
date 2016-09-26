@@ -590,8 +590,7 @@ public abstract class IterateSortedAlignments<T> {
                         "Alignment reference %s index (%d) was not found in the genome.",
                         targetId, targetIndex));
             } else {
-                // substracts from genome length because the size is recorded longer by one base in loadFasta
-                final int genomeLength = genome.getLength(genomeTargetIndex) - 1;
+                final int genomeLength = genome.getLength(genomeTargetIndex);
                 final int alignmentTargetLength = alignmentTargetLengths[targetIndex];
                 if (alignmentTargetLength != genomeLength) {
 
