@@ -204,7 +204,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <configuration>
                             <tasks>
                                 <copy file="${project.build.directory}/goby-bin.jar"
