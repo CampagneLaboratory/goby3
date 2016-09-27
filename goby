@@ -21,7 +21,7 @@ fi
 
 export GOBY_HOME=${WORKING_DIR}
 GOBY_JAR=${GOBY_HOME}/goby.jar
-SLF4J_CONFIG=${GOBY_HOME}/config/logback.xml
+SLF4J_CONFIG=${GOBY_HOME}/config/goby-logback.xml
 
 if [ "${RJAVA_HOME:-notset}" == "notset" ]; then
   #echo "Trying to set RJAVA_HOME environment variable"
@@ -37,4 +37,4 @@ EOT
 fi
 
 #echo java -ea -Xmx${memory_requirement} -Dlog4j.configuration=${LOG4J_PROPS} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
-java -ea -Xmx${memory_requirement} -cp ${SLF4J_CONFIG}:${CLASSPATH} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
+java -ea -Xmx${memory_requirement} -Dlogback.configurationFile=${SLF4J_CONFIG} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
