@@ -421,9 +421,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
 
     private int getNumMatchedReads(String inputFilename) {
-        AlignmentReaderImpl reader = null;
+        AlignmentReader reader = null;
         try {
-            reader = new AlignmentReaderImpl(inputFilename);
+            DefaultAlignmentReaderFactory factory = new DefaultAlignmentReaderFactory();
+            reader = factory.createReader(inputFilename);
             reader.readHeader();
             return reader.getNumberOfAlignedReads();
         } catch (IOException e) {
