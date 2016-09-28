@@ -18,7 +18,7 @@
 
 package org.campagnelab.goby.cli;
 
-import edu.cornell.med.icb.parsers.FastaParser;
+import org.campagnelab.goby.parsers.FastaParser;
 import edu.mssm.crover.cli.CLI;
 import it.unimi.dsi.lang.MutableString;
 

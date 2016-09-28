@@ -1,4 +1,4 @@
-package org.campagnelab.goby.util;
+package org.campagnelab.goby.cli;
 
 /*
  * Copyright (C) 2009-2010 Institute for Computational Biomedicine,

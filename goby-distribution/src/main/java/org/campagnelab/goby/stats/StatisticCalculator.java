@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.lang.MutableString;
-import org.campagnelab.goby.util.DoInParallel;
+import org.campagnelab.goby.cli.DoInParallel;
 
 import java.util.Arrays;
 

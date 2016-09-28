@@ -18,7 +18,7 @@
 
 package org.campagnelab.goby.alignments;
 
-import org.campagnelab.goby.alignments.filters.PercentMismatchesQualityFilter;
+import org.campagnelab.goby.modes.PercentMismatchesQualityFilter;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;

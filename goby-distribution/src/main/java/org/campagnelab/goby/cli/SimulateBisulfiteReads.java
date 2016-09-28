@@ -19,7 +19,7 @@
 package org.campagnelab.goby.cli;
 
 import org.campagnelab.goby.reads.QualityEncoding;
-import edu.cornell.med.icb.parsers.FastaParser;
+import org.campagnelab.goby.parsers.FastaParser;
 import edu.mssm.crover.cli.CLI;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;

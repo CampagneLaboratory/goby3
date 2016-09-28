@@ -18,11 +18,12 @@
  *     along with the Goby IO API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.alignments.filters;
+package org.campagnelab.goby.modes;
 
 import edu.mssm.crover.cli.CLI;
 import org.apache.commons.lang.StringUtils;
 import org.campagnelab.goby.alignments.Alignments;
+import org.campagnelab.goby.alignments.filters.AlignmentQualityFilter;
 
 import java.io.PrintStream;
 

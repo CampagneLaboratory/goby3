@@ -74,6 +74,7 @@
                         <include>org/campagnelab/goby/exception/**</include>
                         <include>org/campagnelab/goby/modes/core/**</include>
                         <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/parsers/**</include>
                     </includes>
 
                 </configuration>
@@ -197,14 +198,6 @@
      </dependency>
 
      <dependency>
-         <groupId>edu.cornell.med.icb</groupId>
-         <artifactId>parsers</artifactId>
-         <version>1.0</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/squil.jar</systemPath>
-     </dependency>
-
-     <dependency>
          <groupId>com.github.samtools</groupId>
          <artifactId>htsjdk</artifactId>
          <version>2.2.4</version>
@@ -225,14 +218,6 @@
      </dependency>
 
      <dependency>
-         <groupId>edu.rit.pj</groupId>
-         <artifactId>pj</artifactId>
-         <version>1.0</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/pj20091226.jar</systemPath>
-     </dependency>
-
-     <dependency>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-math</artifactId>
          <version>2.2</version>
@@ -248,6 +233,14 @@
                  <artifactId>*</artifactId>
              </exclusion>
          </exclusions>
+     </dependency>
+
+     <dependency>
+         <groupId>org.campagnelab.dl</groupId>
+         <artifactId>variation-analysis</artifactId>
+         <version>1.0.2-SNAPSHOT</version>
+         <scope>system</scope>
+         <systemPath>${basedir}/../lib/model-utils-1.0.2-SNAPSHOT.jar</systemPath>
      </dependency>
 
      <dependency>

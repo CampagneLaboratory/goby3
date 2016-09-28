@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.campagnelab.goby.util.DoInParallel;
+import org.campagnelab.goby.cli.DoInParallel;
 
 import java.io.FileWriter;
 import java.io.IOException;

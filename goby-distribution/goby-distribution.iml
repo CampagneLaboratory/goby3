@@ -115,15 +115,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: edu.cornell.med.icb:parsers:1.0">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/squil.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="Maven: edu.cornell.med.icb:tisim-api:1.0">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/tisim-api.jar!/" />

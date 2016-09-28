@@ -18,7 +18,7 @@
 
 package org.campagnelab.goby.methylation;
 
-import org.campagnelab.goby.util.DoInParallel;
+import org.campagnelab.goby.cli.DoInParallel;
 import edu.cornell.med.icb.io.TSVReader;
 import edu.mssm.crover.cli.CLI;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
