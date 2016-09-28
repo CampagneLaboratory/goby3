@@ -1,4 +1,4 @@
-package org.campagnelab.goby.alignments;
+package org.campagnelab.goby.modes.formats;
 
 import com.martiansoftware.jsap.JSAPException;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;

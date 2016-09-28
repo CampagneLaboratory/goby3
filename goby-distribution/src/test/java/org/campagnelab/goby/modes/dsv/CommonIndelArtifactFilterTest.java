@@ -1,4 +1,4 @@
-package org.campagnelab.goby.alignments;
+package org.campagnelab.goby.modes.dsv;
 
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import org.campagnelab.goby.modes.dsv.CommonIndelArtifactFilter;
