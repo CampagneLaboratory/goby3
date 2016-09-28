@@ -16,12 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.alignments;
+package org.campagnelab.goby.modes.dsv;
 
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.modes.dsv.GenotypeFilter;
+import org.campagnelab.goby.alignments.PositionBaseInfo;
 
 import java.util.Arrays;
 

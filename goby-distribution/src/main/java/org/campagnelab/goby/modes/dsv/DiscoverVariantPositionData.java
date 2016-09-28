@@ -22,7 +22,6 @@ import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
 
 import java.util.Collections;
 

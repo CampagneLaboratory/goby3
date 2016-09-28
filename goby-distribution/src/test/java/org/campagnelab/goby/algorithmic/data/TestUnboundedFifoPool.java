@@ -22,6 +22,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.campagnelab.goby.util.UnboundedFifoPool;
 import org.junit.Test;
 
 /**

@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
 
 /**
  * Filter to remove common sequencing artifacts that look like indels. Such artifacts occur in a region of the genome

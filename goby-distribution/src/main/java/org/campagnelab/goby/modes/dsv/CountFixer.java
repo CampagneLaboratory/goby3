@@ -20,10 +20,7 @@ package org.campagnelab.goby.modes.dsv;
 
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.campagnelab.goby.alignments.CountFixerInterface;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 
 /**
  * @author Fabien Campagne

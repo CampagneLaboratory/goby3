@@ -73,18 +73,14 @@ public class UpgradeModeCore {
             }
             if (GobyVersion.isOlder(version, "goby_1.9.6")) {
                 if (reader.isIndexed()) {
-                    // we need to upgrade 1.9.5- alignment indices to the new indexing scheme implemented in 1.9.6+:
-                    UpgradeTo1_9_6 upgrader = new UpgradeTo1_9_6();
-                    upgrader.setSilent(silent);
-                    upgrader.upgrade(basename, reader);
+                    System.err.println("This alignment requires upgrading, please download goby 2 and use it to upgrade.");
+                    System.exit(1);
                 }
             }
             if (GobyVersion.isOlder(version, "goby_1.9.8.2")) {
                 if (reader.isIndexed()) {
-                    // we need to upgrade 1.9.5- alignment indices to the new indexing scheme implemented in 1.9.6+:
-                    UpgradeTo1_9_8_2 upgrader = new UpgradeTo1_9_8_2();
-                    upgrader.setSilent(silent);
-                    upgrader.upgrade(basename, reader);
+                    System.err.println("This alignment requires upgrading, please download goby 2 and use it to upgrade.");
+                    System.exit(1);
                 }
             }
         } catch (IOException e) {

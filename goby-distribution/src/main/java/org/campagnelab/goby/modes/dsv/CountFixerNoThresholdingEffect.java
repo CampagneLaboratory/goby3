@@ -4,7 +4,6 @@ import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
 
 /**
  * @author Fabien Campagne

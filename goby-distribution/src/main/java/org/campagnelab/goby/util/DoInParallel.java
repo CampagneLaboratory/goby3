@@ -16,10 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.cli;
+package org.campagnelab.goby.util;
 
 import edu.rit.pj.ParallelTeam;
-import org.campagnelab.goby.util.BasenameParallelRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

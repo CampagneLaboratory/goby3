@@ -20,7 +20,6 @@
 
 package org.campagnelab.goby.counts;
 
-import org.campagnelab.goby.modes.CompactAlignmentToCountsMode;
 import org.apache.commons.io.FileUtils;
 import org.bdval.io.compound.CompoundDataOutput;
 import org.bdval.io.compound.CompoundFileWriter;

@@ -20,7 +20,7 @@
 
 package org.campagnelab.goby.readers.vcf;
 
-import org.campagnelab.goby.modes.TabToColumnInfoMode;
+import org.campagnelab.goby.modes.core.TabToColumnInfoModeCore;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -206,7 +206,7 @@ public class VCFParser implements Closeable {
         // TODO: Currently this will not work right if the TSV file header line DOES start with "#"
         // TODO: which could be a problem, although current TSV files produced by DiffExp's do not do this.
         if (tsvColumnNameToTypeMap == null && inputFile != null && inputFile.exists()) {
-            final TabToColumnInfoMode reader = new TabToColumnInfoMode();
+            final TabToColumnInfoModeCore reader = new TabToColumnInfoModeCore();
             reader.addInputFile(inputFile);
             reader.setCreateCache(cacheTsvColumnTypes);
             reader.setNumberOfLinesToProcess(tsvLinesToScanForColumnType);

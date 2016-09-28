@@ -26,7 +26,7 @@ import org.campagnelab.goby.algorithmic.data.MethylCountInfo;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.ReadIndexStats;
-import org.campagnelab.goby.alignments.SampleCountInfo;
+import org.campagnelab.goby.modes.dsv.SampleCountInfo;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.stats.MethylCountProviderFromRegionsOutputFormat;
 import org.campagnelab.goby.stats.RegionWriter;

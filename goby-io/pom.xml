@@ -72,7 +72,6 @@
                         <include>org/campagnelab/goby/counts/**</include>
                         <include>org/campagnelab/goby/GobyVersion*</include>
                         <include>org/campagnelab/goby/exception/**</include>
-                        <include>org/campagnelab/goby/modes/GobyDriver*</include>
                         <include>org/campagnelab/goby/modes/core/**</include>
                         <include>org/campagnelab/goby/util/**</include>
                     </includes>

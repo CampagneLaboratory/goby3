@@ -2,7 +2,6 @@ package org.campagnelab.goby.modes.dsv;
 
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;

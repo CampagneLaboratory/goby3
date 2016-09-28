@@ -1,10 +1,6 @@
 package org.campagnelab.goby.modes.dsv;
 
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.modes.dsv.GenotypeFilter;
-import org.campagnelab.goby.modes.dsv.QualityScoreFilter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import it.unimi.dsi.fastutil.objects.ObjectSet;

@@ -19,8 +19,9 @@
 package org.campagnelab.goby.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
+
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;

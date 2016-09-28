@@ -27,7 +27,7 @@ import org.campagnelab.goby.reads.QualityEncoding;
 import org.campagnelab.goby.reads.ReadCodec;
 import org.campagnelab.goby.reads.ReadsWriter;
 import org.campagnelab.goby.reads.ReadsWriterImpl;
-import org.campagnelab.goby.cli.DoInParallel;
+import org.campagnelab.goby.util.DoInParallel;
 import org.campagnelab.goby.util.FileExtensionHelper;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 import it.unimi.dsi.fastutil.io.FastBufferedOutputStream;

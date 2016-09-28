@@ -20,7 +20,6 @@ package org.campagnelab.goby.modes.dsv;
 
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
 
 import java.util.Arrays;
 

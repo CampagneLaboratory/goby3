@@ -20,7 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.cli.DoInParallel;
+import org.campagnelab.goby.util.DoInParallel;
 import org.campagnelab.goby.util.IsDone;
 import org.campagnelab.goby.util.LoggingOutputStream;
 import org.campagnelab.goby.util.StreamSignal;
@@ -32,7 +32,7 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
+import  org.slf4j.event.Level;
 
 import java.io.File;
 import java.io.IOException;

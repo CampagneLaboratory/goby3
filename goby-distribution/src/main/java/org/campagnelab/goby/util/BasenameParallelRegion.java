@@ -1,3 +1,5 @@
+package org.campagnelab.goby.util;
+
 /*
  * Copyright (C) 2009-2010 Institute for Computational Biomedicine,
  *                    Weill Medical College of Cornell University
@@ -16,12 +18,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.util;
 
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import edu.rit.pj.IntegerForLoop;
 import edu.rit.pj.ParallelRegion;
-import org.campagnelab.goby.cli.DoInParallel;
 
 /**
  * @author Fabien Campagne
@@ -58,3 +58,4 @@ class BasenameParallelRegion extends ParallelRegion {
         });
     }
 }
+

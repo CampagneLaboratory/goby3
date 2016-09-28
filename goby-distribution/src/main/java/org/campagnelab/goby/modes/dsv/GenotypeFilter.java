@@ -26,7 +26,6 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
 
 import java.util.Arrays;
 

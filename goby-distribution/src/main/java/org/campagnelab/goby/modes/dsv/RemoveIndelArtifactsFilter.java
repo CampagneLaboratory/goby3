@@ -21,9 +21,6 @@ package org.campagnelab.goby.modes.dsv;
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.modes.dsv.GenotypeFilter;
 
 /**
  * Remove base observations that are a direct consequence of indels spanning the location.

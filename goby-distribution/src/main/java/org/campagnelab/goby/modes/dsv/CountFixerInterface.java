@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.alignments;
+package org.campagnelab.goby.modes.dsv;
 
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.alignments.PositionBaseInfo;
 
 /**
  * Implementations of this interface provide strategies to eliminate or correct likely errors.

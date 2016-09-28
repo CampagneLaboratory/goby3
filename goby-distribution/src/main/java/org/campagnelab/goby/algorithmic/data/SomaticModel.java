@@ -2,7 +2,7 @@ package org.campagnelab.goby.algorithmic.data;
 
 import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.alignments.SampleCountInfo;
+import org.campagnelab.goby.modes.dsv.SampleCountInfo;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;

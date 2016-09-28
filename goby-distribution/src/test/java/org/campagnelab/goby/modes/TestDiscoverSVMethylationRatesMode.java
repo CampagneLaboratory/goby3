@@ -24,6 +24,7 @@ import org.campagnelab.goby.algorithmic.data.GroupComparison;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.modes.dsv.SampleCountInfo;
 import org.campagnelab.goby.modes.formats.MethylationRateVCFOutputFormat;
 import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
 import org.campagnelab.goby.reads.ReadsWriter;
