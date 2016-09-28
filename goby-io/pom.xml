@@ -135,29 +135,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                    <descriptors>
-                        <descriptor>assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin -->
 
         </plugins>
     </build>
@@ -207,14 +184,6 @@
          <groupId>com.google.protobuf</groupId>
          <artifactId>protobuf-java</artifactId>
          <version>${protobuf.version}</version>
-     </dependency>
-
-     <dependency>
-         <groupId>org.campagnelab.bdval</groupId>
-         <artifactId>bdval-api</artifactId>
-         <version>1.0.0</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/bdval-api.jar</systemPath>
      </dependency>
 
      <dependency>
