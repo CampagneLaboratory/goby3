@@ -590,6 +590,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         for (int somaticSampleIndex : somaticSampleIndices) {
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
+                if (model==null){
+                    System.out.println("model not found. path: "+ modelPath + " prefix: " + modelPrefix);
+                    return;
+                }
                 ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts, referenceIndex, pos, list, germlineSampleIndex, somaticSampleIndex);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
