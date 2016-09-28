@@ -24,7 +24,7 @@ import org.campagnelab.goby.alignments.perms.NoOpPermutation;
 import org.campagnelab.goby.alignments.perms.QueryIndexPermutation;
 import org.campagnelab.goby.alignments.perms.QueryIndexPermutationInterface;
 import org.campagnelab.goby.compression.MessageChunksWriter;
-import org.campagnelab.goby.modes.GobyDriver;
+
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
@@ -448,7 +448,7 @@ public class AlignmentWriterImpl implements AlignmentWriter {
 
             final Alignments.AlignmentHeader.Builder headerBuilder = Alignments.AlignmentHeader.newBuilder();
             // record the version of Goby that created this alignment..
-            final String version = VersionUtils.getImplementationVersion(GobyDriver.class);
+            final String version = VersionUtils.getImplementationVersion(AlignmentWriterImpl.class);
             headerBuilder.setVersion(version);
 
             headerBuilder.setLargestSplitQueryIndex(permutator.getBiggestSmallIndex());

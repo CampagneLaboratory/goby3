@@ -23,7 +23,6 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.alignments.filters.AlignmentQualityFilter;
-import org.campagnelab.goby.alignments.filters.PercentMismatchesQualityFilter;
 import org.campagnelab.goby.reads.ReadSet;
 import org.campagnelab.goby.reads.Reads;
 import org.campagnelab.goby.reads.ReadsReader;

@@ -20,6 +20,8 @@ package org.campagnelab.goby.modes;
 
 import org.campagnelab.goby.reads.QualityEncoding;
 import org.campagnelab.goby.util.LogIsConfigured;
+import org.campagnelab.goby.util.SamHelper;
+import org.campagnelab.goby.util.SamSequenceVariation;
 import org.campagnelab.goby.util.pool.NullResettableObjectPool;
 import org.campagnelab.goby.util.pool.ResettableObjectPoolInterface;
 import htsjdk.samtools.SAMRecord;

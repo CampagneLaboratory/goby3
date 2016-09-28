@@ -29,6 +29,7 @@ import org.campagnelab.goby.reads.DualRandomAccessSequenceCache;
 import org.campagnelab.goby.reads.QualityEncoding;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.LogIsConfigured;
+import org.campagnelab.goby.util.SamSequenceVariation;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;

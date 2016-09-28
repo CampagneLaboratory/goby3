@@ -4,7 +4,6 @@ import com.google.protobuf.ByteString;
 import org.campagnelab.goby.alignments.AlignmentTooManyHitsWriter;
 import org.campagnelab.goby.alignments.AlignmentWriter;
 import org.campagnelab.goby.alignments.Alignments;
-import org.campagnelab.goby.modes.SAMToCompactMode;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import htsjdk.samtools.SAMRecord;
 import it.unimi.dsi.fastutil.ints.Int2ByteMap;
@@ -223,10 +222,10 @@ public class ConvertSamBAMReadToGobyAlignment {
 
         config.largestQueryIndex = Math.max(queryIndex, config.largestQueryIndex);
         config.smallestQueryIndex = Math.min(queryIndex, config.smallestQueryIndex);
-        final int genomeTargetIndex = config.genome == null ? -1 : config.genome.getReferenceIndex(SAMToCompactMode.chromosomeNameMapping(config.genome, samRecord.getReferenceName()));
+        final int genomeTargetIndex = config.genome == null ? -1 : config.genome.getReferenceIndex(ChromosomeMapper.chromosomeNameMapping(config.genome, samRecord.getReferenceName()));
         if (config.genome != null && genomeTargetIndex == -1) {
             System.out.println("genomeTargetIndex==-1, name=" + samRecord.getReferenceName());
-            System.out.println("mapping=" + SAMToCompactMode.chromosomeNameMapping(config.genome, samRecord.getReferenceName()));
+            System.out.println("mapping=" + ChromosomeMapper.chromosomeNameMapping(config.genome, samRecord.getReferenceName()));
             System.exit(10);
         }
         int segmentIndex = 0;

@@ -20,7 +20,7 @@ package org.campagnelab.goby.counts;
 
 
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
-import org.bdval.io.compound.CompoundDataInput;
+import org.campagnelab.goby.counts.compound.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;

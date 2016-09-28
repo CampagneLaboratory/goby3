@@ -19,7 +19,7 @@
 package org.campagnelab.goby.stats;
 
 import org.campagnelab.goby.algorithmic.data.MethylCountInfo;
-import org.campagnelab.goby.modes.MethylationRegionsOutputFormat;
+import org.campagnelab.goby.modes.formats.MethylationRegionsOutputFormat;
 
 /**
  * A provider that fetches methylation counts from a region output format.

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy/MM/dd HH:mm:ss} %5r %p [%-7t] [%-15c{1}] %-34C{2} - %m%n</pattern>
+        </encoder>
+    </appender>
+    <!--logger name="org.campagnelab" level="INFO"/-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.reflections.Reflections" level="ERROR"/>
+</configuration>

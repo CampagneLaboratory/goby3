@@ -20,7 +20,7 @@
 
 package org.campagnelab.goby.alignments;
 
-import org.campagnelab.goby.modes.UpgradeMode;
+import org.campagnelab.goby.modes.core.UpgradeModeCore;
 import org.campagnelab.goby.util.FileExtensionHelper;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -108,7 +108,7 @@ public abstract class AbstractAlignmentReader implements Closeable,
         // do not upgrade when the upgrade flag is false;
         if (basename != null && upgrade) {
             // we can only upgrade alignments for which we have a basename
-            UpgradeMode upgrader = new UpgradeMode();
+            UpgradeModeCore upgrader = new UpgradeModeCore();
             upgrader.setSilent(true);
             upgrader.upgrade(basename);
         }

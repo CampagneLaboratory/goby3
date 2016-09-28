@@ -21,7 +21,7 @@
 package org.campagnelab.goby.reads;
 
 import com.google.protobuf.ByteString;
-import edu.cornell.med.icb.parsers.ReaderFastaParser;
+import org.campagnelab.goby.parsers.ReaderFastaParser;
 import it.unimi.dsi.bits.BitVector;
 import it.unimi.dsi.bits.LongArrayBitVector;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;

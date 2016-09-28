@@ -18,6 +18,8 @@
 
 package org.campagnelab.goby.modes;
 
+import org.campagnelab.goby.modes.formats.SequenceVariationOutputFormat;
+
 /**
  * A configurator that does nothing.
  * @author campagne

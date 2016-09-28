@@ -20,7 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.util.SimulateBisulfiteReads;
+import org.campagnelab.goby.cli.SimulateBisulfiteReads;
 
 import java.io.IOException;
 

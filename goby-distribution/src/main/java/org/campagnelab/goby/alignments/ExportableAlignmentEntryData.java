@@ -19,7 +19,7 @@
 package org.campagnelab.goby.alignments;
 
 import com.google.protobuf.ByteString;
-import org.campagnelab.goby.modes.SamHelper;
+import org.campagnelab.goby.util.SamHelper;
 import org.campagnelab.goby.reads.QualityEncoding;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.LogIsConfigured;

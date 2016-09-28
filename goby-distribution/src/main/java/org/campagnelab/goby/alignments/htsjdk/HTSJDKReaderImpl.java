@@ -4,7 +4,6 @@ import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ReadOriginInfo;
 import org.campagnelab.goby.alignments.ReferenceLocation;
-import org.campagnelab.goby.modes.SAMToCompactMode;
 import org.campagnelab.goby.readers.sam.ConversionConfig;
 import org.campagnelab.goby.readers.sam.ConvertSamBAMReadToGobyAlignment;
 import org.campagnelab.goby.readers.sam.SamRecordParser;
@@ -38,7 +37,7 @@ public class HTSJDKReaderImpl implements AlignmentReader {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(SAMToCompactMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HTSJDKReaderImpl.class);
 
     DateFormat dateFormatter = new SimpleDateFormat("dd:MMM:yyyy");
     private boolean sorted;

@@ -12,6 +12,13 @@
     <artifactId>goby-io</artifactId>
     <name>Goby I/O</name>
     <description>I/O core of the Goby Framework</description>
+    <url>http://goby.campagnelab.org</url>
+
+    <properties>
+        <protobuf.output.directory>${basedir}/../goby-distribution/target/generated-sources</protobuf.output.directory>
+
+    </properties>
+
     <build>
         <sourceDirectory>${basedir}/../goby-distribution/src/main/java</sourceDirectory>
         <resources>
@@ -24,12 +31,37 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${build-helper-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-classes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${protobuf.output.directory}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <!-- do not use another version, see http://stackoverflow.com/questions/11051620/compiling-only-selected-files-in-maven-->
+                <version>2.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+
+                    <excludes>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.jsap</exclude>
+                    </excludes>
                     <includes>
                         <include>org/campagnelab/goby/algorithmic/compression/**</include>
                         <include>org/campagnelab/goby/compression/**</include>
@@ -38,22 +70,14 @@
                         <include>org/campagnelab/goby/alignments/**</include>
                         <include>org/campagnelab/goby/baseinfo/**</include>
                         <include>org/campagnelab/goby/counts/**</include>
-                        <include>org/campagnelab/goby/modes/UpgradeMode*</include>
-                        <include>org/campagnelab/goby/modes/AbstractGobyMode*</include>
-                        <include>org/campagnelab/goby/modes/AbstractCommandLineMode*</include>
-                        <include>org/campagnelab/goby/modes/TabToColumnInfoMode*</include>
-                        <include>org/campagnelab/goby/modes/GenericToolsDriver*</include>
-                        <include>org/campagnelab/goby/util/**</include>
-                        <include>org/campagnelab/goby/exception/**</include>
-                        <include>org/campagnelab/goby/identifier/**</include>
-                        <include>org/campagnelab/goby/counts/**</include>
                         <include>org/campagnelab/goby/GobyVersion*</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
 
-                    <excludes>
-                        <exclude>**/*.html</exclude>
-                        <exclude>**/*.jsap</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
 
@@ -70,16 +94,12 @@
                         <include>org/campagnelab/goby/alignments/**</include>
                         <include>org/campagnelab/goby/baseinfo/**</include>
                         <include>org/campagnelab/goby/counts/**</include>
-                        <include>org/campagnelab/goby/modes/UpgradeMode*</include>
-                        <include>org/campagnelab/goby/modes/AbstractGobyMode*</include>
-                        <include>org/campagnelab/goby/modes/AbstractCommandLineMode*</include>
-                        <include>org/campagnelab/goby/modes/TabToColumnInfoMode*</include>
-                        <include>org/campagnelab/goby/modes/GenericToolsDriver*</include>
-                        <include>org/campagnelab/goby/util/**</include>
-                        <include>org/campagnelab/goby/exception/**</include>
-                        <include>org/campagnelab/goby/identifier/**</include>
-                        <include>org/campagnelab/goby/counts/**</include>
                         <include>org/campagnelab/goby/GobyVersion*</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -105,16 +125,12 @@
                         <include>org/campagnelab/goby/alignments/**</include>
                         <include>org/campagnelab/goby/baseinfo/**</include>
                         <include>org/campagnelab/goby/counts/**</include>
-                        <include>org/campagnelab/goby/modes/UpgradeMode*</include>
-                        <include>org/campagnelab/goby/modes/AbstractGobyMode*</include>
-                        <include>org/campagnelab/goby/modes/AbstractCommandLineMode*</include>
-                        <include>org/campagnelab/goby/modes/TabToColumnInfoMode*</include>
-                        <include>org/campagnelab/goby/modes/GenericToolsDriver*</include>
-                        <include>org/campagnelab/goby/util/**</include>
-                        <include>org/campagnelab/goby/exception/**</include>
-                        <include>org/campagnelab/goby/identifier/**</include>
-                        <include>org/campagnelab/goby/counts/**</include>
                         <include>org/campagnelab/goby/GobyVersion*</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -130,29 +146,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                    <descriptors>
-                        <descriptor>assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
         </plugins>
     </build>
@@ -161,11 +154,72 @@
  <dependencies>
 
      <dependency>
-         <groupId>org.campagnelab.goby</groupId>
-         <artifactId>goby-framework</artifactId>
-         <version>3.0.0-SNAPSHOT</version>
+         <groupId>it.unimi.dsi</groupId>
+         <artifactId>fastutil</artifactId>
+         <version>7.0.12</version>
+     </dependency>
+
+     <dependency>
+         <groupId>edu.cornell.med.icb</groupId>
+         <artifactId>icb-util</artifactId>
+         <version>1.1.6</version>
          <scope>system</scope>
-         <systemPath>${basedir}/../goby-distribution/target/goby-3.0.0-SNAPSHOT-bin.jar</systemPath>
+         <systemPath>${basedir}/../lib/icb-utils.jar</systemPath>
+     </dependency>
+
+     <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>1.7.21</version>
+     </dependency>
+
+     <dependency>
+         <groupId>it.unimi.dsi</groupId>
+         <artifactId>dsiutils</artifactId>
+         <version>2.3.3</version>
+         <exclusions>
+             <exclusion>
+                 <groupId>com.google.guava</groupId>
+                 <artifactId>*</artifactId>
+             </exclusion>
+         </exclusions>
+     </dependency>
+
+     <dependency>
+         <groupId>com.github.samtools</groupId>
+         <artifactId>htsjdk</artifactId>
+         <version>2.2.4</version>
+     </dependency>
+
+     <dependency>
+         <groupId>com.google.protobuf</groupId>
+         <artifactId>protobuf-java</artifactId>
+         <version>${protobuf.version}</version>
+     </dependency>
+
+
+     <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-math</artifactId>
+         <version>2.2</version>
+     </dependency>
+
+     <dependency>
+         <groupId>org.reflections</groupId>
+         <artifactId>reflections</artifactId>
+         <version>0.9.5</version>
+         <exclusions>
+             <exclusion>
+                 <groupId>org.slf4j</groupId>
+                 <artifactId>*</artifactId>
+             </exclusion>
+         </exclusions>
+     </dependency>
+
+     <dependency>
+         <groupId>com.github.lucarosellini.rJava</groupId>
+         <artifactId>JRI</artifactId>
+         <version>0.9-7</version>
      </dependency>
 
  </dependencies>

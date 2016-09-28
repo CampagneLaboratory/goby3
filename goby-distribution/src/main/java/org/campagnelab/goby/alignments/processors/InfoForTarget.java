@@ -21,7 +21,7 @@ package org.campagnelab.goby.alignments.processors;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
-import org.campagnelab.goby.algorithmic.data.UnboundedFifoPool;
+import org.campagnelab.goby.util.UnboundedFifoPool;
 import org.campagnelab.goby.alignments.Alignments;
 
 import java.util.Random;

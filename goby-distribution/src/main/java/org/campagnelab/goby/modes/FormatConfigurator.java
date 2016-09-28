@@ -18,6 +18,8 @@
 
 package org.campagnelab.goby.modes;
 
+import org.campagnelab.goby.modes.formats.SequenceVariationOutputFormat;
+
 /**
  * Subclasses of this class perform configuration on a sequence variation output format instance.
  * @author Fabien Campagne

@@ -79,7 +79,7 @@ public abstract class IterateSortedAlignments<T> {
     /**
      * Maximum of half a million bases per position. Can be changed, see setter.
      */
-    int maxThreshold = 500000;
+    public int maxThreshold = 500000;
 
     private AlignmentReaderFactory alignmentReaderFactory = new DefaultAlignmentReaderFactory();
     /**
@@ -590,10 +590,6 @@ public abstract class IterateSortedAlignments<T> {
                         "Alignment reference %s index (%d) was not found in the genome.",
                         targetId, targetIndex));
             } else {
-                // substracts from genome length because the size is recorded longer by one base in loadFasta
-                //TODO: 9/19/2016 manuele: temporary removing the subtraction because it seems that alignments and genome are shifted
-                //TODO: by 1 position after the migration to goby 3. Should we leave like this? May this be caused by alignments
-                //TODO: generated with a previous version?
                 final int genomeLength = genome.getLength(genomeTargetIndex);
                 final int alignmentTargetLength = alignmentTargetLengths[targetIndex];
                 if (alignmentTargetLength != genomeLength) {

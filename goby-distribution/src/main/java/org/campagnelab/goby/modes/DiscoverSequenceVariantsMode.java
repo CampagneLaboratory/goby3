@@ -23,6 +23,8 @@ import com.martiansoftware.jsap.JSAPResult;
 import org.campagnelab.goby.Release1_9_7_2;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
 import org.campagnelab.goby.algorithmic.data.GroupComparison;
+import org.campagnelab.goby.modes.dsv.*;
+import org.campagnelab.goby.modes.formats.*;
 import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
 import org.campagnelab.goby.alignments.processors.*;
 import org.campagnelab.goby.reads.RandomAccessSequenceCache;

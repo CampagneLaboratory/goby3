@@ -9,17 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>goby</artifactId>
-    <name>Goby</name>
-
+    <artifactId>goby-distribution</artifactId>
+    <name>Goby Full Distribution</name>
+    <url>http://goby.campagnelab.org</url>
     <properties>
         <protobuf.input.directory>${project.basedir}/protobuf</protobuf.input.directory>
         <protobuf.output.directory>${project.build.directory}/generated-sources</protobuf.output.directory>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
-        <protobuf.version>3.0.0-beta-4</protobuf.version>
-        <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
         <nd4j.version>0.5.0</nd4j.version>
         <dl4j.version>0.5.0</dl4j.version>
     </properties>
@@ -188,6 +186,7 @@
                     <descriptors>
                         <descriptor>assembly/assembly.xml</descriptor>
                     </descriptors>
+                    <finalName>goby</finalName>
                 </configuration>
                 <executions>
                     <execution>
@@ -195,6 +194,23 @@
                         <phase>package</phase> <!-- bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.build.directory}/goby-bin.jar"
+                                      tofile="${project.basedir}/../goby.jar"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -235,11 +251,6 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.4.8</version>
@@ -247,6 +258,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
             <version>1.7.21</version>
         </dependency>
         <dependency>
@@ -312,13 +328,7 @@
             <version>1.1.7</version>
         </dependency>
         <!-- local dependencies -->
-        <dependency>
-            <groupId>org.campagnelab.bdval</groupId>
-            <artifactId>bdval-api</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/bdval-api.jar</systemPath>
-        </dependency>
+
         <dependency>
             <groupId>edu.cornell.med.icb</groupId>
             <artifactId>icb-util</artifactId>
@@ -354,13 +364,7 @@
             <scope>system</scope>
             <systemPath>${basedir}/../lib/edu.mssm.crover.cli.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>edu.cornell.med.icb</groupId>
-            <artifactId>parsers</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/squil.jar</systemPath>
-        </dependency>
+
         <dependency>
             <groupId>edu.cornell.med.icb</groupId>
             <artifactId>tisim-api</artifactId>
@@ -413,6 +417,12 @@
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-nlp</artifactId>
             <version>${dl4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -426,6 +436,32 @@
             <version>0.0.0.17</version>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>junit-addons</groupId>
+            <artifactId>junit-addons</artifactId>
+            <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.broadinstitute</groupId>
+            <artifactId>picard</artifactId>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

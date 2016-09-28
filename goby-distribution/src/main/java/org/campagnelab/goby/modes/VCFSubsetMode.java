@@ -25,7 +25,7 @@ import org.campagnelab.goby.readers.vcf.ColumnField;
 import org.campagnelab.goby.readers.vcf.ColumnInfo;
 import org.campagnelab.goby.readers.vcf.Columns;
 import org.campagnelab.goby.readers.vcf.VCFParser;
-import org.campagnelab.goby.util.DoInParallel;
+import org.campagnelab.goby.cli.DoInParallel;
 import org.campagnelab.goby.util.GrepReader;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
