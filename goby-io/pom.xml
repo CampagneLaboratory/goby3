@@ -251,33 +251,11 @@
      </dependency>
 
      <dependency>
-         <groupId>edu.mssm.crover</groupId>
-         <artifactId>cli</artifactId>
-         <version>1.0</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/edu.mssm.crover.cli.jar</systemPath>
-     </dependency>
-
-     <dependency>
-         <groupId>org.campagnelab.dl</groupId>
-         <artifactId>variation-analysis</artifactId>
-         <version>1.0.2-SNAPSHOT</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/model-utils-1.0.2-SNAPSHOT.jar</systemPath>
-     </dependency>
-
-     <dependency>
          <groupId>com.github.lucarosellini.rJava</groupId>
          <artifactId>JRI</artifactId>
          <version>0.9-7</version>
      </dependency>
-     <dependency>
-         <groupId>edu.cornell.med.icb</groupId>
-         <artifactId>tisim-api</artifactId>
-         <version>1.0</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/tisim-api.jar</systemPath>
-     </dependency>
+
  </dependencies>
 
 </project>

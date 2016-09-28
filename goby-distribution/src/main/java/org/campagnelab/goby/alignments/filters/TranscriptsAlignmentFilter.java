@@ -21,7 +21,6 @@
 package org.campagnelab.goby.alignments.filters;
 
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
-import edu.cornell.med.icb.tissueinfo.similarity.GeneTranscriptRelationships;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
