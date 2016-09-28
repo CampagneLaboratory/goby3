@@ -75,6 +75,7 @@
                         <include>org/campagnelab/goby/modes/core/**</include>
                         <include>org/campagnelab/goby/util/**</include>
                         <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
 
                 </configuration>
@@ -94,6 +95,11 @@
                         <include>org/campagnelab/goby/baseinfo/**</include>
                         <include>org/campagnelab/goby/counts/**</include>
                         <include>org/campagnelab/goby/GobyVersion*</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -120,6 +126,11 @@
                         <include>org/campagnelab/goby/baseinfo/**</include>
                         <include>org/campagnelab/goby/counts/**</include>
                         <include>org/campagnelab/goby/GobyVersion*</include>
+                        <include>org/campagnelab/goby/exception/**</include>
+                        <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/util/**</include>
+                        <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -184,6 +195,14 @@
          <groupId>com.google.protobuf</groupId>
          <artifactId>protobuf-java</artifactId>
          <version>${protobuf.version}</version>
+     </dependency>
+
+     <dependency>
+         <groupId>org.campagnelab.bdval</groupId>
+         <artifactId>bdval-api</artifactId>
+         <version>1.0.0</version>
+         <scope>system</scope>
+         <systemPath>${basedir}/../lib/bdval-api.jar</systemPath>
      </dependency>
 
      <dependency>
