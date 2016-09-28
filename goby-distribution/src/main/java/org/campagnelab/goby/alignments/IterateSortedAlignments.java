@@ -79,7 +79,7 @@ public abstract class IterateSortedAlignments<T> {
     /**
      * Maximum of half a million bases per position. Can be changed, see setter.
      */
-    int maxThreshold = 500000;
+    public int maxThreshold = 500000;
 
     private AlignmentReaderFactory alignmentReaderFactory = new DefaultAlignmentReaderFactory();
     /**

@@ -1,6 +1,7 @@
 package org.campagnelab.goby.alignments;
 
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
+import org.campagnelab.goby.modes.dsv.CommonIndelArtifactFilter;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

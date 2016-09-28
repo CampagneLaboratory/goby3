@@ -21,11 +21,12 @@ package org.campagnelab.goby.util;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import static org.junit.Assert.assertEquals;
+
+import org.campagnelab.goby.cli.SimulateBisulfiteReads;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * @author Fabien Campagne

@@ -20,6 +20,8 @@ package org.campagnelab.goby.modes;
 
 import org.campagnelab.goby.reads.QualityEncoding;
 import it.unimi.dsi.lang.MutableString;
+import org.campagnelab.goby.util.SamHelper;
+import org.campagnelab.goby.util.SamSequenceVariation;
 import org.junit.Test;
 
 import java.io.IOException;

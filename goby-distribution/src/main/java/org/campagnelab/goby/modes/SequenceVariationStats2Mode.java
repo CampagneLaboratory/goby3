@@ -20,7 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.util.DoInParallel;
+import org.campagnelab.goby.cli.DoInParallel;
 import org.campagnelab.goby.util.WarningCounter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;

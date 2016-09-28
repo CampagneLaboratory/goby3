@@ -39,6 +39,13 @@ import java.io.IOException;
  *         Time: 7:06:57 PM
  */
 public class CountsArchiveWriter implements Closeable {
+
+
+    /**
+     * Default counts archive extension.
+     */
+    public static final String COUNT_ARCHIVE_MODIFIER_DEFAULT = "counts";
+
     private final CompoundFileWriter compoundWriter;
     private CountsWriterI currentCountsWriterI;
     private String currentId;
@@ -58,7 +65,7 @@ public class CountsArchiveWriter implements Closeable {
      * @throws IOException If an error occurs preparing the packaged counts.
      */
     public CountsArchiveWriter(final String basename) throws IOException {
-        this(basename, CompactAlignmentToCountsMode.COUNT_ARCHIVE_MODIFIER_DEFAULT);
+        this(basename, COUNT_ARCHIVE_MODIFIER_DEFAULT);
     }
 
     /**

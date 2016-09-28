@@ -24,6 +24,7 @@ import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.PicardFastaIndexedSequence;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
+import org.campagnelab.goby.util.SamSequenceVariation;
 import org.campagnelab.goby.util.TestFiles;
 import it.unimi.dsi.lang.MutableString;
 import junit.framework.Assert;

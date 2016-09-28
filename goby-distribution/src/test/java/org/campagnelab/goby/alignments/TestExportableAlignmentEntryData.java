@@ -18,7 +18,7 @@
 
 package org.campagnelab.goby.alignments;
 
-import org.campagnelab.goby.modes.SamHelper;
+import org.campagnelab.goby.util.SamHelper;
 import org.campagnelab.goby.readers.FastXEntry;
 import org.campagnelab.goby.readers.FastXReader;
 import org.campagnelab.goby.reads.QualityEncoding;

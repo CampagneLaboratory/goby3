@@ -344,7 +344,7 @@ public class SortMode extends AbstractGobyMode {
         }
         if (numThreads > 0) {
             executorService = new ThreadPoolExecutor(
-                    numThreads, // core thread pool size
+                    numThreads, // delegate thread pool size
                     numThreads, // maximum thread pool size
                     10, // time to wait before resizing pool
                     TimeUnit.MINUTES,

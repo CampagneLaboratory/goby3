@@ -26,6 +26,7 @@ import org.campagnelab.goby.GobyVersion;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.goby.alignments.*;
+import org.campagnelab.goby.modes.core.UpgradeModeCore;
 
 import java.io.IOException;
 
@@ -47,12 +48,8 @@ public class UpgradeMode extends AbstractGobyMode {
      */
     private static final String MODE_DESCRIPTION = "Upgrade goby files to a new version of Goby. We try to devise Goby format to avoid upgrade steps, but sometimes upgrading the data structures cannot be avoided (e.g., when we fix bugs that existed in earlier versions). This tool converts data structures to the latest Goby format.";
 
-    /**
-     * The basename of the compact alignment.
-     */
-    private String[] basenames;
-    private boolean silent;
-    private boolean check;
+
+    UpgradeModeCore delegate = new UpgradeModeCore();
 
 
     @Override
@@ -81,7 +78,7 @@ public class UpgradeMode extends AbstractGobyMode {
         final JSAPResult jsapResult = parseJsapArguments(args);
 
         final String[] inputFiles = jsapResult.getStringArray("input");
-        basenames = AlignmentReaderImpl.getBasenames(inputFiles);
+        delegate.setBasenames(AlignmentReaderImpl.getBasenames(inputFiles));
         //   check = jsapResult.getBoolean("check");
         return this;
 
@@ -89,12 +86,7 @@ public class UpgradeMode extends AbstractGobyMode {
     }
 
     public void execute() throws IOException {
-        for (String basename : basenames) {
-            upgrade(basename);
-            if (check) {
-                check(basename);
-            }
-        }
+        delegate.execute();
     }
 
     /**
@@ -103,82 +95,11 @@ public class UpgradeMode extends AbstractGobyMode {
      * @param basename Basename of the alignment.
      */
     public void upgrade(String basename) {
-        try {
-            AlignmentReaderImpl reader = new AlignmentReaderImpl(basename, false);
-            reader.readHeader();
-            String version = reader.getGobyVersion();
-            if (!silent) {
-                System.out.printf("processing %s with version %s %n", basename, version);
-            }
-            if (GobyVersion.isOlder(version, "goby_1.9.6")) {
-                if (reader.isIndexed()) {
-                    // we need to upgrade 1.9.5- alignment indices to the new indexing scheme implemented in 1.9.6+:
-                    UpgradeTo1_9_6 upgrader = new UpgradeTo1_9_6();
-                    upgrader.setSilent(silent);
-                    upgrader.upgrade(basename, reader);
-                }
-            }
-            if (GobyVersion.isOlder(version, "goby_1.9.8.2")) {
-                if (reader.isIndexed()) {
-                    // we need to upgrade 1.9.5- alignment indices to the new indexing scheme implemented in 1.9.6+:
-                    UpgradeTo1_9_8_2 upgrader = new UpgradeTo1_9_8_2();
-                    upgrader.setSilent(silent);
-                    upgrader.upgrade(basename, reader);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Could not read alignment " + basename);
-            e.printStackTrace();
-        }
+        delegate.upgrade(basename);
     }
 
     public void check(String basename) {
-        try {
-            AlignmentReaderImpl reader = new AlignmentReaderImpl(basename, false);
-            reader.readHeader();
-            String version = reader.getGobyVersion();
-            if (!silent) {
-                System.out.printf("processing %s with version %s %n", basename, version);
-            }
-            if (GobyVersion.isMoreRecent(version, "1.9.6")) {
-                if (reader.isIndexed()) {
-                    ObjectList<ReferenceLocation> locations = reader.getLocations(1000);
-                    System.out.println("Checking..");
-                    ProgressLogger progress = new ProgressLogger();
-                    progress.expectedUpdates = locations.size();
-                    //  progress.priority = Level.INFO;
-                    progress.start();
-                    for (ReferenceLocation location : locations) {
-                        Alignments.AlignmentEntry entry = reader.skipTo(location.targetIndex, location.position);
-                        if (entry == null) {
-                            System.err.printf("Entry must be found at position (t=%d,p=%d) %n", location.targetIndex,
-                                    location.position);
-                            System.exit(1);
-                        }
-                        if (entry.getTargetIndex() < location.targetIndex) {
-                            System.err.printf("Entry must be found on reference >%d for position (t=%d,p=%d) %n",
-                                    location.targetIndex, location.targetIndex,
-                                    location.position);
-                            System.exit(1);
-                        }
-                        if (entry.getPosition() < location.position) {
-                            System.err.printf("Entry must be found at position >=%d for position (t=%d,p=%d) %n",
-                                    location.position, entry.getTargetIndex()
-                                    ,
-                                    entry.getPosition());
-                            System.exit(1);
-                        }
-                        progress.lightUpdate();
-                    }
-                    progress.stop();
-                    System.out.printf("Checked %d skipTo calls", locations.size());
-                }
-
-            }
-        } catch (IOException e) {
-            System.err.println("Could not read alignment " + basename);
-            e.printStackTrace();
-        }
+        delegate.check(basename);
     }
 
     /**
@@ -195,6 +116,6 @@ public class UpgradeMode extends AbstractGobyMode {
     }
 
     public void setSilent(boolean silent) {
-        this.silent = silent;
+        delegate.setSilent(silent);
     }
 }

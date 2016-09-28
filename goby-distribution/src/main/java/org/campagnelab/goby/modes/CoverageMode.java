@@ -24,7 +24,7 @@ import org.campagnelab.goby.algorithmic.algorithm.CoverageAnalysis;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.counts.CountsArchiveReader;
 import org.campagnelab.goby.counts.CountsReader;
-import org.campagnelab.goby.util.DoInParallel;
+import org.campagnelab.goby.cli.DoInParallel;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;

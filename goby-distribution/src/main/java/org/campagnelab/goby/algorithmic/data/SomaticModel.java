@@ -1,6 +1,6 @@
 package org.campagnelab.goby.algorithmic.data;
 
-import org.campagnelab.goby.alignments.DiscoverVariantPositionData;
+import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
 import org.campagnelab.goby.alignments.SampleCountInfo;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

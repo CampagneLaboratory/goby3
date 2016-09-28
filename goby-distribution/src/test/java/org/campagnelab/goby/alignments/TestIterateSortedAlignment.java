@@ -23,6 +23,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.modes.dsv.IterateSortedAlignmentsListImpl;
 import org.junit.AfterClass;
 
 import static org.junit.Assert.assertEquals;

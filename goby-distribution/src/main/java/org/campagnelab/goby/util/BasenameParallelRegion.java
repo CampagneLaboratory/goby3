@@ -21,6 +21,7 @@ package org.campagnelab.goby.util;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import edu.rit.pj.IntegerForLoop;
 import edu.rit.pj.ParallelRegion;
+import org.campagnelab.goby.cli.DoInParallel;
 
 /**
  * @author Fabien Campagne

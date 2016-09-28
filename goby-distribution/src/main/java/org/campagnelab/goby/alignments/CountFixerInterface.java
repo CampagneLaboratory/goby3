@@ -19,6 +19,7 @@
 package org.campagnelab.goby.alignments;
 
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 
 /**
  * Implementations of this interface provide strategies to eliminate or correct likely errors.

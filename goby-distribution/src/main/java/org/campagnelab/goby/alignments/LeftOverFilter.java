@@ -20,6 +20,8 @@ package org.campagnelab.goby.alignments;
 
 import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.modes.dsv.GenotypeFilter;
 
 import java.util.Arrays;
 

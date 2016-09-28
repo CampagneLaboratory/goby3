@@ -2,6 +2,7 @@ package org.campagnelab.goby.alignments;
 
 import com.martiansoftware.jsap.JSAPException;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
+import org.campagnelab.goby.modes.formats.SomaticVariationOutputFormat;
 import org.campagnelab.goby.stats.VCFWriter;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.junit.Test;

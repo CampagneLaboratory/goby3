@@ -26,6 +26,8 @@ import org.campagnelab.goby.counts.CountWriterHelper2;
 import org.campagnelab.goby.counts.CountsArchiveWriter;
 import org.campagnelab.goby.counts.CountsWriterHelperI;
 import org.campagnelab.goby.counts.CountsWriterI;
+import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.modes.dsv.IterateSortedAlignmentsListImpl;
 import org.campagnelab.goby.util.Timer;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -39,6 +41,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import static org.campagnelab.goby.counts.CountsArchiveWriter.COUNT_ARCHIVE_MODIFIER_DEFAULT;
 
 /**
  * Converts a compact alignment to a compressed count archive.
@@ -62,11 +66,6 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
      */
     private static final String MODE_DESCRIPTION =
             "Converts a compact alignment to counts.";
-
-    /**
-     * Default counts archive extension.
-     */
-    public static final String COUNT_ARCHIVE_MODIFIER_DEFAULT = "counts";
 
     /**
      * The output file.

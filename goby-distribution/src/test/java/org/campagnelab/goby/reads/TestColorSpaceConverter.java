@@ -21,10 +21,12 @@ package org.campagnelab.goby.reads;
 import it.unimi.dsi.lang.MutableString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import org.campagnelab.goby.modes.ColorSpaceConverter;
 import org.junit.Test;
 
 /**
- * Validate the functionality of the {@link org.campagnelab.goby.reads.ColorSpaceConverter}.
+ * Validate the functionality of the {@link ColorSpaceConverter}.
  * @author Fabien Campagne
  *         Date: May 18, 2009
  *         Time: 5:53:21 PM

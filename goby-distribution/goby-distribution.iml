@@ -63,7 +63,7 @@
     <orderEntry type="module-library">
       <library name="Maven: org.campagnelab.bdval:bdval-api:1.0.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/bdval-api.jar!/" />
+          <root url="jar://$MODULE_DIR$/../goby-io/../lib/bdval-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -90,7 +90,7 @@
     <orderEntry type="module-library">
       <library name="Maven: com.martiansoftware:jsap:2.1.2">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jsap-2.1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../goby-io/../lib/jsap-2.1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
