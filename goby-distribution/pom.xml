@@ -328,13 +328,7 @@
             <version>1.1.7</version>
         </dependency>
         <!-- local dependencies -->
-        <dependency>
-            <groupId>org.campagnelab.bdval</groupId>
-            <artifactId>bdval-api</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/bdval-api.jar</systemPath>
-        </dependency>
+
         <dependency>
             <groupId>edu.cornell.med.icb</groupId>
             <artifactId>icb-util</artifactId>

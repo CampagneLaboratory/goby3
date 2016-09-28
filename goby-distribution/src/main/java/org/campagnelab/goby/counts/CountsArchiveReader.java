@@ -30,9 +30,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.slf4j.Logger;
-import org.bdval.io.compound.CompoundDataInput;
-import org.bdval.io.compound.CompoundDirectoryEntry;
-import org.bdval.io.compound.CompoundFileReader;
+import org.campagnelab.goby.counts.compound.*;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;

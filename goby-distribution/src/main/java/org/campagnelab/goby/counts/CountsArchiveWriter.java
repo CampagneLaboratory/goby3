@@ -21,8 +21,8 @@
 package org.campagnelab.goby.counts;
 
 import org.apache.commons.io.FileUtils;
-import org.bdval.io.compound.CompoundDataOutput;
-import org.bdval.io.compound.CompoundFileWriter;
+import org.campagnelab.goby.counts.compound.CompoundDataOutput;
+import org.campagnelab.goby.counts.compound.CompoundFileWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -31,7 +31,7 @@ import java.io.IOException;
 
 /**
  * Writes archives of counts information  for several sequences. CountsArchiveWriter leverages
- * the {@link org.bdval.io.compound.CompoundFileWriter}.
+ * the {@link org.campagnelab.goby.counts.compound.CompoundFileWriter}.
  *
  * @author Fabien Campagne
  *         Date: May 13, 2009
@@ -127,12 +127,12 @@ public class CountsArchiveWriter implements Closeable {
         totalSitesSeen += writerI.getNumberOfSitesSeen();
         final byte[] bytes = stream.toByteArray();
 
-        final org.bdval.io.compound.CompoundDataOutput part = compoundWriter.addFile(currentId);
+        final CompoundDataOutput part = compoundWriter.addFile(currentId);
         part.write(bytes);
         part.close();
         compoundWriter.finishAddFile();
 
-        final org.bdval.io.compound.CompoundDataOutput indexPart = compoundWriter.addFile("#index:" + currentId);
+        final CompoundDataOutput indexPart = compoundWriter.addFile("#index:" + currentId);
         indexBuilder.buildIndex(bytes, indexPart);
         indexPart.close();
         compoundWriter.finishAddFile();

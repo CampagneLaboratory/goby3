@@ -61,15 +61,6 @@
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.7" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.7" level="project" />
     <orderEntry type="module-library">
-      <library name="Maven: org.campagnelab.bdval:bdval-api:1.0.0">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../goby-io/../lib/bdval-api.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="Maven: edu.cornell.med.icb:icb-util:1.1.6">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/icb-utils.jar!/" />

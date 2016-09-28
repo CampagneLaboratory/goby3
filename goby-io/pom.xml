@@ -197,13 +197,6 @@
          <version>${protobuf.version}</version>
      </dependency>
 
-     <dependency>
-         <groupId>org.campagnelab.bdval</groupId>
-         <artifactId>bdval-api</artifactId>
-         <version>1.0.0</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/bdval-api.jar</systemPath>
-     </dependency>
 
      <dependency>
          <groupId>org.apache.commons</groupId>
