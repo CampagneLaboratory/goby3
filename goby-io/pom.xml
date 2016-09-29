@@ -205,7 +205,7 @@
      <dependency>
          <groupId>org.reflections</groupId>
          <artifactId>reflections</artifactId>
-         <version>0.9.5</version>
+         <version>0.9.10</version>
          <exclusions>
              <exclusion>
                  <groupId>org.slf4j</groupId>
