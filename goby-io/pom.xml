@@ -160,11 +160,9 @@
      </dependency>
 
      <dependency>
-         <groupId>edu.cornell.med.icb</groupId>
-         <artifactId>icb-util</artifactId>
-         <version>1.1.6</version>
-         <scope>system</scope>
-         <systemPath>${basedir}/../lib/icb-utils.jar</systemPath>
+         <groupId>org.campagnelab.icb</groupId>
+         <artifactId>icb-utils</artifactId>
+         <version>1.7.0-SNAPSHOT</version>
      </dependency>
 
      <dependency>
