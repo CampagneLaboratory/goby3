@@ -21,7 +21,8 @@ Goby is currently being developed by the members of the [Campagne laboratory](ht
 ### Source code
 Goby source code is now on GitHub.  You can obtain and build the project as follows:
    ```
-   git clone git://github.com/CampagneLaboratory/goby3.git
+   git clone git://github.com/CampagneLaboratory/goby3.git;
+   
    cd goby3
    ```
 #### Compilation:
