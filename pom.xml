@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.campagnelab.goby</groupId>
     <artifactId>goby-framework</artifactId>
+    <version>${goby.version}</version>
     <packaging>pom</packaging>
-    <version>3.0.0-SNAPSHOT</version>
+
     <scm>
         <connection>scm:git@github.com:CampagneLaboratory/goby3.git</connection>
         <developerConnection>scm:git:git@github.com:CampagneLaboratory/goby3.git</developerConnection>
@@ -43,6 +44,7 @@
         analysis pipelines for high-throughput sequencing data.
     </description>
     <properties>
+        <goby.version>3.0.0</goby.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
