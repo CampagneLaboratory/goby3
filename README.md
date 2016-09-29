@@ -22,7 +22,6 @@ Goby is currently being developed by the members of the [Campagne laboratory](ht
 Goby source code is now on GitHub.  You can obtain and build the project as follows:
    ```
    git clone git://github.com/CampagneLaboratory/goby3.git;
-   
    cd goby3
    ```
 #### Compilation:
@@ -39,7 +38,7 @@ The wrapper sets some variables, and runs the jar file. You can also run goby di
    ```
    java -jar goby.jar -Xmx1g --help
    ```
-In this case, adjust the -Xmx1g according to the amount of memory you need. You should also defined the GOBY_HOME environment variable to point to the directory that contains the goby distribution or repo.
+In this case, adjust the -Xmx1g according to the amount of memory you need. You should also define the GOBY_HOME environment variable to point to the directory that contains the goby distribution or repo. You may also want to look at the wrapper to see what other arguments are set (e.g., to adjust logging levels).
 ### Documentation and forums
 You will find extensive documentation at [goby.campagnelab.org](http://goby.campagnelab.org).
 Usage questions and feedback should be addressed to the [Goby user forum](https://groups.google.com/forum/?fromgroups#!forum/goby-framework).
