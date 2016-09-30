@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.campagnelab.goby</groupId>
         <artifactId>goby-framework</artifactId>
-        <version>${goby.version}</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +16,6 @@
 
     <properties>
         <protobuf.output.directory>${basedir}/../goby-distribution/target/generated-sources</protobuf.output.directory>
-
     </properties>
 
     <build>
