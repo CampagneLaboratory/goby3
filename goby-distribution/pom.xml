@@ -343,12 +343,10 @@
             <systemPath>${basedir}/../lib/model-utils-1.0.2-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.martiansoftware</groupId>
+            <groupId>org.campagnelab.ext</groupId>
             <artifactId>jsap</artifactId>
-            <version>2.1.2</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/jsap-2.1.2.jar</systemPath>
-        </dependency>
+            <version>3.0.0</version>
+            </dependency>
         <dependency>
             <groupId>edu.rit.pj</groupId>
             <artifactId>pj</artifactId>
