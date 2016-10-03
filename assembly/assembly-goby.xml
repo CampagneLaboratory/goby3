@@ -19,6 +19,7 @@
                 <include>config/**</include>
                 <include>models/**</include>
                 <include>data/**</include>
+                <include>scripts/distrib/**</include>
             </includes>
             <outputDirectory>${version}</outputDirectory>
         </fileSet>
