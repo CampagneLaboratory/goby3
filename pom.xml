@@ -142,6 +142,18 @@
                             <finalName>goby_${project.version}</finalName>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>make-goby-goby</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/assembly-goby.xml</descriptor>
+                            </descriptors>
+                            <finalName>goby_${project.version}</finalName>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -152,7 +164,7 @@
                         <configuration>
                             <tasks>
                                 <exec dir="${basedir}"
-                                      executable="${basedir}/prepare-release.sh"
+                                      executable="${basedir}/_prepare-release.sh"
                                       failonerror="true">
                                       <arg line=""/>
                                 </exec>
