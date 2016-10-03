@@ -12,3 +12,8 @@ mvn -pl :goby-framework assembly:single@make-goby-models
 mvn -pl :goby-framework assembly:single@make-goby-data
 
 mv target/*.zip  ${RELEASE_FOLDER}
+
+(cd ${RELEASE_FOLDER}; ln -s *-data.zip goby-data.zip)
+(cd ${RELEASE_FOLDER}; ln -s *-models.zip goby-models.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-apidoc.zip goby-apidoc.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-src.zip goby-src.zip)
