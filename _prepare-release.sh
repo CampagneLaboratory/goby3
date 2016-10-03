@@ -16,6 +16,7 @@ mvn -pl :goby-framework assembly:single@make-goby-deps
 mvn -pl :goby-framework assembly:single@make-goby-goby
 
 mv target/*.zip  ${RELEASE_FOLDER}
+cp CHANGES.txt ${RELEASE_FOLDER}
 
 (cd ${RELEASE_FOLDER}; ln -s *-data.zip goby-data.zip)
 (cd ${RELEASE_FOLDER}; ln -s *-deps.zip goby-deps.zip)
