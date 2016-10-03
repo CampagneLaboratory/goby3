@@ -6,15 +6,12 @@
     <formats>
         <format>zip</format>
     </formats>
-    <baseDirectory>models</baseDirectory>
-    <includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <includes>
-                <include>models</include>
-            </includes>
+            <!-- Take everything inside the models folder -->
+            <directory>models</directory>
+            <outputDirectory>models</outputDirectory>
         </fileSet>
     </fileSets>
-
-
 </assembly>
