@@ -119,13 +119,13 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>make-goby</id>
+                        <id>make-goby-data</id>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>assembly/assembly-goby.xml</descriptor>
+                                <descriptor>assembly/assembly-data.xml</descriptor>
                             </descriptors>
                             <finalName>goby_${project.version}</finalName>
                         </configuration>

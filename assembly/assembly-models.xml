@@ -6,10 +6,9 @@
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>true</includeBaseDirectory>
+    <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <!-- Take everything inside the models folder -->
             <directory>models</directory>
             <outputDirectory>models</outputDirectory>
         </fileSet>
