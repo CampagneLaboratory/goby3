@@ -132,6 +132,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-goby-release</id>
+                        <configuration>
+                            <tasks>
+                                <exec dir="${basedir}"
+                                      executable="${basedir}/prepare-release.sh"
+                                      failonerror="true">
+                                      <arg line=""/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
     </build>
