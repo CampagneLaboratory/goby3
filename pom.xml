@@ -143,6 +143,18 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>make-goby-apidoc</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/assembly-apidoc.xml</descriptor>
+                            </descriptors>
+                            <finalName>goby_${project.version}</finalName>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>make-goby-goby</id>
                         <goals>
                             <goal>single</goal>
