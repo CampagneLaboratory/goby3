@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="3.0.2"
+VERSION=$1
 RELEASE_FOLDER="release-goby_${VERSION}"
 
 rm -rf ${RELEASE_FOLDER}

@@ -190,7 +190,7 @@
                                 <exec dir="${basedir}"
                                       executable="${basedir}/_prepare-release.sh"
                                       failonerror="true">
-                                      <arg line=""/>
+                                      <arg line="${pom.version}"/>
                                 </exec>
                             </tasks>
                         </configuration>
