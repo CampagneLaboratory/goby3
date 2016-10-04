@@ -18,10 +18,10 @@ mvn -pl :goby-framework assembly:single@make-goby-goby
 mvn -pl :goby-framework assembly:single@make-goby-apidoc
 
 mv target/*.zip  ${RELEASE_FOLDER}
+
 cp goby.jar ${RELEASE_FOLDER}/goby.jar
-
 cp CHANGES.txt ${RELEASE_FOLDER}
-
+echo "${VERSION}" >> ${RELEASE_FOLDER}/VERSION.txt
 (cd ${RELEASE_FOLDER}; ln -s *-data.zip goby-data.zip)
 (cd ${RELEASE_FOLDER}; ln -s *-deps.zip goby-deps.zip)
 (cd ${RELEASE_FOLDER}; ln -s *-models.zip goby-models.zip)
