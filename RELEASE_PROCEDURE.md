@@ -24,17 +24,18 @@ The goby-io and goby-framework modules must be published to the Central Reposito
 
 The 4 artifacts (goby-framework, goby-distribution, goby-io and goby-spi) are published in the Nexus Staging repository. 
 
-[TBP: how to login]
+Log in to https://oss.sonatype.org/#stagingRepositories as ''campagnelaboratory'' and search for a repository called "campagnelab-XXXX". Select the repo and then open the Summary tab in the bottom panel of the page. 
 
 We usually want to publish only goby-io and goby-framework, therefore we right click on goby-distribution and goby-spi and remove them from the staged artifacts.
 
-A good practice is to test the dependencies on the staged artifacts from another project to see if dependencies are correctly resolved.
+A good practice is to test the staged artifacts as dependencies in another Maven-based project to check if dependency tree is correctly resolved.
 
 [TBP: how to enable the staging repo for deps resolution]
 
 
-[TBP: how to approve and release]
+### How to approve and release
 
+Log in to https://oss.sonatype.org/#stagingRepositories as ''campagnelaboratory'' and search for a repository called "campagnelab-XXXX". Select the repo and then click on the Release button located above the list of repositories. After some time (usually 10 minutes), the repository will disappear. This means that the release has been approved by Sonatype and from now on the artifacts are available on the Central Repository. It will take between 20 mins to few hours to be indexed by Central Repository. After that period, they should be available in the org.campagnelab groupID (http://search.maven.org/#search%7Cga%7C1%7Corg.campagnelab). 
 ## Prepare the release files
 ```sh
   $ cd goby3/formal-releases
