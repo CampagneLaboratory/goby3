@@ -9,6 +9,8 @@ rm -rf ${RELEASE_FOLDER}
 mkdir -p ${RELEASE_FOLDER}
 cd ${BASEDIR}
 mvn clean
+rm -f ${BASEDIR}/goby.jar
+
 # we first assemble a clean base dir
 mvn -pl :goby-framework assembly:single@make-goby-src
 
