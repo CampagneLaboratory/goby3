@@ -5,9 +5,11 @@ RELEASE_FOLDER="release-goby_${VERSION}"
 
 rm -rf ${RELEASE_FOLDER}
 mkdir -p ${RELEASE_FOLDER}
-#mvn -pl :goby-distribution clean install
-cp goby-distribution/target/*-sources.jar ${RELEASE_FOLDER}/goby_${VERSION}-src.zip
-cp goby.jar ${RELEASE_FOLDER}/goby.jar
+mvn clean
+# we first assemble a clean base dir
+mvn -pl :goby-framework assembly:single@make-goby-src
+
+mvn install
 
 mvn -pl :goby-framework assembly:single@make-goby-models
 mvn -pl :goby-framework assembly:single@make-goby-data
@@ -16,6 +18,8 @@ mvn -pl :goby-framework assembly:single@make-goby-goby
 mvn -pl :goby-framework assembly:single@make-goby-apidoc
 
 mv target/*.zip  ${RELEASE_FOLDER}
+cp goby.jar ${RELEASE_FOLDER}/goby.jar
+
 cp CHANGES.txt ${RELEASE_FOLDER}
 
 (cd ${RELEASE_FOLDER}; ln -s *-data.zip goby-data.zip)
