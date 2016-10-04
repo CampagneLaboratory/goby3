@@ -12,7 +12,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>goby-distribution/data</directory>
+            <directory>${basedir}/goby-distribution/data</directory>
             <outputDirectory>${version}/data</outputDirectory>
         </fileSet>
     </fileSets>

@@ -9,7 +9,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>models</directory>
+            <directory>${basedir}/models</directory>
             <outputDirectory>${version}/models</outputDirectory>
         </fileSet>
     </fileSets>

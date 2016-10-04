@@ -21,6 +21,7 @@ mvn -pl :goby-framework assembly:single@make-goby-data
 mvn -pl :goby-framework assembly:single@make-goby-deps
 mvn -pl :goby-framework assembly:single@make-goby-goby
 mvn -pl :goby-framework assembly:single@make-goby-apidoc
+mvn -pl :goby-framework assembly:single@make-goby-cpp
 
 cd ${WORKDIR}
 # move the generated files to the release folder
@@ -36,3 +37,4 @@ cp ${BASEDIR}/goby.jar ${RELEASE_FOLDER}/goby.jar
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-apidoc.zip goby-apidoc.zip)
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-src.zip goby-src.zip)
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-goby.zip goby.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-cpp.zip goby-cpp.zip)
