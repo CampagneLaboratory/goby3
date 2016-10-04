@@ -18,10 +18,13 @@
                 <include>COPYING</include>
                 <include>config/**</include>
                 <include>models/**</include>
-                <include>data/**</include>
                 <include>scripts/distrib/**</include>
             </includes>
             <outputDirectory>${version}/goby</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>goby-distribution/data</directory>
+            <outputDirectory>${version}/goby/data</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
