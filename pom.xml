@@ -227,6 +227,21 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>tag-goby-release</id>
+                        <configuration>
+                            <tasks>
+                                <exec dir="${project.basedir}/formal-releases"
+                                      executable="${project.basedir}/formal-releases/_tag-release.sh"
+                                      failonerror="true">
+                                    <arg line="${pom.version}"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

@@ -16,8 +16,6 @@ if [ -d "$RELEASE_FOLDER" ]; then
         cd archive
         ln -s ../release-goby_${VERSION} .
 END
-    git tag "r${VERSION}"
-    #git push --tags
 else
     echo "$RELEASE_FOLDER does not exist. Please, run prepare-release.sh to prepare the release files for $VERSION and then try again."
 fi
