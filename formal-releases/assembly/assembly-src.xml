@@ -11,11 +11,11 @@
         <fileSet>
             <directory>${basedir}</directory>
             <outputDirectory>${version}/src</outputDirectory>
-        </fileSet>
-        <fileSet>
             <excludes>
-                <exclude>.idea</exclude>
-                <exclude>formal-releases</exclude>
+                <exclude>.idea/**</exclude>
+                <exclude>formal-releases/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>target/**</exclude>
             </excludes>
         </fileSet>
     </fileSets>
