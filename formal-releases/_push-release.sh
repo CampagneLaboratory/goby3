@@ -8,8 +8,7 @@ if [ -d "$RELEASE_FOLDER" ]; then
     tar zcvf release-goby_${VERSION}.tgz ${RELEASE_FOLDER}
     #scp release-goby_${VERSION}.tgz www@okeeffe:/var/www/dirs/chagall/goby/releases/
     #git tag "r${VERSION}"
-    #git remote set-url origin git@github.com:CampagneLaboratory/goby3.git
-    #git push --tags origin
+    #git push --tags
 else
-    echo "$RELEASE_FOLDER does not exist. Did you prepare a release to push for $VERSION?"
+    echo "$RELEASE_FOLDER does not exist. Please, run prepare-release.sh to prepare the release files for $VERSION and then try again."
 fi

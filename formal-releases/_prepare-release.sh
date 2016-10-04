@@ -5,6 +5,12 @@ BASEDIR=$2
 WORKDIR=`pwd`
 RELEASE_FOLDER="${WORKDIR}/release-goby_${VERSION}"
 
+
+if [[ $VERSION == *"SNAPSHOT"* ]] ;then
+  echo "Current version is set to ${VERSION}. Can't release a snapshot!";
+  exit 1
+fi
+
 rm -rf ${RELEASE_FOLDER}
 mkdir -p ${RELEASE_FOLDER}
 cd ${BASEDIR}
