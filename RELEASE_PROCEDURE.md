@@ -13,7 +13,27 @@ git clone git@github.com:campagnelaboratory/goby3.git
 ```
 ## Deploy to Maven Central Repository
 
-[TODO]
+The goby-io and goby-framework modules must be published to the Central Repository. In order to do that, the following configuration must be set on the local machine:
+ - pgp keys to digitally sign the artifacts
+ - campagnelaboratory's user on sonatype to push the artifacts on the Sonatype repos.
+
+```sh
+  $ cd goby3
+  $ mvn deploy
+```
+
+The 4 artifacts (goby-framework, goby-distribution, goby-io and goby-spi) are published in the Nexus Staging repository. 
+
+[TBP: how to login]
+
+We usually want to publish only goby-io and goby-framework, therefore we right click on goby-distribution and goby-spi and remove them from the staged artifacts.
+
+A good practice is to test the dependencies on the staged artifacts from another project to see if dependencies are correctly resolved.
+
+[TBP: how to enable the staging repo for deps resolution]
+
+
+[TBP: how to approve and release]
 
 ## Prepare the release files
 ```sh
@@ -54,13 +74,21 @@ Note the presence of softlinks that use a generic name to the specific version f
 
 Before sending the release out, some testing should be performed. Open and execute each of the jar files and run a few examples. Once you are happy with the content of the release folder, you can decide to push the release of the  web site for distribution.
 
-At this point, the release files need to be placed on the web server. This requires access to the account "www":
+At this point, the release files need to be placed on the web server. This requires access to the account "www" on okeeffe. To push the release, just execute the following commands:
 
 
 ```sh
   $ cd goby3/formal-releases
   $ ./push-release.sh
 ```
-The entire Goby release directory will be copied to /var/www/dirs/chagall/goby/releases/ on okeeffe.
 
-[TBC]
+If everything works, the entire Goby release directory is be copied to /var/www/dirs/chagall/goby/releases/ on okeeffe and a latest-release symlink is created in the folder to link the new release folder. We suggest to manually inspect the new release folder before moving to the next step.
+
+## Tag the release
+The final step is to tag the release in the git repository. 
+```sh
+  $ cd goby3/formal-releases
+  $ ./tag-release.sh
+```
+
+The release is tagged as ''r{version}'', where version is the goby-framework version declared in the goby3/pom.xml
