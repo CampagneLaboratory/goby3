@@ -10,7 +10,7 @@
     <fileSets>
         <fileSet>
             <directory>lib</directory>
-            <outputDirectory>lib</outputDirectory>
+            <outputDirectory>${version}/lib</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

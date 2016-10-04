@@ -10,7 +10,7 @@
     <fileSets>
         <fileSet>
             <directory>models</directory>
-            <outputDirectory>models</outputDirectory>
+            <outputDirectory>${version}/models</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

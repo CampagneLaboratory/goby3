@@ -13,7 +13,7 @@
     <fileSets>
         <fileSet>
             <directory>goby-distribution/data</directory>
-            <outputDirectory>data</outputDirectory>
+            <outputDirectory>${version}/data</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

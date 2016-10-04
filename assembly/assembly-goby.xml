@@ -21,7 +21,7 @@
                 <include>data/**</include>
                 <include>scripts/distrib/**</include>
             </includes>
-            <outputDirectory>${version}</outputDirectory>
+            <outputDirectory>${version}/goby</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
