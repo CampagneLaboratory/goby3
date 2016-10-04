@@ -10,7 +10,7 @@
     <fileSets>
         <fileSet>
             <directory>${basedir}/lib</directory>
-            <outputDirectory>${version}/lib</outputDirectory>
+            <outputDirectory>goby-${version}/lib</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

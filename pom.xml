@@ -143,13 +143,13 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>make-goby-apidoc</id>
+                        <id>make-goby-javadoc</id>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>formal-releases/assembly/assembly-apidoc.xml</descriptor>
+                                <descriptor>formal-releases/assembly/assembly-javadoc.xml</descriptor>
                             </descriptors>
                             <finalName>goby_${project.version}</finalName>
                         </configuration>
@@ -179,13 +179,13 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>make-goby-goby</id>
+                        <id>make-goby-bin</id>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>formal-releases/assembly/assembly-goby.xml</descriptor>
+                                <descriptor>formal-releases/assembly/assembly-bin.xml</descriptor>
                             </descriptors>
                             <finalName>goby_${project.version}</finalName>
                         </configuration>

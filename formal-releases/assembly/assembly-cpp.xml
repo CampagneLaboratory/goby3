@@ -10,7 +10,7 @@
     <fileSets>
         <fileSet>
             <directory>${basedir}/cpp</directory>
-            <outputDirectory>${version}/cpp</outputDirectory>
+            <outputDirectory>goby-${version}/cpp</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
