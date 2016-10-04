@@ -10,7 +10,13 @@
     <fileSets>
         <fileSet>
             <directory>${basedir}</directory>
-            <outputDirectory>${version}/src</outputDirectory>
+            <outputDirectory>goby-${version}/src</outputDirectory>
+            <excludes>
+                <exclude>.idea/**</exclude>
+                <exclude>formal-releases/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>target/**</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 </assembly>

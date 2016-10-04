@@ -2,7 +2,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
 
-    <id>goby</id>
+    <id>bin</id>
     <formats>
         <format>zip</format>
     </formats>
@@ -18,10 +18,13 @@
                 <include>COPYING</include>
                 <include>config/**</include>
                 <include>models/**</include>
-                <include>data/**</include>
                 <include>scripts/distrib/**</include>
             </includes>
-            <outputDirectory>${version}/goby</outputDirectory>
+            <outputDirectory>goby-${version}/bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>goby-distribution/data</directory>
+            <outputDirectory>goby-${version}/bin/data</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

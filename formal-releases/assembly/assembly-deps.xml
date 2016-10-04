@@ -9,8 +9,8 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>lib</directory>
-            <outputDirectory>${version}/lib</outputDirectory>
+            <directory>${basedir}/lib</directory>
+            <outputDirectory>goby-${version}/lib</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

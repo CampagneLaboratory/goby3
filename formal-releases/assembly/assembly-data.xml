@@ -12,8 +12,8 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>goby-distribution/data</directory>
-            <outputDirectory>${version}/data</outputDirectory>
+            <directory>${basedir}/goby-distribution/data</directory>
+            <outputDirectory>goby-${version}/data</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

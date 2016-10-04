@@ -5,32 +5,44 @@ BASEDIR=$2
 WORKDIR=`pwd`
 RELEASE_FOLDER="${WORKDIR}/release-goby_${VERSION}"
 
+
+if [[ $VERSION == *"SNAPSHOT"* ]] ;then
+  echo "Current version is set to ${VERSION}. Can't release a snapshot!";
+  exit 1
+fi
+
 rm -rf ${RELEASE_FOLDER}
 mkdir -p ${RELEASE_FOLDER}
 cd ${BASEDIR}
+
+#clean up before preparing the archives
 mvn clean
+rm -f ${BASEDIR}/goby.jar
+
 # we first assemble a clean base dir
-mvn -pl :goby-framework assembly:single@make-goby-src
+#mvn -pl :goby-framework assembly:single@make-goby-src
 
 mvn install
 
 mvn -pl :goby-framework assembly:single@make-goby-models
 mvn -pl :goby-framework assembly:single@make-goby-data
 mvn -pl :goby-framework assembly:single@make-goby-deps
-mvn -pl :goby-framework assembly:single@make-goby-goby
-mvn -pl :goby-framework assembly:single@make-goby-apidoc
+mvn -pl :goby-framework assembly:single@make-goby-bin
+mvn -pl :goby-framework assembly:single@make-goby-javadoc
+#mvn -pl :goby-framework assembly:single@make-goby-cpp
 
 cd ${WORKDIR}
 # move the generated files to the release folder
 cp ${BASEDIR}/CHANGES.txt ${RELEASE_FOLDER}
 echo "${VERSION}" >> ${RELEASE_FOLDER}/VERSION.txt
-mv ${BASEDIR}/target/*.zip  ${RELEASE_FOLDER}
+mv ${BASEDIR}/target/goby_${VERSION}-*.zip  ${RELEASE_FOLDER}
 cp ${BASEDIR}/goby.jar ${RELEASE_FOLDER}/goby.jar
 
 # create symlinks
-(cd ${RELEASE_FOLDER}; ln -s *-data.zip goby-data.zip)
-(cd ${RELEASE_FOLDER}; ln -s *-deps.zip goby-deps.zip)
-(cd ${RELEASE_FOLDER}; ln -s *-models.zip goby-models.zip)
-(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-apidoc.zip goby-apidoc.zip)
-(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-src.zip goby-src.zip)
-(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-goby.zip goby.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-data.zip goby-data.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-deps.zip goby-deps.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-models.zip goby-models.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-javadoc.zip goby-javadoc.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-bin.zip goby-bin.zip)
+#(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-src.zip goby-src.zip)
+#(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-cpp.zip goby-cpp.zip)
