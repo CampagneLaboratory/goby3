@@ -10,6 +10,7 @@ if [ -d "$RELEASE_FOLDER" ]; then
     ssh www@okeeffe << END
         cd /var/www/dirs/chagall/goby/releases/
         tar zxvf release-goby_${VERSION}.tgz
+        chmod -R a+r release-goby_${VERSION}
         rm -f latest-release
         ln -s release-goby_${VERSION} latest-release
         cd archive
