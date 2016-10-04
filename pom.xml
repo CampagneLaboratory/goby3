@@ -198,6 +198,21 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>push-goby-release</id>
+                        <configuration>
+                            <tasks>
+                                <exec dir="${basedir}"
+                                      executable="${basedir}/_push-release.sh"
+                                      failonerror="true">
+                                    <arg line="${pom.version}"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
