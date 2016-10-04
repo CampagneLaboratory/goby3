@@ -202,7 +202,7 @@
                                 <exec dir="${project.basedir}/formal-releases"
                                       executable="${project.basedir}/formal-releases/_prepare-release.sh"
                                       failonerror="true">
-                                      <arg line="${pom.version}"/>
+                                      <arg line="${project.version}"/>
                                       <arg line="${project.basedir}"/>
                                 </exec>
                             </tasks>
@@ -218,7 +218,7 @@
                                 <exec dir="${project.basedir}/formal-releases"
                                       executable="${project.basedir}/formal-releases/_push-release.sh"
                                       failonerror="true">
-                                    <arg line="${pom.version}"/>
+                                    <arg line="${project.version}"/>
                                     <arg line="${project.basedir}"/>
                                 </exec>
                             </tasks>
@@ -234,7 +234,7 @@
                                 <exec dir="${project.basedir}/formal-releases"
                                       executable="${project.basedir}/formal-releases/_tag-release.sh"
                                       failonerror="true">
-                                    <arg line="${pom.version}"/>
+                                    <arg line="${project.version}"/>
                                 </exec>
                             </tasks>
                         </configuration>
