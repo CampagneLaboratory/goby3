@@ -12,5 +12,11 @@
             <directory>${basedir}</directory>
             <outputDirectory>${version}/src</outputDirectory>
         </fileSet>
+        <fileSet>
+            <excludes>
+                <exclude>.idea</exclude>
+                <exclude>formal-releases</exclude>
+            </excludes>
+        </fileSet>
     </fileSets>
 </assembly>
