@@ -10,7 +10,7 @@
     <fileSets>
         <fileSet>
             <directory>goby-distribution/target/apidocs</directory>
-            <outputDirectory>${version}/apidoc</outputDirectory>
+            <outputDirectory>${version}/javadocs</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
