@@ -14,7 +14,7 @@ Once the development team is confident that the source code is stable, the binar
 - tar and zip commands
 - write access to [Goby 3](https://github.com/CampagneLaboratory/goby3) on github
 - gpg keys of Campagne laboratory
-- credentials for logging in to Nexus with the campagnelaboratory user
+- credentials for logging in to Nexus with the Campagne Lab's user
 
 ## Clone to the repository
 ```sh
@@ -25,7 +25,7 @@ Once the development team is confident that the source code is stable, the binar
 The goby-io and goby-framework modules must be published to the [Central Repository](http://search.maven.org/). In order to do that, the following configuration must be set on the local machine:
  
  - pgp keys to digitally sign the artifacts
- - campagnelaboratory's user on sonatype to push the artifacts on the Sonatype repos.
+ - Campagne Lab's user on sonatype to push the artifacts on the Sonatype repos.
 
 To publish the artifacts, type the following:
 ```sh
@@ -49,6 +49,7 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.10:get \
     -Dtransitive=true \
     -Dartifact=org.campagnelab.goby:goby-io:LATEST
 ```
+You can alternately replace LATEST with the specific release version (reported in the version element of goby3/pom.xml) to make sure the commnad really resolves against that version.
 
 ### How to approve and release
 
@@ -62,6 +63,8 @@ As for the staged artifact, we check that the release and its dependencies are r
     -Dtransitive=true \
     -Dartifact=org.campagnelab.goby:goby-io:LATEST
 ```
+You can alternately replace LATEST with the specific release version (reported in the version element of goby3/pom.xml) to make sure the commnad really resolves against that version.
+
 ## Prepare the release files
 ```sh
   cd goby3/formal-releases
@@ -72,7 +75,7 @@ The version of the release is set according to the goby-framework version declar
 
 The release script will tag the Goby project in the subversion repository so that the contents of the release can be tracked back to the source.  The script only bundles what is in the main trunk of the subversion repository and NOT what exists on the local disk.  This is intentional since it is essential that we know exactly what is in the distribution.
 
-The files intended for distribution will be placed into a directory called release-goby_VERSION.  An example of a release structure using the tag '''3.0.2''' is as follows:
+The files intended for distribution will be placed into a directory called release-goby_VERSION.  An example of a release structure using the tag ''3.0.2'' is as follows:
 ```sh
    ls -1 release-goby_3.0.2/
     goby.jar
@@ -114,8 +117,8 @@ If everything works, the entire Goby release directory is be copied to /var/www/
 ## Tag the release
 The final step is to tag the release in the git repository. 
 ```sh
-  $ cd goby3/formal-releases
-  $ ./tag-release.sh
+   cd goby3/formal-releases
+   ./tag-release.sh
 ```
 
 The release is tagged as ''r{version}'', where version is the goby-framework version declared in the goby3/pom.xml
