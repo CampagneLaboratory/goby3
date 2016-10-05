@@ -18,7 +18,7 @@ Once the development team is confident that the source code is stable, the binar
 
 ## Clone to the repository
 ```sh
-  $ git clone git@github.com:campagnelaboratory/goby3.git
+  git clone git@github.com:campagnelaboratory/goby3.git
 ```
 ## Deploy to Maven Central Repository
 
@@ -29,28 +29,43 @@ The goby-io and goby-framework modules must be published to the [Central Reposit
 
 To publish the artifacts, type the following:
 ```sh
-  $ cd goby3
-  $ mvn deploy
+  cd goby3
+  mvn deploy
 ```
 
-The 4 artifacts of the project (goby-framework, goby-distribution, goby-io and goby-spi) are published in the Nexus Staging repository. 
+The deploy phase publishes the 4 artifacts of the project (goby-framework, goby-distribution, goby-io and goby-spi) in the Nexus Staging repository. 
 
 Log in to https://oss.sonatype.org/#stagingRepositories as ''campagnelaboratory'' and search for a repository called "campagnelab-XXXX". Select the repo and then open the Summary tab in the bottom panel of the page. 
 
-We usually want to publish only goby-io and goby-framework, therefore we right click on goby-distribution and goby-spi and remove them from the staged artifacts.
+Since we want to publish only goby-io and goby-framework, we right click on goby-distribution and goby-spi and remove both of them from the staged artifacts.
 
-A good practice is to test the staged artifacts as dependencies in another Maven-based project to check if dependency tree is correctly resolved.
+### Test the staged release
+Before approving the release, a good practice at this point is test that the staged artifacts and their dependencies would be correctly resolved if used in another project. 
+For that we don't need to set up another Maven-based project. The following line command can be used to download the goby-io artifact and its dependencies to the local ~/.m2/repository:
 
-[TBP: how to enable the staging repo for deps resolution]
-
+```sh
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.10:get \
+    -DremoteRepositories=https://oss.sonatype.org/service/local/staging/deploy/maven2 \
+    -Dtransitive=true \
+    -Dartifact=org.campagnelab.goby:goby-io:LATEST
+```
 
 ### How to approve and release
 
-Log in to https://oss.sonatype.org/#stagingRepositories as ''campagnelaboratory'' and search for a repository called "campagnelab-XXXX". Select the repo and then click on the Release button located above the list of repositories. After some time (usually 10 minutes), the repository will disappear. This means that the release has been approved by Sonatype and from now on the artifacts are available on the Central Repository. It will take between 20 mins to few hours to be indexed by Central Repository. After that period, they should be available in the org.campagnelab groupID (http://search.maven.org/#search%7Cga%7C1%7Corg.campagnelab). 
+Log in to https://oss.sonatype.org/#stagingRepositories as ''campagnelaboratory'' and search for a repository called "campagnelab-XXXX". Select the repo and then click on the Release button located above the list of repositories. After some time (usually about 10 minutes), the repository should disappear. This means that the release has been approved by Sonatype and from now on the artifacts are available on the Central Repository. It will take between 20 mins to few hours to be also indexed by Central Repository. After that period, they should be available in the org.campagnelab groupID (http://search.maven.org/#search%7Cga%7C1%7Corg.campagnelab). 
+_Do note that once approved and released the artifact CANNOT be deleted from the Central Repository._
+### Test the approved release
+As for the staged artifact, we check that the release and its dependencies are resolved as expected with the following command:
+```sh
+ mvn org.apache.maven.plugins:maven-dependency-plugin:2.10:get \
+    -DremoteRepositories=https://oss.sonatype.org/content/groups/public \
+    -Dtransitive=true \
+    -Dartifact=org.campagnelab.goby:goby-io:LATEST
+```
 ## Prepare the release files
 ```sh
-  $ cd goby3/formal-releases
-  $ ./prepare-release.sh
+  cd goby3/formal-releases
+  ./prepare-release.sh
 ```
 
 The version of the release is set according to the goby-framework version declared in the goby3/pom.xml. Snapshot versions are not accepted for formal releases.
@@ -59,7 +74,7 @@ The release script will tag the Goby project in the subversion repository so tha
 
 The files intended for distribution will be placed into a directory called release-goby_VERSION.  An example of a release structure using the tag '''3.0.2''' is as follows:
 ```sh
-   $ ls -1 release-goby_3.0.2/
+   ls -1 release-goby_3.0.2/
     goby.jar
     CHANGES.txt
     VERSION.txt
@@ -90,8 +105,8 @@ At this point, the release files need to be placed on the web server. This requi
 
 
 ```sh
-  $ cd goby3/formal-releases
-  $ ./push-release.sh
+  cd goby3/formal-releases
+  ./push-release.sh
 ```
 
 If everything works, the entire Goby release directory is be copied to /var/www/dirs/chagall/goby/releases/ on okeeffe and a latest-release symlink is created in the folder to link the new release folder. We suggest to manually inspect the new release folder before moving to the next step.
