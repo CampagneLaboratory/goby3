@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 VERSION=$1
+
+if [[ $VERSION == *"SNAPSHOT"* ]] ;then
+  echo "Current version is set to ${VERSION}. Can't release a snapshot!";
+  exit 1
+fi
+
 RELEASE_FOLDER="release-goby_${VERSION}"
 if [ -d "$RELEASE_FOLDER" ]; then
     # remove any previous archive for this release

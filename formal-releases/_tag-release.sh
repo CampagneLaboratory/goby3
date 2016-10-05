@@ -2,13 +2,13 @@
 
 VERSION=$1
 
-read -p "Are you sure to tag this release as r${VERSION}? [y/N] " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    WORKDIR=`pwd`
-    cd ..
-    git tag "r${VERSION}"
-    git push --tags
-    cd ${WORKDIR}
+if [[ $VERSION == *"SNAPSHOT"* ]] ;then
+  echo "Current version is set to ${VERSION}. Can't tag a snapshot!";
+  exit 1
 fi
+
+WORKDIR=`pwd`
+cd ..
+git tag "r${VERSION}"
+git push --tags
+cd ${WORKDIR}
