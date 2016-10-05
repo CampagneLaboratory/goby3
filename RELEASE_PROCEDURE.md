@@ -5,24 +5,35 @@ This page describes the process for making a formal software release of the [Gob
 A combination of bash scripts and maven goals exist to aid in the process of bundling a new release for public distribution. The scripts are available in the ''formal-releases'' directory of the Goby source tree.
 
 Once the development team is confident that the source code is stable, the binary distribution, the javadoc and associated data, models and configuration files must be tagged, bundled and uploaded to the [Goby](http://goby.campagnelab.org) web site for distribution.
-## Access to the repository
 
-The user creating the release must have write access to Goby in github.
+## Requirements:
+ 
+- [Java 1.8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- [Maven 3.3.5+](https://maven.apache.org/download.cgi)
+- git 1.8+ client
+- tar and zip commands
+- write access to [Goby 3](https://github.com/CampagneLaboratory/goby3) on github
+- gpg keys of Campagne laboratory
+- credentials for logging in to Nexus with the campagnelaboratory user
+
+## Clone to the repository
 ```sh
-git clone git@github.com:campagnelaboratory/goby3.git
+  $ git clone git@github.com:campagnelaboratory/goby3.git
 ```
 ## Deploy to Maven Central Repository
 
-The goby-io and goby-framework modules must be published to the Central Repository. In order to do that, the following configuration must be set on the local machine:
+The goby-io and goby-framework modules must be published to the [Central Repository](http://search.maven.org/). In order to do that, the following configuration must be set on the local machine:
+ 
  - pgp keys to digitally sign the artifacts
  - campagnelaboratory's user on sonatype to push the artifacts on the Sonatype repos.
 
+To publish the artifacts, type the following:
 ```sh
   $ cd goby3
   $ mvn deploy
 ```
 
-The 4 artifacts (goby-framework, goby-distribution, goby-io and goby-spi) are published in the Nexus Staging repository. 
+The 4 artifacts of the project (goby-framework, goby-distribution, goby-io and goby-spi) are published in the Nexus Staging repository. 
 
 Log in to https://oss.sonatype.org/#stagingRepositories as ''campagnelaboratory'' and search for a repository called "campagnelab-XXXX". Select the repo and then open the Summary tab in the bottom panel of the page. 
 
