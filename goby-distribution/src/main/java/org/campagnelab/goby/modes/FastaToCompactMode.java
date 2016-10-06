@@ -20,6 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import edu.rit.pj.PJProperties;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.readers.FastXEntry;
 import org.campagnelab.goby.readers.FastXReader;
@@ -77,6 +78,9 @@ public class FastaToCompactMode extends AbstractGobyMode {
     private static final String MODE_DESCRIPTION = "Converts FASTA/FASTQ files to the "
             + "Goby \"compact-reads\" file format. Since Goby 1.7, this mode can load paired-end "
             + "runs into single compact files.";
+    // This index is incremented by each thread only once, so that threads start assigning entry index at a different index
+    // than any other thread.
+    private static int GLOBALENTRYINDEX = 0;
 
     /**
      * The files to convert to compact reads.
@@ -412,6 +416,15 @@ public class FastaToCompactMode extends AbstractGobyMode {
             if (concatenate) {
                 concat(inputFilenames, reqOutputFilename);
             } else {
+                if (numThreads == -1) {
+
+                    int defaultThreadCount = PJProperties.getPjNt();
+                    if (defaultThreadCount == 0) {
+                        defaultThreadCount = Runtime.getRuntime().availableProcessors();
+                    }
+                    numThreads = defaultThreadCount;
+                }
+
                 final DoInParallel loop = new DoInParallel(numThreads) {
                     @Override
                     public void action(final DoInParallel forDataAccess, final String inputBasename, final int loopIndex) {
@@ -427,15 +440,24 @@ public class FastaToCompactMode extends AbstractGobyMode {
                 System.out.println("parallel: " + parallel);
                 loop.execute(parallel, inputFilenames);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (
+                IllegalArgumentException e
+                )
+
+        {
             if (apiMode) {
                 throw e;
             } else {
                 LOG.error("Error processing", e);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e
+                )
+
+        {
             LOG.error("Error processing", e);
         }
+
     }
 
 
@@ -525,6 +547,7 @@ public class FastaToCompactMode extends AbstractGobyMode {
         return outputFilename.toString();
     }
 
+
     private void processOneFile(final int loopIndex, final int length, final String inputFilename,
                                 final Properties keyValueProps) throws IOException {
         String outputFilename;
@@ -559,6 +582,9 @@ public class FastaToCompactMode extends AbstractGobyMode {
         }
         FastXEntry pairEntry = null;
         int entryIndex = 0;
+        synchronized (this) {
+            entryIndex = GLOBALENTRYINDEX++;
+        }
         writer.setMetaData(keyValueProps);
 
         for (final FastXEntry entry : new FastXReader(inputFilename)) {
@@ -593,8 +619,9 @@ public class FastaToCompactMode extends AbstractGobyMode {
                 }
             }
 
-            writer.appendEntry();
-            entryIndex++;
+            writer.appendEntry(entryIndex);
+// skip the numbers used by the other threads.
+            entryIndex += numThreads;
         }
     }
 
