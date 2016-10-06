@@ -576,6 +576,11 @@ public class FastaToCompactMode extends AbstractGobyMode {
         FastXReader pairReader = null;
         if (processPairs) {
             final String pairInputFilename = pairFilename(inputFilename);
+
+            if (pairInputFilename == null) {
+                System.err.printf("Unable to locate paired filename for input file %s. Make sure the --pair-indicator option (%s/%s) occurs inside the filename.", inputFilename, pairIndicator1, pairIndicator2);
+                System.exit(1);
+            }
             LOG.info(String.format("Located paired-end input files (%s,%s)", inputFilename, pairInputFilename));
             pairReader = new FastXReader(pairInputFilename);
 
