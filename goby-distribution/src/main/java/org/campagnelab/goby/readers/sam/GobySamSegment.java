@@ -226,7 +226,7 @@ public class GobySamSegment implements Resettable {
         GobyQuickSeqvar seqvar = null;
         int currentReadIndex = firstReadIndex - (reverseStrand ? -1 : 1);
         int currentRefPosition = firstRefPosition - 1;
-        for (int i = 0; i < readBases.length(); i++) {
+        for (int i = 0; i < Math.min(readBases.length(),refBases.length()); i++) {
             final char refChar = refBases.charAt(i);
             final char readChar = readBases.charAt(i);
             if (readChar != '-') {

@@ -252,6 +252,7 @@ WarningCounter warnOnce=new WarningCounter(1);
                     }
                 }
             }
+            int endIndex = Math.min(allRefBases.length(), refStringPosition + cigarLength);
             if (cigarOperator.consumesReferenceBases()) {
                 if (cigarOperator != CigarOperator.N) {
 
@@ -260,7 +261,7 @@ WarningCounter warnOnce=new WarningCounter(1);
                             segment.refBases.append('N');
                         }
                     } else {
-                        segment.refBases.append(allRefBases.substring(refStringPosition, refStringPosition + cigarLength));
+                        segment.refBases.append(allRefBases.substring(refStringPosition, endIndex));
 
                     }
                     segment.targetAlignedLength += cigarLength;
@@ -274,7 +275,7 @@ WarningCounter warnOnce=new WarningCounter(1);
                 }
             }
             // ALWAYS increment refPosition by cigarLength because of how we build allRefBases.
-            newRefStringPosition = refStringPosition + cigarLength;
+            newRefStringPosition = endIndex;
 
             refStringPosition = newRefStringPosition;
             readStringPosition = newReadStringPosition;
