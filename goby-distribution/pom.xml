@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.campagnelab.goby</groupId>
         <artifactId>goby-framework</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -460,5 +460,6 @@
             <version>2.6.0</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 </project>
