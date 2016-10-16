@@ -20,6 +20,7 @@
 
 package org.campagnelab.goby.baseinfo;
 
+import org.apache.commons.io.IOUtils;
 import org.campagnelab.goby.compression.ChunkCodec;
 import org.campagnelab.goby.compression.FastBufferedMessageChunksReader;
 import org.campagnelab.goby.compression.MessageChunksReader;
@@ -88,8 +89,13 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
         codec = null;
 
         try {
-            properties.load(new FileInputStream(basename + ".sbip"));
-            totalRecords=Integer.parseInt(properties.getProperty("numRecords"));
+            FileInputStream propertiesStream = new FileInputStream(basename + ".sbip");
+            try {
+                properties.load(propertiesStream);
+                totalRecords = Integer.parseInt(properties.getProperty("numRecords"));
+            }finally {
+                IOUtils.closeQuietly(propertiesStream);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Unable to load properties for " + basename);
         }
