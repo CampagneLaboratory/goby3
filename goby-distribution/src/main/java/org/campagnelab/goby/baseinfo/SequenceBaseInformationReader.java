@@ -97,7 +97,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
                 IOUtils.closeQuietly(propertiesStream);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load properties for " + basename);
+            throw new RuntimeException("Unable to load properties for " + basename,e);
         }
     }
 
