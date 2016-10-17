@@ -38,7 +38,9 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import java.io.*;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 /**
  * Reads sequence base information files produced by the SBI output format of the discover sequence variation mode.
@@ -73,6 +75,15 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      */
     public SequenceBaseInformationReader(final File file) throws IOException {
         this(getBasename(file.getCanonicalPath()), FileUtils.openInputStream(file));
+    }
+
+    @Override
+    public void forEach(Consumer<? super BaseInformationRecords.BaseInformation> action) {
+        Objects.requireNonNull(action);
+        while (this.hasNext()) {
+            BaseInformationRecords.BaseInformation next = this.next();
+            action.accept(next);
+        }
     }
 
     /**
