@@ -38,7 +38,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     private final BaseInformationCollection.Builder collectionBuilder;
     private String basename;
     private final MessageChunksWriter messageChunkWriter;
-    private int recordIndex;
+    private long recordIndex;
 
     public SequenceBaseInformationWriter(final String basename) throws FileNotFoundException {
         this(new FileOutputStream(SequenceBaseInformationReader.getBasename(basename) + ".sbi"));
@@ -59,7 +59,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
-        p.setProperty("numRecords", Integer.toString(recordIndex));
+        p.setProperty("numRecords", Long.toString(recordIndex));
         p.save(new FileOutputStream(basename + ".sbip"), basename);
     }
 
@@ -84,7 +84,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     public synchronized void printStats(final PrintStream out) {
         messageChunkWriter.printStats(out);
         out.println("Number of bytes/baseInformation record " +
-                (messageChunkWriter.getTotalBytesWritten()) / (float) recordIndex);
+                (messageChunkWriter.getTotalBytesWritten()) / (double) recordIndex);
     }
 
 }
