@@ -19,10 +19,11 @@ package org.campagnelab.goby.baseinfo;
  *     along with the Goby IO API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.campagnelab.goby.compression.MessageChunksWriter;
-import org.campagnelab.goby.compression.SequenceBaseInfoCollectionHandler;
+import org.apache.commons.io.IOUtils;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformation;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
+import org.campagnelab.goby.compression.MessageChunksWriter;
+import org.campagnelab.goby.compression.SequenceBaseInfoCollectionHandler;
 
 import java.io.*;
 import java.util.Properties;
@@ -58,9 +59,21 @@ public class SequenceBaseInformationWriter implements Closeable {
     @Override
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
+        writeProperties(basename, recordIndex);
+    }
+
+    /**
+     * Write the sbip file with the provided information about the content of the file.
+     * @param basename basename of the .sbi file.
+     * @param numberOfRecords in the .sbi file.
+     * @throws FileNotFoundException
+     */
+    public static void writeProperties(String basename, long numberOfRecords) throws FileNotFoundException {
         Properties p = new Properties();
-        p.setProperty("numRecords", Long.toString(recordIndex));
-        p.save(new FileOutputStream(basename + ".sbip"), basename);
+        p.setProperty("numRecords", Long.toString(numberOfRecords));
+        FileOutputStream out = new FileOutputStream(basename + ".sbip");
+        p.save(out, basename);
+        IOUtils.closeQuietly(out);
     }
 
     /**
