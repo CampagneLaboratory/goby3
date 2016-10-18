@@ -338,7 +338,7 @@
         <dependency>
             <groupId>org.campagnelab.dl</groupId>
             <artifactId>variation-analysis</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.3-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${basedir}/../lib/model-utils-1.0.2-SNAPSHOT.jar</systemPath>
         </dependency>
