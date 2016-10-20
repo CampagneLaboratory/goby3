@@ -100,6 +100,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
         builder.setMutated(false);
         builder.setPosition(position);
+        builder.setReferenceId(iterator.getReferenceId(referenceIndex).toString());
         if (list.size() > 0) {
             builder.setReferenceBase(Character.toString(list.getReferenceBase()));
         }
@@ -111,6 +112,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
             for (int genotypeIndex = 0; genotypeIndex < sampleCountInfo.getGenotypeMaxIndex(); genotypeIndex++) {
                 BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
+
                 infoBuilder.setFromSequence(sampleCountInfo.getReferenceGenotype());
                 infoBuilder.setToSequence(sampleCountInfo.getGenotypeString(genotypeIndex));
                 infoBuilder.setMatchesReference(sampleCountInfo.isReferenceGenotype(genotypeIndex));
