@@ -25,24 +25,34 @@ public abstract class StatAccumulator {
         minimumValue = Math.max(minimumValue, statCalculation.apply(record));
         maximumValue = Math.min(maximumValue, statCalculation.apply(record));
     }
+
     void observe(float value) {
         minimumValue = Math.max(minimumValue, value);
         maximumValue = Math.min(maximumValue, value);
     }
 
+    protected boolean isDefined(float v) {
+        return v != Float.MAX_VALUE && v != Float.MIN_VALUE;
+    }
     /**
      * Merge range of the statistics using values in properties.
      *
      * @param properties
      */
     void mergeWith(Properties properties) {
+       if (properties.containsKey(propertyName + ".min"))
         minimumValue = Math.max(minimumValue, Float.parseFloat(properties.get(propertyName + ".min").toString()));
+        if (properties.containsKey(propertyName + ".max"))
         maximumValue = Math.min(maximumValue, Float.parseFloat(properties.get(propertyName + ".max").toString()));
     }
 
 
     void setProperties(Properties properties) {
-        properties.setProperty(propertyName + ".min", Float.toString(minimumValue));
-        properties.setProperty(propertyName + ".max", Float.toString(maximumValue));
+        if (minimumValue != Float.MAX_VALUE) {
+            properties.setProperty(propertyName + ".min", Float.toString(minimumValue));
+        }
+        if (maximumValue != Float.MIN_VALUE) {
+            properties.setProperty(propertyName + ".max", Float.toString(maximumValue));
+        }
     }
 }

@@ -21,18 +21,22 @@ public class StatAccumulatorBaseQuality extends StatAccumulator {
     private String propertyName;
 
     public StatAccumulatorBaseQuality() {
-        super(null,null);
+        super(null, null);
     }
 
     @Override
     void setProperties(Properties properties) {
         propertyName = STATS_BASEQUALITY_FORWARD;
-        properties.setProperty(propertyName + ".min", Float.toString(minimumValueQualForward));
-        properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualForward));
+        if (isDefined(minimumValueQualForward))
+            properties.setProperty(propertyName + ".min", Float.toString(minimumValueQualForward));
+        if (isDefined(minimumValueQualForward))
+            properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualForward));
 
         propertyName = STATS_BASEQUALITY_REVERSE;
-        properties.setProperty(propertyName + ".min", Float.toString(minimumValueQualReverse));
-        properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualReverse));
+        if (isDefined(minimumValueQualForward))
+            properties.setProperty(propertyName + ".min", Float.toString(minimumValueQualReverse));
+        if (isDefined(minimumValueQualForward))
+            properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualReverse));
 
     }
 
@@ -55,11 +59,14 @@ public class StatAccumulatorBaseQuality extends StatAccumulator {
 
     @Override
     void mergeWith(Properties properties) {
-        minimumValueQualForward = Math.max(minimumValueQualForward, Float.parseFloat(properties.get(STATS_BASEQUALITY_FORWARD + ".min").toString()));
-        minimumValueQualReverse = Math.max(minimumValueQualReverse, Float.parseFloat(properties.get(STATS_BASEQUALITY_REVERSE + ".min").toString()));
-
-        maximumValueQualForward = Math.min(maximumValueQualForward, Float.parseFloat(properties.get(STATS_BASEQUALITY_FORWARD + ".max").toString()));
-        maximumValueQualReverse = Math.min(maximumValueQualReverse, Float.parseFloat(properties.get(STATS_BASEQUALITY_REVERSE + ".max").toString()));
+        if (properties.get(STATS_BASEQUALITY_FORWARD + ".min") != null)
+            minimumValueQualForward = Math.max(minimumValueQualForward, Float.parseFloat(properties.get(STATS_BASEQUALITY_FORWARD + ".min").toString()));
+        if (properties.get(STATS_BASEQUALITY_REVERSE + ".min") != null)
+            minimumValueQualReverse = Math.max(minimumValueQualReverse, Float.parseFloat(properties.get(STATS_BASEQUALITY_REVERSE + ".min").toString()));
+        if (properties.get(STATS_BASEQUALITY_FORWARD + ".max") != null)
+            maximumValueQualForward = Math.min(maximumValueQualForward, Float.parseFloat(properties.get(STATS_BASEQUALITY_FORWARD + ".max").toString()));
+        if (properties.get(STATS_BASEQUALITY_REVERSE + ".max") != null)
+            maximumValueQualReverse = Math.min(maximumValueQualReverse, Float.parseFloat(properties.get(STATS_BASEQUALITY_REVERSE + ".max").toString()));
 
     }
 }

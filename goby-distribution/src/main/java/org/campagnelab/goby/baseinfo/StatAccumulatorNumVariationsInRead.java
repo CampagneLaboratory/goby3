@@ -16,7 +16,10 @@ public class StatAccumulatorNumVariationsInRead extends StatAccumulator {
     void observe(BaseInformationRecords.BaseInformation record) {
         for (BaseInformationRecords.SampleInfo sample : record.getSamplesList())
             for (BaseInformationRecords.CountInfo count : sample.getCountsList()) {
-                observe(count.getNumVariationsInReadsCount());
+                for (BaseInformationRecords.NumberWithFrequency v : count.getNumVariationsInReadsList()) {
+                    observe(v.getNumber());
+                }
+
             }
     }
 }

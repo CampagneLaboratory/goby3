@@ -21,18 +21,22 @@ public class StatAccumulatorReadMappingQuality extends StatAccumulator {
     private String propertyName;
 
     public StatAccumulatorReadMappingQuality() {
-        super(null,null);
+        super(null, null);
     }
 
     @Override
     void setProperties(Properties properties) {
         propertyName = STATS_READMAPPINGQUALITY_FORWARD;
-        properties.setProperty(propertyName + ".min", Float.toString(minimumValueForward));
-        properties.setProperty(propertyName + ".max", Float.toString(maximumValueForward));
+        if (isDefined(minimumValueForward))
+            properties.setProperty(propertyName + ".min", Float.toString(minimumValueForward));
+        if (isDefined(maximumValueForward))
+            properties.setProperty(propertyName + ".max", Float.toString(maximumValueForward));
 
         propertyName = STATS_READMAPPINGQUALITY_REVERSE;
-        properties.setProperty(propertyName + ".min", Float.toString(minimumValueReverse));
-        properties.setProperty(propertyName + ".max", Float.toString(maximumValueReverse));
+        if (isDefined(minimumValueReverse))
+            properties.setProperty(propertyName + ".min", Float.toString(minimumValueReverse));
+        if (isDefined(maximumValueReverse))
+            properties.setProperty(propertyName + ".max", Float.toString(maximumValueReverse));
 
     }
 
@@ -54,11 +58,15 @@ public class StatAccumulatorReadMappingQuality extends StatAccumulator {
 
     @Override
     void mergeWith(Properties properties) {
-        minimumValueForward = Math.max(minimumValueForward, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_FORWARD + ".min").toString()));
-        minimumValueReverse = Math.max(minimumValueReverse, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_REVERSE + ".min").toString()));
+        if (properties.containsKey(STATS_READMAPPINGQUALITY_FORWARD + ".min"))
+            minimumValueForward = Math.max(minimumValueForward, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_FORWARD + ".min").toString()));
+        if (properties.containsKey(STATS_READMAPPINGQUALITY_REVERSE + ".min"))
+            minimumValueReverse = Math.max(minimumValueReverse, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_REVERSE + ".min").toString()));
 
-        maximumValueForward = Math.min(maximumValueForward, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_FORWARD + ".max").toString()));
-        maximumValueReverse = Math.min(maximumValueReverse, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_REVERSE + ".max").toString()));
+        if (properties.containsKey(STATS_READMAPPINGQUALITY_FORWARD + ".max"))
+            maximumValueForward = Math.min(maximumValueForward, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_FORWARD + ".max").toString()));
+        if (properties.containsKey(STATS_READMAPPINGQUALITY_REVERSE + ".max"))
+            maximumValueReverse = Math.min(maximumValueReverse, Float.parseFloat(properties.get(STATS_READMAPPINGQUALITY_REVERSE + ".max").toString()));
 
     }
 }
