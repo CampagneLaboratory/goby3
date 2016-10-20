@@ -10,7 +10,7 @@ import java.util.Properties;
  */
 public class StatAccumulatorReadMappingQuality extends StatAccumulator {
     public static final String STATS_READMAPPINGQUALITY_FORWARD = "stats.readMappingQuality.forward";
-    public static final String STATS_READMAPPINGQUALITY_REVERSE = "stats.readMappingQuality.forward";
+    public static final String STATS_READMAPPINGQUALITY_REVERSE = "stats.readMappingQuality.reverse";
 
     protected float minimumValueForward = Float.MAX_VALUE;
     protected float maximumValueForward = Float.MIN_VALUE;
