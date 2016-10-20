@@ -97,7 +97,7 @@ public abstract class IterateSortedAlignmentsListImpl
         info.position = currentRefPosition - 1; // store 0-based position
         byte readMappingQuality = (byte) (alignmentEntry.hasMappingQuality() ? alignmentEntry.getMappingQuality() : 40);
         info.readMappingQuality = (byte)(readMappingQuality & 0xFF);
-        info.qualityScore = readMappingQuality;
+        info.qualityScore = 40;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
         info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
         //System.out.printf("position=%d %s%n", currentRefPosition, info);
@@ -131,7 +131,7 @@ public abstract class IterateSortedAlignmentsListImpl
         info.position = currentRefPosition - 1; // store 0-based position
         final int readMappingQuality = (alignmentEntry.hasMappingQuality() ? alignmentEntry.getMappingQuality() : 40);
         info.readMappingQuality = (byte)(readMappingQuality & 0xFF);
-        info.qualityScore = (byte) Math.min(toQual, readMappingQuality);
+        info.qualityScore = toQual;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
         info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
         addToFuture(positionToBases, info);
