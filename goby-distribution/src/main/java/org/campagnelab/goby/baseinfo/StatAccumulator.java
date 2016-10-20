@@ -27,8 +27,8 @@ public abstract class StatAccumulator {
     }
 
     void observe(float value) {
-        minimumValue = Math.max(minimumValue, value);
-        maximumValue = Math.min(maximumValue, value);
+        minimumValue = Math.min(minimumValue, value);
+        maximumValue = Math.max(maximumValue, value);
     }
 
     protected boolean isDefined(float v) {

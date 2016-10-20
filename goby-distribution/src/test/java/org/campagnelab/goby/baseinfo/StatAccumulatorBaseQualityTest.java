@@ -16,86 +16,14 @@ import static org.testng.Assert.*;
  */
 public class StatAccumulatorBaseQualityTest {
 
-
-    public void testObserve() throws Exception {
-        StatAccumulatorBaseQuality bq = new StatAccumulatorBaseQuality();
-        Properties p = new Properties();
-        bq.observe(construct(new int[]{15, 12}, new int[]{1, 100}));
-        bq.setProperties(p);
-
-    }
-
-    private BaseInformationRecords.BaseInformation construct(int[] forwardQual, int[] reverseQual) throws TextFormat.ParseException {
-        BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
-
-        BaseInformationRecords.CountInfo.Builder count = BaseInformationRecords.CountInfo.newBuilder();
-        count.setMatchesReference(true);
-
-        for (int i : reverseQual) {
-            BaseInformationRecords.NumberWithFrequency.Builder nf = BaseInformationRecords.NumberWithFrequency.newBuilder();
-            nf.setFrequency(1);
-            nf.setNumber(i);
-            count.addQualityScoresReverseStrand(nf);
-        }
-
-
-         TextFormat.getParser().merge(record, builder);
-        for (int i : forwardQual) {
-            BaseInformationRecords.NumberWithFrequency.Builder nf = BaseInformationRecords.NumberWithFrequency.newBuilder();
-            nf.setFrequency(1);
-            nf.setNumber(i);
-            builder.getSamples(0).getCounts(0).toBuilder().addQualityScoresForwardStrand(nf).build();
-        }
-        for (int i : reverseQual) {
-            BaseInformationRecords.NumberWithFrequency.Builder nf = BaseInformationRecords.NumberWithFrequency.newBuilder();
-            nf.setFrequency(1);
-            nf.setNumber(i);
-          //  builder.getSamples(0).getCountsOrBuilder(0).bui.addQualityScoresReverseStrand(nf).build();
-        }
-        return builder.build();
-    }
-
-    String record = "reference_index: 18\n" +
-            "position: 17214616\n" +
-            "mutated: false\n" +
-            "referenceBase: \"A\"\n" +
-            "samples {\n" +
-            "  counts {\n" +
-            "    matchesReference: true\n" +
-            "    fromSequence: \"A\"\n" +
-            "    toSequence: \"A\"\n" +
-            "    genotypeCountForwardStrand: 5\n" +
-            "    genotypeCountReverseStrand: 0\n" +
-            "  }\n" +
-            "  counts {\n" +
-            "    matchesReference: false\n" +
-            "    fromSequence: \"A\"\n" +
-            "    toSequence: \"T\"\n" +
-            "    genotypeCountForwardStrand: 5\n" +
-            "    genotypeCountReverseStrand: 0\n" +
-            "  }\n" +
-            "}\n" +
-            "samples {\n" +
-            "  counts {\n" +
-            "    matchesReference: true\n" +
-            "    fromSequence: \"A\"\n" +
-            "    toSequence: \"A\"\n" +
-            "    genotypeCountForwardStrand: 5\n" +
-            "    genotypeCountReverseStrand: 0\n" +
-            "  }\n" +
-            "  counts {\n" +
-            "    matchesReference: false\n" +
-            "    fromSequence: \"A\"\n" +
-            "    toSequence: \"T\"\n" +
-            "    genotypeCountForwardStrand: 5\n" +
-            "    genotypeCountReverseStrand: 0\n" +
-            "  }\n" +
-
-            "} ";
-
     @Test
-    public void testMergeWith() throws Exception {
+    public void testObserve() throws Exception {
+        StatAccumulatorNumVariationsInRead bq = new StatAccumulatorNumVariationsInRead();
+        Properties p = new Properties();
+        bq.observe(12);
+        bq.observe(15);
+        bq.setProperties(p);
+        assertEquals("{stats.numVariationsInRead.max=15.0, stats.numVariationsInRead.min=12.0}", p.toString());
 
     }
-
 }
