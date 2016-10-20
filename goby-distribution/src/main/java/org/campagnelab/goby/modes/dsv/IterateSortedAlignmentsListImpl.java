@@ -20,11 +20,11 @@
 
 package org.campagnelab.goby.modes.dsv;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,8 +127,10 @@ public abstract class IterateSortedAlignmentsListImpl
         info.matchesReference = false;
         info.position = currentRefPosition - 1; // store 0-based position
         final int readMappingQuality = (alignmentEntry.hasMappingQuality() ? alignmentEntry.getMappingQuality() : 40);
+        info.readMappingQuality = (byte)(readMappingQuality & 0xFF);
         info.qualityScore = (byte) Math.min(toQual, readMappingQuality);
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
+        info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
         addToFuture(positionToBases, info);
     }
 

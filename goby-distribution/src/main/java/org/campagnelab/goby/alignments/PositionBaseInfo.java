@@ -29,6 +29,7 @@ public class PositionBaseInfo {
     public int readIndex;
     public int readerIndex;
     public byte qualityScore=Byte.MIN_VALUE;
+    public byte readMappingQuality=Byte.MIN_VALUE;
     public boolean matchesReference;
     public char from = ' ';
     public char to = ' ';
@@ -37,6 +38,11 @@ public class PositionBaseInfo {
      */
     public int position;
     public boolean matchesForwardStrand;
+    /**
+     * The number of variations encountered in the read that supports this variation.
+     */
+    public int numVariationsInRead;
+
     @Override
     public String toString() {
         final char strand = matchesForwardStrand ? '+' : '-';

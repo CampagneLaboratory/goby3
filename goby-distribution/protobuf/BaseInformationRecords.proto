@@ -1,4 +1,5 @@
 syntax = "proto2";
+
 package org.campagnelab.dl.varanalysis.protobuf;
 
 option java_package = "org.campagnelab.dl.varanalysis.protobuf";
@@ -19,7 +20,7 @@ message BaseInformation {
     /** Index of the reference sequence where this base is observed in the genome. */
     required uint32 reference_index = 1;
     /** Identifier for the reference sequence (typically chromosome name). */
-    optional string reference_id=10;
+    optional string reference_id = 10;
     /**  The position in the reference sequence of the genome. */
     required uint32 position = 2;
 
@@ -43,7 +44,11 @@ message BaseInformation {
 
     /** The genotype at this base position. In the format A/B where A,B are alleles (single bases or indels).
     Homozygotes are written for instance, A/A while A/T-- is a heterozygote genotype with one allele A another T--*[ */
-    optional string trueGenotype=9;
+    optional string trueGenotype = 9;
+
+    /** Genomic context centered on the base: bases around the base. If 11 bases are stored, 5 bases of context are
+    stored on either side. */
+    optional string genomicSequenceContext = 15;
 }
 
 /**
@@ -95,6 +100,14 @@ message CountInfo {
     /** The index in the read of  all bases matching this genotype on the reverse strand */
     repeated NumberWithFrequency readIndicesReverseStrand = 19;
 
+    /** Mapping qualities for read on the forward strand with this genotype. */
+    repeated NumberWithFrequency readMappingQualityForwardStrand = 21;
+
+    /** Mapping qualities for read on the reverse strand with this genotype. */
+    repeated NumberWithFrequency readMappingQualityReverseStrand = 22;
+    /**
+    Number of variations found in the reads that support this genotype. */
+    repeated NumberWithFrequency numVariationsInReads = 23;
     /** True iff the genotype is called in this sample. In other words, this field is true when the genotype caller believes
      that this genotype is present in the sample. */
     optional bool isCalled = 20;
@@ -103,5 +116,4 @@ message CountInfo {
 message NumberWithFrequency {
     required uint32 number = 1;
     required uint32 frequency = 2;
-
 }
