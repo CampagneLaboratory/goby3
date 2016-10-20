@@ -95,8 +95,11 @@ public abstract class IterateSortedAlignmentsListImpl
         info.to = '\0';
         info.matchesReference = true;
         info.position = currentRefPosition - 1; // store 0-based position
-        info.qualityScore = (byte) (alignmentEntry.hasMappingQuality() ? alignmentEntry.getMappingQuality() : 40);
+        byte readMappingQuality = (byte) (alignmentEntry.hasMappingQuality() ? alignmentEntry.getMappingQuality() : 40);
+        info.readMappingQuality = (byte)(readMappingQuality & 0xFF);
+        info.qualityScore = readMappingQuality;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
+        info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
         //System.out.printf("position=%d %s%n", currentRefPosition, info);
         addToFuture(positionToBases, info);
     }
