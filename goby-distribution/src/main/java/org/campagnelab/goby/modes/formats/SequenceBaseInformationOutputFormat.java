@@ -102,7 +102,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
             qualityScores[sampleInd][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
             readMappingQuality[sampleInd][baseInd][strandInd].add(baseInfo.readMappingQuality & 0xFF);
-            numVariationsInReads[sampleInd][baseInd].add(baseInfo.readMappingQuality & 0xFF);
+            numVariationsInReads[sampleInd][baseInd].add(baseInfo.numVariationsInRead );
             //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
             readIdxs[sampleInd][baseInd][strandInd].add(baseInfo.readIndex);
         }
