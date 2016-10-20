@@ -18,6 +18,8 @@ message BaseInformationCollection {
 message BaseInformation {
     /** Index of the reference sequence where this base is observed in the genome. */
     required uint32 reference_index = 1;
+    /** Identifier for the reference sequence (typically chromosome name). */
+    optional string reference_id=5;
     /**  The position in the reference sequence of the genome. */
     required uint32 position = 2;
 
@@ -39,6 +41,9 @@ message BaseInformation {
     /** A set of samples (ie germline,somatic). */
     repeated SampleInfo samples = 8;
 
+    /** The genotype at this base position. In the format A/B where A,B are alleles (single bases or indels).
+    Homozygotes are written for instance, A/A while A/T-- is a heterozygote genotype with one allele A another T--*[*/]:
+    optional string trueGenotype=9;
 }
 
 /**
