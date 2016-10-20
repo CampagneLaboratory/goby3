@@ -25,6 +25,10 @@ public abstract class StatAccumulator {
         minimumValue = Math.max(minimumValue, statCalculation.apply(record));
         maximumValue = Math.min(maximumValue, statCalculation.apply(record));
     }
+    void observe(float value) {
+        minimumValue = Math.max(minimumValue, value);
+        maximumValue = Math.min(maximumValue, value);
+    }
 
     /**
      * Merge range of the statistics using values in properties.

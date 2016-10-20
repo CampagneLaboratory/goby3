@@ -43,6 +43,9 @@ public class SequenceBaseInformationWriter implements Closeable {
     private final MessageChunksWriter messageChunkWriter;
     private long recordIndex;
     private StatAccumulatorBaseQuality baseQualityStats = new StatAccumulatorBaseQuality();
+    private StatAccumulatorReadMappingQuality readMappingQualityStats = new StatAccumulatorReadMappingQuality();
+    private StatAccumulatorNumVariationsInRead readVariationNumberStats = new StatAccumulatorNumVariationsInRead();
+
 
     public SequenceBaseInformationWriter(final String basename) throws FileNotFoundException {
         this(new FileOutputStream(SequenceBaseInformationReader.getBasename(basename) + ".sbi"));
@@ -64,6 +67,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
         baseQualityStats.setProperties(p);
+        readMappingQualityStats.setProperties(p);
+        readVariationNumberStats.setProperties(p);
         writeProperties(basename, recordIndex,p);
     }
 
@@ -79,14 +84,23 @@ public class SequenceBaseInformationWriter implements Closeable {
 
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
         StatAccumulatorBaseQuality bq = new StatAccumulatorBaseQuality();
+        StatAccumulatorReadMappingQuality rmq = new StatAccumulatorReadMappingQuality();
+        StatAccumulatorNumVariationsInRead nvir = new StatAccumulatorNumVariationsInRead();
         long numTotal = 0;
         for (Properties p : properties) {
+
             bq.mergeWith(p);
+            rmq.mergeWith(p);
+            nvir.mergeWith(p);
+
             numTotal += Long.parseLong(p.get("numRecords").toString());
         }
         Properties merged = new Properties();
         merged.setProperty("numRecords", Long.toString(numTotal));
         bq.setProperties(merged);
+        rmq.setProperties(merged);
+        nvir.setProperties(merged);
+
         merged.save(out, basename);
         IOUtils.closeQuietly(out);
     }
@@ -113,6 +127,8 @@ public class SequenceBaseInformationWriter implements Closeable {
 
         collectionBuilder.addRecords(baseInfo);
         baseQualityStats.observe(baseInfo);
+        readMappingQualityStats.observe(baseInfo);
+        readVariationNumberStats.observe(baseInfo);
         messageChunkWriter.writeAsNeeded(collectionBuilder);
         recordIndex += 1;
     }

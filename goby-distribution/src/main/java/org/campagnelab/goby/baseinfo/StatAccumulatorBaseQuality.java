@@ -9,8 +9,8 @@ import java.util.Properties;
  * Created by fac2003 on 10/20/16.
  */
 public class StatAccumulatorBaseQuality extends StatAccumulator {
-    public static final String STATS_BASEQUALITY_FORWARD = "stats.basequality.forward";
-    public static final String STATS_BASEQUALITY_REVERSE = "stats.basequality.reverse";
+    public static final String STATS_BASEQUALITY_FORWARD = "stats.baseQuality.forward";
+    public static final String STATS_BASEQUALITY_REVERSE = "stats.baseQuality.reverse";
 
     protected float minimumValueQualForward = Float.MAX_VALUE;
     protected float maximumValueQualForward = Float.MIN_VALUE;
