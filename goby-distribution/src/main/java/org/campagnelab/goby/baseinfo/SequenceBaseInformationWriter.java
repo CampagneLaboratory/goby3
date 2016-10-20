@@ -40,6 +40,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     private String basename;
     private final MessageChunksWriter messageChunkWriter;
     private long recordIndex;
+    private StatAccumulatorBaseQuality baseQualityStats = new StatAccumulatorBaseQuality();
 
     public SequenceBaseInformationWriter(final String basename) throws FileNotFoundException {
         this(new FileOutputStream(SequenceBaseInformationReader.getBasename(basename) + ".sbi"));
@@ -59,21 +60,29 @@ public class SequenceBaseInformationWriter implements Closeable {
     @Override
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
-        writeProperties(basename, recordIndex);
+        Properties p = new Properties();
+        baseQualityStats.setProperties(p);
+        writeProperties(basename, recordIndex, p);
     }
 
     /**
      * Write the sbip file with the provided information about the content of the file.
-     * @param basename basename of the .sbi file.
+     *
+     * @param basename        basename of the .sbi file.
      * @param numberOfRecords in the .sbi file.
+     * @param p               Properties that should be written.
      * @throws FileNotFoundException
      */
-    public static void writeProperties(String basename, long numberOfRecords) throws FileNotFoundException {
-        Properties p = new Properties();
+    public static void writeProperties(String basename, long numberOfRecords, Properties p) throws FileNotFoundException {
+
         p.setProperty("numRecords", Long.toString(numberOfRecords));
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
         p.save(out, basename);
         IOUtils.closeQuietly(out);
+    }
+
+    public static void writeProperties(String basename, long numberOfRecords) throws FileNotFoundException {
+        writeProperties(basename, numberOfRecords, null);
     }
 
     /**
@@ -85,6 +94,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     public synchronized void appendEntry(BaseInformation baseInfo) throws IOException {
 
         collectionBuilder.addRecords(baseInfo);
+        baseQualityStats.observe(baseInfo);
         messageChunkWriter.writeAsNeeded(collectionBuilder);
         recordIndex += 1;
     }
