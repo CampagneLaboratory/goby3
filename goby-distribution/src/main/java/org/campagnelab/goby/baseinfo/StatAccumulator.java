@@ -41,9 +41,9 @@ public abstract class StatAccumulator {
      */
     void mergeWith(Properties properties) {
        if (properties.containsKey(propertyName + ".min"))
-        minimumValue = Math.max(minimumValue, Float.parseFloat(properties.get(propertyName + ".min").toString()));
+        minimumValue = Math.min(minimumValue, Float.parseFloat(properties.get(propertyName + ".min").toString()));
         if (properties.containsKey(propertyName + ".max"))
-        maximumValue = Math.min(maximumValue, Float.parseFloat(properties.get(propertyName + ".max").toString()));
+        maximumValue = Math.max(maximumValue, Float.parseFloat(properties.get(propertyName + ".max").toString()));
     }
 
 

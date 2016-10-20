@@ -24,6 +24,5 @@ public class StatAccumulatorBaseQualityTest {
         bq.observe(15);
         bq.setProperties(p);
         assertEquals("{stats.numVariationsInRead.max=15.0, stats.numVariationsInRead.min=12.0}", p.toString());
-
     }
 }
