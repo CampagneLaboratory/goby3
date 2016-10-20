@@ -26,6 +26,8 @@ import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.compression.SequenceBaseInfoCollectionHandler;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -62,27 +64,43 @@ public class SequenceBaseInformationWriter implements Closeable {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
         baseQualityStats.setProperties(p);
-        writeProperties(basename, recordIndex, p);
+        writeProperties(basename, recordIndex,p);
     }
 
     /**
-     * Write the sbip file with the provided information about the content of the file.
+     * Write the sbip file with the  information obtained by merging properties.
      *
-     * @param basename        basename of the .sbi file.
-     * @param numberOfRecords in the .sbi file.
-     * @param p               Properties that should be written.
+     * @param basename   basename of the .sbi file.
+     * @param properties List of properties that should be written.
      * @throws FileNotFoundException
      */
-    public static void writeProperties(String basename, long numberOfRecords, Properties p) throws FileNotFoundException {
+    public static void writeProperties(String basename, List<Properties> properties) throws FileNotFoundException {
 
-        p.setProperty("numRecords", Long.toString(numberOfRecords));
+
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
-        p.save(out, basename);
+        StatAccumulatorBaseQuality bq = new StatAccumulatorBaseQuality();
+        long numTotal = 0;
+        for (Properties p : properties) {
+            bq.mergeWith(p);
+            numTotal += Long.parseLong(p.get("numRecords").toString());
+        }
+        Properties merged = new Properties();
+        merged.setProperty("numRecords", Long.toString(numTotal));
+        bq.setProperties(merged);
+        merged.save(out, basename);
         IOUtils.closeQuietly(out);
     }
 
     public static void writeProperties(String basename, long numberOfRecords) throws FileNotFoundException {
-        writeProperties(basename, numberOfRecords, null);
+        Properties p = new Properties();
+        writeProperties(basename, numberOfRecords, p);
+    }
+
+    private static void writeProperties(String basename, long numberOfRecords, Properties p) throws FileNotFoundException {
+        p.setProperty("numRecords", Long.toString(numberOfRecords));
+        List<Properties> lp = new ArrayList<>();
+        lp.add(p);
+        writeProperties(basename, lp);
     }
 
     /**

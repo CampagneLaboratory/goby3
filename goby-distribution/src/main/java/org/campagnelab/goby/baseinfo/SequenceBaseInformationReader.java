@@ -58,6 +58,14 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
     private long totalRecords;
 
     /**
+     * Return the properties defined in the .bip file.
+     * @return
+     */
+    public Properties getProperties() {
+        return properties;
+    }
+
+    /**
      * Initialize the reader.
      *
      * @param path Path to the input file
