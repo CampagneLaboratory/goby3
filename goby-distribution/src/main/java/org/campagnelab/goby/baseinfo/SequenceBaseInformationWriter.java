@@ -19,6 +19,7 @@ package org.campagnelab.goby.baseinfo;
  *     along with the Goby IO API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import edu.cornell.med.icb.util.VersionUtils;
 import org.apache.commons.io.IOUtils;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformation;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
@@ -66,6 +67,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
+        p.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
         baseQualityStats.setProperties(p);
         readMappingQualityStats.setProperties(p);
         readVariationNumberStats.setProperties(p);
