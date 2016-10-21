@@ -67,7 +67,6 @@ public class SequenceBaseInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
-        p.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
         baseQualityStats.setProperties(p);
         readMappingQualityStats.setProperties(p);
         readVariationNumberStats.setProperties(p);
@@ -99,6 +98,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         }
         Properties merged = new Properties();
         merged.setProperty("numRecords", Long.toString(numTotal));
+        merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
         bq.setProperties(merged);
         rmq.setProperties(merged);
         nvir.setProperties(merged);
