@@ -21,6 +21,7 @@ package org.campagnelab.goby.baseinfo;
 
 import edu.cornell.med.icb.util.VersionUtils;
 import org.apache.commons.io.IOUtils;
+import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformation;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
 import org.campagnelab.goby.compression.MessageChunksWriter;
@@ -43,6 +44,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     private String basename;
     private final MessageChunksWriter messageChunkWriter;
     private long recordIndex;
+    private ConstantAccumulator contextSize = new ConstantAccumulator("contextSize", BaseInformationRecords.BaseInformationOrBuilder::getGenomicSequenceContext);
     private StatAccumulatorBaseQuality baseQualityStats = new StatAccumulatorBaseQuality();
     private StatAccumulatorReadMappingQuality readMappingQualityStats = new StatAccumulatorReadMappingQuality();
     private StatAccumulatorNumVariationsInRead readVariationNumberStats = new StatAccumulatorNumVariationsInRead();
@@ -67,6 +69,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
+        contextSize.setProperties(p,Integer -> Integer.toString());
         baseQualityStats.setProperties(p);
         readMappingQualityStats.setProperties(p);
         readVariationNumberStats.setProperties(p);
@@ -84,12 +87,18 @@ public class SequenceBaseInformationWriter implements Closeable {
 
 
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
+        ConstantAccumulator cs = new ConstantAccumulator("contextSize", BaseInformationRecords.BaseInformationOrBuilder::getGenomicSequenceContext);
         StatAccumulatorBaseQuality bq = new StatAccumulatorBaseQuality();
         StatAccumulatorReadMappingQuality rmq = new StatAccumulatorReadMappingQuality();
         StatAccumulatorNumVariationsInRead nvir = new StatAccumulatorNumVariationsInRead();
         long numTotal = 0;
         for (Properties p : properties) {
-
+            try {
+                cs.mergeWith(p,String -> Integer.parseInt(String));
+            } catch (IOException e) {
+                System.err.println("unparseable Genomic Context value in sbi properties file.");
+                e.printStackTrace();
+            }
             bq.mergeWith(p);
             rmq.mergeWith(p);
             nvir.mergeWith(p);
@@ -102,6 +111,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         bq.setProperties(merged);
         rmq.setProperties(merged);
         nvir.setProperties(merged);
+        cs.setProperties(merged,Integer -> Integer.toString());
 
         merged.save(out, basename);
         IOUtils.closeQuietly(out);
@@ -126,8 +136,8 @@ public class SequenceBaseInformationWriter implements Closeable {
      */
 
     public synchronized void appendEntry(BaseInformation baseInfo) throws IOException {
-
         collectionBuilder.addRecords(baseInfo);
+        contextSize.observe(baseInfo);
         baseQualityStats.observe(baseInfo);
         readMappingQualityStats.observe(baseInfo);
         readVariationNumberStats.observe(baseInfo);
