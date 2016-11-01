@@ -100,7 +100,9 @@ public abstract class IterateSortedAlignmentsListImpl
         info.qualityScore = 40;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
         info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
-        info.insertSize=alignmentEntry.getInsertSize();
+        if (alignmentEntry.hasInsertSize()) {
+            info.insertSize = alignmentEntry.getInsertSize();
+        }
         //System.out.printf("position=%d %s%n", currentRefPosition, info);
         addToFuture(positionToBases, info);
     }
@@ -135,7 +137,9 @@ public abstract class IterateSortedAlignmentsListImpl
         info.qualityScore = toQual;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
         info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
-        info.insertSize=alignmentEntry.getInsertSize();
+        if (alignmentEntry.hasInsertSize()) {
+            info.insertSize = alignmentEntry.getInsertSize();
+        }
         addToFuture(positionToBases, info);
     }
 
