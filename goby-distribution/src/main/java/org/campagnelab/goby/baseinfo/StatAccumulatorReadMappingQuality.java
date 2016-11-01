@@ -3,6 +3,7 @@ package org.campagnelab.goby.baseinfo;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 
 import java.util.Properties;
+import java.util.function.Function;
 
 /**
  * Store the range of read mapping quality for forward and reverse strands.
@@ -39,6 +40,7 @@ public class StatAccumulatorReadMappingQuality extends StatAccumulator {
             properties.setProperty(propertyName + ".max", Float.toString(maximumValueReverse));
 
     }
+
 
     @Override
     void observe(BaseInformationRecords.BaseInformation record) {

@@ -3,6 +3,7 @@ package org.campagnelab.goby.baseinfo;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 
 import java.util.Properties;
+import java.util.function.Function;
 
 /**
  * Store the range of basequality forward and reverse strand.
@@ -21,8 +22,9 @@ public class StatAccumulatorBaseQuality extends StatAccumulator {
     private String propertyName;
 
     public StatAccumulatorBaseQuality() {
-        super(null, null);
+        super(null,null);
     }
+
 
     @Override
     void setProperties(Properties properties) {
@@ -39,7 +41,6 @@ public class StatAccumulatorBaseQuality extends StatAccumulator {
             properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualReverse));
 
     }
-
 
     @Override
     void observe(BaseInformationRecords.BaseInformation record) {

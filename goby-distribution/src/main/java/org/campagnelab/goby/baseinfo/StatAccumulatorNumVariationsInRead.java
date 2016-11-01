@@ -8,6 +8,7 @@ import java.util.function.Function;
  * Created by fac2003 on 10/20/16.
  */
 public class StatAccumulatorNumVariationsInRead extends StatAccumulator {
+
     public StatAccumulatorNumVariationsInRead() {
         super("stats.numVariationsInRead", null);
     }
@@ -22,4 +23,6 @@ public class StatAccumulatorNumVariationsInRead extends StatAccumulator {
 
             }
     }
+
+
 }

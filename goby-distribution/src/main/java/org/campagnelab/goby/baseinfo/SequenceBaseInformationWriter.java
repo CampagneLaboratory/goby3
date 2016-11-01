@@ -44,11 +44,15 @@ public class SequenceBaseInformationWriter implements Closeable {
     private String basename;
     private final MessageChunksWriter messageChunkWriter;
     private long recordIndex;
-    private ConstantAccumulator contextSize = new ConstantAccumulator("contextSize", BaseInformationRecords.BaseInformationOrBuilder::getGenomicSequenceContext);
-    private StatAccumulatorBaseQuality baseQualityStats = new StatAccumulatorBaseQuality();
-    private StatAccumulatorReadMappingQuality readMappingQualityStats = new StatAccumulatorReadMappingQuality();
-    private StatAccumulatorNumVariationsInRead readVariationNumberStats = new StatAccumulatorNumVariationsInRead();
-    private StatAccumulatorInsertSizes readInsertSizeStats = new StatAccumulatorInsertSizes();
+    public List<StatAccumulator> ACCUMULATORS = new ArrayList<>();
+
+    {
+        ACCUMULATORS.add(new ConstantAccumulator("genomicContextSize", baseInformation -> (float) baseInformation.getGenomicSequenceContext().length()));
+        ACCUMULATORS.add(new StatAccumulatorReadMappingQuality());
+        ACCUMULATORS.add(new StatAccumulatorNumVariationsInRead());
+        ACCUMULATORS.add(new StatAccumulatorBaseQuality());
+    }
+
 
     public SequenceBaseInformationWriter(final String basename) throws FileNotFoundException {
         this(new FileOutputStream(SequenceBaseInformationReader.getBasename(basename) + ".sbi"));
@@ -69,11 +73,10 @@ public class SequenceBaseInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
-        contextSize.setProperties(p,Integer -> Integer.toString());
-        baseQualityStats.setProperties(p);
-        readMappingQualityStats.setProperties(p);
-        readVariationNumberStats.setProperties(p);
-        writeProperties(basename, recordIndex,p);
+        for (StatAccumulator accumulator:ACCUMULATORS) {
+         accumulator.setProperties(p);
+        }
+        writeProperties(basename, recordIndex, p);
     }
 
     /**
@@ -87,35 +90,25 @@ public class SequenceBaseInformationWriter implements Closeable {
 
 
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
-        ConstantAccumulator cs = new ConstantAccumulator("contextSize", BaseInformationRecords.BaseInformationOrBuilder::getGenomicSequenceContext);
-        StatAccumulatorBaseQuality bq = new StatAccumulatorBaseQuality();
-        StatAccumulatorReadMappingQuality rmq = new StatAccumulatorReadMappingQuality();
-        StatAccumulatorNumVariationsInRead nvir = new StatAccumulatorNumVariationsInRead();
-        StatAccumulatorInsertSizes is = new StatAccumulatorInsertSizes();
+
+        List<StatAccumulator> accumulators=new ArrayList<>();
+        accumulators.add(new ConstantAccumulator("contextSize", baseInformation -> (float) baseInformation.getGenomicSequenceContext().length()));
+        accumulators.add( new StatAccumulatorBaseQuality());
+        accumulators.add(new StatAccumulatorReadMappingQuality());
+        accumulators.add(new StatAccumulatorNumVariationsInRead());
         long numTotal = 0;
         for (Properties p : properties) {
-            try {
-                cs.mergeWith(p,String -> Integer.parseInt(String));
-            } catch (IOException e) {
-                System.err.println("unparseable Genomic Context value in sbi properties file.");
-                e.printStackTrace();
+            for (StatAccumulator accumulator:accumulators) {
+                accumulator.mergeWith(p);
             }
-            bq.mergeWith(p);
-            rmq.mergeWith(p);
-            nvir.mergeWith(p);
-            is.mergeWith(p);
-
             numTotal += Long.parseLong(p.get("numRecords").toString());
         }
         Properties merged = new Properties();
         merged.setProperty("numRecords", Long.toString(numTotal));
         merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
-        bq.setProperties(merged);
-        rmq.setProperties(merged);
-        nvir.setProperties(merged);
-        is.setProperties(merged);
-        cs.setProperties(merged,Integer -> Integer.toString());
-
+        for (StatAccumulator accumulator:accumulators) {
+            accumulator.setProperties(merged);
+        }
         merged.save(out, basename);
         IOUtils.closeQuietly(out);
     }
@@ -140,10 +133,9 @@ public class SequenceBaseInformationWriter implements Closeable {
 
     public synchronized void appendEntry(BaseInformation baseInfo) throws IOException {
         collectionBuilder.addRecords(baseInfo);
-        contextSize.observe(baseInfo);
-        baseQualityStats.observe(baseInfo);
-        readMappingQualityStats.observe(baseInfo);
-        readVariationNumberStats.observe(baseInfo);
+        for (StatAccumulator accumulator:ACCUMULATORS) {
+            accumulator.observe(baseInfo);
+        }
         messageChunkWriter.writeAsNeeded(collectionBuilder);
         recordIndex += 1;
     }

@@ -11,10 +11,10 @@ import java.util.function.Function;
  * Created by fac2003 on 10/20/16.
  */
 public abstract class StatAccumulator {
-    private final Function<? super BaseInformationRecords.BaseInformation, ? extends Float> statCalculation;
+    protected final Function<? super BaseInformationRecords.BaseInformation, ? extends Float> statCalculation;
     protected float minimumValue = Float.MAX_VALUE;
     protected float maximumValue = Float.MIN_VALUE;
-    private String propertyName;
+    protected String propertyName;
 
     public StatAccumulator(String propertyName, Function<? super BaseInformationRecords.BaseInformation, ? extends Float> statCalculation) {
         this.propertyName = propertyName;
@@ -55,4 +55,5 @@ public abstract class StatAccumulator {
             properties.setProperty(propertyName + ".max", Float.toString(maximumValue));
         }
     }
+
 }
