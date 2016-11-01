@@ -108,6 +108,9 @@ message CountInfo {
     /**
     Number of variations found in the reads that support this genotype. */
     repeated NumberWithFrequency numVariationsInReads = 23;
+    /**
+    Number of variations found in the reads that support this genotype. */
+    repeated NumberWithFrequency insertSizes = 24;
     /** True iff the genotype is called in this sample. In other words, this field is true when the genotype caller believes
      that this genotype is present in the sample. */
     optional bool isCalled = 20;

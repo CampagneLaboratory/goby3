@@ -78,10 +78,13 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             maxGenotypeIndex = Math.max(sampleCountInfo.getGenotypeMaxIndex(), maxGenotypeIndex);
         }
 
+
+
         IntArrayList[][][] qualityScores = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] readMappingQuality = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] readIdxs = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][] numVariationsInReads = new IntArrayList[numSamples][maxGenotypeIndex];
+        IntArrayList[][] insertSizes = new IntArrayList[numSamples][maxGenotypeIndex];
 
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
@@ -93,6 +96,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     readMappingQuality[sampleIndex][genotypeIndex][k] = new IntArrayList();
                     readIdxs[sampleIndex][genotypeIndex][k] = new IntArrayList();
                     numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList();
+                    insertSizes[sampleIndex][genotypeIndex] = new IntArrayList();
                 }
             }
         }
@@ -102,7 +106,8 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
             qualityScores[sampleInd][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
             readMappingQuality[sampleInd][baseInd][strandInd].add(baseInfo.readMappingQuality & 0xFF);
-            numVariationsInReads[sampleInd][baseInd].add(baseInfo.numVariationsInRead );
+            numVariationsInReads[sampleInd][baseInd].add(baseInfo.numVariationsInRead);
+            insertSizes[sampleInd][baseInd].add(baseInfo.insertSize);
             //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
             readIdxs[sampleInd][baseInd][strandInd].add(baseInfo.readIndex);
         }
@@ -114,7 +119,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         genomicContext.setLength(0);
         RandomAccessSequenceInterface genome = iterator.getGenome();
         int referenceSequenceLength = iterator.getGenome().getLength(referenceIndex);
-        for (int refPos = Math.max(position - 10, 0); refPos < Math.min(position + 10, referenceSequenceLength); refPos++) {
+        for (int refPos = Math.max(position - 10, 0); refPos < Math.min(position + 11, referenceSequenceLength); refPos++) {
             genomicContext.append(genome.get(referenceIndex, refPos));
         }
         builder.setGenomicSequenceContext(genomicContext.toString());
@@ -144,6 +149,8 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 infoBuilder.addAllReadMappingQualityForwardStrand(ProtoPredictor.compressFreq(readIdxs[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
                 infoBuilder.addAllReadMappingQualityReverseStrand(ProtoPredictor.compressFreq(readIdxs[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
                 infoBuilder.addAllNumVariationsInReads(ProtoPredictor.compressFreq(numVariationsInReads[sampleIndex][genotypeIndex]));
+                infoBuilder.addAllInsertSizes(ProtoPredictor.compressFreq(insertSizes[sampleIndex][genotypeIndex]));
+
                 infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
                 sampleBuilder.addCounts(infoBuilder.build());
             }

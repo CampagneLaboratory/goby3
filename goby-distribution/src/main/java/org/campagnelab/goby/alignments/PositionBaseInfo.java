@@ -42,6 +42,10 @@ public class PositionBaseInfo {
      * The number of variations encountered in the read that supports this variation.
      */
     public int numVariationsInRead;
+    /**
+     * The insert size between the two strands of the read
+     */
+    public int insertSize;
 
     @Override
     public String toString() {

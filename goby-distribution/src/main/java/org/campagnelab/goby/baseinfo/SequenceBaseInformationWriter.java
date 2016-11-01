@@ -48,7 +48,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     private StatAccumulatorBaseQuality baseQualityStats = new StatAccumulatorBaseQuality();
     private StatAccumulatorReadMappingQuality readMappingQualityStats = new StatAccumulatorReadMappingQuality();
     private StatAccumulatorNumVariationsInRead readVariationNumberStats = new StatAccumulatorNumVariationsInRead();
-
+    private StatAccumulatorInsertSizes readInsertSizeStats = new StatAccumulatorInsertSizes();
 
     public SequenceBaseInformationWriter(final String basename) throws FileNotFoundException {
         this(new FileOutputStream(SequenceBaseInformationReader.getBasename(basename) + ".sbi"));
@@ -91,6 +91,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         StatAccumulatorBaseQuality bq = new StatAccumulatorBaseQuality();
         StatAccumulatorReadMappingQuality rmq = new StatAccumulatorReadMappingQuality();
         StatAccumulatorNumVariationsInRead nvir = new StatAccumulatorNumVariationsInRead();
+        StatAccumulatorInsertSizes is = new StatAccumulatorInsertSizes();
         long numTotal = 0;
         for (Properties p : properties) {
             try {
@@ -102,6 +103,7 @@ public class SequenceBaseInformationWriter implements Closeable {
             bq.mergeWith(p);
             rmq.mergeWith(p);
             nvir.mergeWith(p);
+            is.mergeWith(p);
 
             numTotal += Long.parseLong(p.get("numRecords").toString());
         }
@@ -111,6 +113,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         bq.setProperties(merged);
         rmq.setProperties(merged);
         nvir.setProperties(merged);
+        is.setProperties(merged);
         cs.setProperties(merged,Integer -> Integer.toString());
 
         merged.save(out, basename);
