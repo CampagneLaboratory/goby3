@@ -51,6 +51,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorReadMappingQuality());
         ACCUMULATORS.add(new StatAccumulatorNumVariationsInRead());
         ACCUMULATORS.add(new StatAccumulatorBaseQuality());
+        ACCUMULATORS.add(new StatAccumulatorInsertSizes());
+        // NB: must modify accumulator in static methods below as well.
     }
 
 
@@ -73,8 +75,8 @@ public class SequenceBaseInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = new Properties();
-        for (StatAccumulator accumulator:ACCUMULATORS) {
-         accumulator.setProperties(p);
+        for (StatAccumulator accumulator : ACCUMULATORS) {
+            accumulator.setProperties(p);
         }
         writeProperties(basename, recordIndex, p);
     }
@@ -91,14 +93,17 @@ public class SequenceBaseInformationWriter implements Closeable {
 
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
 
-        List<StatAccumulator> accumulators=new ArrayList<>();
+        List<StatAccumulator> accumulators = new ArrayList<>();
         accumulators.add(new ConstantAccumulator("contextSize", baseInformation -> (float) baseInformation.getGenomicSequenceContext().length()));
-        accumulators.add( new StatAccumulatorBaseQuality());
+        accumulators.add(new StatAccumulatorBaseQuality());
         accumulators.add(new StatAccumulatorReadMappingQuality());
         accumulators.add(new StatAccumulatorNumVariationsInRead());
+        accumulators.add(new StatAccumulatorInsertSizes());
+        // NB: Add new accumulators here as well.
+
         long numTotal = 0;
         for (Properties p : properties) {
-            for (StatAccumulator accumulator:accumulators) {
+            for (StatAccumulator accumulator : accumulators) {
                 accumulator.mergeWith(p);
             }
             numTotal += Long.parseLong(p.get("numRecords").toString());
@@ -106,7 +111,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         Properties merged = new Properties();
         merged.setProperty("numRecords", Long.toString(numTotal));
         merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
-        for (StatAccumulator accumulator:accumulators) {
+        for (StatAccumulator accumulator : accumulators) {
             accumulator.setProperties(merged);
         }
         merged.save(out, basename);
@@ -133,7 +138,7 @@ public class SequenceBaseInformationWriter implements Closeable {
 
     public synchronized void appendEntry(BaseInformation baseInfo) throws IOException {
         collectionBuilder.addRecords(baseInfo);
-        for (StatAccumulator accumulator:ACCUMULATORS) {
+        for (StatAccumulator accumulator : ACCUMULATORS) {
             accumulator.observe(baseInfo);
         }
         messageChunkWriter.writeAsNeeded(collectionBuilder);
