@@ -337,10 +337,8 @@
         <!-- local dependencies -->
         <dependency>
             <groupId>org.campagnelab.dl</groupId>
-            <artifactId>variation-analysis</artifactId>
+            <artifactId>model-utils</artifactId>
             <version>1.0.3-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/model-utils-1.0.3-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.campagnelab.ext</groupId>
