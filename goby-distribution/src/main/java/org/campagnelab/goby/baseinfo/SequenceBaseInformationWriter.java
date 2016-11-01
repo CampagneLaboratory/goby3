@@ -94,7 +94,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         FileOutputStream out = new FileOutputStream(basename + ".sbip");
 
         List<StatAccumulator> accumulators = new ArrayList<>();
-        accumulators.add(new ConstantAccumulator("contextSize", baseInformation -> (float) baseInformation.getGenomicSequenceContext().length()));
+        accumulators.add(new ConstantAccumulator("genomicContextSize", baseInformation -> (float) baseInformation.getGenomicSequenceContext().length()));
         accumulators.add(new StatAccumulatorBaseQuality());
         accumulators.add(new StatAccumulatorReadMappingQuality());
         accumulators.add(new StatAccumulatorNumVariationsInRead());
