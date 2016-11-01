@@ -1,5 +1,7 @@
 package org.campagnelab.goby.modes.formats;
 
+import org.campagnelab.dl.model.utils.*;
+import org.campagnelab.dl.model.utils.mappers.EfficientFeatureMapper;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
 import org.campagnelab.goby.algorithmic.data.SomaticModel;
 import org.campagnelab.goby.alignments.*;
@@ -19,10 +21,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.campagnelab.dl.model.utils.BayesCalibrator;
-import org.campagnelab.dl.model.utils.CalcCalibrator;
-import org.campagnelab.dl.model.utils.FDREstimator;
-import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.model.utils.models.ModelLoader;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -891,7 +889,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         Properties prop = new Properties();
         InputStream input = null;
         try {
-            input = new FileInputStream(modelPath + "/config.properties");
+            final String modelPropertiesFilename = modelPath + "/config.properties";
+            input = new FileInputStream(modelPropertiesFilename);
             // load a properties file
             prop.load(input);
             // get the property value and print it out
@@ -904,6 +903,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             // Create a new instance from the loaded class
             Constructor constructor = loadedMyClass.getConstructor();
             featureMapper = (FeatureMapper) constructor.newInstance();
+            if (featureMapper instanceof ConfigurableFeatureMapper) {
+                ConfigurableFeatureMapper confMapper= (ConfigurableFeatureMapper) featureMapper;
+                System.out.println("Configuring feature mapper with model properties at "+modelPropertiesFilename);
+                confMapper.configure(prop);
+            }
         } catch (Exception e) {
             LOG.error("Unable to load class: ", e);
             return null;
