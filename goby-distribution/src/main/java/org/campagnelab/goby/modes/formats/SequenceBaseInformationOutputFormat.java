@@ -3,6 +3,7 @@ package org.campagnelab.goby.modes.formats;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.lang.MutableString;
+import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
@@ -13,6 +14,8 @@ import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.modes.dsv.SampleCountInfo;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
+import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +51,22 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     static private Logger LOG = LoggerFactory.getLogger(SequenceBaseInformationOutputFormat.class);
     //ProgressLogger pgReadWrite;
 
-    private SequenceBaseInformationWriter parquetWriter;
+    private SequenceBaseInformationWriter sbiWriter;
+    @RegisterThis
+    public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
+            "sampling-rate:float, ratio of sites to write to output. The default writes all sites. Use 0.1 to sample 10% of sites.:1.0",
+            "random-seed:long, random seed used for sampling sites.:23902390283"
+    );
+
+    private float samplingRate;
+    XoRoShiRo128PlusRandom randomGenerator;
 
     public void defineColumns(OutputInfo statsWriter, DiscoverSequenceVariantsMode mode) {
-
+        samplingRate = doc.getFloat("sampling-rate");
+        int seed = doc.getInteger("random-seed");
+        randomGenerator = new XoRoShiRo128PlusRandom(seed);
         try {
-            parquetWriter = new SequenceBaseInformationWriter(statsWriter.getFilename());
+            sbiWriter = new SequenceBaseInformationWriter(statsWriter.getFilename());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,11 +76,17 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public void allocateStorage(int numberOfSamples, int numberOfGroups) {
     }
 
-    MutableString genomicContext = new MutableString();
+    private MutableString genomicContext = new MutableString();
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
         int numSamples = sampleCounts.length;
+        if (samplingRate < 1.0) {
+            if (randomGenerator.nextFloat() > samplingRate) {
+                // do not process the site.
+                return;
+            }
+        }
 
         // pgReadWrite.update();
         //if (minCountsFilter(sampleCounts)) return;
@@ -77,7 +96,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
             maxGenotypeIndex = Math.max(sampleCountInfo.getGenotypeMaxIndex(), maxGenotypeIndex);
         }
-
 
 
         IntArrayList[][][] qualityScores = new IntArrayList[numSamples][maxGenotypeIndex][2];
@@ -161,7 +179,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             builder.addSamples(sampleBuilder.build());
         }
         try {
-            parquetWriter.appendEntry(builder.build());
+            sbiWriter.appendEntry(builder.build());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -179,7 +197,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public void close() {
         //    pgReadWrite.stop();
         try {
-            parquetWriter.close();
+            sbiWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
