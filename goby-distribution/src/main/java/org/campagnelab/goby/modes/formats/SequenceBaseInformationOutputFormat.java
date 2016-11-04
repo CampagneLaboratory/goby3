@@ -44,6 +44,16 @@ import java.io.IOException;
 
 
 public class SequenceBaseInformationOutputFormat implements SequenceVariationOutputFormat {
+
+    public static final DynamicOptionClient doc() {
+        return doc;
+    }
+    @RegisterThis
+    public static final DynamicOptionClient doc = new DynamicOptionClient(SequenceBaseInformationOutputFormat.class,
+            "sampling-rate:float, ratio of sites to write to output. The default writes all sites. Use 0.1 to sample 10% of sites.:1.0",
+            "random-seed:long, random seed used for sampling sites.:2390239"
+    );
+
     public static final int POSITIVE_STRAND = 0;
     public static final int NEGATIVE_STRAND = 1;
     //update this as new features are included
@@ -52,11 +62,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     //ProgressLogger pgReadWrite;
 
     private SequenceBaseInformationWriter sbiWriter;
-    @RegisterThis
-    public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-            "sampling-rate:float, ratio of sites to write to output. The default writes all sites. Use 0.1 to sample 10% of sites.:1.0",
-            "random-seed:long, random seed used for sampling sites.:23902390283"
-    );
+
 
     private float samplingRate;
     XoRoShiRo128PlusRandom randomGenerator;

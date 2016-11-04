@@ -47,6 +47,7 @@ public class DynamicOptionRegistry {
 
     public static void register(final DynamicOptionClient client) {
         if (!registeredDOClients.contains(client)) {
+            LOG.trace("Adding client "+client);
             registeredDOClients.add(client);
         }
     }
