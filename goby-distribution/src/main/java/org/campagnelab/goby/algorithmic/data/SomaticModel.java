@@ -82,7 +82,7 @@ public class SomaticModel {
 
         for (PositionBaseInfo baseInfo : list) {
             int baseInd = sampleCounts[0].baseIndex(baseInfo.to);
-            int sampleInd = Arrays.binarySearch(sampleToReaderIdxs,baseInfo.readerIndex);
+            int sampleInd = java.util.Arrays.asList(sampleToReaderIdxs).indexOf(baseInfo.readerIndex);
             int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
             qualityScores[sampleInd][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
             readMappingQuality[sampleInd][baseInd][strandInd].add(baseInfo.readMappingQuality & 0xFF);

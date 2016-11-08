@@ -41,6 +41,12 @@ import java.io.IOException;
  * /Users/rct66/data/cfs/genotypes_proto
  * --genome
  * human_g1k_v37
+ *
+ *
+ *
+ * input convention:
+ * paired: germline, somatic
+ * trio: father, mother, somatic
  */
 
 
@@ -95,7 +101,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 return;
             }
         }
-        //trio (inputs father mother somatic), vs pair (inputs somatic germline)
+        //trio (inputs father mother somatic), vs pair (inputs germline somatic)
         int[] readerIdxs = sampleCounts.length==3?(new int[]{0,1,2}):(new int[]{0,1});
         try {
             sbiWriter.appendEntry(SomaticModel.toProto(iterator.getGenome(), iterator.getReferenceId(referenceIndex).toString(), sampleCounts, referenceIndex, position, list, readerIdxs));
