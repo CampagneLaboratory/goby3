@@ -34,6 +34,19 @@ public class SomaticModel {
     }
 
 
+    /**
+     * Returns a prediction by applying a serialized version of the arguments (via toProto) to the stored model.
+     * @param genome genome stored in a DiscoverVariantIterateSortedAlignments iterator
+     * @param referenceID name of chromosome, also acquired from an iterator
+     * @param sampleCounts Array of count information objects
+     * @param referenceIndex index corresponding to chromosome
+     * @param position position value of the record in question to serialize
+     * @param list Additional data about the reads
+     * @param readerIdxs Array which points a required sample (always father,mother,somatic,germline to its reader index
+     *                     positions corresponding to readers which do not exist (ie father in a pair scenario)
+     *                     will contain value -1
+     * @return
+     */
     //readerIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
     public ProtoPredictor.Prediction mutPrediction(RandomAccessSequenceInterface genome, String referenceID,
                                                    SampleCountInfo sampleCounts[],
@@ -51,6 +64,20 @@ public class SomaticModel {
 
     static MutableString genomicContext = new MutableString();
 
+    /**
+     * Returns a serialized record of a given position in protobuf format. Required step before mapping to features.
+     * Used by SequenceBaseInformationOutputFormat to generate datasets, and SomaticVariationOutputFormat (via mutPrediction) when
+     * generating predictions on new examples.
+     * @param genome genome stored in a DiscoverVariantIterateSortedAlignments iterator
+     * @param referenceID name of chromosome, also acquired from an iterator
+     * @param sampleCounts Array of count information objects
+     * @param referenceIndex index corresponding to chromosome
+     * @param position position value of the record in question to serialize
+     * @param list Additional data about the reads
+     * @param sampleToReaderIdxs Array which points a required sample (trio:father,mother,somatic pair:germline,somatic) to its reader index
+     *                           this index corresponds to the location of data collected by that reader in the SampleCountInfo array
+     * @return
+     */
     public static BaseInformationRecords.BaseInformation toProto(RandomAccessSequenceInterface genome,
                                                                  String referenceID,
                                                                  SampleCountInfo sampleCounts[],
