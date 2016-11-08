@@ -493,15 +493,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (isPossibleSomaticVariation(sampleCounts)) {
             estimateSomaticFrequencies(sampleCounts);
             estimatePriority(sampleCounts);
-            estimateProbabilty(sampleCounts, list);
+            estimateProbability(iterator, sampleCounts, list);
 
             if (isSomaticCandidate()) {
-                if (addBayes) {
-                    calculate(sampleCounts, list, bayesCalculator, bayesProbabilityIdxs);
-                }
-                if (addFdr) {
-                    calculate(sampleCounts, list, fdrEstimator, fdrProbabilityIdxs);
-                }
                 statsWriter.writeRecord();
             }
 
@@ -589,38 +583,38 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         this.sample2MotherSampleIndex = sample2MotherSampleIndex;
     }
 
-    private void estimateProbabilty(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
+    private void estimateProbability(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
         for (int somaticSampleIndex : somaticSampleIndices) {
+            int fatherSampleIndex = sample2FatherSampleIndex[somaticSampleIndex];
+            int motherSampleIndex = sample2MotherSampleIndex[somaticSampleIndex];
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
                 if (model==null){
                     System.out.println("model not found. path: "+ modelPath + " prefix: " + modelPrefix);
                     return;
                 }
-                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts, referenceIndex, pos, list, germlineSampleIndex, somaticSampleIndex);
+
+                //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
+                int[] readerIdxs = {fatherSampleIndex,motherSampleIndex,somaticSampleIndex,germlineSampleIndex};
+                ProtoPredictor.Prediction prediction = model.mutPrediction(iterator.getGenome(), iterator.getReferenceId(referenceIndex).toString(), sampleCounts, referenceIndex, pos, list, readerIdxs);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
+                if (addBayes) {
+                    statsWriter.setInfo(bayesProbabilityIdxs[somaticSampleIndex],bayesCalculator.calibrateProb(prediction.posProb));
+                }
+                if (addFdr) {
+                    statsWriter.setInfo(fdrProbabilityIdxs[somaticSampleIndex],fdrEstimator.calibrateProb(prediction.posProb));
+                }
                 // do not write the site if it is predicted not somatic.
                 if (prediction.posProb < modelPThreshold) {
                     Arrays.fill(isSomaticCandidate[somaticSampleIndex], false);
                 }
+
             }
         }
 
     }
 
-
-    private void calculate(SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list, CalcCalibrator calculator, int[] fieldIdxArray) {
-        for (int somaticSampleIndex : somaticSampleIndices) {
-            int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
-            for (int germlineSampleIndex : germlineSampleIndices) {
-                ProtoPredictor.Prediction prediction = model.mutPrediction(sampleCounts, referenceIndex, pos, list, germlineSampleIndex, somaticSampleIndex);
-                float prob = prediction.posProb;
-                float bayes = calculator.calibrateProb(prob);
-                statsWriter.setInfo(fieldIdxArray[somaticSampleIndex], bayes);
-            }
-        }
-    }
 
 
     public void estimatePriority(SampleCountInfo[] sampleCounts) {
