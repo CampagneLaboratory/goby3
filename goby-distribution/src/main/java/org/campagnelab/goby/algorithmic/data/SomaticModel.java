@@ -150,6 +150,13 @@ public class SomaticModel {
 
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             BaseInformationRecords.SampleInfo.Builder sampleBuilder = BaseInformationRecords.SampleInfo.newBuilder();
+            //This simply marks the the last sample (consistent with convention) as a tumor sample.
+            //No matter the experimental design, we require a single, final "tumor" sample which will be the one
+            //the model makes mutation predictions on. Other somatic samples could be included, but the model
+            //will use the other samples to make predictions about the last sample.
+            if (sampleIndex == numSamples-1) {
+                sampleBuilder.setIsTumor(true);
+            }
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
 
             for (int genotypeIndex = 0; genotypeIndex < sampleCountInfo.getGenotypeMaxIndex(); genotypeIndex++) {

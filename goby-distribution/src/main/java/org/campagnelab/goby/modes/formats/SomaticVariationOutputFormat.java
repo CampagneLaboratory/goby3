@@ -231,6 +231,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         modelPrefix = modelName.substring(0, modelName.length() - "Model.bin".length());
         modelPathSplit[modelPathSplit.length - 1] = "";
         modelPath = customPath.substring(0, customPath.length() - modelName.length());
+        //TODO: rna seq default model does not have config.properties file?
         try {
             model = getModel(modelPath, modelPrefix);
             System.out.println("model at " +modelPath + " loaded");
