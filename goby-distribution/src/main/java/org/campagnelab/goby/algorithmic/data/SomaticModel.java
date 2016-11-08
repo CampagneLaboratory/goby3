@@ -35,7 +35,11 @@ public class SomaticModel {
 
 
     //readerIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
-    public ProtoPredictor.Prediction mutPrediction(RandomAccessSequenceInterface genome, String referenceID, SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int[] readerIdxs){
+    public ProtoPredictor.Prediction mutPrediction(RandomAccessSequenceInterface genome, String referenceID,
+                                                   SampleCountInfo sampleCounts[],
+                                                   int referenceIndex, int position,
+                                                   DiscoverVariantPositionData list,
+                                                   int[] readerIdxs){
         int[] sampleToReaderIdxs;
         sampleToReaderIdxs = isTrio? (new int[]{readerIdxs[0],readerIdxs[1],readerIdxs[2]}) : (new int[]{readerIdxs[3],readerIdxs[2]});
 
@@ -46,7 +50,13 @@ public class SomaticModel {
 
 
     static MutableString genomicContext = new MutableString();
-    public static BaseInformationRecords.BaseInformation toProto(RandomAccessSequenceInterface genome, String referenceID, SampleCountInfo sampleCounts[], int referenceIndex, int position, DiscoverVariantPositionData list, int[] sampleToReaderIdxs) {
+
+    public static BaseInformationRecords.BaseInformation toProto(RandomAccessSequenceInterface genome,
+                                                                 String referenceID,
+                                                                 SampleCountInfo sampleCounts[],
+                                                                 int referenceIndex, int position,
+                                                                 DiscoverVariantPositionData list,
+                                                                 int[] sampleToReaderIdxs) {
         int numSamples = sampleToReaderIdxs.length;
 
         // pgReadWrite.update();
@@ -82,6 +92,9 @@ public class SomaticModel {
 
         for (PositionBaseInfo baseInfo : list) {
             int baseInd = sampleCounts[0].baseIndex(baseInfo.to);
+            //TODO Consider: binarySearch requires the first argument to be sorted. Does this hold?
+            //TODO Consider: binary search only useful when searching a large array. For small arrays
+            //TODO a linear search is faster.
             int sampleInd = Arrays.binarySearch(sampleToReaderIdxs,baseInfo.readerIndex);
             int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
             qualityScores[sampleInd][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
