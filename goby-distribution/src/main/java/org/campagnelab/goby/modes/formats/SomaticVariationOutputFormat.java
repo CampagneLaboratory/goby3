@@ -918,7 +918,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
 
         ModelLoader modelLoader = new ModelLoader(modelPath);
-        MultiLayerNetwork model = modelLoader.loadModel(prefix);
+        MultiLayerNetwork model = modelLoader.loadMultiLayerNetwork(prefix);
 
         return new SomaticModel(model, featureMapper);
     }
