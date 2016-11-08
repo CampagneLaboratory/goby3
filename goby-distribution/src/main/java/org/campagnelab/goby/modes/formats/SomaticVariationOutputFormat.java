@@ -596,7 +596,12 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
                 //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
                 int[] readerIdxs = {fatherSampleIndex,motherSampleIndex,somaticSampleIndex,germlineSampleIndex};
-                ProtoPredictor.Prediction prediction = model.mutPrediction(iterator.getGenome(), iterator.getReferenceId(referenceIndex).toString(), sampleCounts, referenceIndex, pos, list, readerIdxs);
+                ProtoPredictor.Prediction prediction = model.mutPrediction(iterator.getGenome(),
+                        iterator.getReferenceId(referenceIndex).toString(),
+                        sampleCounts,
+                        referenceIndex, pos,
+                        list,
+                        readerIdxs);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
                 if (addBayes) {
