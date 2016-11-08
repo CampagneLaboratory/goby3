@@ -202,7 +202,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @return the next read entry from the input stream.
      */
     public final BaseInformationRecords.BaseInformation next() {
-        if (!reader.hasNext(collection, collection.getRecordsCount())) {
+        if (!reader.hasNext(collection, collection==null? 0: collection.getRecordsCount())) {
             throw new NoSuchElementException();
         }
         final BaseInformationRecords.BaseInformation record = collection.getRecords(reader.incrementEntryIndex());
