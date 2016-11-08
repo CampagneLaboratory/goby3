@@ -27,8 +27,8 @@ public class SomaticModel {
     private ProtoPredictor predictor;
     private boolean isTrio;
 
-    public SomaticModel(MultiLayerNetwork model, FeatureMapper mapper){
-        this.predictor = new ProtoPredictor(model,mapper);
+    public SomaticModel(MultiLayerNetwork model, FeatureMapper mapper) {
+        this.predictor = new ProtoPredictor(model, mapper);
         this.isTrio = mapper.getClass().getCanonicalName().contains("Trio");
 
     }
@@ -39,12 +39,12 @@ public class SomaticModel {
                                                    SampleCountInfo sampleCounts[],
                                                    int referenceIndex, int position,
                                                    DiscoverVariantPositionData list,
-                                                   int[] readerIdxs){
+                                                   int[] readerIdxs) {
         int[] sampleToReaderIdxs;
-        sampleToReaderIdxs = isTrio? (new int[]{readerIdxs[0],readerIdxs[1],readerIdxs[2]}) : (new int[]{readerIdxs[3],readerIdxs[2]});
+        sampleToReaderIdxs = isTrio ? (new int[]{readerIdxs[0], readerIdxs[1], readerIdxs[2]}) : (new int[]{readerIdxs[3], readerIdxs[2]});
 
         //in the past, predictions on 0 reads have been bypassed and given prediction value 0. leaving this out for now.
-        BaseInformationRecords.BaseInformation proto = toProto(genome, referenceID, sampleCounts, referenceIndex,position,list, sampleToReaderIdxs );
+        BaseInformationRecords.BaseInformation proto = toProto(genome, referenceID, sampleCounts, referenceIndex, position, list, sampleToReaderIdxs);
         return predictor.mutPrediction(proto);
     }
 
@@ -91,15 +91,18 @@ public class SomaticModel {
         }
 
         for (PositionBaseInfo baseInfo : list) {
-            int baseInd = sampleCounts[0].baseIndex(baseInfo.to);
-            int sampleInd = java.util.Arrays.asList(sampleToReaderIdxs).indexOf(baseInfo.readerIndex);
-            int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
-            qualityScores[sampleInd][baseInd][strandInd].add(baseInfo.qualityScore & 0xFF);
-            readMappingQuality[sampleInd][baseInd][strandInd].add(baseInfo.readMappingQuality & 0xFF);
-            numVariationsInReads[sampleInd][baseInd].add(baseInfo.numVariationsInRead);
-            insertSizes[sampleInd][baseInd].add(baseInfo.insertSize);
-            //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
-            readIdxs[sampleInd][baseInd][strandInd].add(baseInfo.readIndex);
+            int baseIndex = sampleCounts[0].baseIndex(baseInfo.to);
+            int sampleIndex = java.util.Arrays.asList(sampleToReaderIdxs).indexOf(baseInfo.readerIndex);
+            // check that we need to focus on the sample from which this base originates (if not, ignore the base)
+            if (sampleIndex != -1) {
+                int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
+                qualityScores[sampleIndex][baseIndex][strandInd].add(baseInfo.qualityScore & 0xFF);
+                readMappingQuality[sampleIndex][baseIndex][strandInd].add(baseInfo.readMappingQuality & 0xFF);
+                numVariationsInReads[sampleIndex][baseIndex].add(baseInfo.numVariationsInRead);
+                insertSizes[sampleIndex][baseIndex].add(baseInfo.insertSize);
+                //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
+                readIdxs[sampleIndex][baseIndex][strandInd].add(baseInfo.readIndex);
+            }
         }
         BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
         builder.setMutated(false);
@@ -151,7 +154,6 @@ public class SomaticModel {
         }
         return builder.build();
     }
-
 
 
 }
