@@ -102,7 +102,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             }
         }
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
-        int[] readerIdxs = sampleCounts.length==3?(new int[]{0,1,2}):(new int[]{0,1});
+        Integer[] readerIdxs = sampleCounts.length==3?(new Integer[]{0,1,2}):(new Integer[]{0,1});
         try {
             sbiWriter.appendEntry(SomaticModel.toProto(iterator.getGenome(),
                     iterator.getReferenceId(referenceIndex).toString(),

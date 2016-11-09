@@ -53,8 +53,8 @@ public class SomaticModel {
                                                    int referenceIndex, int position,
                                                    DiscoverVariantPositionData list,
                                                    int[] readerIdxs) {
-        int[] sampleToReaderIdxs;
-        sampleToReaderIdxs = isTrio ? (new int[]{readerIdxs[0], readerIdxs[1], readerIdxs[2]}) : (new int[]{readerIdxs[3], readerIdxs[2]});
+        Integer[] sampleToReaderIdxs;
+        sampleToReaderIdxs = isTrio ? (new Integer[]{readerIdxs[0], readerIdxs[1], readerIdxs[2]}) : (new Integer[]{readerIdxs[3], readerIdxs[2]});
 
         //in the past, predictions on 0 reads have been bypassed and given prediction value 0. leaving this out for now.
         BaseInformationRecords.BaseInformation proto = toProto(genome, referenceID, sampleCounts, referenceIndex, position, list, sampleToReaderIdxs);
@@ -83,7 +83,7 @@ public class SomaticModel {
                                                                  SampleCountInfo sampleCounts[],
                                                                  int referenceIndex, int position,
                                                                  DiscoverVariantPositionData list,
-                                                                 int[] sampleToReaderIdxs) {
+                                                                 Integer[] sampleToReaderIdxs) {
         int numSamples = sampleToReaderIdxs.length;
 
         // pgReadWrite.update();
@@ -119,7 +119,7 @@ public class SomaticModel {
 
         for (PositionBaseInfo baseInfo : list) {
             int baseIndex = sampleCounts[0].baseIndex(baseInfo.to);
-            int sampleIndex = java.util.Arrays.asList(sampleToReaderIdxs).indexOf(baseInfo.readerIndex);
+            int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
             // check that we need to focus on the sample from which this base originates (if not, ignore the base)
             if (sampleIndex != -1) {
                 int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
