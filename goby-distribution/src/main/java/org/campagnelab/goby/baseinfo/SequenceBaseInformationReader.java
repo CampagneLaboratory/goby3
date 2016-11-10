@@ -48,17 +48,22 @@ import java.util.function.Consumer;
  * @author Fabien Campagne
  *         Date: Aug 27, 2016
  */
-public class SequenceBaseInformationReader implements Iterator<BaseInformationRecords.BaseInformation>, Iterable<BaseInformationRecords.BaseInformation>,
+public class SequenceBaseInformationReader implements Iterator<BaseInformationRecords.BaseInformation>,
+        Iterable<BaseInformationRecords.BaseInformation>,
         Closeable {
-    private final MessageChunksReader reader;
+
+
+    private MessageChunksReader reader;
     private String basename;
+    private String sbiPath;
     private BaseInformationRecords.BaseInformationCollection collection;
-    private final Properties properties  = new Properties();
+    private final Properties properties = new Properties();
     private int recordLoadedSoFar;
     private long totalRecords;
 
     /**
      * Return the properties defined in the .bip file.
+     *
      * @return
      */
     public Properties getProperties() {
@@ -103,20 +108,25 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
     public SequenceBaseInformationReader(String basename, final InputStream stream) {
         super();
         this.basename = basename;
+        this.sbiPath = basename + ".sbi";
+        reset(basename, stream);
+    }
+
+    private void reset(String basename, InputStream stream) {
         reader = new MessageChunksReader(stream);
         reader.setHandler(new SequenceBaseInfoCollectionHandler());
         codec = null;
-
+        this.collection = null;
         try {
-            FileInputStream propertiesStream = new FileInputStream(basename + ".sbip");
+            FileInputStream propertiesStream = new FileInputStream(basename+".sbip");
             try {
                 properties.load(propertiesStream);
                 totalRecords = Integer.parseInt(properties.getProperty("numRecords"));
-            }finally {
+            } finally {
                 IOUtils.closeQuietly(propertiesStream);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load properties for " + basename,e);
+            throw new RuntimeException("Unable to load properties for " + basename, e);
         }
     }
 
@@ -206,7 +216,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
             throw new NoSuchElementException();
         }
         final BaseInformationRecords.BaseInformation record = collection.getRecords(reader.incrementEntryIndex());
-        recordLoadedSoFar+=1;
+        recordLoadedSoFar += 1;
         return record;
     }
 
@@ -226,11 +236,18 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
 
 
     /**
-     * Make the reader "iterable" for java "for each" loops and such.
+     * Make the reader "iterable" for java "for each" loops and such. If an iteration was in progress, it will be
+     * canceled. The new iteration starts from the beginning of the iterator.
      *
      * @return this object
      */
     public Iterator<BaseInformationRecords.BaseInformation> iterator() {
+        try {
+            IOUtils.closeQuietly(reader);
+            reset(basename, FileUtils.openInputStream(new File(sbiPath)));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to reset iterator", e);
+        }
         return this;
     }
 
