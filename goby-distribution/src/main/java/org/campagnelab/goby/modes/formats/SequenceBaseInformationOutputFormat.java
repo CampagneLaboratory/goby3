@@ -61,13 +61,8 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             "random-seed:long, random seed used for sampling sites.:2390239"
     );
 
-    public static final int POSITIVE_STRAND = 0;
-    public static final int NEGATIVE_STRAND = 1;
-    //update this as new features are included
 
     static private Logger LOG = LoggerFactory.getLogger(SequenceBaseInformationOutputFormat.class);
-    //ProgressLogger pgReadWrite;
-
     private SequenceBaseInformationWriter sbiWriter;
 
 
@@ -85,8 +80,10 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         }
 
     }
+    Integer[] readerIdxs;
 
     public void allocateStorage(int numberOfSamples, int numberOfGroups) {
+        readerIdxs  = numberOfSamples==3?(new Integer[]{0,1,2}):(new Integer[]{0,1});
     }
 
 
@@ -94,7 +91,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
-        int numSamples = sampleCounts.length;
         if (samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
                 // do not process the site.
@@ -102,8 +98,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             }
         }
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
-        Integer[] readerIdxs = sampleCounts.length==3?(new Integer[]{0,1,2}):(new Integer[]{0,1});
-        try {
+         try {
             sbiWriter.appendEntry(SomaticModel.toProto(iterator.getGenome(),
                     iterator.getReferenceId(referenceIndex).toString(),
                     sampleCounts, referenceIndex, position, list, readerIdxs));
