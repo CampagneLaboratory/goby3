@@ -24,6 +24,7 @@ import org.campagnelab.goby.stats.VCFWriter;
 import org.campagnelab.goby.util.OutputInfo;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
+import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,15 +223,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //set optional column vars from doc
         this.addBayes = doc.getBoolean("include_bayes");
         this.addFdr = doc.getBoolean("include_fdr");
-     //   this.bayesPrior = doc.getDouble("bayes_prior");
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
         //extract prefix and model directory from model path input.
-        String[] modelPathSplit = customPath.split("/");
-        String modelName = modelPathSplit[modelPathSplit.length - 1];
-        modelPrefix = modelName.substring(0, modelName.length() - "Model.bin".length());
-        modelPathSplit[modelPathSplit.length - 1] = "";
-        modelPath = customPath.substring(0, customPath.length() - modelName.length());
+        modelPrefix = ModelLoader.getModelLabel(customPath);
+        modelPath = ModelLoader.getModelPath(customPath);
         //TODO: rna seq default model does not have config.properties file?
         try {
             model = getModel(modelPath, modelPrefix);
@@ -905,8 +902,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             Constructor constructor = loadedMyClass.getConstructor();
             featureMapper = (FeatureMapper) constructor.newInstance();
             if (featureMapper instanceof ConfigurableFeatureMapper) {
-                ConfigurableFeatureMapper confMapper= (ConfigurableFeatureMapper) featureMapper;
-                System.out.println("Configuring feature mapper with model properties at "+modelPropertiesFilename);
+                ConfigurableFeatureMapper confMapper = (ConfigurableFeatureMapper) featureMapper;
+                System.out.println("Configuring feature mapper with model properties at " + modelPropertiesFilename);
                 confMapper.configure(prop);
             }
         } catch (Exception e) {
@@ -918,8 +915,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
 
         ModelLoader modelLoader = new ModelLoader(modelPath);
-        MultiLayerNetwork model = modelLoader.loadMultiLayerNetwork(prefix);
-
+        Model model = modelLoader.loadModel(prefix);
+        if (model == null) {
+            System.err.printf("Model cannot be loaded with path %s and prefix %s%n",modelPath,modelPrefix);
+            System.exit(1);
+        }
         return new SomaticModel(model, featureMapper);
     }
 }

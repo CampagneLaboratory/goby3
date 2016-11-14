@@ -10,6 +10,7 @@ import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class SomaticModel {
     private ProtoPredictor predictor;
     private boolean isTrio;
 
-    public SomaticModel(MultiLayerNetwork model, FeatureMapper mapper) {
+    public SomaticModel(Model model, FeatureMapper mapper) {
         this.predictor = new ProtoPredictor(model, mapper);
         this.isTrio = mapper.getClass().getCanonicalName().contains("Trio");
 
