@@ -12,8 +12,9 @@ import java.io.IOException;
  * This class will be moved to the variation project to remove the dependency on model-utils, then loaded
  * with the Java service infrastructure from the model-util jar added in the goby wrapper. Make sure to move
  * the service declaration (currently in  goby-spi/META-INF.services).
- * @author  Fabien Campagne
- * Created by fac2003 on 11/14/16.
+ *
+ * @author Fabien Campagne
+ *         Created by fac2003 on 11/14/16.
  */
 public class DLSomaticPredictor implements SomaticPredictor {
     private SomaticModel model;
@@ -50,18 +51,19 @@ public class DLSomaticPredictor implements SomaticPredictor {
     }
 
     @Override
-    public float getSomaticFrequency(float defaultFrequency) {
+    public float getSomaticFrequency() {
 
         assert prediction != null;
-        if (prediction.hasSomaticFrequency) {
-            return prediction.predictedSomaticFrequency;
-        } else {
-            return defaultFrequency;
-        }
+        return prediction.predictedSomaticFrequency;
     }
 
     @Override
     public boolean modelIsLoaded() {
         return model != null;
+    }
+
+    @Override
+    public boolean hasSomaticFrequency() {
+        return prediction.hasSomaticFrequency;
     }
 }

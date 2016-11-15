@@ -584,6 +584,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 double probabilityIsMutated = predictor.probabilityIsMutated();
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], probabilityIsMutated);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], predictor.probabilityIsNotMutated());
+                if (predictor.hasSomaticFrequency()) {
+                    statsWriter.setInfo(candidateFrequencyIndex[somaticSampleIndex], predictor.getSomaticFrequency() * 100);
+                }
                 // do not write the site if it is predicted not somatic.
                 if (probabilityIsMutated < modelPThreshold) {
                     Arrays.fill(isSomaticCandidate[somaticSampleIndex], false);
@@ -784,7 +787,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             if (!isSomaticCandidate()) {
                 somaticFrequency = 0;
             }
-            statsWriter.setInfo(candidateFrequencyIndex[sampleIndex], predictor.getSomaticFrequency(somaticFrequency)* 100);
+            statsWriter.setInfo(candidateFrequencyIndex[sampleIndex], somaticFrequency * 100);
         }
 
     }

@@ -24,7 +24,9 @@ public interface SomaticPredictor {
 
     double probabilityIsNotMutated();
 
-    float getSomaticFrequency(float defaultFrequency);
+    float getSomaticFrequency();
 
     boolean modelIsLoaded();
+
+    boolean hasSomaticFrequency();
 }
