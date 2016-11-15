@@ -153,8 +153,10 @@
                         <include>org/campagnelab/goby/GobyVersion*</include>
                         <include>org/campagnelab/goby/exception/**</include>
                         <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/modes/dsv/**</include>
                         <include>org/campagnelab/goby/util/**</include>
                         <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/goby/predictions/**</include>
                         <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
 
@@ -177,8 +179,10 @@
                         <include>org/campagnelab/goby/GobyVersion*</include>
                         <include>org/campagnelab/goby/exception/**</include>
                         <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/modes/dsv/**</include>
                         <include>org/campagnelab/goby/util/**</include>
                         <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/goby/predictions/**</include>
                         <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
                 </configuration>
@@ -208,8 +212,10 @@
                         <include>org/campagnelab/goby/GobyVersion*</include>
                         <include>org/campagnelab/goby/exception/**</include>
                         <include>org/campagnelab/goby/modes/core/**</include>
+                        <include>org/campagnelab/goby/modes/dsv/**</include>
                         <include>org/campagnelab/goby/util/**</include>
                         <include>org/campagnelab/goby/parsers/**</include>
+                        <include>org/campagnelab/goby/predictions/**</include>
                         <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
                 </configuration>
