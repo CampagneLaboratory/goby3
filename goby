@@ -35,6 +35,9 @@ EOT
   export RJAVA_HOME=${temp}
   rm -f /tmp/r-cmd.txt
 fi
-
+DL_CLASSPATH=${GOBY_HOME}/model-utils.jar
+if [ ! -e "${DL_CLASSPATH}" ]; then
+    echo "Model utils jar not found. It must be installed at ${GOBY_HOME}/model-utils.jar"
+fi
 #echo java -ea -Xmx${memory_requirement} -Dlog4j.configuration=${LOG4J_PROPS} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
-java -ea -Xmx${memory_requirement} -Dlogback.configurationFile=${SLF4J_CONFIG} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
+java -ea -cp ${DL_CLASSPATH} -Xmx${memory_requirement} -Dlogback.configurationFile=${SLF4J_CONFIG} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
