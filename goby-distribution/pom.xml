@@ -228,10 +228,15 @@
             <version>2.0.1</version>
         </dependency>
         <!-- local dependencies -->
-        <dependency>
+        <!--dependency>
             <groupId>org.campagnelab.dl</groupId>
             <artifactId>model-utils</artifactId>
             <version>1.0.3-SNAPSHOT</version>
+        </dependency-->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.campagnelab.ext</groupId>
@@ -356,6 +361,10 @@
             <artifactId>dsiutils</artifactId>
             <version>2.3.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.campagnelab.goby</groupId>
+            <artifactId>goby-io</artifactId>
+            <version>3.0.3-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
