@@ -19,7 +19,9 @@
         <protobuf.output.directory>${project.build.directory}/generated-sources</protobuf.output.directory>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-        <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>    </properties>
+        <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+        <protobuf.input.filepaths.path>Alignments.proto Reads.proto BaseInformationRecords.proto</protobuf.input.filepaths.path>
+</properties>
 
     <build>
         <sourceDirectory>${basedir}/../goby-distribution/src/main/java</sourceDirectory>

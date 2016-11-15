@@ -5,15 +5,14 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FilenameUtils;
-import org.campagnelab.dl.model.utils.models.ModelLoader;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.alignments.DefaultAlignmentReaderFactory;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
-import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.predictions.SomaticPredictor;
 import org.campagnelab.goby.readers.vcf.ColumnType;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
@@ -228,8 +227,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
         //extract prefix and model directory from model path input.
-        modelPrefix = ModelLoader.getModelLabel(customPath);
-        modelPath = ModelLoader.getModelPath(customPath);
         try {
             predictor.loadModel(modelPath, modelPrefix);
 
