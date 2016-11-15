@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FilenameUtils;
-import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
 import org.campagnelab.goby.algorithmic.data.SomaticModel;
 import org.campagnelab.goby.alignments.AlignmentReader;
@@ -15,6 +14,7 @@ import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.modes.dsv.SampleCountInfo;
+import org.campagnelab.goby.predictions.SomaticPredictor;
 import org.campagnelab.goby.readers.vcf.ColumnType;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.stats.VCFWriter;
@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ServiceLoader;
 
 /**
  * File format to output genotypes for somatic variations. The format must be used together with the covariates option
@@ -52,8 +53,7 @@ import java.util.Arrays;
  *         Time: 10:13 AM
  */
 public class SomaticVariationOutputFormat implements SequenceVariationOutputFormat {
-
-
+    private SomaticPredictor predictor;
     private boolean addBayes;
     private boolean addFdr;
     private double bayesPrior;
@@ -180,6 +180,18 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private IntArrayList somaticSampleIndices;
 
     public void defineColumns(OutputInfo outputInfo, DiscoverSequenceVariantsMode mode) {
+
+        // load the predictor.
+        ServiceLoader<SomaticPredictor> predictorLoader;
+        predictorLoader = ServiceLoader.load(SomaticPredictor.class);
+        predictorLoader.reload();
+        predictor = predictorLoader.iterator().next();
+        if (predictor == null) {
+            throw new RuntimeException("The model-utils jar was not found in the classpath. Unable to call somatic variations. Prefer to run goby with the shell wrapper (distrition/goby) to configure this dependency.");
+        }
+        if (predictorLoader.iterator().hasNext()) {
+            LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
+        }
         // define columns for genotype format
         samples = mode.getSamples();
         statsWriter = new VCFWriter(outputInfo.getPrintWriter());
@@ -218,9 +230,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         modelPrefix = modelName.substring(0, modelName.length() - "Model.bin".length());
         modelPathSplit[modelPathSplit.length - 1] = "";
         modelPath = customPath.substring(0, customPath.length() - modelName.length());
-        //TODO: rna seq default model does not have config.properties file?
         try {
-            model = new SomaticModel(modelPath, modelPrefix);
+            predictor.loadModel(modelPath, modelPrefix);
+
             System.out.println("model at " + modelPath + " loaded");
         } catch (IOException e) {
             throw new RuntimeException("Unable to load somatic model", e);
@@ -558,20 +570,22 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             int motherSampleIndex = sample2MotherSampleIndex[somaticSampleIndex];
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
-                assert model != null : "model must be found with path: " + modelPath + " prefix: " + modelPrefix;
+                assert predictor.modelIsLoaded() : "model must be found with path: " + modelPath + " prefix: " + modelPrefix;
 
                 //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
                 int[] readerIdxs = {fatherSampleIndex, motherSampleIndex, somaticSampleIndex, germlineSampleIndex};
-                ProtoPredictor.Prediction prediction = model.mutPrediction(iterator.getGenome(),
+                predictor.predict(iterator.getGenome(),
                         iterator.getReferenceId(referenceIndex).toString(),
                         sampleCounts,
                         referenceIndex, pos,
                         list,
                         readerIdxs);
-                statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
-                statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
+
+                double probabilityIsMutated = predictor.probabilityIsMutated();
+                statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], probabilityIsMutated);
+                statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], predictor.probabilityIsNotMutated());
                 // do not write the site if it is predicted not somatic.
-                if (prediction.posProb < modelPThreshold) {
+                if (probabilityIsMutated < modelPThreshold) {
                     Arrays.fill(isSomaticCandidate[somaticSampleIndex], false);
                 }
 
@@ -770,7 +784,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             if (!isSomaticCandidate()) {
                 somaticFrequency = 0;
             }
-            statsWriter.setInfo(candidateFrequencyIndex[sampleIndex], somaticFrequency * 100);
+            statsWriter.setInfo(candidateFrequencyIndex[sampleIndex], predictor.getSomaticFrequency(somaticFrequency)* 100);
         }
 
     }
