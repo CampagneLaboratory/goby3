@@ -5,10 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.campagnelab.dl.model.utils.*;
-import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
-import org.campagnelab.dl.model.utils.models.ModelLoader;
+import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
 import org.campagnelab.goby.algorithmic.data.SomaticModel;
 import org.campagnelab.goby.alignments.AlignmentReader;
@@ -24,16 +21,11 @@ import org.campagnelab.goby.stats.VCFWriter;
 import org.campagnelab.goby.util.OutputInfo;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
-import java.util.Properties;
 
 /**
  * File format to output genotypes for somatic variations. The format must be used together with the covariates option
@@ -76,10 +68,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
             "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/rna-seq-1472848302343/bestAUCModel.bin",
-            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99",
-            "include_fdr:boolean, experimental option to include a False Discovery Rate column in vcf output. For each position, outputs estimated proportion of false positives to all positions with a higher somatic variation likelihood.:false",
-            "include_bayes:boolean, experimental option to produce a true probability of somatic variation with bayes' rule, using a rate of mutation prior.:false"
-         // TODO  not present in variation-analysis 1.0.1 jar, reenable if needed when new jar in Goby:    "bayes_prior:double, expected rate of mutation at the somatic site.:2.5e-7"
+            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -178,8 +167,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private String modelPath;
     private String modelPrefix;
     private SomaticModel model;
-    private BayesCalibrator bayesCalculator;
-    private CalcCalibrator fdrEstimator;
 
     /**
      * Hook to install the somatic sample indices for testing.
@@ -222,7 +209,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //set optional column vars from doc
         this.addBayes = doc.getBoolean("include_bayes");
         this.addFdr = doc.getBoolean("include_fdr");
-     //   this.bayesPrior = doc.getDouble("bayes_prior");
+        //   this.bayesPrior = doc.getDouble("bayes_prior");
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
         //extract prefix and model directory from model path input.
@@ -233,30 +220,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         modelPath = customPath.substring(0, customPath.length() - modelName.length());
         //TODO: rna seq default model does not have config.properties file?
         try {
-            model = getModel(modelPath, modelPrefix);
-            System.out.println("model at " +modelPath + " loaded");
+            model = new SomaticModel(modelPath, modelPrefix);
+            System.out.println("model at " + modelPath + " loaded");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to load somatic model", e);
         }
-
-
-        if (addBayes) {
-            try {
-                bayesCalculator = new BayesCalibrator(modelPath, modelPrefix, true);
-                         } catch (Exception e) {
-                LOG.error("Unable to initialize BayesCalibrator.", e);
-                System.exit(1);
-            }
-        }
-        if (addFdr) {
-            try {
-                fdrEstimator = new FDREstimator(modelPath, modelPrefix, true);
-            } catch (Exception e) {
-                LOG.error("Unable to initialize FDREstimator.", e);
-                System.exit(1);
-            }
-        }
-
 
         numSamples = samples.length;
         ObjectSet<String> allCovariates = covInfo.getCovariateKeys();
@@ -590,13 +558,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             int motherSampleIndex = sample2MotherSampleIndex[somaticSampleIndex];
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
             for (int germlineSampleIndex : germlineSampleIndices) {
-                if (model==null){
-                    System.out.println("model not found. path: "+ modelPath + " prefix: " + modelPrefix);
-                    return;
-                }
+                assert model != null : "model must be found with path: " + modelPath + " prefix: " + modelPrefix;
 
                 //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
-                int[] readerIdxs = {fatherSampleIndex,motherSampleIndex,somaticSampleIndex,germlineSampleIndex};
+                int[] readerIdxs = {fatherSampleIndex, motherSampleIndex, somaticSampleIndex, germlineSampleIndex};
                 ProtoPredictor.Prediction prediction = model.mutPrediction(iterator.getGenome(),
                         iterator.getReferenceId(referenceIndex).toString(),
                         sampleCounts,
@@ -605,12 +570,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                         readerIdxs);
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], prediction.posProb);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], prediction.negProb);
-                if (addBayes) {
-                    statsWriter.setInfo(bayesProbabilityIdxs[somaticSampleIndex],bayesCalculator.calibrateProb(prediction.posProb));
-                }
-                if (addFdr) {
-                    statsWriter.setInfo(fdrProbabilityIdxs[somaticSampleIndex],fdrEstimator.calibrateProb(prediction.posProb));
-                }
                 // do not write the site if it is predicted not somatic.
                 if (prediction.posProb < modelPThreshold) {
                     Arrays.fill(isSomaticCandidate[somaticSampleIndex], false);
@@ -620,7 +579,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         }
 
     }
-
 
 
     public void estimatePriority(SampleCountInfo[] sampleCounts) {
@@ -882,44 +840,4 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         // this method does nothing. Kept for compatibility with JUnit tests.
     }
 
-    //prefix specifies whether to use best or latest model in directory
-    private SomaticModel getModel(String modelPath, String prefix) throws IOException {
-
-        //get MAPPER
-        FeatureMapper featureMapper = null;
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            final String modelPropertiesFilename = modelPath + "/config.properties";
-            input = new FileInputStream(modelPropertiesFilename);
-            // load a properties file
-            prop.load(input);
-            // get the property value and print it out
-            String mapperName = prop.getProperty("mapper");
-
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            // Load the target class using its binary name
-            java.lang.Class loadedMyClass = classLoader.loadClass(mapperName);
-            System.out.println("Loaded class name: " + loadedMyClass.getName());
-            // Create a new instance from the loaded class
-            Constructor constructor = loadedMyClass.getConstructor();
-            featureMapper = (FeatureMapper) constructor.newInstance();
-            if (featureMapper instanceof ConfigurableFeatureMapper) {
-                ConfigurableFeatureMapper confMapper= (ConfigurableFeatureMapper) featureMapper;
-                System.out.println("Configuring feature mapper with model properties at "+modelPropertiesFilename);
-                confMapper.configure(prop);
-            }
-        } catch (Exception e) {
-            LOG.error("Unable to load class: ", e);
-            return null;
-        } finally {
-            IOUtils.closeQuietly(input);
-        }
-
-
-        ModelLoader modelLoader = new ModelLoader(modelPath);
-        MultiLayerNetwork model = modelLoader.loadMultiLayerNetwork(prefix);
-
-        return new SomaticModel(model, featureMapper);
-    }
 }

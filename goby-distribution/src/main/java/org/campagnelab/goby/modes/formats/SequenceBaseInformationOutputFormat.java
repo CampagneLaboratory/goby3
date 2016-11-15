@@ -1,13 +1,8 @@
 package org.campagnelab.goby.modes.formats;
 
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
-import org.campagnelab.dl.model.utils.ProtoPredictor;
-import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.algorithmic.data.SomaticModel;
-import org.campagnelab.goby.alignments.PositionBaseInfo;
 import org.campagnelab.goby.baseinfo.SequenceBaseInformationWriter;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;

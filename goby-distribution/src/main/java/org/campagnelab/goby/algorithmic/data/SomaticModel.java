@@ -1,6 +1,9 @@
 package org.campagnelab.goby.algorithmic.data;
 
 import it.unimi.dsi.lang.MutableString;
+import org.apache.commons.io.IOUtils;
+import org.campagnelab.dl.model.utils.ConfigurableFeatureMapper;
+import org.campagnelab.dl.model.utils.models.ModelLoader;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
@@ -9,11 +12,18 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
+import org.campagnelab.goby.modes.formats.SequenceBaseInformationOutputFormat;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * Created by rct66 on 6/23/16.
@@ -23,6 +33,7 @@ public class SomaticModel {
     public static final int POSITIVE_STRAND = 0;
     public static final int NEGATIVE_STRAND = 1;
 
+    static private Logger LOG = LoggerFactory.getLogger(SomaticModel.class);
 
     private ProtoPredictor predictor;
     private boolean isTrio;
@@ -33,6 +44,46 @@ public class SomaticModel {
 
     }
 
+    //prefix specifies whether to use best or latest model in directory
+    public SomaticModel(String modelPath, String prefix) throws IOException {
+
+        //get MAPPER
+        FeatureMapper featureMapper = null;
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            final String modelPropertiesFilename = modelPath + "/config.properties";
+            input = new FileInputStream(modelPropertiesFilename);
+            // load a properties file
+            prop.load(input);
+            // get the property value and print it out
+            String mapperName = prop.getProperty("mapper");
+
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            // Load the target class using its binary name
+            java.lang.Class loadedMyClass = classLoader.loadClass(mapperName);
+            System.out.println("Loaded class name: " + loadedMyClass.getName());
+            // Create a new instance from the loaded class
+            Constructor constructor = loadedMyClass.getConstructor();
+            featureMapper = (FeatureMapper) constructor.newInstance();
+            if (featureMapper instanceof ConfigurableFeatureMapper) {
+                ConfigurableFeatureMapper confMapper= (ConfigurableFeatureMapper) featureMapper;
+                System.out.println("Configuring feature mapper with model properties at "+modelPropertiesFilename);
+                confMapper.configure(prop);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to create feature mapper",e);
+        } finally {
+            IOUtils.closeQuietly(input);
+        }
+
+
+        ModelLoader modelLoader = new ModelLoader(modelPath);
+        MultiLayerNetwork model = modelLoader.loadMultiLayerNetwork(prefix);
+
+        this.predictor = new ProtoPredictor(model, featureMapper);
+        this.isTrio = featureMapper.getClass().getCanonicalName().contains("Trio");
+    }
 
     /**
      * Returns a prediction by applying a serialized version of the arguments (via toProto) to the stored model.
