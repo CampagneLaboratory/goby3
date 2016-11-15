@@ -18,7 +18,7 @@
 
 package org.campagnelab.goby.algorithmic.algorithm;
 
-import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import it.unimi.dsi.lang.MutableString;

@@ -20,7 +20,7 @@ package org.campagnelab.goby.algorithmic.algorithm;
 
 //import EquivalentIndelRegion;
 
-import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
 import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
 import org.junit.Before;

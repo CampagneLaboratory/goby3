@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.campagnelab.goby.algorithmic.data;
+package org.campagnelab.goby.algorithmic.indels;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.lang.MutableString;

@@ -19,6 +19,8 @@
 package org.campagnelab.goby.modes.dsv;
 
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
 
 import java.util.Arrays;

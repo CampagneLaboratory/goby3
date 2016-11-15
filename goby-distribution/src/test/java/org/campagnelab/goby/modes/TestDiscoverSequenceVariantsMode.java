@@ -22,6 +22,8 @@ import com.google.protobuf.ByteString;
 import com.martiansoftware.jsap.JSAPException;
 import org.campagnelab.goby.R.GobyRengine;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.modes.dsv.*;
 import org.campagnelab.goby.modes.formats.AlleleFrequencyOutputFormat;
