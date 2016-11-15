@@ -8,6 +8,7 @@ import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
+import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
@@ -94,7 +95,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         }
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
          try {
-            sbiWriter.appendEntry(SomaticModel.toProto(iterator.getGenome(),
+            sbiWriter.appendEntry(ProtoHelper.toProto(iterator.getGenome(),
                     iterator.getReferenceId(referenceIndex).toString(),
                     sampleCounts, referenceIndex, position, list, readerIdxs));
         } catch (IOException e) {

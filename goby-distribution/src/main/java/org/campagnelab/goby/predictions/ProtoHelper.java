@@ -1,13 +1,18 @@
 package org.campagnelab.goby.predictions;
 
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
-import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.modes.dsv.SampleCountInfo;
+
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+
+import java.util.List;
 
 /**
  * Created by mas2182 on 11/15/16.
@@ -123,17 +128,17 @@ public class ProtoHelper {
                 infoBuilder.setGenotypeCountForwardStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, true));
                 infoBuilder.setGenotypeCountReverseStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, false));
 
-                infoBuilder.addAllQualityScoresForwardStrand(ProtoPredictor.compressFreq(qualityScores[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
-                infoBuilder.addAllQualityScoresReverseStrand(ProtoPredictor.compressFreq(qualityScores[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
+                infoBuilder.addAllQualityScoresForwardStrand(compressFreq(qualityScores[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
+                infoBuilder.addAllQualityScoresReverseStrand(compressFreq(qualityScores[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
 
-                infoBuilder.addAllReadIndicesForwardStrand(ProtoPredictor.compressFreq(readIdxs[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
-                infoBuilder.addAllReadIndicesReverseStrand(ProtoPredictor.compressFreq(readIdxs[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
+                infoBuilder.addAllReadIndicesForwardStrand(compressFreq(readIdxs[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
+                infoBuilder.addAllReadIndicesReverseStrand(compressFreq(readIdxs[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
 
-                infoBuilder.addAllReadMappingQualityForwardStrand(ProtoPredictor.compressFreq(readMappingQuality[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
-                infoBuilder.addAllReadMappingQualityReverseStrand(ProtoPredictor.compressFreq(readMappingQuality[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
+                infoBuilder.addAllReadMappingQualityForwardStrand(compressFreq(readMappingQuality[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
+                infoBuilder.addAllReadMappingQualityReverseStrand(compressFreq(readMappingQuality[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
 
-                infoBuilder.addAllNumVariationsInReads(ProtoPredictor.compressFreq(numVariationsInReads[sampleIndex][genotypeIndex]));
-                infoBuilder.addAllInsertSizes(ProtoPredictor.compressFreq(insertSizes[sampleIndex][genotypeIndex]));
+                infoBuilder.addAllNumVariationsInReads(compressFreq(numVariationsInReads[sampleIndex][genotypeIndex]));
+                infoBuilder.addAllInsertSizes(compressFreq(insertSizes[sampleIndex][genotypeIndex]));
 
                 infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
                 sampleBuilder.addCounts(infoBuilder.build());
@@ -143,4 +148,26 @@ public class ProtoHelper {
         }
         return builder.build();
     }
+
+    public static List<BaseInformationRecords.NumberWithFrequency> compressFreq(List<Integer> numList) {
+        //compress into map
+        Int2IntArrayMap freqMap = new Int2IntArrayMap(100);
+        for (int num : numList) {
+            Integer freq = freqMap.putIfAbsent(num, 1);
+            if (freq != null) {
+                freqMap.put(num, freq + 1);
+            }
+        }
+        //iterate map into freqlist
+        List<BaseInformationRecords.NumberWithFrequency> freqList = new ObjectArrayList<>(freqMap.size());
+        for (Int2IntMap.Entry entry : freqMap.int2IntEntrySet()) {
+            BaseInformationRecords.NumberWithFrequency.Builder freqBuilder = BaseInformationRecords.NumberWithFrequency.newBuilder();
+            freqBuilder.setFrequency(entry.getIntValue());
+            freqBuilder.setNumber(entry.getIntKey());
+            freqList.add(freqBuilder.build());
+        }
+        return freqList;
+    }
+
+
 }
