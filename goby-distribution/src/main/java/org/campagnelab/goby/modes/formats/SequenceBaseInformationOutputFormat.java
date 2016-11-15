@@ -79,7 +79,17 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     Integer[] readerIdxs;
 
     public void allocateStorage(int numberOfSamples, int numberOfGroups) {
-        readerIdxs  = numberOfSamples==3?(new Integer[]{0,1,2}):(new Integer[]{0,1});
+        switch(numberOfSamples) {
+            case 1:
+                readerIdxs = new Integer[]{0};
+                break;
+            case 2:
+                readerIdxs = new Integer[]{0,1};
+                break;
+            default: //case 3, extend switch case in the future to handle more experimental designs.
+                readerIdxs = new Integer[]{0,1,2};
+                break;
+        }
     }
 
 
