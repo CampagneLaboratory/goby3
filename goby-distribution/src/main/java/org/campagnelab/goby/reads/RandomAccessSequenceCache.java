@@ -248,7 +248,7 @@ public class RandomAccessSequenceCache implements RandomAccessSequenceInterface 
 
     public final int getRange(final String referenceName, final int position, final int length) {
         final int referenceIndex = getReferenceIndex(referenceName);
-        return getRange(referenceIndex, position, length);
+        return getRange(referenceIndex, position, length, referenceName);
     }
 
     @Override
@@ -261,9 +261,9 @@ public class RandomAccessSequenceCache implements RandomAccessSequenceInterface 
 
     final LongArrayBitVector bits = LongArrayBitVector.getInstance();
 
-    public int getRange(final int referenceIndex, final int position, final int length) {
+    public int getRange(final int referenceIndex, final int position, final int length, String referenceName) {
         assert referenceIndex >= minRefIndex && referenceIndex <= maxRefIndex :
-                String.format("referenceindex %d out of genome slice [%d-%d].", referenceIndex,
+                String.format("referenceindex %d obtained from referenceName "+ referenceName + " , is out of genome slice [%d-%d].", referenceIndex, referenceName,
                         minRefIndex, maxRefIndex);
         final int maxSize = sizes.getInt(referenceIndex);
         assert position + length < maxSize : "position must be less than size of the reference sequence (" + maxSize + ")";

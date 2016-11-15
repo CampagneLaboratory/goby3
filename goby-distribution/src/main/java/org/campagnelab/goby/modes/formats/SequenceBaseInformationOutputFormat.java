@@ -59,6 +59,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     static private Logger LOG = LoggerFactory.getLogger(SequenceBaseInformationOutputFormat.class);
     private SequenceBaseInformationWriter sbiWriter;
+    private int count = 0;
 
 
     private float samplingRate;
@@ -73,7 +74,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
     Integer[] readerIdxs;
 
@@ -100,6 +100,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        count++;
 
 
     }
@@ -118,6 +119,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println(count);
     }
 
     public void setGenome(RandomAccessSequenceInterface genome) {
