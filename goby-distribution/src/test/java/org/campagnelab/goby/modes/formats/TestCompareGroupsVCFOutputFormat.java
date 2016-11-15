@@ -20,13 +20,12 @@ package org.campagnelab.goby.modes.formats;
 
 import org.campagnelab.goby.R.GobyRengine;
 import org.campagnelab.goby.Release1_9_7_2;
-import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.algorithmic.data.GroupComparison;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.modes.dsv.SampleCountInfo;
-import org.campagnelab.goby.modes.formats.CompareGroupsVCFOutputFormat;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.stats.DifferentialExpressionAnalysis;
 import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
 import org.campagnelab.goby.stats.VCFWriter;

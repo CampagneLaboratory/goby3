@@ -18,7 +18,9 @@
 
 package org.campagnelab.goby.modes.dsv;
 
-import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;

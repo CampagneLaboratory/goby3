@@ -1,7 +1,7 @@
 package org.campagnelab.goby.predictions;
 
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.modes.dsv.SampleCountInfo;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 
 import java.io.IOException;

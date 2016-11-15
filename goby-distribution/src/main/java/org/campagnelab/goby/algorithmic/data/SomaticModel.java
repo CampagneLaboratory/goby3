@@ -4,15 +4,13 @@ import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.io.IOUtils;
 import org.campagnelab.dl.model.utils.ConfigurableFeatureMapper;
 import org.campagnelab.dl.model.utils.models.ModelLoader;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-import org.campagnelab.goby.modes.dsv.SampleCountInfo;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.campagnelab.dl.model.utils.ProtoPredictor;
 import org.campagnelab.dl.model.utils.mappers.FeatureMapper;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
-import org.campagnelab.goby.modes.formats.SequenceBaseInformationOutputFormat;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -23,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.Properties;
 
 /**

@@ -26,7 +26,7 @@ import org.campagnelab.goby.counts.CountWriterHelper2;
 import org.campagnelab.goby.counts.CountsArchiveWriter;
 import org.campagnelab.goby.counts.CountsWriterHelperI;
 import org.campagnelab.goby.counts.CountsWriterI;
-import org.campagnelab.goby.modes.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.modes.dsv.IterateSortedAlignmentsListImpl;
 import org.campagnelab.goby.util.Timer;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
