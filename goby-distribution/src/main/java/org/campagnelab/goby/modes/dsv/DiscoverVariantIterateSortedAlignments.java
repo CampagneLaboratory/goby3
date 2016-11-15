@@ -184,7 +184,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             // per VCF spec.) keyPos is zero-based
             final int keyPos = indelCandidateRegion.startPosition - flankLeftSize + 1;
             assert genome.get(referenceIndex, keyPos) == indelCandidateRegion.fromInContext().charAt(0) :
-                    "first base of context must match genome at key position, '" +  genome.get(referenceIndex, keyPos) + "' (genome) != '" + indelCandidateRegion.fromInContext().charAt(0) + "' (first base)";
+                    "first base of context must match genome at key position, " +  "refName="+genome.getReferenceName(referenceIndex) + ", " + "refIndex="+referenceIndex + ", " + "keyPos="+ keyPos + ", '" + genome.get(referenceIndex, keyPos) + "' (genome) != '" + indelCandidateRegion.fromInContext().charAt(0) + "' (first base)";
             indelCandidateRegion.sampleIndex = sampleIndex;
 
             DiscoverVariantPositionData positionBaseInfos = positionToBases.get(keyPos);
