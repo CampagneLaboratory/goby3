@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -57,10 +58,7 @@ import java.util.ServiceLoader;
  *         Time: 10:13 AM
  */
 public class SomaticVariationOutputFormat implements SequenceVariationOutputFormat {
-    private SomaticPredictor predictor;
-    private boolean addBayes;
-    private boolean addFdr;
-    private double bayesPrior;
+    private static SomaticPredictor predictor;
 
     private static String GOBY_HOME;
     private float modelPThreshold;
@@ -172,6 +170,25 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private String modelPrefix;
     private SomaticModel model;
 
+    static {
+        // load the predictor.
+        ServiceLoader<SomaticPredictor> predictorLoader;
+        predictorLoader = ServiceLoader.load(SomaticPredictor.class);
+        predictorLoader.reload();
+        final Iterator<SomaticPredictor> iterator = predictorLoader.iterator();
+        if (iterator.hasNext()) {
+            predictor = iterator.next();
+        }
+        if (predictor == null) {
+            throw new RuntimeException("The model-utils jar was not found in the classpath. " +
+                    "Unable to call somatic variations. " +
+                    "Prefer to run goby with the shell wrapper (distrition/goby) to configure this dependency.");
+        }
+        if (iterator.hasNext()) {
+            LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
+        }
+    }
+
     /**
      * Hook to install the somatic sample indices for testing.
      *
@@ -185,17 +202,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     public void defineColumns(OutputInfo outputInfo, DiscoverSequenceVariantsMode mode) {
 
-        // load the predictor.
-        ServiceLoader<SomaticPredictor> predictorLoader;
-        predictorLoader = ServiceLoader.load(SomaticPredictor.class);
-        predictorLoader.reload();
-        predictor = predictorLoader.iterator().next();
-        if (predictor == null) {
-            throw new RuntimeException("The model-utils jar was not found in the classpath. Unable to call somatic variations. Prefer to run goby with the shell wrapper (distrition/goby) to configure this dependency.");
-        }
-        if (predictorLoader.iterator().hasNext()) {
-            LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
-        }
+
         // define columns for genotype format
         samples = mode.getSamples();
         statsWriter = new VCFWriter(outputInfo.getPrintWriter());
@@ -223,8 +230,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         }
 
         //set optional column vars from doc
-        this.addBayes = doc.getBoolean("include_bayes");
-        this.addFdr = doc.getBoolean("include_fdr");
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
         //extract prefix and model directory from model path input.
@@ -296,18 +301,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     String.format("model-unmut-probability[%s]", sample),
                     1, ColumnType.Float,
                     "Probability score of no somatic variation, determined by a neural network trained on simulated mutations.", "statistic", "indexed");
-            if (addBayes) {
-                bayesProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
-                        String.format("model-bayes[%s]", sample),
-                        1, ColumnType.Float,
-                        "Probability score of a somatic variation, predicted with model probability and bayes theorem.", "statistic", "indexed");
-            }
-            if (addFdr) {
-                fdrProbabilityIdxs[sampleIndex] = statsWriter.defineField("INFO",
-                        String.format("model-fdr[%s]", sample),
-                        1, ColumnType.Float,
-                        "False discovery rate at threshold defined by the model probability of this record.", "statistic", "indexed");
-            }
 
         }
 
