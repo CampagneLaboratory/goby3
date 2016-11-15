@@ -1,7 +1,6 @@
 package org.campagnelab.goby.modes.dsv;
 
-import org.campagnelab.goby.algorithmic.data.EquivalentIndelRegion;
-import org.campagnelab.goby.modes.dsv.CommonIndelArtifactFilter;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

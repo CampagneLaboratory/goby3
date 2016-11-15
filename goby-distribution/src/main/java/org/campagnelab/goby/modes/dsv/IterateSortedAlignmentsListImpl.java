@@ -21,6 +21,7 @@
 package org.campagnelab.goby.modes.dsv;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
