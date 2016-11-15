@@ -2,7 +2,6 @@ package org.campagnelab.goby.modes.formats;
 
 
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
-import org.campagnelab.goby.algorithmic.data.SomaticModel;
 import org.campagnelab.goby.baseinfo.SequenceBaseInformationWriter;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;

@@ -101,6 +101,13 @@ public class ProtoHelper {
         for (int refPos = Math.max(position - 10, 0); refPos < Math.min(position + 11, referenceSequenceLength); refPos++) {
             genomicContext.append(genome.get(referenceIndex, refPos));
         }
+        for (int i = (position - 10); i < 0; i++){
+            genomicContext.insert(0,"N");
+        }
+        for (int i = (position + 11); i >= referenceSequenceLength; i--){
+            genomicContext.append("N");
+        }
+
         builder.setGenomicSequenceContext(genomicContext.toString());
 
         if (list.size() > 0) {

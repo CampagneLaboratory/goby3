@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FilenameUtils;
 import org.campagnelab.dl.model.utils.models.ModelLoader;
 import org.campagnelab.goby.algorithmic.data.CovariateInfo;
-import org.campagnelab.goby.algorithmic.data.SomaticModel;
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
 import org.campagnelab.goby.alignments.DefaultAlignmentReaderFactory;
@@ -165,7 +164,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private int igvFieldIndex;
     private String modelPath;
     private String modelPrefix;
-    private SomaticModel model;
 
     static {
         // load the predictor.
