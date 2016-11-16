@@ -164,7 +164,20 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private String modelPath;
     private String modelPrefix;
 
-    static {
+
+    /**
+     * Hook to install the somatic sample indices for testing.
+     *
+     * @param somaticSampleIndices
+     */
+    protected void setSomaticSampleIndices(IntArrayList somaticSampleIndices) {
+        this.somaticSampleIndices = somaticSampleIndices;
+    }
+
+    private IntArrayList somaticSampleIndices;
+
+    public void defineColumns(OutputInfo outputInfo, DiscoverSequenceVariantsMode mode) {
+
         // load the predictor.
         ServiceLoader<SomaticPredictor> predictorLoader;
         predictorLoader = ServiceLoader.load(SomaticPredictor.class);
@@ -181,22 +194,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (iterator.hasNext()) {
             LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
         }
-    }
-
-    /**
-     * Hook to install the somatic sample indices for testing.
-     *
-     * @param somaticSampleIndices
-     */
-    protected void setSomaticSampleIndices(IntArrayList somaticSampleIndices) {
-        this.somaticSampleIndices = somaticSampleIndices;
-    }
-
-    private IntArrayList somaticSampleIndices;
-
-    public void defineColumns(OutputInfo outputInfo, DiscoverSequenceVariantsMode mode) {
-
-
         // define columns for genotype format
         samples = mode.getSamples();
         statsWriter = new VCFWriter(outputInfo.getPrintWriter());
