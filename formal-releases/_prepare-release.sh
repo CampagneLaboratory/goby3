@@ -14,7 +14,6 @@ fi
 
 rm -rf ${RELEASE_FOLDER}
 mkdir -p ${RELEASE_FOLDER}
-mvn dependency:copy -Ddl.version=${DL_VERSION} -U
 cd ${BASEDIR}
 
 #clean up before preparing the archives
@@ -32,6 +31,8 @@ mvn -pl :goby-framework assembly:single@make-goby-deps
 mvn -pl :goby-framework assembly:single@make-goby-bin
 mvn -pl :goby-framework assembly:single@make-goby-javadoc
 #mvn -pl :goby-framework assembly:single@make-goby-cpp
+
+mvn -f dl-downloader.xml dependency:copy -Ddl.version=${DL_VERSION} -U
 
 cd ${WORKDIR}
 # move the generated files to the release folder

@@ -7,10 +7,10 @@ if [[ ! $VERSION == *"SNAPSHOT"* ]] ;then
   exit 1
 fi
 rm -fr package
-mvn dependency:copy -Ddl.version=${DL_VERSION} -U
 cd ..
-mvn clean package
+mvn clean install
 mkdir -p snapshot-previews/package
+mvn -f dl-downloader.xml dependency:copy -Ddl.version=${DL_VERSION} -U
 cp goby.jar somatic.jar framework.jar snapshot-previews/package/
 cp goby snapshot-previews/package/
 cp -r config snapshot-previews/package/

@@ -29,7 +29,7 @@
                                     <type>jar</type>
                                     <version>${dl.version}</version>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.basedir}/..</outputDirectory>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
                                     <destFileName>somatic.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -38,7 +38,7 @@
                                     <version>${dl.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.basedir}/..</outputDirectory>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
                                     <destFileName>framework.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
