@@ -2,6 +2,7 @@
 
 VERSION=$1
 BASEDIR=$2
+DL_VERSION=$3
 WORKDIR=`pwd`
 RELEASE_FOLDER="${WORKDIR}/release-goby_${VERSION}"
 
@@ -13,6 +14,7 @@ fi
 
 rm -rf ${RELEASE_FOLDER}
 mkdir -p ${RELEASE_FOLDER}
+mvn dependency:copy -Ddl.version=${DL_VERSION} -U
 cd ${BASEDIR}
 
 #clean up before preparing the archives
@@ -36,7 +38,8 @@ cd ${WORKDIR}
 cp ${BASEDIR}/CHANGES.txt ${RELEASE_FOLDER}
 echo "${VERSION}" >> ${RELEASE_FOLDER}/VERSION.txt
 mv ${BASEDIR}/target/goby_${VERSION}-*.zip  ${RELEASE_FOLDER}
-cp ${BASEDIR}/goby.jar ${RELEASE_FOLDER}/goby.jar
+cp ${BASEDIR}/goby.jar ${BASEDIR}/somatic.jar ${BASEDIR}/framework.jar ${RELEASE_FOLDER}
+
 
 # create symlinks
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-data.zip goby-data.zip)
