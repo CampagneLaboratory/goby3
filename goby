@@ -13,7 +13,7 @@
 memory_requirement=$1
 shift
 other_parameters=$*
-set +x
+set -x
 WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ $OSTYPE == "cygwin" ]]; then
     WORKING_DIR=`cygpath -m "${WORKING_DIR}"`
@@ -35,9 +35,13 @@ EOT
   export RJAVA_HOME=${temp}
   rm -f /tmp/r-cmd.txt
 fi
-DL_CLASSPATH=${GOBY_HOME}/somatic.jar
-if [ ! -e "${DL_CLASSPATH}" ]; then
+DL_SOMATIC_CLASSPATH=${GOBY_HOME}/somatic.jar
+if [ ! -e "${DL_SOMATIC_CLASSPATH}" ]; then
     echo "Model somatic.jar not found. It must be installed at ${GOBY_HOME}/somatic.jar"
 fi
+DL_FRAMEWORK_CLASSPATH=${GOBY_HOME}/framework.jar
+if [ ! -e "${DL_FRAMEWORK_CLASSPATH}" ]; then
+    echo "Model framework.jar not found. It must be installed at ${GOBY_HOME}/framework.jar"
+fi
 #echo java -ea -Xmx${memory_requirement} -Dlog4j.configuration=${LOG4J_PROPS} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
-java -ea -cp ${DL_CLASSPATH} -Xmx${memory_requirement} -Dlogback.configurationFile=${SLF4J_CONFIG} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
+java -ea -cp ${DL_FRAMEWORK_CLASSPATH}:${DL_SOMATIC_CLASSPATH} -Xmx${memory_requirement} -Dlogback.configurationFile=${SLF4J_CONFIG} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}

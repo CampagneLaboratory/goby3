@@ -227,12 +227,14 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
         //extract prefix and model directory from model path input.
+        modelPrefix = predictor.getModelPrefix(customPath);
+        modelPath = predictor.getModelPath(customPath);
         try {
             predictor.loadModel(modelPath, modelPrefix);
-
             System.out.println("model at " + modelPath + " loaded");
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load somatic model", e);
+            throw new RuntimeException(String.format("Unable to load somatic model %s with path %s ", modelPrefix,
+                    modelPath), e);
         }
 
         numSamples = samples.length;
