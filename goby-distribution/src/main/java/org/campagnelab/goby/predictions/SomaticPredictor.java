@@ -11,6 +11,9 @@ import java.io.IOException;
  * Created by fac2003 on 11/14/16.
  */
 public interface SomaticPredictor {
+    String getModelPath(String fullMPath);
+    String getModelPrefix(String fullMPath);
+
     void loadModel(String modelPath, String modelPrefix) throws IOException;
 
     void predict(RandomAccessSequenceInterface genome,

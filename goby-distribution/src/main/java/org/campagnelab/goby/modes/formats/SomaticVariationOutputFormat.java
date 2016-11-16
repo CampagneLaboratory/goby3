@@ -164,7 +164,20 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private String modelPath;
     private String modelPrefix;
 
-    static {
+
+    /**
+     * Hook to install the somatic sample indices for testing.
+     *
+     * @param somaticSampleIndices
+     */
+    protected void setSomaticSampleIndices(IntArrayList somaticSampleIndices) {
+        this.somaticSampleIndices = somaticSampleIndices;
+    }
+
+    private IntArrayList somaticSampleIndices;
+
+    public void defineColumns(OutputInfo outputInfo, DiscoverSequenceVariantsMode mode) {
+
         // load the predictor.
         ServiceLoader<SomaticPredictor> predictorLoader;
         predictorLoader = ServiceLoader.load(SomaticPredictor.class);
@@ -181,22 +194,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         if (iterator.hasNext()) {
             LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
         }
-    }
-
-    /**
-     * Hook to install the somatic sample indices for testing.
-     *
-     * @param somaticSampleIndices
-     */
-    protected void setSomaticSampleIndices(IntArrayList somaticSampleIndices) {
-        this.somaticSampleIndices = somaticSampleIndices;
-    }
-
-    private IntArrayList somaticSampleIndices;
-
-    public void defineColumns(OutputInfo outputInfo, DiscoverSequenceVariantsMode mode) {
-
-
         // define columns for genotype format
         samples = mode.getSamples();
         statsWriter = new VCFWriter(outputInfo.getPrintWriter());
@@ -227,12 +224,14 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
         //extract prefix and model directory from model path input.
+        modelPrefix = predictor.getModelPrefix(customPath);
+        modelPath = predictor.getModelPath(customPath);
         try {
             predictor.loadModel(modelPath, modelPrefix);
-
             System.out.println("model at " + modelPath + " loaded");
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load somatic model", e);
+            throw new RuntimeException(String.format("Unable to load somatic model %s with path %s ", modelPrefix,
+                    modelPath), e);
         }
 
         numSamples = samples.length;
