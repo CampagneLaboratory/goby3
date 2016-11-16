@@ -174,9 +174,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             predictor = iterator.next();
         }
         if (predictor == null) {
-            throw new RuntimeException("The model-utils jar was not found in the classpath. " +
+            throw new RuntimeException("The somatic.jar file was not found in the classpath. " +
                     "Unable to call somatic variations. " +
-                    "Prefer to run goby with the shell wrapper (distrition/goby) to configure this dependency.");
+                    "Prefer to run goby with the shell wrapper (distribution/goby) to configure this dependency.");
         }
         if (iterator.hasNext()) {
             LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
