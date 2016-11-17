@@ -1,4 +1,9 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash +x
+
+if [ $# -ne 2 ]; then
+    echo "usage: prepare-previews GOBY_VERSION-SNAPSHOT DL_VERSION-SNAPSHOT"
+    exit 1
+fi
 
 VERSION=$1
 DL_VERSION=$2
@@ -6,6 +11,11 @@ if [[ ! $VERSION == *"SNAPSHOT"* ]] ;then
   echo "Current version is set to ${VERSION}, but you should only preview a snapshot (version must end in -SNAPSHOT)!";
   exit 1
 fi
+if [[ ! $DL_VERSION == *"SNAPSHOT"* ]] ;then
+  echo "Current version is set to ${DL_VERSION}, but you should only preview a snapshot (version must end in -SNAPSHOT)!";
+  exit 1
+fi
+
 rm -fr package
 cd ..
 mvn clean install
