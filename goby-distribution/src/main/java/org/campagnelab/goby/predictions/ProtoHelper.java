@@ -79,7 +79,7 @@ public class ProtoHelper {
         }
 
         for (PositionBaseInfo baseInfo : list) {
-            int baseIndex = sampleCounts[sampleToReaderIdxs[0]].baseIndex(baseInfo.to);
+            int baseIndex = sampleCounts[sampleToReaderIdxs[baseInfo.readerIndex]].baseIndex(baseInfo.to);
             int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
             // check that we need to focus on the sample from which this base originates (if not, ignore the base)
             if (sampleIndex != -1) {
