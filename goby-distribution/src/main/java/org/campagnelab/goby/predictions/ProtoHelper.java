@@ -79,7 +79,7 @@ public class ProtoHelper {
         }
 
         for (PositionBaseInfo baseInfo : list) {
-            int baseIndex = sampleCounts[0].baseIndex(baseInfo.to);
+            int baseIndex = sampleCounts[sampleToReaderIdxs[0]].baseIndex(baseInfo.to);
             int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
             // check that we need to focus on the sample from which this base originates (if not, ignore the base)
             if (sampleIndex != -1) {
@@ -128,7 +128,7 @@ public class ProtoHelper {
             if (sampleIndex == numSamples-1) {
                 sampleBuilder.setIsTumor(true);
             }
-            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
+            final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
 
             for (int genotypeIndex = 0; genotypeIndex < sampleCountInfo.getGenotypeMaxIndex(); genotypeIndex++) {
                 BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
@@ -154,7 +154,7 @@ public class ProtoHelper {
                 infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
                 sampleBuilder.addCounts(infoBuilder.build());
             }
-            sampleBuilder.setFormattedCounts(sampleCounts[sampleIndex].toString());
+            sampleBuilder.setFormattedCounts(sampleCounts[sampleToReaderIdxs[sampleIndex]].toString());
             builder.addSamples(sampleBuilder.build());
         }
         return builder.build();
