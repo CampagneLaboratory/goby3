@@ -102,14 +102,16 @@ public class ProtoHelper {
 
         //derive context length
         int cl = (contextLength-1)/2;
-        for (int refPos = Math.max(position - cl, 0); refPos < Math.min(position + (cl+1), referenceSequenceLength); refPos++) {
+        final int genomicStart = position - cl;
+        final int genomicEnd = position + (cl + 1);
+        for (int refPos = Math.max(genomicStart, 0); refPos < Math.min(genomicEnd, referenceSequenceLength); refPos++) {
             genomicContext.append(genome.get(referenceIndex, refPos));
         }
         //pad zeros as needed
-        for (int i = (position - cl); i < 0; i++){
+        for (int i = genomicStart; i < 0; i++){
             genomicContext.insert(0,"N");
         }
-        for (int i = (position + (cl+1)); i >= referenceSequenceLength; i--){
+        for (int i = genomicEnd; i > referenceSequenceLength; i--){
             genomicContext.append("N");
         }
         builder.setGenomicSequenceContext(genomicContext.toString());
