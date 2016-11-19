@@ -117,6 +117,6 @@ message CountInfo {
 }
 
 message NumberWithFrequency {
-    required uint32 number = 1;
+    required int32 number = 1;
     required uint32 frequency = 2;
 }
