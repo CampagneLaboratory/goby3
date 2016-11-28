@@ -98,8 +98,6 @@ public class VCFToMapMode extends AbstractGobyMode {
 
         chMap = new Object2ObjectOpenHashMap<String,Int2ObjectMap<String>>(40);
 
-
-
         return this;
     }
 
@@ -138,11 +136,6 @@ public class VCFToMapMode extends AbstractGobyMode {
 
 
 
-
-
-
-
-
     /**
      * Compare VCF files.
      *
@@ -172,14 +165,14 @@ public class VCFToMapMode extends AbstractGobyMode {
             String positionStr = parser.getColumnValue(positionColumnIndex).toString();
             final CharSequence ref = parser.getColumnValue(refColumnIndex);
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
-            final CharSequence gt = parser.getColumnValue(globalFieldIndexSample);
-            final String[] alts = alt.toString().split(",");
-            String chromShort = chromosomeName.substring(3);
-            if (!chMap.containsValue(chromShort)){
-                chMap.put(chromShort,new Int2ObjectArrayMap<String>(50000));
+            final CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample-1);
+            final String paddedAlt = alt + ",N";
+            final String[] alts = paddedAlt.toString().split(",");
+            if (!chMap.containsValue(chromosomeName)){
+                chMap.put(chromosomeName,new Int2ObjectArrayMap<String>(50000));
             }
             String expandedGT = convertGT(gt.toString(),ref.toString(),alts[0],alts[1]);
-            chMap.get(chromShort).put(Integer.parseInt(positionStr),expandedGT);
+            chMap.get(chromosomeName).put(Integer.parseInt(positionStr),expandedGT);
         }
         BinIO.storeObject(chMap,new File(outputMapname));
     }
@@ -194,4 +187,16 @@ public class VCFToMapMode extends AbstractGobyMode {
         //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
         return origGT.replace("0",ref).replace("1",alt1).replace("2",alt2);
     }
+
+
+    /**
+     * @param args command line arguments
+     * @throws java.io.IOException IO error
+     * @throws com.martiansoftware.jsap.JSAPException
+     *                             command line parsing error.
+     */
+    public static void main(final String[] args) throws IOException, JSAPException {
+        new VCFToMapMode().configure(args).execute();
+    }
+
 }

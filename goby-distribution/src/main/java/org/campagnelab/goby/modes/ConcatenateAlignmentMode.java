@@ -124,9 +124,8 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args) throws IOException, JSAPException {
@@ -190,10 +189,15 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
                         return readGroupHelper;
                     }
                 };
+
+        int startReferenceIndex = 0;
+        int startPosition = 0;
         if (allSorted) {
             GenomicRange genomicRange = sliceHelper.getGenomicRange();
             if (genomicRange != null) {
                 ((ConcatSortedAlignmentReader) alignmentReader).setGenomicRange(genomicRange);
+                startReferenceIndex = sliceHelper.getGenomicRange().startReferenceIndex;
+                startPosition = sliceHelper.getGenomicRange().startPosition;
             }
         }
         alignmentReader.setAdjustSampleIndices(adjustSampleIndices);
@@ -232,7 +236,8 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
         assert processor != null : "processor cannot be null";
         Alignments.AlignmentEntry entry;
         int counter = 0;
-        while ((entry = processor.nextRealignedEntry(0, 0)) != null) {
+
+        while ((entry = processor.nextRealignedEntry(startReferenceIndex, startPosition)) != null) {
             if (counter++ > maxEntriesToProcess) {
                 break;
             }
@@ -286,9 +291,9 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
 
     public static boolean isAllSorted(final boolean upgrade, final String[] basenames) throws IOException {
         boolean sorted = true;
-        DefaultAlignmentReaderFactory factory=new DefaultAlignmentReaderFactory();
+        DefaultAlignmentReaderFactory factory = new DefaultAlignmentReaderFactory();
 
-        for (final AlignmentReader reader : factory.createReader(basenames,upgrade)) {
+        for (final AlignmentReader reader : factory.createReader(basenames, upgrade)) {
             reader.readHeader();
             sorted &= reader.isSorted();
         }
