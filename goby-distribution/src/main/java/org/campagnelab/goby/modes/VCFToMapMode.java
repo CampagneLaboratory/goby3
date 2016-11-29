@@ -160,20 +160,36 @@ public class VCFToMapMode extends AbstractGobyMode {
         final String sampleName = parser.getColumnNamesUsingFormat()[0];
         final int globalFieldIndexSample = parser.getGlobalFieldIndex(sampleName, "GT");
 
+
+        ProgressLogger pg = new ProgressLogger(LOG);
+        pg.itemsName = "variants";
+
+        String positionStr = null;
+        CharSequence ref = null;
+
         while (parser.hasNextDataLine()){
             String chromosomeName = parser.getColumnValue(chromosomeColumnIndex).toString();
-            String positionStr = parser.getColumnValue(positionColumnIndex).toString();
-            final CharSequence ref = parser.getColumnValue(refColumnIndex);
+            String posOld = positionStr;
+            CharSequence refOld  = ref;
+            positionStr = parser.getColumnValue(positionColumnIndex).toString();
+            ref = parser.getColumnValue(refColumnIndex);
+            //check that position is actually iterating
+//            if (ref == refOld && positionStr == posOld){
+//                break;
+//            }
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
             final CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample-1);
             final String paddedAlt = alt + ",N";
             final String[] alts = paddedAlt.toString().split(",");
-            if (!chMap.containsValue(chromosomeName)){
+            if (!chMap.containsKey(chromosomeName)){
                 chMap.put(chromosomeName,new Int2ObjectArrayMap<String>(50000));
             }
             String expandedGT = convertGT(gt.toString(),ref.toString(),alts[0],alts[1]);
             chMap.get(chromosomeName).put(Integer.parseInt(positionStr),expandedGT);
+            parser.next();
+            pg.update();
         }
+        pg.stop();
         BinIO.storeObject(chMap,new File(outputMapname));
     }
 
