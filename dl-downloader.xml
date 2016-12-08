@@ -28,6 +28,7 @@
                                     <artifactId>somatic</artifactId>
                                     <type>jar</type>
                                     <version>${dl.version}</version>
+                                    <classifier>native</classifier>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}</outputDirectory>
                                     <destFileName>somatic.jar</destFileName>
@@ -37,6 +38,7 @@
                                     <artifactId>framework</artifactId>
                                     <version>${dl.version}</version>
                                     <type>jar</type>
+                                    <classifier>native</classifier>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}</outputDirectory>
                                     <destFileName>framework.jar</destFileName>
