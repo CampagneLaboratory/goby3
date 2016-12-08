@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.campagnelab.goby</groupId>
         <artifactId>goby-framework</artifactId>
-        <version>3.0.3-SNAPSHOT</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
     <artifactId>goby-spi</artifactId>
     <modelVersion>4.0.0</modelVersion>
