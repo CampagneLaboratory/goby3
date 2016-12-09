@@ -2,8 +2,8 @@
 
 DL_VERSION=$1
 if [ -z "$DL_VERSION" ]; then
-    echo "ERROR: The '<dl.version>' parameter is missing a value."
-    echo "Syntax: ./prepare-release <dl.version>"
+    echo "ERROR: The 'DL_VERSION' parameter is missing a value."
+    echo "Usage: ./prepare-release DL_VERSION"
     exit 1
 fi
 WORKDIR=`pwd`
