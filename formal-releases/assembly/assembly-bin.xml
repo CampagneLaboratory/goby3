@@ -11,6 +11,8 @@
         <fileSet>
             <includes>
                 <include>goby.jar</include>
+                <include>somatic.jar</include>
+                <include>framework.jar</include>
                 <include>goby</include>
                 <include>*.license</include>
                 <include>CHANGES.txt</include>
@@ -18,13 +20,8 @@
                 <include>COPYING</include>
                 <include>config/**</include>
                 <include>models/**</include>
-                <include>scripts/distrib/**</include>
             </includes>
-            <outputDirectory>goby-${version}/bin</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>goby-distribution/data</directory>
-            <outputDirectory>goby-${version}/bin/data</outputDirectory>
+            <outputDirectory>goby-${version}</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
