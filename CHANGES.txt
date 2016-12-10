@@ -1,4 +1,9 @@
->3.0.0
+3.1
+ - Reorganize model prediction to facilitate installing new versions of the variationAnalysis jars.
+ Goby 3.1 is now compatible with variationanalysis 1.1.1.
+ - Replace models with versions trained with variationanalysis 1.1.1.
+ - Add somatic mutation models trained with whole genome data (ICGC GoldSet).
+3.0.0
  - Support reading BAM alignments directly with Goby APIs.
  - Support probabilitic models for calling somatic variations, trained with deep learning.
 2.3.6
