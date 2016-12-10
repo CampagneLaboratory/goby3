@@ -226,9 +226,15 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //extract prefix and model directory from model path input.
         modelPrefix = predictor.getModelPrefix(customPath);
         modelPath = predictor.getModelPath(customPath);
+       if (modelPath==null || modelPath==null) {
+           throw new RuntimeException("Unable to determine modelPath or prefix/label  with "+customPath);
+       }
         try {
             predictor.loadModel(modelPath, modelPrefix);
             System.out.println("model at " + modelPath + " loaded");
+            if (!predictor.modelIsLoaded()){
+                throw new IOException("Model not loaded");
+            }
         } catch (IOException e) {
             throw new RuntimeException(String.format("Unable to load somatic model %s with path %s ", modelPrefix,
                     modelPath), e);
