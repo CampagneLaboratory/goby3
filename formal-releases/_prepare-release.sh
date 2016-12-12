@@ -49,4 +49,4 @@ mv ${BASEDIR}/target/goby_${VERSION}-bin.zip  ${RELEASE_FOLDER}
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-deps.zip goby-deps.zip)
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-models.zip goby-models.zip)
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-javadoc.zip goby-javadoc.zip)
-(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-bin.zip goby-bin.zip)
+(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-bin.zip goby.zip)

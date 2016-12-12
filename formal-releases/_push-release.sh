@@ -12,8 +12,8 @@ if [ -d "$RELEASE_FOLDER" ]; then
     # remove any previous archive for this release
     rm -f release-goby_${VERSION}.tgz
     tar zcvf release-goby_${VERSION}.tgz ${RELEASE_FOLDER}
-    scp release-goby_${VERSION}.tgz www@okeeffe:/var/www/dirs/chagall/goby/releases/
-    ssh www@okeeffe << END
+    scp release-goby_${VERSION}.tgz fcweb@okeeffe:/var/www/dirs/chagall/goby/releases/
+    ssh fcweb@okeeffe << END
         cd /var/www/dirs/chagall/goby/releases/
         tar zxvf release-goby_${VERSION}.tgz
         chmod -R a+r release-goby_${VERSION}
