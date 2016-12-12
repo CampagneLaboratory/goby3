@@ -40,7 +40,8 @@ The wrapper sets some variables, and runs the jar file. You can also run goby di
    ```
 In this case, adjust the -Xmx1g according to the amount of memory you need. You should also define the GOBY_HOME environment variable to point to the directory that contains the goby distribution or repo. You may also want to look at the wrapper to see what other arguments are set (e.g., to adjust logging levels).
 ### Documentation and forums
-You will find extensive documentation at [goby.campagnelab.org](http://goby.campagnelab.org).
+You will find extensive documentation at [goby.campagnelab.org](http://goby.campagnelab.org) and at [![Javadocs](http://javadoc.io/badge/org.campagnelab.goby/goby-io.svg)](http://javadoc.io/doc/org.campagnelab.goby/goby-io)
+.
 Usage questions and feedback should be addressed to the [Goby user forum](https://groups.google.com/forum/?fromgroups#!forum/goby-framework).
 
 If you have questions about compiling the software, reach us on Gitter:
