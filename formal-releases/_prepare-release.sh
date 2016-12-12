@@ -19,27 +19,29 @@ cd ${BASEDIR}
 #clean up before preparing the archives
 mvn clean
 rm -f ${BASEDIR}/goby.jar
-
-# we first assemble a clean base dir
-#mvn -pl :goby-framework assembly:single@make-goby-src
+rm -f ${BASEDIR}/somatic.jar
+rm -f ${BASEDIR}/framework.jar
 
 mvn install
 
 mvn -pl :goby-framework assembly:single@make-goby-models
 mvn -pl :goby-framework assembly:single@make-goby-data
 mvn -pl :goby-framework assembly:single@make-goby-deps
-mvn -pl :goby-framework assembly:single@make-goby-bin
 mvn -pl :goby-framework assembly:single@make-goby-javadoc
-#mvn -pl :goby-framework assembly:single@make-goby-cpp
 
+# download variation analysis dependencies
 mvn -f dl-downloader.xml dependency:copy -Ddl.version=${DL_VERSION} -U
-
-cd ${WORKDIR}
+cd ${WORKDIR}   ls
 # move the generated files to the release folder
 cp ${BASEDIR}/CHANGES.txt ${RELEASE_FOLDER}
 echo "${VERSION}" >> ${RELEASE_FOLDER}/VERSION.txt
 mv ${BASEDIR}/target/goby_${VERSION}-*.zip  ${RELEASE_FOLDER}
 cp ${BASEDIR}/goby.jar ${BASEDIR}/somatic.jar ${BASEDIR}/framework.jar ${RELEASE_FOLDER}
+
+#create goby-bin.zip
+cd ${BASEDIR}
+mvn -pl :goby-framework assembly:single@make-goby-bin
+mv ${BASEDIR}/target/goby_${VERSION}-bin.zip  ${RELEASE_FOLDER}
 
 
 # create symlinks
@@ -48,5 +50,3 @@ cp ${BASEDIR}/goby.jar ${BASEDIR}/somatic.jar ${BASEDIR}/framework.jar ${RELEASE
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-models.zip goby-models.zip)
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-javadoc.zip goby-javadoc.zip)
 (cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-bin.zip goby-bin.zip)
-#(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-src.zip goby-src.zip)
-#(cd ${RELEASE_FOLDER}; ln -s goby_${VERSION}-cpp.zip goby-cpp.zip)
