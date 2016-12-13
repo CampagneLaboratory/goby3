@@ -23,6 +23,14 @@ public class ProtoHelper {
     static final int contextLength = 21;
 
     static MutableString genomicContext = new MutableString();
+    private static String defaultGenomicContext;
+    static {
+        defaultGenomicContext="";
+        for (int i=0;i<contextLength;i++) {
+            defaultGenomicContext+="N";
+        }
+    }
+
 
 
     /**
@@ -114,7 +122,7 @@ public class ProtoHelper {
         for (int i = genomicEnd; i > referenceSequenceLength; i--){
             genomicContext.append("N");
         }
-        builder.setGenomicSequenceContext(genomicContext.toString());
+        builder.setGenomicSequenceContext(contextLength==genomicContext.length()?genomicContext.toString():defaultGenomicContext);
 
         if (list.size() > 0) {
             builder.setReferenceBase(Character.toString(list.getReferenceBase()));
