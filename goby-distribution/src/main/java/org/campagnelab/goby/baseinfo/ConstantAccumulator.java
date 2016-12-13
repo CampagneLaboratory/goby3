@@ -19,7 +19,8 @@ public class ConstantAccumulator extends StatAccumulator {
     void observe(float value) {
         super.observe(value);
         if (Float.compare(minimumValue, maximumValue) != 0) {
-            throw new RuntimeException("Invalid value encountered. The value is not a constant: minimum and maximum differ for "+propertyName);
+            throw new RuntimeException("Invalid value encountered. The value is not a constant: minimum and maximum differ for "+propertyName +
+            " min="+minimumValue+" max="+maximumValue+ " value="+value);
         }
     }
 
