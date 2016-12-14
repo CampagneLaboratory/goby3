@@ -32,7 +32,7 @@ public class ProtoHelper {
         }
     }
 
-
+    private static StringBuilder refBaseStringBuilder=new StringBuilder();
 
     /**
      * Returns a serialized record of a given position in protobuf format. Required step before mapping to features.
@@ -78,11 +78,11 @@ public class ProtoHelper {
 
             for (int genotypeIndex = 0; genotypeIndex < genotypeMaxIndex; genotypeIndex++) {
                 for (int k = 0; k < 2; k++) {
-                    qualityScores[sampleIndex][genotypeIndex][k] = new IntArrayList();
-                    readMappingQuality[sampleIndex][genotypeIndex][k] = new IntArrayList();
-                    readIdxs[sampleIndex][genotypeIndex][k] = new IntArrayList();
-                    numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList();
-                    insertSizes[sampleIndex][genotypeIndex] = new IntArrayList();
+                    qualityScores[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
+                    readMappingQuality[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
+                    readIdxs[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
+                    numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList(1024);
+                    insertSizes[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                 }
             }
         }
@@ -126,7 +126,9 @@ public class ProtoHelper {
         builder.setGenomicSequenceContext(contextLength==genomicContext.length()?genomicContext.toString():defaultGenomicContext);
 
         if (list.size() > 0) {
-            builder.setReferenceBase(Character.toString(list.getReferenceBase()));
+            refBaseStringBuilder.setLength(0);
+            refBaseStringBuilder.append(list.getReferenceBase());
+            builder.setReferenceBase(refBaseStringBuilder.toString());
         }
         builder.setReferenceIndex(referenceIndex);
 
