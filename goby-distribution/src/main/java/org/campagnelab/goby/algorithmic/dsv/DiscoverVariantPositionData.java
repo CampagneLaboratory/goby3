@@ -53,6 +53,22 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
         }
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        if (candidateIndels != null) {
+            candidateIndels.clear();
+        }
+        if (failedIndels != null) {
+            failedIndels.clear();
+        }
+        if (filtered != null) {
+            for (ObjectArraySet set : filtered) {
+                set.clear();
+            }
+        }
+    }
+
     /**
      * Count of genotypes that were flagged for removal by some filter in this sample.
      */
@@ -79,8 +95,8 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
         }
         if (!candidateIndels.contains(candidateIndel)) {
             candidateIndels.add(candidateIndel);
-           // System.out.println(candidateIndels);
-           // assert candidateIndels.contains(candidateIndel) : "indel must have been added.";
+            // System.out.println(candidateIndels);
+            // assert candidateIndels.contains(candidateIndel) : "indel must have been added.";
         } else {
             for (final EquivalentIndelRegion eir : candidateIndels) {
                 if (eir.equals(candidateIndel)) {
@@ -94,7 +110,7 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
 
     public ObjectArraySet<EquivalentIndelRegion> getIndels() {
 
-       return candidateIndels;
+        return candidateIndels;
     }
 
     /**
@@ -132,26 +148,28 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
             return failedIndels;
         }
     }
+
     public String completeToString() {
         return super.toString();
 
     }
 
-    public void printAll(){
+    public void printAll() {
         System.out.println(completeToString());
     }
 
     /**
      * Sub-sample this list to keep the specified maximum number of elements.
+     *
      * @param numberToKeep the number of elements to keep in the list after sub-sampling
      */
     public void subSample(int numberToKeep) {
 
-        final int size=this.size();
-        if (numberToKeep>=size) return;
+        final int size = this.size();
+        if (numberToKeep >= size) return;
 
         Collections.shuffle(this);
-        for (int i=size-1 ; i>=numberToKeep; --i) {
+        for (int i = size - 1; i >= numberToKeep; --i) {
             this.remove(i);
         }
     }

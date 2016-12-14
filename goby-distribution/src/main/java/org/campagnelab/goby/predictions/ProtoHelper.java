@@ -1,19 +1,19 @@
 package org.campagnelab.goby.predictions;
 
-import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
+import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
-
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.BaseToStringHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Random;
@@ -25,16 +25,21 @@ public class ProtoHelper {
     public static final int POSITIVE_STRAND = 0;
     public static final int NEGATIVE_STRAND = 1;
     static final int contextLength = 21;
+    private static final Logger LOG = LoggerFactory.getLogger(ProtoHelper.class);
 
-    static private MutableString genomicContext = new MutableString();
     private static String defaultGenomicContext;
+    private static ProgressLogger baseProgressLogger = new ProgressLogger(LOG);
 
     static {
+        baseProgressLogger.displayLocalSpeed = true;
+        baseProgressLogger.start();
         defaultGenomicContext = "";
         for (int i = 0; i < contextLength; i++) {
             defaultGenomicContext += "N";
         }
     }
+
+    static private MutableString genomicContext = new MutableString(defaultGenomicContext.length());
 
     private static BaseToStringHelper baseConversion = new BaseToStringHelper();
 
@@ -79,9 +84,9 @@ public class ProtoHelper {
 
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
-            final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
-            for (int genotypeIndex = 0; genotypeIndex < genotypeMaxIndex; genotypeIndex++) {
+
+            for (int genotypeIndex = 0; genotypeIndex < maxGenotypeIndex; genotypeIndex++) {
                 for (int k = 0; k < 2; k++) {
                     qualityScores[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
                     readMappingQuality[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
@@ -91,7 +96,9 @@ public class ProtoHelper {
                 }
             }
         }
-
+        if (list.size() > 1000) {
+            System.out.println(list.size());
+        }
         for (PositionBaseInfo baseInfo : list) {
             int baseIndex = sampleCounts[sampleToReaderIdxs[baseInfo.readerIndex]].baseIndex(baseInfo.to);
             int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
@@ -110,35 +117,10 @@ public class ProtoHelper {
         builder.setMutated(false);
         builder.setPosition(position);
         builder.setReferenceId(referenceID);
-        // store 10 bases of genomic context around the site:
-        {
-            genomicContext.setLength(0);
-            int referenceSequenceLength = genome.getLength(referenceIndex);
+        transferGenomicContext(genome, referenceIndex, position, list, builder);
 
-            //derive context length
-            int cl = (contextLength - 1) / 2;
-            final int genomicStart = position - cl;
-            final int genomicEnd = position + (cl + 1);
-            int index = 0;
-            for (int refPos = Math.max(genomicStart, 0); refPos < Math.min(genomicEnd, referenceSequenceLength); refPos++) {
-                genomicContext.append(baseConversion.convert(genome.get(referenceIndex, refPos)));
-            }
-            //pad zeros as needed
-            for (int i = genomicStart; i < 0; i++) {
-                genomicContext.insert(0, "N");
-            }
-            index = genomicContext.length();
-            for (int i = genomicEnd; i > referenceSequenceLength; i--) {
-                genomicContext.insert(index++, "N");
-            }
-            builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext);
-        }
-        if (list.size() > 0) {
 
-            builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
-        }
         builder.setReferenceIndex(referenceIndex);
-
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             BaseInformationRecords.SampleInfo.Builder sampleBuilder = BaseInformationRecords.SampleInfo.newBuilder();
             //This simply marks the the last sample (consistent with convention) as a tumor sample.
@@ -152,11 +134,51 @@ public class ProtoHelper {
             String referenceGenotype = null;
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
-            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], numVariationsInReads[sampleIndex], insertSizes[sampleIndex], sampleBuilder, sampleCountInfo, referenceGenotype, genotypeMaxIndex);
+            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], numVariationsInReads[sampleIndex], insertSizes[sampleIndex], sampleBuilder, sampleCountInfo, referenceGenotype, maxGenotypeIndex);
             sampleBuilder.setFormattedCounts(sampleCounts[sampleToReaderIdxs[sampleIndex]].toString());
             builder.addSamples(sampleBuilder.build());
         }
+        baseProgressLogger.update(list.size());
+        list.clear();
         return builder.build();
+    }
+
+    private static Random random = new Random();
+
+    private static void transferGenomicContext(RandomAccessSequenceInterface genome, int referenceIndex, int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder) {
+        // store 10 bases of genomic context around the site:
+        {
+            genomicContext.setLength(0);
+            int referenceSequenceLength = genome.getLength(referenceIndex);
+            if (referenceIndex <= 0) {
+                builder.setGenomicSequenceContext(defaultGenomicContext);
+            } else {
+                //derive context length
+                int cl = (contextLength - 1) / 2;
+                final int genomicStart = Math.max(position - cl, 0);
+                final int genomicEnd = Math.min(position + (cl + 1), referenceSequenceLength);
+                int index = 0;
+                for (int refPos = genomicStart; refPos < genomicEnd; refPos++) {
+                    genomicContext.insert(index++, baseConversion.convert(genome.get(referenceIndex, refPos)));
+                }
+                //pad zeros as needed
+                for (int i = genomicStart; i < 0; i++) {
+                    genomicContext.insert(0, "N");
+                }
+                index = genomicContext.length();
+                for (int i = genomicEnd; i > referenceSequenceLength; i--) {
+                    genomicContext.insert(index++, "N");
+                }
+              /*  if (random.nextDouble() < 0.01) {
+                    System.out.println(genomicContext);
+                }*/
+                builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext);
+            }
+            if (list.size() > 0) {
+
+                builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
+            }
+        }
     }
 
     private static void transfer(IntArrayList[][] qualityScore, IntArrayList[][] intArrayLists, IntArrayList[][] readIdx, IntArrayList[] numVariationsInRead, IntArrayList[] insertSize, BaseInformationRecords.SampleInfo.Builder sampleBuilder, SampleCountInfo sampleCountInfo, String referenceGenotype, int genotypeMaxIndex) {
@@ -190,14 +212,14 @@ public class ProtoHelper {
         }
     }
 
+    static Int2IntMap freqMap = new Int2IntAVLTreeMap();
+
     public static List<BaseInformationRecords.NumberWithFrequency> compressFreq(List<Integer> numList) {
         //compress into map
-        Int2IntMap freqMap = new Int2IntAVLTreeMap();
+        freqMap.clear();
         for (int num : numList) {
-            Integer freq = freqMap.putIfAbsent(num, 1);
-            if (freq != null) {
-                freqMap.put(num, freq + 1);
-            }
+            int freq = freqMap.getOrDefault(num, 0);
+            freqMap.put(num, freq + 1);
         }
         //iterate map into freqlist
         List<BaseInformationRecords.NumberWithFrequency> freqList = new ObjectArrayList<>(freqMap.size());

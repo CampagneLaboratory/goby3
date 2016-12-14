@@ -122,6 +122,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         randomGenerator = new XoRoShiRo128PlusRandom(seed);
         try {
             sbiWriter = new SequenceBaseInformationWriter(statsWriter.getFilename());
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
