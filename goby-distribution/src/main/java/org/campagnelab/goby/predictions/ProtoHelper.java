@@ -96,9 +96,7 @@ public class ProtoHelper {
                 }
             }
         }
-        if (list.size() > 1000) {
-            System.out.println(list.size());
-        }
+
         for (PositionBaseInfo baseInfo : list) {
             int baseIndex = sampleCounts[sampleToReaderIdxs[baseInfo.readerIndex]].baseIndex(baseInfo.to);
             int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
