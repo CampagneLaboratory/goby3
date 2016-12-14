@@ -186,7 +186,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             // per VCF spec.) keyPos is zero-based
             final int keyPos = indelCandidateRegion.startPosition - flankLeftSize + 1;
             assert genome.get(referenceIndex, keyPos) == indelCandidateRegion.fromInContext().charAt(0) :
-                    "first base of context must match genome at key position, " +  "refName="+genome.getReferenceName(referenceIndex) + ", " + "refIndex="+referenceIndex + ", " + "keyPos="+ keyPos + ", '" + genome.get(referenceIndex, keyPos) + "' (genome) != '" + indelCandidateRegion.fromInContext().charAt(0) + "' (first base)";
+                    "first base of context must match genome at key position, " + "refName=" + genome.getReferenceName(referenceIndex) + ", " + "refIndex=" + referenceIndex + ", " + "keyPos=" + keyPos + ", '" + genome.get(referenceIndex, keyPos) + "' (genome) != '" + indelCandidateRegion.fromInContext().charAt(0) + "' (first base)";
             indelCandidateRegion.sampleIndex = sampleIndex;
 
             DiscoverVariantPositionData positionBaseInfos = positionToBases.get(keyPos);
@@ -226,13 +226,17 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                                  final int position,
                                  final DiscoverVariantPositionData list) {
         int sumVariantCounts = 0;
-     //   System.out.printf("target=%s position=%d list:%d%n",referenceIndex, position, list.size());
+        //   System.out.printf("target=%s position=%d list:%d%n",referenceIndex, position, list.size());
         if (referenceIndex != previousReference && genome != null) {
             genomeRefIndex = genome.getReferenceIndex(getReferenceId(referenceIndex).toString());
             format.setGenomeReferenceIndex(genomeRefIndex);
             previousReference = referenceIndex;
-        }
 
+        }
+        if (genomeRefIndex == -1) {
+            // this position is not in the genome, we skip it.
+            return;
+        }
         final char referenceBase = getReferenceAllele(genome, position, list);
 
         for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
@@ -304,7 +308,8 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                     sampleCounts[sampleIndex].referenceBase = referenceBase;
                     sampleCounts[sampleIndex].distinctReadIndices.add(info.readIndex);
 
-                    if (!info.isInsertionOrDeletion()) incrementBaseCounter(info.to, sampleIndex, info.matchesForwardStrand);
+                    if (!info.isInsertionOrDeletion())
+                        incrementBaseCounter(info.to, sampleIndex, info.matchesForwardStrand);
                 }
             }
 
@@ -422,22 +427,22 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
     private void incrementBaseCounter(char base, int sampleIndex, boolean matchesForwardStrand) {
         switch (base) {
             case 'A':
-                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_A_INDEX,matchesForwardStrand);
+                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_A_INDEX, matchesForwardStrand);
                 break;
             case 'T':
-                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_T_INDEX,matchesForwardStrand);
+                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_T_INDEX, matchesForwardStrand);
                 break;
             case 'C':
-                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_C_INDEX,matchesForwardStrand);
+                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_C_INDEX, matchesForwardStrand);
                 break;
             case 'G':
-                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_G_INDEX,matchesForwardStrand);
+                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_G_INDEX, matchesForwardStrand);
                 break;
             case '-':
                 // deletions are handled as indels, do not report as Ns.
                 break;
             default:
-                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_OTHER_INDEX,matchesForwardStrand);
+                sampleCounts[sampleIndex].incrementGenotypeCount(SampleCountInfo.BASE_OTHER_INDEX, matchesForwardStrand);
                 break;
         }
     }
