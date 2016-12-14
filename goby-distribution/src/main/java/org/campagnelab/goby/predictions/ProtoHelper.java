@@ -148,7 +148,7 @@ public class ProtoHelper {
         {
             genomicContext.setLength(0);
             int referenceSequenceLength = genome.getLength(referenceIndex);
-            if (referenceIndex <= 0) {
+            if (referenceSequenceLength <= 0) {
                 builder.setGenomicSequenceContext(defaultGenomicContext);
             } else {
                 //derive context length
