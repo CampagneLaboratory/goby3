@@ -32,6 +32,7 @@ import org.campagnelab.goby.readers.vcf.VCFParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import it.unimi.dsi.fastutil.io.BinIO;
+
 import java.io.*;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,7 +54,7 @@ public class VCFToMapMode extends AbstractGobyMode {
      * The input files.
      */
     private File vcfFile;
-    private Object2ObjectMap<String,Int2ObjectMap<String>> chMap;
+    private Object2ObjectMap<String, Int2ObjectMap<String>> chMap;
     /**
      * The output map filename.
      */
@@ -96,7 +97,7 @@ public class VCFToMapMode extends AbstractGobyMode {
         setInputFilenames(jsapResult.getString("vcfInput"));
         outputMapname = jsapResult.getString("output");
 
-        chMap = new Object2ObjectOpenHashMap<String,Int2ObjectMap<String>>(40);
+        chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<String>>(40);
 
         return this;
     }
@@ -133,9 +134,6 @@ public class VCFToMapMode extends AbstractGobyMode {
     }
 
 
-
-
-
     /**
      * Compare VCF files.
      *
@@ -166,11 +164,11 @@ public class VCFToMapMode extends AbstractGobyMode {
 
         String positionStr = null;
         CharSequence ref = null;
-
-        while (parser.hasNextDataLine()){
+        pg.start();
+        while (parser.hasNextDataLine()) {
             String chromosomeName = parser.getColumnValue(chromosomeColumnIndex).toString();
             String posOld = positionStr;
-            CharSequence refOld  = ref;
+            CharSequence refOld = ref;
             positionStr = parser.getColumnValue(positionColumnIndex).toString();
             ref = parser.getColumnValue(refColumnIndex);
             //check that position is actually iterating
@@ -178,38 +176,36 @@ public class VCFToMapMode extends AbstractGobyMode {
 //                break;
 //            }
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
-            final CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample-1);
+            final CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample - 1);
             final String paddedAlt = alt + ",N";
             final String[] alts = paddedAlt.toString().split(",");
-            if (!chMap.containsKey(chromosomeName)){
-                chMap.put(chromosomeName,new Int2ObjectArrayMap<String>(50000));
+            if (!chMap.containsKey(chromosomeName)) {
+                chMap.put(chromosomeName, new Int2ObjectArrayMap<String>(50000));
             }
-            String expandedGT = convertGT(gt.toString(),ref.toString(),alts[0],alts[1]);
-            chMap.get(chromosomeName).put(Integer.parseInt(positionStr),expandedGT);
+            String expandedGT = convertGT(gt.toString(), ref.toString(), alts[0], alts[1]);
+            chMap.get(chromosomeName).put(Integer.parseInt(positionStr), expandedGT);
             parser.next();
             pg.update();
         }
         pg.stop();
-        BinIO.storeObject(chMap,new File(outputMapname));
+        BinIO.storeObject(chMap, new File(outputMapname));
     }
-
 
 
     /*
     * Convert vcf gt format, ie 1|0 , to expanded format, ie ACCCCT|G
     * This is only compatible with VCF's with ONE SAMPLE, as in the platinum genome vcf's.
      */
-    private String convertGT(String origGT, String ref, String alt1, String alt2 ){
+    private String convertGT(String origGT, String ref, String alt1, String alt2) {
         //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
-        return origGT.replace("0",ref).replace("1",alt1).replace("2",alt2);
+        return origGT.replace("0", ref).replace("1", alt1).replace("2", alt2);
     }
 
 
     /**
      * @param args command line arguments
-     * @throws java.io.IOException IO error
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             command line parsing error.
+     * @throws java.io.IOException                    IO error
+     * @throws com.martiansoftware.jsap.JSAPException command line parsing error.
      */
     public static void main(final String[] args) throws IOException, JSAPException {
         new VCFToMapMode().configure(args).execute();
