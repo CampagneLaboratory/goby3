@@ -1,5 +1,6 @@
 package org.campagnelab.goby.predictions;
 
+import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -12,8 +13,10 @@ import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
 
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.util.BaseToStringHelper;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by mas2182 on 11/15/16.
@@ -23,27 +26,29 @@ public class ProtoHelper {
     public static final int NEGATIVE_STRAND = 1;
     static final int contextLength = 21;
 
-    static MutableString genomicContext = new MutableString();
+    static private MutableString genomicContext = new MutableString();
     private static String defaultGenomicContext;
+
     static {
-        defaultGenomicContext="";
-        for (int i=0;i<contextLength;i++) {
-            defaultGenomicContext+="N";
+        defaultGenomicContext = "";
+        for (int i = 0; i < contextLength; i++) {
+            defaultGenomicContext += "N";
         }
     }
 
-    private static StringBuilder refBaseStringBuilder=new StringBuilder();
+    private static BaseToStringHelper baseConversion = new BaseToStringHelper();
 
     /**
      * Returns a serialized record of a given position in protobuf format. Required step before mapping to features.
      * Used by SequenceBaseInformationOutputFormat to generate datasets, and SomaticVariationOutputFormat (via mutPrediction) when
      * generating predictions on new examples.
-     * @param genome genome stored in a DiscoverVariantIterateSortedAlignments iterator
-     * @param referenceID name of chromosome, also acquired from an iterator
-     * @param sampleCounts Array of count information objects
-     * @param referenceIndex index corresponding to chromosome
-     * @param position position value of the record in question to serialize
-     * @param list Additional data about the reads
+     *
+     * @param genome             genome stored in a DiscoverVariantIterateSortedAlignments iterator
+     * @param referenceID        name of chromosome, also acquired from an iterator
+     * @param sampleCounts       Array of count information objects
+     * @param referenceIndex     index corresponding to chromosome
+     * @param position           position value of the record in question to serialize
+     * @param list               Additional data about the reads
      * @param sampleToReaderIdxs Array which points a required sample (trio:father,mother,somatic pair:germline,somatic) to its reader index
      *                           this index corresponds to the location of data collected by that reader in the SampleCountInfo array
      * @return
@@ -106,29 +111,31 @@ public class ProtoHelper {
         builder.setPosition(position);
         builder.setReferenceId(referenceID);
         // store 10 bases of genomic context around the site:
-        genomicContext.setLength(0);
-        int referenceSequenceLength = genome.getLength(referenceIndex);
+        {
+            genomicContext.setLength(0);
+            int referenceSequenceLength = genome.getLength(referenceIndex);
 
-        //derive context length
-        int cl = (contextLength-1)/2;
-        final int genomicStart = position - cl;
-        final int genomicEnd = position + (cl + 1);
-        for (int refPos = Math.max(genomicStart, 0); refPos < Math.min(genomicEnd, referenceSequenceLength); refPos++) {
-            genomicContext.append(genome.get(referenceIndex, refPos));
+            //derive context length
+            int cl = (contextLength - 1) / 2;
+            final int genomicStart = position - cl;
+            final int genomicEnd = position + (cl + 1);
+            int index = 0;
+            for (int refPos = Math.max(genomicStart, 0); refPos < Math.min(genomicEnd, referenceSequenceLength); refPos++) {
+                genomicContext.append(baseConversion.convert(genome.get(referenceIndex, refPos)));
+            }
+            //pad zeros as needed
+            for (int i = genomicStart; i < 0; i++) {
+                genomicContext.insert(0, "N");
+            }
+            index = genomicContext.length();
+            for (int i = genomicEnd; i > referenceSequenceLength; i--) {
+                genomicContext.insert(index++, "N");
+            }
+            builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext);
         }
-        //pad zeros as needed
-        for (int i = genomicStart; i < 0; i++){
-            genomicContext.insert(0,"N");
-        }
-        for (int i = genomicEnd; i > referenceSequenceLength; i--){
-            genomicContext.append("N");
-        }
-        builder.setGenomicSequenceContext(contextLength==genomicContext.length()?genomicContext.toString():defaultGenomicContext);
-
         if (list.size() > 0) {
-            refBaseStringBuilder.setLength(0);
-            refBaseStringBuilder.append(list.getReferenceBase());
-            builder.setReferenceBase(refBaseStringBuilder.toString());
+
+            builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
         }
         builder.setReferenceIndex(referenceIndex);
 
@@ -138,39 +145,49 @@ public class ProtoHelper {
             //No matter the experimental design, we require a single, final "tumor" sample which will be the one
             //the model makes mutation predictions on. Other somatic samples could be included, but the model
             //will use the other samples to make predictions about the last sample.
-            if (sampleIndex == numSamples-1) {
+            if (sampleIndex == numSamples - 1) {
                 sampleBuilder.setIsTumor(true);
             }
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
+            String referenceGenotype = null;
+            final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
-            for (int genotypeIndex = 0; genotypeIndex < sampleCountInfo.getGenotypeMaxIndex(); genotypeIndex++) {
-                BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
-
-                infoBuilder.setFromSequence(sampleCountInfo.getReferenceGenotype());
-                infoBuilder.setToSequence(sampleCountInfo.getGenotypeString(genotypeIndex));
-                infoBuilder.setMatchesReference(sampleCountInfo.isReferenceGenotype(genotypeIndex));
-                infoBuilder.setGenotypeCountForwardStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, true));
-                infoBuilder.setGenotypeCountReverseStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, false));
-
-                infoBuilder.addAllQualityScoresForwardStrand(compressFreq(qualityScores[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
-                infoBuilder.addAllQualityScoresReverseStrand(compressFreq(qualityScores[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
-
-                infoBuilder.addAllReadIndicesForwardStrand(compressFreq(readIdxs[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
-                infoBuilder.addAllReadIndicesReverseStrand(compressFreq(readIdxs[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
-
-                infoBuilder.addAllReadMappingQualityForwardStrand(compressFreq(readMappingQuality[sampleIndex][genotypeIndex][POSITIVE_STRAND]));
-                infoBuilder.addAllReadMappingQualityReverseStrand(compressFreq(readMappingQuality[sampleIndex][genotypeIndex][NEGATIVE_STRAND]));
-
-                infoBuilder.addAllNumVariationsInReads(compressFreq(numVariationsInReads[sampleIndex][genotypeIndex]));
-                infoBuilder.addAllInsertSizes(compressFreq(insertSizes[sampleIndex][genotypeIndex]));
-
-                infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
-                sampleBuilder.addCounts(infoBuilder.build());
-            }
+            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], numVariationsInReads[sampleIndex], insertSizes[sampleIndex], sampleBuilder, sampleCountInfo, referenceGenotype, genotypeMaxIndex);
             sampleBuilder.setFormattedCounts(sampleCounts[sampleToReaderIdxs[sampleIndex]].toString());
             builder.addSamples(sampleBuilder.build());
         }
         return builder.build();
+    }
+
+    private static void transfer(IntArrayList[][] qualityScore, IntArrayList[][] intArrayLists, IntArrayList[][] readIdx, IntArrayList[] numVariationsInRead, IntArrayList[] insertSize, BaseInformationRecords.SampleInfo.Builder sampleBuilder, SampleCountInfo sampleCountInfo, String referenceGenotype, int genotypeMaxIndex) {
+        for (int genotypeIndex = 0; genotypeIndex < genotypeMaxIndex; genotypeIndex++) {
+            BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
+            if (genotypeIndex == 0) {
+
+                // this method may be expensive, don't call more than needed:
+                referenceGenotype = sampleCountInfo.getReferenceGenotype();
+            }
+            infoBuilder.setFromSequence(referenceGenotype);
+            infoBuilder.setToSequence(sampleCountInfo.getGenotypeString(genotypeIndex));
+            infoBuilder.setMatchesReference(sampleCountInfo.isReferenceGenotype(genotypeIndex));
+            infoBuilder.setGenotypeCountForwardStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, true));
+            infoBuilder.setGenotypeCountReverseStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, false));
+
+            infoBuilder.addAllQualityScoresForwardStrand(compressFreq(qualityScore[genotypeIndex][POSITIVE_STRAND]));
+            infoBuilder.addAllQualityScoresReverseStrand(compressFreq(qualityScore[genotypeIndex][NEGATIVE_STRAND]));
+
+            infoBuilder.addAllReadIndicesForwardStrand(compressFreq(readIdx[genotypeIndex][POSITIVE_STRAND]));
+            infoBuilder.addAllReadIndicesReverseStrand(compressFreq(readIdx[genotypeIndex][NEGATIVE_STRAND]));
+
+            infoBuilder.addAllReadMappingQualityForwardStrand(compressFreq(intArrayLists[genotypeIndex][POSITIVE_STRAND]));
+            infoBuilder.addAllReadMappingQualityReverseStrand(compressFreq(intArrayLists[genotypeIndex][NEGATIVE_STRAND]));
+
+            infoBuilder.addAllNumVariationsInReads(compressFreq(numVariationsInRead[genotypeIndex]));
+            infoBuilder.addAllInsertSizes(compressFreq(insertSize[genotypeIndex]));
+
+            infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
+            sampleBuilder.addCounts(infoBuilder.build());
+        }
     }
 
     public static List<BaseInformationRecords.NumberWithFrequency> compressFreq(List<Integer> numList) {

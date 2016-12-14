@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
+import org.campagnelab.goby.util.BaseToStringHelper;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -329,11 +330,13 @@ public class SampleCountInfo {
 
     }
 
+    private BaseToStringHelper baseConversion = new BaseToStringHelper();
+
     public String getReferenceGenotype() {
         if (hasIndels()) {
             return indels.get(0).fromInContext();
         } else {
-            return Character.toString(referenceBase);
+            return baseConversion.convert(referenceBase);
 
         }
     }

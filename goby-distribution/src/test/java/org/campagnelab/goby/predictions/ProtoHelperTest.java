@@ -29,16 +29,19 @@ public class ProtoHelperTest {
         int cl = (contextLength - 1) / 2;
         final int genomicStart = position - cl;
         final int genomicEnd = position + (cl + 1);
+        int index=0;
         for (int refPos = Math.max(genomicStart, 0); refPos < Math.min(genomicEnd, referenceSequenceLength); refPos++) {
-            genomicContext.append(genome.charAt(refPos));
+            genomicContext.insert(index++,genome.charAt(refPos));
         }
         //pad zeros as needed
         for (int i = genomicStart; i < 0; i++) {
             genomicContext.insert(0, "N");
         }
+        index=genomicContext.length();
         for (int i = genomicEnd; i > referenceSequenceLength; i--) {
-            genomicContext.append("N");
+            genomicContext.insert(index++,'N');
         }
+        assertEquals(contextLength,genomicContext.length());
         return genomicContext.toString();
     }
 }
