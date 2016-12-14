@@ -1,5 +1,6 @@
 package org.campagnelab.goby.predictions;
 
+import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -172,7 +173,7 @@ public class ProtoHelper {
 
     public static List<BaseInformationRecords.NumberWithFrequency> compressFreq(List<Integer> numList) {
         //compress into map
-        Int2IntArrayMap freqMap = new Int2IntArrayMap(100);
+        Int2IntMap freqMap = new Int2IntAVLTreeMap();
         for (int num : numList) {
             Integer freq = freqMap.putIfAbsent(num, 1);
             if (freq != null) {
