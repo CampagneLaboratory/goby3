@@ -169,6 +169,7 @@ public class VCFToMapMode extends AbstractGobyMode {
             String chromosomeName = parser.getColumnValue(chromosomeColumnIndex).toString();
             String posOld = positionStr;
             CharSequence refOld = ref;
+
             positionStr = parser.getColumnValue(positionColumnIndex).toString();
             ref = parser.getColumnValue(refColumnIndex);
             //check that position is actually iterating
@@ -183,7 +184,10 @@ public class VCFToMapMode extends AbstractGobyMode {
                 chMap.put(chromosomeName, new Int2ObjectArrayMap<String>(50000));
             }
             String expandedGT = convertGT(gt.toString(), ref.toString(), alts[0], alts[1]);
-            chMap.get(chromosomeName).put(Integer.parseInt(positionStr), expandedGT);
+            final int positionVCF = Integer.parseInt(positionStr);
+            // VCF is one-based, Goby zero-based. We convert here:
+            int positionGoby=positionVCF-1;
+            chMap.get(chromosomeName).put(positionGoby, expandedGT);
             parser.next();
             pg.update();
         }
