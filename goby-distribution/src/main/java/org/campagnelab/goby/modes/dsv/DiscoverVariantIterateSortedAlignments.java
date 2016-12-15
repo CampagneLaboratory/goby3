@@ -20,17 +20,6 @@
 
 package org.campagnelab.goby.modes.dsv;
 
-import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
-import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
-import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
-import org.campagnelab.goby.alignments.*;
-import org.campagnelab.goby.alignments.processors.ObservedIndel;
-import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
-import org.campagnelab.goby.modes.formats.SequenceVariationOutputFormat;
-import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.util.OutputInfo;
-import org.campagnelab.goby.util.WarningCounter;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -39,6 +28,18 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
+import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
+import org.campagnelab.goby.alignments.PositionToBasesMap;
+import org.campagnelab.goby.alignments.processors.ObservedIndel;
+import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
+import org.campagnelab.goby.modes.formats.SequenceVariationOutputFormat;
+import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.WarningCounter;
 
 /**
  * Helper class to implement the logic of discovering sequence variations in and across groups of samples.
@@ -380,6 +381,9 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
         return (referenceIndex > endReferenceIndex || referenceIndex == endReferenceIndex && position > endPosition);
     }
 
+    /**
+     * When this flag is true, read the reference base from the genome.
+     */
     boolean overrideReferenceWithGenome;
 
     /**
@@ -407,10 +411,14 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             while (iterator.hasNext()) {
                 org.campagnelab.goby.alignments.PositionBaseInfo positionBaseInfo = iterator.next();
                 if (!positionBaseInfo.matchesReference) {
-                    if (positionBaseInfo.from != '-' && positionBaseInfo.from != '.') {
-                        // skip the variant if this was an insertion in the read and we don't know the reference.
+                    if (positionBaseInfo.from == 'A' || positionBaseInfo.from == 'C' || positionBaseInfo.from == 'T'
+                            || positionBaseInfo.from == 'G') {
+                        // variation from is a base. Use it as reference for this position.
                         refBase = positionBaseInfo.from;
                         break;
+                    } else {
+                        // skip the variant if this was an insertion in the read and we don't know the reference.
+
                     }
                 }
             }
