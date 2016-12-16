@@ -395,22 +395,33 @@ public class HTSJDKReaderImpl implements AlignmentReader {
 
     @Override
     public ObjectList<ReferenceLocation> getLocations(int modulo) throws IOException {
-        return null;
+        // simulate locations for a BAM/CRAM alignemnt:
+        ObjectList<ReferenceLocation> locations = new ObjectArrayList<>();
+        int targetIndex = 0;
+        for (int targetLength : getTargetLength()) {
+            for (int position = 0; position < targetLength; position += modulo) {
+                ReferenceLocation location = new ReferenceLocation(targetIndex, position);
+                locations.add(location);
+            }
+            targetIndex++;
+        }
+        return locations;
     }
 
     @Override
     public ReferenceLocation getMinLocation() throws IOException {
-        return null;
+        return new ReferenceLocation(0,0);
     }
 
     @Override
     public ReferenceLocation getMaxLocation() throws IOException {
-        return null;
+        final int lastTarget = getNumberOfTargets() - 1;
+        return new ReferenceLocation(lastTarget,getTargetLength()[lastTarget]);
     }
 
     @Override
     public ObjectList<ReferenceLocation> getLocationsByBytes(int bytesPerSlice) throws IOException {
-        return null;
+     throw new UnsupportedOperationException("Locations by byte are not supported for SAM/BAM/CRAM formats.");
     }
 
     @Override
