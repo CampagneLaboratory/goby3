@@ -105,7 +105,7 @@ public abstract class IterateSortedAlignmentsListImpl
             info.insertSize = alignmentEntry.getInsertSize();
         }
         //System.out.printf("position=%d %s%n", currentRefPosition, info);
-        addToFuture(positionToBases, info);
+        addToFuture(positionToBases, info, currentReferenceIndex);
     }
 
 
@@ -141,18 +141,18 @@ public abstract class IterateSortedAlignmentsListImpl
         if (alignmentEntry.hasInsertSize()) {
             info.insertSize = alignmentEntry.getInsertSize();
         }
-        addToFuture(positionToBases, info);
+        addToFuture(positionToBases, info, currentReferenceIndex);
     }
 
     private final WarningCounter moreVariantsThanThreshold = new WarningCounter(10);
     private int SUB_SAMPLE_SIZE = 10000;
 
     private final void addToFuture(final PositionToBasesMap<DiscoverVariantPositionData> positionToBases,
-                                   final PositionBaseInfo info) {
+                                   final PositionBaseInfo info, int currentReferenceIndex) {
         final int position = info.position;
         DiscoverVariantPositionData list = positionToBases.get(position);
         if (list == null) {
-            list = new DiscoverVariantPositionData(position);
+            list = new DiscoverVariantPositionData(position,getGenome().get(currentReferenceIndex,position));
             positionToBases.put(position, list);
         } else {
             assert list.getZeroBasedPosition() == position : "info position must match list position.";

@@ -35,6 +35,7 @@ import java.util.Collections;
  */
 public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInfo> {
     private static final long serialVersionUID = 9212001398502402859L;
+    private char referenceBase;
     private ObjectArraySet<EquivalentIndelRegion> candidateIndels;
     private int position;
     private ObjectArraySet<EquivalentIndelRegion> failedIndels;
@@ -51,6 +52,7 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
         for (int baseIndex = 0; baseIndex < SampleCountInfo.BASE_MAX_INDEX; baseIndex++) {
             filtered[baseIndex] = new ObjectArraySet();
         }
+
     }
 
     @Override
@@ -79,9 +81,10 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
         return String.format("pos=%d #bases: %d #indels: %d", position, size(), hasCandidateIndels() ? getIndels().size() : 0);
     }
 
-    public DiscoverVariantPositionData(final int position) {
+    public DiscoverVariantPositionData(final int position, char referenceBase) {
         this();
         this.position = position;
+        this.referenceBase=referenceBase;
     }
 
     /**
@@ -138,7 +141,7 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
     }
 
     public char getReferenceBase() {
-        return get(0).from;
+        return referenceBase;
     }
 
     public ObjectArraySet<EquivalentIndelRegion> getFailedIndels() {

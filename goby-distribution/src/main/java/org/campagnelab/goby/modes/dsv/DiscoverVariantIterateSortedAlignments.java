@@ -193,7 +193,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             DiscoverVariantPositionData positionBaseInfos = positionToBases.get(keyPos);
             //   System.out.printf("Observing indel at position %d %n", keyPos);
             if (positionBaseInfos == null) {
-                positionBaseInfos = new DiscoverVariantPositionData(keyPos);
+                positionBaseInfos = new DiscoverVariantPositionData(keyPos, genome.get(referenceIndex,keyPos));
                 positionToBases.put(keyPos, positionBaseInfos);
             }
 
