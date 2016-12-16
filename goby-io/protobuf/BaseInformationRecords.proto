@@ -64,6 +64,9 @@ message SampleInfo {
     /** string encoding nicely formatted version of counts */
     optional string formattedCounts = 3;
 
+    /** string encoding nicely formatted version of counts */
+    optional bool isVariant = 4;
+
 }
 
 message CountInfo {
