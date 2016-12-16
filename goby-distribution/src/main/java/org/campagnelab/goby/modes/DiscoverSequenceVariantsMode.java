@@ -367,6 +367,7 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
         sortedPositionIterator = new DiscoverVariantIterateSortedAlignments(formatter);
         sortedPositionIterator.setCallIndels(callIndels);
         sortedPositionIterator.setGenome(genome);
+        sortedPositionIterator.SUB_SAMPLE_SIZE=maxThresholdPerSite;
         sortedPositionIterator.setStartFlapLength(startFlapSize);
         sortedPositionIterator.parseIncludeReferenceArgument(jsapResult);
         sortedPositionIterator.setMinimumVariationSupport(minimumVariationSupport);

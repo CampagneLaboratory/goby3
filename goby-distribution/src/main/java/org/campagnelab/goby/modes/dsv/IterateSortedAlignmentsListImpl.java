@@ -145,7 +145,7 @@ public abstract class IterateSortedAlignmentsListImpl
     }
 
     private final WarningCounter moreVariantsThanThreshold = new WarningCounter(10);
-    private int SUB_SAMPLE_SIZE = 10000;
+    public int SUB_SAMPLE_SIZE = 1000;
 
     private final void addToFuture(final PositionToBasesMap<DiscoverVariantPositionData> positionToBases,
                                    final PositionBaseInfo info, int currentReferenceIndex) {
@@ -153,30 +153,12 @@ public abstract class IterateSortedAlignmentsListImpl
         DiscoverVariantPositionData list = positionToBases.get(position);
         if (list == null) {
             list = new DiscoverVariantPositionData(position,getGenome().get(currentReferenceIndex,position));
+            list.SUB_SAMPLE_SIZE=SUB_SAMPLE_SIZE;
             positionToBases.put(position, list);
         } else {
             assert list.getZeroBasedPosition() == position : "info position must match list position.";
         }
-        boolean isIgnoredPosition = positionToBases.isIgnoredPosition(position);
-        if (isIgnoredPosition || list.size() >= maxThreshold) {
 
-            // stop accumulating if the position has more than half a million bases!
-            // also sub-sample the already collection bases to reduce coverage to 10,000.
-
-            if (!isIgnoredPosition) {
-                IntOpenHashSet positions = new IntOpenHashSet();
-                for (PositionBaseInfo element : list) {
-                    positions.add(element.position);
-                }
-                moreVariantsThanThreshold.warn(LOG, "position=%d has more variants %d than max threshold=%d. Stopped recording. Distinct position#%d ",
-                        info.position, maxThreshold, list.size(),
-                        positions.size());
-                list.subSample(SUB_SAMPLE_SIZE);
-            }
-            positionToBases.markIgnoredPosition(position);
-
-            return;
-        }
 
         list.add(info);
 

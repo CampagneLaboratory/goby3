@@ -24,6 +24,7 @@ import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
 
 import java.util.Collections;
+import java.util.Random;
 
 /**
  * Stores information collected about each genomic position inspected by IterateSortedAlignmentsImpl (used by
@@ -40,6 +41,8 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
     private int position;
     private ObjectArraySet<EquivalentIndelRegion> failedIndels;
     private static final ObjectArraySet<EquivalentIndelRegion> EMPTY_SET = new ObjectArraySet<EquivalentIndelRegion>();
+    private int numObservations;
+    public int SUB_SAMPLE_SIZE;
 
     public int getZeroBasedPosition() {
         return position;
@@ -84,7 +87,7 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
     public DiscoverVariantPositionData(final int position, char referenceBase) {
         this();
         this.position = position;
-        this.referenceBase=referenceBase;
+        this.referenceBase = referenceBase;
     }
 
     /**
@@ -175,5 +178,26 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
         for (int i = size - 1; i >= numberToKeep; --i) {
             this.remove(i);
         }
+    }
+
+    Random random = new Random();
+
+    @Override
+    public boolean add(PositionBaseInfo positionBaseInfo) {
+       assert SUB_SAMPLE_SIZE!=0: "SUB_SAMPLE_SIZE cannot be zero";
+        numObservations++;
+        float samplingRate = 1;
+        if (numObservations > SUB_SAMPLE_SIZE) {
+            // make the sampling rate decrease with the total number of observations that would have been made so far:
+            samplingRate = 1 / (1 + ((float)numObservations / (float)SUB_SAMPLE_SIZE));
+            if (random.nextFloat()<samplingRate) {
+                return super.add(positionBaseInfo);
+            }
+        }
+        return super.add(positionBaseInfo);
+    }
+
+    public int numObservations() {
+        return numObservations;
     }
 }

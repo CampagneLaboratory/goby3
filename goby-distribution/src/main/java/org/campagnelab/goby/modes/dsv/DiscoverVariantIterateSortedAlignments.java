@@ -194,6 +194,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             //   System.out.printf("Observing indel at position %d %n", keyPos);
             if (positionBaseInfos == null) {
                 positionBaseInfos = new DiscoverVariantPositionData(keyPos, genome.get(referenceIndex,keyPos));
+                positionBaseInfos.SUB_SAMPLE_SIZE=SUB_SAMPLE_SIZE;
                 positionToBases.put(keyPos, positionBaseInfos);
             }
 
@@ -299,13 +300,19 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                 } else {
                     sampleCounts[sampleIndex].varCount++;
                     sumVariantCounts++;
-                    if (info.from != referenceBase && info.from != '.' && info.from != '-') {
-
+                   /* if (referenceBase!='N' && info.from != referenceBase && (info.from =='A' || info.from == 'C'||info.from=='T'||info.from=='G')) {
+                        MutableString basesBefore=new MutableString();
+                        MutableString basesAfter=new MutableString();
+                        getGenome().getRange(referenceIndex,position-10,10,basesBefore);
+                        getGenome().getRange(referenceIndex,position+1,10,basesAfter);
+                        if (position==471089) {
+                            System.out.println("STOP");
+                        }
+                        System.out.printf("mismatch %c/%c at %s:%d %s|%s%n", info.from, referenceBase, getReferenceId(referenceIndex), position , basesBefore,basesAfter);
                         refBaseWarning.warn(LOG, "reference base differ between variation (%c) and genome (%c) at chr %s position %d",
                                 info.from, referenceBase, getReferenceId(referenceIndex),
                                 position);
-
-                    }
+                    }   */
                     sampleCounts[sampleIndex].referenceBase = referenceBase;
                     sampleCounts[sampleIndex].distinctReadIndices.add(info.readIndex);
 

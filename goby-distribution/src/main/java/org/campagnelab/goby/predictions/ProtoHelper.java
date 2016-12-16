@@ -132,7 +132,9 @@ public class ProtoHelper {
             String referenceGenotype = null;
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
-            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], numVariationsInReads[sampleIndex], insertSizes[sampleIndex], sampleBuilder, sampleCountInfo, referenceGenotype, maxGenotypeIndex);
+            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex],
+                    numVariationsInReads[sampleIndex], insertSizes[sampleIndex], sampleBuilder, sampleCountInfo,
+                    referenceGenotype, maxGenotypeIndex);
             sampleBuilder.setFormattedCounts(sampleCounts[sampleToReaderIdxs[sampleIndex]].toString());
             builder.addSamples(sampleBuilder.build());
         }
