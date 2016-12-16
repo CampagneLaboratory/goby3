@@ -201,8 +201,24 @@ public class VCFToMapMode extends AbstractGobyMode {
     * This is only compatible with VCF's with ONE SAMPLE, as in the platinum genome vcf's.
      */
     private String convertGT(String origGT, String ref, String alt1, String alt2) {
+        int maxLength = Math.max(ref.length(),Math.max(alt1.length(),alt2.length()));
+        StringBuffer padRef = new StringBuffer(ref);
+        StringBuffer padAlt1 = new StringBuffer(alt1);
+        StringBuffer padAlt2 = new StringBuffer(alt2);
+        for (int i = 1; i <= maxLength; i++){
+            if (padRef.length() < maxLength){
+                padRef.append("-");
+            }
+            if (padAlt1.length() < maxLength){
+                padAlt1.append("-");
+            }
+            if (padAlt2.length() < maxLength){
+                padAlt2.append("-");
+            }
+        }
+
         //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
-        return origGT.replace("0", ref).replace("1", alt1).replace("2", alt2);
+        return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
     }
 
 
