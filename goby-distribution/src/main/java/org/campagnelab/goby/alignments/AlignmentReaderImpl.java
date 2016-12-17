@@ -145,7 +145,7 @@ public class AlignmentReaderImpl extends AbstractAlignmentReader implements Alig
      * @return True if the alignment can be read, false otherwise.
      */
     public static boolean canRead(final String filename) {
-        String gobyExtension = FilenameUtils.getExtension(filename);
+        String gobyExtension = "."+FilenameUtils.getExtension(filename);
         boolean fileEndsWithGobyExtension =
                 ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_REQUIRED_EXTS,gobyExtension) ||
                 ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_POSSIBLE_EXTS,gobyExtension);
