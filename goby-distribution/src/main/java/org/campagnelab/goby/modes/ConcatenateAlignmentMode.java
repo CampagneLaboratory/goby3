@@ -147,7 +147,11 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
             readGroupHelper.parseReadGroupOptions(jsapResult, inputFilenames);
             readGroupHelper.setOverrideReadGroups(true);
         }
-        sliceHelper.parseIncludeReferenceArgument(jsapResult, inputFilenames);
+        if (jsapResult.getString("start-position")!=null||jsapResult.getString("end-position")!=null) {
+            sliceHelper.parseIncludeReferenceArgument(jsapResult, inputFilenames);
+        } else {
+            sliceHelper=null;
+        }
         return this;
     }
 
@@ -193,7 +197,7 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
         int startReferenceIndex = 0;
         int startPosition = 0;
         if (allSorted) {
-            GenomicRange genomicRange = sliceHelper.getGenomicRange();
+            GenomicRange genomicRange = sliceHelper!=null?sliceHelper.getGenomicRange():null;
             if (genomicRange != null) {
                 ((ConcatSortedAlignmentReader) alignmentReader).setGenomicRange(genomicRange);
                 startReferenceIndex = sliceHelper.getGenomicRange().startReferenceIndex;

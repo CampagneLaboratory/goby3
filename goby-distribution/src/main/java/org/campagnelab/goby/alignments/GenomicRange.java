@@ -132,9 +132,8 @@ public class GenomicRange {
      */
     public boolean setTargetIds(String... inputFilenames) {
         ConcatAlignmentReader concat = null;
-        DefaultAlignmentReaderFactory factory=new DefaultAlignmentReaderFactory();
         try {
-            concat = new ConcatAlignmentReader(factory.getBasenames(inputFilenames));
+            concat = new ConcatAlignmentReader(inputFilenames);
             concat.readHeader();
             setTargetIds(concat.getTargetIdentifiers());
             concat.close();
