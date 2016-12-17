@@ -126,7 +126,8 @@ public class HTSJDKReaderImpl implements AlignmentReader {
         SamReaderFactory readerFactory = SamReaderFactory.make();
 
         readerFactory.validationStringency(ValidationStringency.LENIENT);
-        parser = indexFileExists ? readerFactory.open(new File(filename)) : new SAMFileReader(stream);
+
+        parser = indexFileExists ? readerFactory.open(new File(filename)) :  readerFactory.open( SamInputResource.of(stream));
         targetIds = new IndexedIdentifier();
         final Int2ByteMap queryIndex2NextFragmentIndex = new Int2ByteOpenHashMap();
 
