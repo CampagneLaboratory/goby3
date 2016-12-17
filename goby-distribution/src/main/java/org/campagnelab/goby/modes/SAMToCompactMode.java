@@ -20,6 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import it.unimi.dsi.fastutil.ints.Int2ByteAVLTreeMap;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.alignments.perms.QueryIndexPermutation;
 import org.campagnelab.goby.alignments.perms.ReadNameToIndex;
@@ -302,7 +303,7 @@ public class SAMToCompactMode extends AbstractGobyMode {
             // if the input is sorted, request creation of the index when writing the alignment.
             writer.setSorted(true);
         }
-        final Int2ByteMap queryIndex2NextFragmentIndex = new Int2ByteOpenHashMap();
+        final Int2ByteMap queryIndex2NextFragmentIndex = new Int2ByteAVLTreeMap();
 
 
         final ObjectArrayList<Alignments.AlignmentEntry.Builder> builders = new ObjectArrayList<Alignments.AlignmentEntry.Builder>();

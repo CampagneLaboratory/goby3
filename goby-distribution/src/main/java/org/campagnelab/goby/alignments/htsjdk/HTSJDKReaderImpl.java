@@ -1,5 +1,6 @@
 package org.campagnelab.goby.alignments.htsjdk;
 
+import it.unimi.dsi.fastutil.ints.Int2ByteAVLTreeMap;
 import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ReadOriginInfo;
@@ -129,7 +130,7 @@ public class HTSJDKReaderImpl implements AlignmentReader {
 
         parser = indexFileExists ? readerFactory.open(new File(filename)) :  readerFactory.open( SamInputResource.of(stream));
         targetIds = new IndexedIdentifier();
-        final Int2ByteMap queryIndex2NextFragmentIndex = new Int2ByteOpenHashMap();
+        queryIndex2NextFragmentIndex        = new Int2ByteAVLTreeMap();
 
         final ObjectArrayList<Alignments.AlignmentEntry.Builder> builders = new ObjectArrayList<Alignments.AlignmentEntry.Builder>();
 
@@ -143,7 +144,7 @@ public class HTSJDKReaderImpl implements AlignmentReader {
         convertReads.setConfig(config);
         samRecordIterator = parser.iterator();
     }
-
+    final Int2ByteMap queryIndex2NextFragmentIndex;
     @Override
     public boolean isIndexed() {
         try {
@@ -207,6 +208,10 @@ public class HTSJDKReaderImpl implements AlignmentReader {
     @Override
     public Alignments.AlignmentEntry next() {
         final Alignments.AlignmentEntry alignmentEntry = builders.remove(0).build();
+        if (alignmentEntry.getTargetIndex()!=lastTargetIndex) {
+            // forget association with past fragments, a new reference is being processed.
+            queryIndex2NextFragmentIndex.clear();
+        }
         this.lastTargetIndex = alignmentEntry.getTargetIndex();
         this.lastPosition = alignmentEntry.getPosition();
         //    System.out.printf("ref: %d position: %d%n",alignmentEntry.getTargetIndex(), alignmentEntry.getPosition());
@@ -283,7 +288,9 @@ public class HTSJDKReaderImpl implements AlignmentReader {
         for (int i = 0; i < numElements; i++) {
             // for any reference but the first, include from start (1):
             final int startPosition = i == 0 ? samPositionOneBased : 1;
-            intervals[i] = new QueryInterval(i + targetIndex, startPosition, Integer.MAX_VALUE); // open ended interval, finishing
+            intervals[i] = new QueryInterval(i + targetIndex,
+                    startPosition,
+                    -1 /* end of sequence */); // open ended interval, finishing
             // at end of ref.
         }
         return QueryInterval.optimizeIntervals(intervals);
@@ -295,7 +302,7 @@ public class HTSJDKReaderImpl implements AlignmentReader {
         for (int i = 0; i < numElements; i++) {
             // for any reference but the first, include from start (1):
             final int startPosition = i == 0 ? startSamPositionOneBased : 1;
-            final int endPosition = (i == endTargetIndex - startTargetIndex) ? endSamPositionOneBased : Integer.MAX_VALUE;
+            final int endPosition = (i == endTargetIndex - startTargetIndex) ? endSamPositionOneBased : -1 /* end of target sequence*/;
             intervals[i] = new QueryInterval(i + startTargetIndex, startPosition, endPosition);
             // at end of ref.
         }
