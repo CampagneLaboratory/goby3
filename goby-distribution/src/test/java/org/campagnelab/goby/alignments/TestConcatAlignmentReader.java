@@ -353,7 +353,9 @@ public class TestConcatAlignmentReader {
     }
 
     // this test does URL connections to DropBox, so we give it up to 60 seconds before failing:
-    @Test(timeout = 60000)
+    //@Test(timeout = 60000)
+   //This test is disabled because the alignment was written with Goby 1 and Goby 3 does not support upgrading on
+    // the fly.
     public void testLoadTwoFromHttpURLs() throws IOException {
         final int count;
         /*
@@ -386,7 +388,8 @@ public class TestConcatAlignmentReader {
                 "test-data//bam/Example.bam",
                 "test-data//bam/Example.bam");
         count = countAlignmentEntries(concatReader);
-        assertEquals(964, count);
+        // correct number can be checked with samtools flagstat, multiply # mapped by 2 (paired end) : 1969065 + 0 mapped (98.45%:nan%)
+        assertEquals(3938130, count);
         concatReader.readHeader();
 
         assertEquals(2, concatReader.getNumberOfQueries());

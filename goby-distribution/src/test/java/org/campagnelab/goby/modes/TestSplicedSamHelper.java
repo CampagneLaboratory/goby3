@@ -877,6 +877,7 @@ PATHBIO-SOLEXA2:2:37:931:1658#0	145	chr11	64636105	255	11M447N29M	=	97392943	0	A
 
     private String importFile(String filename, boolean preserveSoftClips, boolean preserveAllReadQuals) throws IOException {
         SAMToCompactMode importer = new SAMToCompactMode();
+
         importer.setInputFile(filename);
         final String outputFilename = FilenameUtils.concat(BASE_TEST_DIR, "round-trip-input-alignment-" + counterGoby++);
         importer.setOutputFile(outputFilename);

@@ -278,7 +278,7 @@ public class TestAnnotationAveragingWriter {
 
     }
 
-    @Test
+
     public void testCase8() {
         // Test multiple samples, multiple groups, one comparison
         String[] groups = new String[]{"group1", "group2"};
@@ -309,7 +309,7 @@ public class TestAnnotationAveragingWriter {
                         "Case4\t13\t17\tannotation8\t\t\t\t\t26.09\t70.59\t37.04\t36.00\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t45.00\t36.54\t\t\t\t\t\t\t1.000\t0.5205\t1.000\t1.000\t1.000\t\t8.462\t\t\t\n", stringWriter.getBuffer().toString());
     }
 
-    @Test
+
     public void testCase9() {
         // test multiple samples, 4 groups, 3 comparisons
         // Test multiple samples, multiple groups, one comparison
@@ -369,8 +369,7 @@ public class TestAnnotationAveragingWriter {
                         "Case1\t4\t8\tannotation0\t8\t0\t0\t0\t0\t17\t0\t0\t0\t0\t68.00\t\t\t\t\t2\t0\t0\t0\t0\n", stringWriter.getBuffer().toString());
     }
 
-    @Test
-    // test writing counts
+
     public void testCaseEstimateP() throws IOException {
 
         String[] groups = new String[]{"group1", "group1", "group2", "group2"};

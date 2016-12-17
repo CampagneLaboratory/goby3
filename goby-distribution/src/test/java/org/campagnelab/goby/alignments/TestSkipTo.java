@@ -18,7 +18,6 @@
 
 package org.campagnelab.goby.alignments;
 
-import org.campagnelab.goby.compression.HybridChunkCodec1;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -27,7 +26,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
@@ -356,7 +358,8 @@ public class TestSkipTo {
 
     }
 
-    @Test
+    //@Test
+//Disabled in Goby 3. Alignment is too old and Goby 3 does not support on the fly upgrading.
     public void testSkipWithUrl() throws IOException {
 
         // AlignmentReader reader = new AlignmentReaderImpl("http://dl.dropbox.com/u/357497/UANMNXR-hybrid-domain.header");
@@ -391,7 +394,7 @@ public class TestSkipTo {
     chr11:67,501,982-67,505,747
      */
 
-       @Test
+//ignore, alignemnt too old.
     public void testOldHybridHZ() throws IOException {
 
         // AlignmentReader reader = new AlignmentReaderImpl("http://dl.dropbox.com/u/357497/UANMNXR-hybrid-domain.header");
@@ -406,6 +409,7 @@ public class TestSkipTo {
         assertTrue(67501982 <= entry.getPosition());
 
     }
+
     @Test
     public void testSkipToHybrid() throws IOException {
 
@@ -420,12 +424,10 @@ public class TestSkipTo {
     }
 
 
-
-
     @Test
     public void testHybridWindow() throws IOException {
 
-        AlignmentReader reader = new AlignmentReaderImpl(0x304,0x1999,"test-data/alignment-hybrid-codec/EJOYQAZ-small-hybrid.entries");
+        AlignmentReader reader = new AlignmentReaderImpl(0x304, 0x1999, "test-data/alignment-hybrid-codec/EJOYQAZ-small-hybrid.entries");
         reader.readHeader();
 
         Alignments.AlignmentEntry entry = reader.next();

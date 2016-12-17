@@ -193,15 +193,7 @@ public class TestDensityEstimator {
         // ptest has no problem with differences in coverage between groups:
         assertEquals(0, adaptor.calculateWithCovariate(10010, 10000, 0, 10, 0), 0.001);
     }
-    @Test
-       public void testFisherExact() {
-           StatisticAdaptor adaptor = new FisherExactTestAdaptor();
-           assertEquals(16.789604574725345, adaptor.calculateNoCovariate( 495, 405, 95, 5), .1);   // 55->90
-           assertEquals(16.789604574725345, adaptor.calculateWithCovariate(1000, 495, 405, 95, 5), .1);   // 55->90
-           assertEquals(23.839098600218055, adaptor.calculateWithCovariate(1100, 405, 495, 95, 5), .1);  //45->95
-           assertEquals(0.0d, adaptor.calculateWithCovariate(1100, 250, 250, 250, 250), 0.001d);
-           assertEquals(0.00d, adaptor.calculateWithCovariate(1100, 251, 250, 252, 250), 0.001d);
-       }
+
     @Test
     public void testSmallLog10Binning() {
         SmallAndLog10BinningStrategy binner = new SmallAndLog10BinningStrategy();

@@ -19,6 +19,7 @@
 package org.campagnelab.goby.alignments;
 
 import com.google.protobuf.ByteString;
+import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import org.campagnelab.goby.alignments.processors.InfoForTarget;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
 import org.campagnelab.goby.alignments.processors.RealignmentProcessor;
@@ -344,7 +345,8 @@ entry.position=0
 
         ObjectListIterator<Alignments.AlignmentEntry> list = list1.iterator();
         RealignmentProcessor realigner = new RealignmentProcessor(list);
-        realigner.setGenome(new RandomAccessSequenceTestSupport(list2Refs()));
+        IndexedIdentifier targetIds=new IndexedIdentifier();
+        realigner.setGenome(new RandomAccessSequenceTestSupport(list2Refs()),targetIds);
         Alignments.AlignmentEntry entry;
         while ((entry = realigner.nextRealignedEntry(0, 0)) != null) {
 
