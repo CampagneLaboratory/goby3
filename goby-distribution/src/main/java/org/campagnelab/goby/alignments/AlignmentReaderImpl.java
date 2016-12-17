@@ -21,10 +21,6 @@
 package org.campagnelab.goby.alignments;
 
 import com.google.protobuf.CodedInputStream;
-import org.campagnelab.goby.compression.ChunkCodec;
-import org.campagnelab.goby.compression.FastBufferedMessageChunksReader;
-import org.campagnelab.goby.exception.GobyRuntimeException;
-import org.campagnelab.goby.util.AlignmentHelper;
 import edu.cornell.med.icb.identifier.DoubleIndexedIdentifier;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -38,6 +34,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.campagnelab.goby.compression.ChunkCodec;
+import org.campagnelab.goby.compression.FastBufferedMessageChunksReader;
+import org.campagnelab.goby.exception.GobyRuntimeException;
+import org.campagnelab.goby.util.AlignmentHelper;
 
 import java.io.*;
 import java.util.*;
@@ -145,11 +145,16 @@ public class AlignmentReaderImpl extends AbstractAlignmentReader implements Alig
      * @return True if the alignment can be read, false otherwise.
      */
     public static boolean canRead(final String filename) {
+        String gobyExtension = FilenameUtils.getExtension(filename);
+        boolean fileEndsWithGobyExtension =
+                ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_REQUIRED_EXTS,gobyExtension) ||
+                ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_POSSIBLE_EXTS,gobyExtension);
+        final String filenameNoExtension = fileEndsWithGobyExtension?FilenameUtils.removeExtension(filename):
+                filename;
 
-        final String filenameNoExtension = FilenameUtils.removeExtension(filename);
         File[] inFiles = AlignmentHelper.buildResults(filenameNoExtension);
         boolean none = true;
-        for (int i = 0; i < inFiles.length; i++){
+        for (int i = 0; i < inFiles.length; i++) {
             if ((ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_POSSIBLE_EXTS, "." + FilenameUtils.getExtension(inFiles[i].getName())) ||
                     ArrayUtils.contains(AlignmentReaderImpl.COMPACT_ALIGNMENT_FILE_REQUIRED_EXTS, "." + FilenameUtils.getExtension(inFiles[i].getName())))) {
                 // the file does not contain any of the possible Goby extensions. It is not a supported file.
@@ -307,7 +312,7 @@ public class AlignmentReaderImpl extends AbstractAlignmentReader implements Alig
         try {
             headerStream = new GZIPInputStream(new RepositionableInputStream(this.basename + ".header"));
         } catch (IOException e) {
-         //   e.printStackTrace();
+            //   e.printStackTrace();
             // try not compressed for compatibility with 1.4-:
             LOG.trace("falling back to legacy 1.4- uncompressed header.");
 

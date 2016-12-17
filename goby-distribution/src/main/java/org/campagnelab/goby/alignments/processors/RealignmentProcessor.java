@@ -19,16 +19,17 @@
 package org.campagnelab.goby.alignments.processors;
 
 import com.google.protobuf.ByteString;
-import org.campagnelab.goby.alignments.Alignments;
-import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
-import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.util.WarningCounter;
+import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import it.unimi.dsi.lang.MutableString;
+import org.campagnelab.goby.alignments.Alignments;
+import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
+import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.util.WarningCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +44,12 @@ import java.io.IOException;
  * @author Fabien Campagne
  *         Date: Apr 30, 2011
  *         Time: 11:58:07 AM
+ *         <p>
+ *         TODO: convert target index to genome index. Necessary when there is not a one to one mapping between
+ *         TODO: alignment and genome.
  */
 public class RealignmentProcessor implements AlignmentProcessorInterface {
+    private IndexedIdentifier targetIdentifiers;
     int windowLength = 0;
 
     int currentTargetIndex = -1;
@@ -52,6 +57,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
     private int processedCount;
     private int numEntriesRealigned;
+    private GenomeAlignmentTargetMapper targetMapper;
 
     @Override
     public int getModifiedCount() {
@@ -74,12 +80,13 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
     private WarningCounter genomeNull = new WarningCounter(2);
 
 
-    ObjectArrayList<InfoForTarget> targetInfo = new ObjectArrayList<InfoForTarget>();
+    private ObjectArrayList<InfoForTarget> targetInfo = new ObjectArrayList<InfoForTarget>();
 
-    final SkipToIterator iterator;
+    final private SkipToIterator iterator;
     private RandomAccessSequenceInterface genome;
 
     public RealignmentProcessor(final ConcatSortedAlignmentReader sortedReaders) {
+        targetIdentifiers = sortedReaders.getTargetIdentifiers();
         iterator = new SkipToSortedReader(sortedReaders);
         numTargets = sortedReaders.getNumberOfTargets();
         targetInfo = new ObjectArrayList<InfoForTarget>(numTargets);
@@ -127,7 +134,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                     currentTargetIndex = minTargetIndex;
                     // push new targetIndices to activeTargetIndices:
                     if (activeTargetIndices.isEmpty() || activeTargetIndices.lastInt() != entryTargetIndex) {
-                   //     LOG.info("Adding targetIndex: " + entryTargetIndex + " at back of activeTargetIndices ");
+                        //     LOG.info("Adding targetIndex: " + entryTargetIndex + " at back of activeTargetIndices ");
                         activeTargetIndices.add(entryTargetIndex);
                     }
                     final InfoForTarget frontInfo = reallocateTargetInfo(entryTargetIndex);
@@ -312,10 +319,11 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
                 final char toBase = var.getTo().charAt(j);
                 final int index = newGenomicPosition + j;
-                if (index < 0 || index > genome.getLength(targetIndex)) {
+                if (index < 0 || index > genome.getLength(targetMapper.toGenome(targetIndex))) {
                     score += -10;
                 } else {
-                    final boolean compatible = genome.get(targetIndex, newGenomicPosition + j) == toBase;
+                    final boolean compatible = genome.get(targetMapper.toGenome(targetIndex),
+                            newGenomicPosition + j) == toBase;
                     if (!compatible) {
                         // we keep only sequence variatiations that continue to be incompatible with the reference after inserting the indel:
 
@@ -345,8 +353,9 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                 // count -1 for every new mismatch introduced by the indel:
                 if (realignedPos >= 0) {
 
-                    final char fromBase = genome.get(targetIndex, realignedPos);
-                    final char toBase = genome.get(targetIndex, pos);
+                    int genomeTargetIndex = targetMapper.toGenome(targetIndex);
+                    final char fromBase = genome.get(genomeTargetIndex, realignedPos);
+                    final char toBase = genome.get(genomeTargetIndex, pos);
                     final boolean compatible = fromBase == toBase;
 
                     if (!compatible) {
@@ -366,11 +375,12 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
                     }
                 } else {
+                    int genomeTargetIndex = targetMapper.toGenome(targetIndex);
                     LOG.warn(
                             String.format("Realigned position cannot be negative." +
                                             " Ignoring this entry: %s%n" +
                                             "Error encountered at targetIndex=%d targetId=%s pos=%d %n",
-                                    entry.toString(), targetIndex, genome.getReferenceName(targetIndex), pos));
+                                    entry.toString(), targetIndex, genome.getReferenceName(genomeTargetIndex), pos));
                     // returning source entry without any changes:
                     return entry;
                 }
@@ -425,12 +435,15 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         int targetIndex = entry.getTargetIndex();
         int score = 0;
         int direction = shiftForward ? 1 : -1;
-
+        int genomeTargetIndex = targetMapper.toGenome(targetIndex);
+        if (genomeTargetIndex==-1) {
+            throw new RuntimeException(String.format("alignment target index  %d (chromosome %s) has no equivalent in the genome.",targetIndex, targetMapper.getAlignmentId(targetIndex)));
+        }
         if (genome == null) {
             genomeNull.warn(LOG, "Genome must not be null outside of JUnit tests.");
             return Integer.MIN_VALUE;
         }
-        final int targetLength = genome.getLength(targetIndex);
+        final int targetLength = genome.getLength(genomeTargetIndex);
         /*
          *Reference positions for which the alignment does not agree with the reference, 0-based:
          */
@@ -447,10 +460,10 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
                 final char toBase = var.getTo().charAt(j);
                 final int index = newGenomicPosition + j;
-                if (index < 0 || index > genome.getLength(targetIndex)) {
+                if (index < 0 || index > genome.getLength(genomeTargetIndex)) {
                     score += -10;
                 } else {
-                    final boolean compatible = genome.get(targetIndex, newGenomicPosition + j) == toBase;
+                    final boolean compatible = genome.get(genomeTargetIndex, newGenomicPosition + j) == toBase;
 
                     score += compatible ? 1 : 0;
                     // store which reference positions are different from the reference:
@@ -473,7 +486,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 //         String post = getGenomeSegment(genome, targetIndex, startAlignment + indelLength, endAlignment + indelLength);
         //   System.out.printf(" pre and post alignments: %n%s\n%s%n", pre, post);
         // pos is zero-based:
-        endAlignment = Math.min(endAlignment, genome.getLength(targetIndex) - 1);
+        endAlignment = Math.min(endAlignment, genome.getLength(genomeTargetIndex) - 1);
         for (int pos = startAlignment; pos < endAlignment; pos++) {
             // both variantPositions and pos are zero-based:
             if (!variantPositions.contains(pos)) {
@@ -485,8 +498,8 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                 if (realignedPos < 0 || realignedPos >= targetLength) {
                     score += -10;
                 } else {
-                    final char refBase = genome.get(targetIndex, pos);
-                    final char newRefBase = genome.get(targetIndex, realignedPos);
+                    final char refBase = genome.get(genomeTargetIndex, pos);
+                    final char newRefBase = genome.get(genomeTargetIndex, realignedPos);
 
                     score += (refBase == newRefBase) ? 0 : -1;
                 }
@@ -501,7 +514,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
     private String getGenomeSegment(RandomAccessSequenceInterface genome, int targetIndex, int startAlignment, int endAlignment) {
         MutableString sequence = new MutableString();
         for (int pos = startAlignment; pos < endAlignment; pos++) {
-            sequence.append(genome.get(targetIndex, pos));
+            sequence.append(genome.get(targetMapper.toAlignment(targetIndex), pos));
         }
         return sequence.toString();
     }
@@ -541,6 +554,8 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
     public void setGenome(RandomAccessSequenceInterface genome) {
         this.genome = genome;
+        assert targetIdentifiers != null : "Target identifiers must be initialized";
+        targetMapper = new GenomeAlignmentTargetMapper(targetIdentifiers, genome);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(RealignmentProcessor.class);
