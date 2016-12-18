@@ -32,6 +32,7 @@ import org.campagnelab.goby.alignments.processors.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Concatenate compact alignment files. Concatenation preserves
@@ -245,6 +246,7 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
             if (counter++ > maxEntriesToProcess) {
                 break;
             }
+           // showProgress(entry);
 
             writer.appendEntry(entry);
 
@@ -280,6 +282,13 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
                 processor.getModifiedCount(),
                 divide(100 * processor.getModifiedCount(), processor.getProcessedCount()));
 
+    }
+private Random random=new Random();
+    private void showProgress(Alignments.AlignmentEntry entry) {
+        if (random.nextFloat()<0.1) {
+
+            System.out.printf("%s:%d%n",genome.getReferenceName(entry.getTargetIndex()) , entry.getPosition());
+        }
     }
 
     /**
