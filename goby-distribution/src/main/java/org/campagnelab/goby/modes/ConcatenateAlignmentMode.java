@@ -275,6 +275,7 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
         writer.setStatistics(alignmentReader.getStatistics());
         writer.putStatistic("overall.matched.percent",
                 String.format("%3.3g", divide(numLogicalEntries, numQueries) * 100d));
+
         writer.close();
         alignmentReader.getConcatPerm().concatenate(outputFilename);
         writer.printStats(System.out);

@@ -20,23 +20,16 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import edu.cornell.med.icb.iterators.TsvLineIterator;
-import it.unimi.dsi.fastutil.chars.CharSemiIndirectHeaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.*;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.campagnelab.goby.readers.vcf.VCFParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import it.unimi.dsi.fastutil.io.BinIO;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.zip.GZIPOutputStream;
 
 
 /**
@@ -44,11 +37,11 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author Remi Torracinta
  */
-public class VCFToMapMode extends AbstractGobyMode {
+public class VCFToGenotypeMapMode extends AbstractGobyMode {
     /**
      * Used to log debug and informational messages.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(VCFToMapMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VCFToGenotypeMapMode.class);
 
     /**
      * The input files.
@@ -64,12 +57,15 @@ public class VCFToMapMode extends AbstractGobyMode {
     /**
      * The mode name.
      */
-    private static final String MODE_NAME = "genotype-map-mode";
+    private static final String MODE_NAME = "vcf-to-genotype-map";
 
     /**
      * The mode description help text.
      */
-    private static final String MODE_DESCRIPTION = "Create a genotype map from VCF file. Map is used to make a genotyping sbi dataset for neural network testing/training.";
+    private static final String MODE_DESCRIPTION = "Create a genotype map from a VCF file. " +
+            "The resulting map can be used to annotate an sbi dataset with true genotype labels. " +
+            "See the variationanalysis project for details."
+           ;
 
 
     @Override
@@ -228,7 +224,7 @@ public class VCFToMapMode extends AbstractGobyMode {
      * @throws com.martiansoftware.jsap.JSAPException command line parsing error.
      */
     public static void main(final String[] args) throws IOException, JSAPException {
-        new VCFToMapMode().configure(args).execute();
+        new VCFToGenotypeMapMode().configure(args).execute();
     }
 
 }
