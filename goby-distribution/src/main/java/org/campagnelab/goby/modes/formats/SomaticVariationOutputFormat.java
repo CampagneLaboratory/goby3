@@ -192,7 +192,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     "Prefer to run goby with the shell wrapper (distribution/goby) to configure this dependency.");
         }
         if (iterator.hasNext()) {
-            LOG.warn("At least two implementations of Somatic Predictors have been found. Make sure a single provider exists in the classpath.");
+            LOG.warn("At least two implementations of SomaticPredictor have been found. Make sure a single provider exists in the classpath.");
         }
         // define columns for genotype format
         samples = mode.getSamples();
