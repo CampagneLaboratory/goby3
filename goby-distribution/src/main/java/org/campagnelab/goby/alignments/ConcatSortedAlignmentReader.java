@@ -191,7 +191,7 @@ public class ConcatSortedAlignmentReader extends ConcatAlignmentReader {
                 do {
                     alignmentEntry = reader.skipTo(targetIndex, position);
                 } while (alignmentEntry != null && genomicRange != null &&
-                        genomicRange.positionIsBeforeStart(alignmentEntry.getTargetIndex(),
+                        genomicRange.positionIsStrictlyBeforeStart(alignmentEntry.getTargetIndex(),
                                 alignmentEntry.getPosition()));
 
                 if (alignmentEntry == null) {
