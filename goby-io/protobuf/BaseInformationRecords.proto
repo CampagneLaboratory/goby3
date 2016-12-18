@@ -58,13 +58,15 @@ message SampleInfo {
     /** A number of bases were observed at the position. */
     repeated CountInfo counts = 1;
 
-    /** flag to specify whether the relevant sample is from a tumor (ie somatic sample) */
+    /** Flag to specify whether the relevant sample is from a tumor (ie somatic sample) */
     optional bool isTumor = 2;
 
-    /** string encoding nicely formatted version of counts */
+    /** String encoding nicely formatted version of counts */
     optional string formattedCounts = 3;
 
-    /** string encoding nicely formatted version of counts */
+    /** Indicates whether this sample has a non-reference allele. Only filled in
+     when true labels have been added (using add-true-genotypes.sh from variationanalysis).
+     */
     optional bool isVariant = 4;
 
 }
