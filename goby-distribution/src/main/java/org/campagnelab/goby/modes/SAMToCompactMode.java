@@ -20,12 +20,19 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import edu.cornell.med.icb.identifier.IndexedIdentifier;
+import htsjdk.samtools.*;
 import it.unimi.dsi.fastutil.ints.Int2ByteAVLTreeMap;
+import it.unimi.dsi.fastutil.ints.Int2ByteMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.lang.MutableString;
+import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.alignments.perms.QueryIndexPermutation;
 import org.campagnelab.goby.alignments.perms.ReadNameToIndex;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.readers.sam.ConversionConfig;
+import org.campagnelab.goby.readers.sam.ConvertSamBAMReadToGobyAlignment;
 import org.campagnelab.goby.readers.sam.SAMRecordIterable;
 import org.campagnelab.goby.readers.sam.SamRecordParser;
 import org.campagnelab.goby.reads.DualRandomAccessSequenceCache;
@@ -34,14 +41,6 @@ import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
-import edu.cornell.med.icb.identifier.IndexedIdentifier;
-import it.unimi.dsi.fastutil.ints.Int2ByteMap;
-import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.lang.MutableString;
-import it.unimi.dsi.logging.ProgressLogger;
-import htsjdk.samtools.*;
-import org.campagnelab.goby.readers.sam.ConvertSamBAMReadToGobyAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ public class SAMToCompactMode extends AbstractGobyMode {
     private int dummyQueryIndex;
 
 
-    private ConversionConfig config;
+    private ConversionConfig config=new ConversionConfig();
 
 
     @RegisterThis
@@ -312,7 +311,7 @@ public class SAMToCompactMode extends AbstractGobyMode {
         samRecordParser.setQualityEncoding(config.qualityEncoding);
         samRecordParser.setGenome(config.genome);
         ConvertSamBAMReadToGobyAlignment convertReads = new ConvertSamBAMReadToGobyAlignment(targetIds, readGroups,
-                 queryIndex2NextFragmentIndex, builders, samRecordParser);
+                queryIndex2NextFragmentIndex, builders, samRecordParser);
         convertReads.setConfig(config);
         for (final SAMRecord samRecord : new SAMRecordIterable(parser.iterator())) {
             config.numberOfReads++;
@@ -429,8 +428,6 @@ public class SAMToCompactMode extends AbstractGobyMode {
             }
         }
     }
-
-
 
 
     /**
