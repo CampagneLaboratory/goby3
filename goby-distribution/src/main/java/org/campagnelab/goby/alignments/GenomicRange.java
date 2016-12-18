@@ -124,6 +124,21 @@ public class GenomicRange {
         }
         return false;
     }
+    /**
+     * Return true if and only if the specified position occurs strictly before the start of the
+     * slice.
+     *
+     * @param referenceIndex
+     * @param position
+     * @return
+     */
+    public boolean positionIsStrictlyBeforeStart(int referenceIndex, int position) {
+        if (referenceIndex < startReferenceIndex) return true;
+        if (referenceIndex == startReferenceIndex && position < startPosition) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Set target ids to translate chromosome into indices.
