@@ -21,7 +21,7 @@ cd ..
 mvn clean install
 mkdir -p snapshot-previews/package
 mvn -f dl-downloader.xml dependency:copy -Ddl.version=${DL_VERSION} -U
-cp goby.jar somatic.jar framework.jar snapshot-previews/package/
+cp goby.jar somatic.jar genotype.jar framework.jar snapshot-previews/package/
 cp goby snapshot-previews/package/
 cp -r config snapshot-previews/package/
 cp -r models snapshot-previews/package/

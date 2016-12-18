@@ -35,6 +35,16 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.campagnelab.dl</groupId>
+                                    <artifactId>genotype</artifactId>
+                                    <type>jar</type>
+                                    <version>${dl.version}</version>
+                                    <classifier>native</classifier>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
+                                    <destFileName>genotype.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.campagnelab.dl</groupId>
                                     <artifactId>framework</artifactId>
                                     <version>${dl.version}</version>
                                     <type>jar</type>

@@ -20,6 +20,7 @@ cd ${BASEDIR}
 mvn clean
 rm -f ${BASEDIR}/goby.jar
 rm -f ${BASEDIR}/somatic.jar
+rm -f ${BASEDIR}/genotype.jar
 rm -f ${BASEDIR}/framework.jar
 
 mvn install
@@ -36,7 +37,7 @@ cd ${WORKDIR}   ls
 cp ${BASEDIR}/CHANGES.txt ${RELEASE_FOLDER}
 echo "${VERSION}" >> ${RELEASE_FOLDER}/VERSION.txt
 mv ${BASEDIR}/target/goby_${VERSION}-*.zip  ${RELEASE_FOLDER}
-cp ${BASEDIR}/goby.jar ${BASEDIR}/somatic.jar ${BASEDIR}/framework.jar ${RELEASE_FOLDER}
+cp ${BASEDIR}/goby.jar ${BASEDIR}/somatic.jar ${BASEDIR}/genotype.jar ${BASEDIR}/framework.jar ${RELEASE_FOLDER}
 
 #create goby-bin.zip
 cd ${BASEDIR}

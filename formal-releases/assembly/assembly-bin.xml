@@ -12,6 +12,7 @@
             <includes>
                 <include>goby.jar</include>
                 <include>somatic.jar</include>
+                <include>genotype.jar</include>
                 <include>framework.jar</include>
                 <include>goby</include>
                 <include>*.license</include>
