@@ -55,6 +55,11 @@ public interface RandomAccessSequenceInterface {
      */
     void getRange(final int referenceIndex, final int position, final int length, MutableString bases);
 
+    /**
+     * Return the index of the reference, or -1 if the name is not found in the genome.
+     * @param referenceId name of the reference.
+     * @return
+     */
     int getReferenceIndex(String referenceId);
    /**
      * Return the reference name corresponding to this index.
