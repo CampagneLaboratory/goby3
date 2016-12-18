@@ -20,15 +20,15 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.compression.MessageChunksWriter;
-import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.util.AlignmentHelper;
-import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.alignments.processors.*;
+import org.campagnelab.goby.compression.MessageChunksWriter;
+import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.util.AlignmentHelper;
+import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,10 +148,10 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
             readGroupHelper.parseReadGroupOptions(jsapResult, inputFilenames);
             readGroupHelper.setOverrideReadGroups(true);
         }
-        if (jsapResult.getString("start-position")!=null||jsapResult.getString("end-position")!=null) {
+        if (jsapResult.getString("start-position") != null || jsapResult.getString("end-position") != null) {
             sliceHelper.parseIncludeReferenceArgument(jsapResult, inputFilenames);
         } else {
-            sliceHelper=null;
+            sliceHelper = null;
         }
         return this;
     }
@@ -198,7 +198,7 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
         int startReferenceIndex = 0;
         int startPosition = 0;
         if (allSorted) {
-            GenomicRange genomicRange = sliceHelper!=null?sliceHelper.getGenomicRange():null;
+            GenomicRange genomicRange = sliceHelper != null ? sliceHelper.getGenomicRange() : null;
             if (genomicRange != null) {
                 ((ConcatSortedAlignmentReader) alignmentReader).setGenomicRange(genomicRange);
                 startReferenceIndex = sliceHelper.getGenomicRange().startReferenceIndex;
@@ -246,8 +246,9 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
             if (counter++ > maxEntriesToProcess) {
                 break;
             }
-           // showProgress(entry);
-
+          //  showProgress(entry);
+            startReferenceIndex = entry.getTargetIndex();
+            startPosition = entry.getPosition();
             writer.appendEntry(entry);
 
             numLogicalEntries += entry.getMultiplicity();
@@ -283,11 +284,16 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
                 divide(100 * processor.getModifiedCount(), processor.getProcessedCount()));
 
     }
-private Random random=new Random();
-    private void showProgress(Alignments.AlignmentEntry entry) {
-        if (random.nextFloat()<0.1) {
 
-            System.out.printf("%s:%d%n",genome.getReferenceName(entry.getTargetIndex()) , entry.getPosition());
+    private Random random = new Random();
+
+    private void showProgress(Alignments.AlignmentEntry entry) {
+        if (random.nextFloat() < 0.0001) {
+
+            System.out.printf("%s:%d%n", genome.getReferenceName(entry.getTargetIndex()), entry.getPosition());
+        }
+        if (entry.getPosition() > 248720478) {
+            System.out.println("STOP");
         }
     }
 
