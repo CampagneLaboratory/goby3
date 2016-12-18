@@ -557,6 +557,11 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         assert targetIdentifiers != null : "Target identifiers must be initialized";
         targetMapper = new GenomeAlignmentTargetMapper(targetIdentifiers, genome);
     }
+    public void setGenome(RandomAccessSequenceInterface genome, IndexedIdentifier targetIdentifiers ) {
+        this.genome = genome;
+        assert targetIdentifiers != null : "Target identifiers must be initialized";
+        targetMapper = new GenomeAlignmentTargetMapper(targetIdentifiers, genome);
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(RealignmentProcessor.class);
 }
