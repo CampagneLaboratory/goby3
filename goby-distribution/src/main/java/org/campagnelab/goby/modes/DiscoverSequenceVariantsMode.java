@@ -20,18 +20,6 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import org.campagnelab.goby.Release1_9_7_2;
-import org.campagnelab.goby.algorithmic.data.CovariateInfo;
-import org.campagnelab.goby.algorithmic.data.GroupComparison;
-import org.campagnelab.goby.modes.dsv.*;
-import org.campagnelab.goby.modes.formats.*;
-import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
-import org.campagnelab.goby.alignments.processors.*;
-import org.campagnelab.goby.reads.RandomAccessSequenceCache;
-import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
-import org.campagnelab.goby.stats.DifferentialExpressionAnalysis;
-import org.campagnelab.goby.util.OutputInfo;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import edu.cornell.med.icb.io.TSVReader;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -39,7 +27,22 @@ import it.unimi.dsi.fastutil.objects.*;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.campagnelab.goby.alignments.*;
+import org.campagnelab.goby.Release1_9_7_2;
+import org.campagnelab.goby.algorithmic.data.CovariateInfo;
+import org.campagnelab.goby.algorithmic.data.GroupComparison;
+import org.campagnelab.goby.alignments.AlignmentReaderImpl;
+import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
+import org.campagnelab.goby.alignments.NonAmbiguousAlignmentReaderFactory;
+import org.campagnelab.goby.alignments.ReadIndexStats;
+import org.campagnelab.goby.alignments.processors.*;
+import org.campagnelab.goby.modes.dsv.*;
+import org.campagnelab.goby.modes.formats.*;
+import org.campagnelab.goby.reads.RandomAccessSequenceCache;
+import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
+import org.campagnelab.goby.stats.DifferentialExpressionAnalysis;
+import org.campagnelab.goby.stats.DifferentialExpressionCalculator;
+import org.campagnelab.goby.util.OutputInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,9 +146,8 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args) throws IOException, JSAPException {
@@ -310,19 +312,21 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
 
                 break;
             case GENOTYPES:
+                if (GenotypesOutputFormat.doc().getString("model-path") == null) {
+                    // only applies filters if a modelPath is not provided because the model was trained without filters.
+                    genotypeFilters.add(new QualityScoreFilter());
+                    genotypeFilters.add(new LeftOverFilter(minimumVariationSupport));
 
-                genotypeFilters.add(new QualityScoreFilter());
-                genotypeFilters.add(new LeftOverFilter(minimumVariationSupport));
-
-                if (callIndels) {
-                    genotypeFilters.add(new RemoveIndelArtifactsFilter());
-                    genotypeFilters.add(new CommonIndelArtifactFilter());
-                }
-                if (!disableAtLeastQuarterFilter) {
-                    genotypeFilters.add(new AtLeastAQuarterFilter());
-                }
-                if (diploid) {
-                    genotypeFilters.add(new DiploidFilter());
+                    if (callIndels) {
+                        genotypeFilters.add(new RemoveIndelArtifactsFilter());
+                        genotypeFilters.add(new CommonIndelArtifactFilter());
+                    }
+                    if (!disableAtLeastQuarterFilter) {
+                        genotypeFilters.add(new AtLeastAQuarterFilter());
+                    }
+                    if (diploid) {
+                        genotypeFilters.add(new DiploidFilter());
+                    }
                 }
                 break;
             case SEQUENCE_BASE_INFORMATION:
@@ -356,7 +360,6 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
         modelPath = jsapResult.getString("model-path");
 
 
-
         final RandomAccessSequenceInterface genome = configureGenome(testGenome, jsapResult);
 
         final int startFlapSize = jsapResult.getInt("start-flap-size", 100);
@@ -367,7 +370,7 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
         sortedPositionIterator = new DiscoverVariantIterateSortedAlignments(formatter);
         sortedPositionIterator.setCallIndels(callIndels);
         sortedPositionIterator.setGenome(genome);
-        sortedPositionIterator.SUB_SAMPLE_SIZE=maxThresholdPerSite;
+        sortedPositionIterator.SUB_SAMPLE_SIZE = maxThresholdPerSite;
         sortedPositionIterator.setStartFlapLength(startFlapSize);
         sortedPositionIterator.parseIncludeReferenceArgument(jsapResult);
         sortedPositionIterator.setMinimumVariationSupport(minimumVariationSupport);
@@ -565,7 +568,7 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
      * @return A model path string for custom model probability calling
      */
     public String getModelPath() {
-        if (modelPath == null){
+        if (modelPath == null) {
             return "";
         }
         return modelPath;
@@ -796,9 +799,8 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
      * Main method.
      *
      * @param args command line args.
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
-     * @throws java.io.IOException error parsing or executing.
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
+     * @throws java.io.IOException                    error parsing or executing.
      */
     public static void main(final String[] args) throws JSAPException, IOException {
 
