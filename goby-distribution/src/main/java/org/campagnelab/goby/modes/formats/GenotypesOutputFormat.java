@@ -56,6 +56,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     private RandomAccessSequenceInterface genome;
     private int genomeReferenceIndex;
     private double[] modelProbabilities;
+    private int modelCallIndex;
+    private int modelProbabilityIndex;
 
     public static final DynamicOptionClient doc() {
         return doc;
@@ -173,7 +175,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         }
         zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity", "zygosity");
         statsWriter.defineSamples(samples);
-        statsWriter.writeHeader("##modelPath="+modelPath,"##modelTag="+predictor.getModelProperties().get("tag"));
+        statsWriter.writeHeader("##modelPath=" + modelPath, "##modelTag=" + predictor.getModelProperties().get("tag"));
 
 
     }
@@ -188,6 +190,10 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         baseCountFieldIndex = statsWriter.defineField("FORMAT", "BC", 5, ColumnType.String, "Base counts in format A=?;T=?;C=?;G=?;N=?.", "base-calls");
         goodBaseCountFieldIndex = statsWriter.defineField("FORMAT", "GB", 1, ColumnType.String, "Number of bases that pass base filters in this sample, or ignore string.", "good-bases");
         failBaseCountFieldIndex = statsWriter.defineField("FORMAT", "FB", 1, ColumnType.String, "Number of bases that failed base filters in this sample, or ignore string.", "failed-bases");
+        if (predictor.modelIsLoaded()) {
+            modelCallIndex = statsWriter.defineField("FORMAT", "MC", 1, ColumnType.String, "Model Calls.", "genotype");
+            modelProbabilityIndex = statsWriter.defineField("FORMAT", "P", 1, ColumnType.Float, "Model proability.", "genotype");
+        }
     }
 
     public void allocateStorage(int numberOfSamples, int numberOfGroups) {
@@ -215,7 +221,6 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         fillVariantCountArrays(sampleCounts);
 
         CharSequence currentReferenceId = iterator.getReferenceId(referenceIndex);
-
         statsWriter.setId(".");
         statsWriter.setInfo(biomartFieldIndex,
                 String.format("%s:%d:%d", currentReferenceId, position,
@@ -256,6 +261,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             predictor.predict(genome, referenceId, sampleCounts, referenceIndex, position, list, new int[]{sampleIndex});
             modelGenotypes[sampleIndex] = predictor.getCalledGenotype();
             modelProbabilities[sampleIndex] = predictor.getProbabilityOfCalledGenotype();
+            statsWriter.setSampleValue(modelCallIndex, sampleIndex, modelGenotypes[sampleIndex]);
+            statsWriter.setSampleValue(modelProbabilityIndex, sampleIndex, modelProbabilities[sampleIndex]);
             sampleIndex++;
         }
     }
@@ -362,7 +369,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                 String genotype = sci.getGenotypeString(genotypeIndex);
                 // when a model is available, we used the called alleles to determine if a given genotype is present in
                 // the sample. Otherwise, we default to Goby1-2's sampleCount>0 behavior.
-                if ((modelAvailable? calledAlleles.contains(genotype): sampleCount > 0 )&& genotypeIndex != SampleCountInfo.BASE_OTHER_INDEX) {
+                if ((modelAvailable ? calledAlleles.contains(genotype) : sampleCount > 0) &&
+                        genotypeIndex != SampleCountInfo.BASE_OTHER_INDEX) {
                     siteObserved = true;
 
                     if (sci.isIndel(genotypeIndex)) {
