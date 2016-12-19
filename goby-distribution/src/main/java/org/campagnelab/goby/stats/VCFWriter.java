@@ -18,8 +18,8 @@
 
 package org.campagnelab.goby.stats;
 
-import org.campagnelab.goby.modes.GobyDriver;
 import edu.cornell.med.icb.util.VersionUtils;
+import htsjdk.samtools.util.BlockCompressedOutputStream;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
-import htsjdk.samtools.util.BlockCompressedOutputStream;
+import org.campagnelab.goby.modes.GobyDriver;
 import org.campagnelab.goby.readers.vcf.*;
 
 import java.io.OutputStreamWriter;
@@ -189,9 +189,20 @@ public class VCFWriter {
      * Write the VCF header.
      */
     public void writeHeader() {
+        writeHeader();
+    }
+
+    /**
+     * Write the VCF header.
+     */
+    public void writeHeader(String... headerLines) {
 
         outWriter.printf("##fileformat=VCFv4.1%n" +
                 "##Goby=%s%n", VersionUtils.getImplementationVersion(GobyDriver.class));
+        for (String headerLine : headerLines) {
+            assert headerLine.startsWith("##") : "Header line must start with ##";
+            outWriter.printf("%s%n", headerLine);
+        }
         if (writeFieldGroupAssociations) {
             outWriter.printf("##FieldGroupAssociations=%s%n", buildGroupDeclaration());
         }

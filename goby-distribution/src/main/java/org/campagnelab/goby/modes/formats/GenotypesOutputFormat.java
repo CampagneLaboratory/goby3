@@ -131,6 +131,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         }
         samples = mode.getSamples();
         this.statsWriter = new VCFWriter(writer.getPrintWriter());
+
         biomartFieldIndex = statsWriter.defineField("INFO", "BIOMART_COORDS", 1, ColumnType.String, "Coordinates for use with Biomart.", "biomart");
         defineInfoFields(statsWriter);
         defineGenotypeField(statsWriter);
@@ -141,7 +142,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         }
         zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity", "zygosity");
         statsWriter.defineSamples(samples);
-        statsWriter.writeHeader();
+        statsWriter.writeHeader("##modelPath="+modelPath,"##modelTag="+predictor.getModelProperties().get("tag"));
 
 //get model ready
         String customPath = doc.getString("model-path");

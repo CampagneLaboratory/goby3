@@ -5,6 +5,7 @@ import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This interface defines the contract of the genotype predictor implemented in the variationanalysis project.
@@ -43,4 +44,10 @@ public interface GenotypePredictor extends Predictor {
      * @return True or false.
      */
     boolean trainedForIndels();
+
+    /**
+     * Return the model properties.
+     * @return
+     */
+    Properties getModelProperties();
 }
