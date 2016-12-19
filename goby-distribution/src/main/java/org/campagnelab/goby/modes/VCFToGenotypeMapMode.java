@@ -173,7 +173,11 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 //                break;
 //            }
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
-            final CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample - 1);
+            CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample - 1);
+            if (gt.equals("GT")){
+                gt = parser.getStringFieldValue(globalFieldIndexSample);
+            }
+            assert (gt != "GT"):"GT is not a valid genotype, vcf misread.";
             final String paddedAlt = alt + ",N";
             final String[] alts = paddedAlt.toString().split(",");
             if (!chMap.containsKey(chromosomeName)) {
