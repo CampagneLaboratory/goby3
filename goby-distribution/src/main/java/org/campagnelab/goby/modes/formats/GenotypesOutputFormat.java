@@ -129,22 +129,9 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         if (iterator.hasNext()) {
             LOG.warn("At least two implementations of GenotypePredictor have been found. Make sure a single provider exists in the classpath.");
         }
-        samples = mode.getSamples();
-        this.statsWriter = new VCFWriter(writer.getPrintWriter());
 
-        biomartFieldIndex = statsWriter.defineField("INFO", "BIOMART_COORDS", 1, ColumnType.String, "Coordinates for use with Biomart.", "biomart");
-        defineInfoFields(statsWriter);
-        defineGenotypeField(statsWriter);
 
-        if (ALT_FORMAT) {
-            altCountsIndex = statsWriter.defineField("FORMAT", "AltCounts", 1, ColumnType.String, "AltCounts", "altcounts");
-            arrayCountsIndex = statsWriter.defineField("FORMAT", "ArrayCounts", 1, ColumnType.String, "ArrayCounts", "arraycounts");
-        }
-        zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity", "zygosity");
-        statsWriter.defineSamples(samples);
-        statsWriter.writeHeader("##modelPath="+modelPath,"##modelTag="+predictor.getModelProperties().get("tag"));
-
-//get model ready
+        //get model ready
         String customPath = doc.getString("model-path");
         if (customPath.contains("${GOBY_HOME}")) {
             GOBY_HOME = System.getenv("GOBY_HOME");
@@ -171,6 +158,23 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             throw new RuntimeException(String.format("Unable to load genotype model %s with path %s ", modelPrefix,
                     modelPath), e);
         }
+
+
+        samples = mode.getSamples();
+        this.statsWriter = new VCFWriter(writer.getPrintWriter());
+
+        biomartFieldIndex = statsWriter.defineField("INFO", "BIOMART_COORDS", 1, ColumnType.String, "Coordinates for use with Biomart.", "biomart");
+        defineInfoFields(statsWriter);
+        defineGenotypeField(statsWriter);
+
+        if (ALT_FORMAT) {
+            altCountsIndex = statsWriter.defineField("FORMAT", "AltCounts", 1, ColumnType.String, "AltCounts", "altcounts");
+            arrayCountsIndex = statsWriter.defineField("FORMAT", "ArrayCounts", 1, ColumnType.String, "ArrayCounts", "arraycounts");
+        }
+        zygFieldIndex = statsWriter.defineField("FORMAT", "Zygosity", 1, ColumnType.String, "Zygosity", "zygosity");
+        statsWriter.defineSamples(samples);
+        statsWriter.writeHeader("##modelPath="+modelPath,"##modelTag="+predictor.getModelProperties().get("tag"));
+
 
     }
 
