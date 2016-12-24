@@ -43,9 +43,9 @@ public class HTSJDKReaderImpl implements AlignmentReader {
 
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(HTSJDKReaderImpl.class,
-            "force-sorted:HTSJDKReaderImpl, when true, assume all alignments are sorted. " +
+            "force-sorted:boolean, when true, assume all alignments are sorted. " +
                     "When false, check the SO:coordinate flag in the header. Use this option only when you " +
-                    "know that each input alignment has been sorted."
+                    "know that each input alignment has been sorted:false"
     );
     /**
      * Used to log debug and informational messages.
@@ -541,7 +541,8 @@ public class HTSJDKReaderImpl implements AlignmentReader {
 
     @Override
     public boolean isSorted() {
-        if (doc().getBoolean("force-sorted")) {
+        Boolean aBoolean = doc().getBoolean("force-sorted");
+        if (aBoolean!=null && aBoolean) {
             return true;
         }
         return parser.getFileHeader().getSortOrder() != SAMFileHeader.SortOrder.unsorted;
