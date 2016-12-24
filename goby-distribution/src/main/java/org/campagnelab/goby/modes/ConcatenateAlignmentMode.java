@@ -205,10 +205,12 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
                 startPosition = sliceHelper.getGenomicRange().startPosition;
             }
         }
+
         alignmentReader.setAdjustSampleIndices(adjustSampleIndices);
         alignmentReader.setStartEndOffsets(startOffsetArgument, endOffsetArgument);
         final ProgressLogger progress = new ProgressLogger();
-        progress.displayFreeMemory = true;
+        progress.displayFreeMemory = false;
+        progress.expectedUpdates=alignmentReader.getNumberOfAlignedReads();
         int entriesInOutputFile = 0;
         long numLogicalEntries = 0;
         long numEntries = 0;
