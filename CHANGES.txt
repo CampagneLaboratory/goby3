@@ -3,7 +3,8 @@
  compression benchmarks (had nothing to do with compression but with the conversion of SAM/BAM to goby representation).
  - Disabled tests that could not succeed anymore (because of choices we made in Goby 3, such as lack of auto-upgrade
  for alignments produced with Goby 1 and 2.)
- -
+ - BAM/CRAM support. Added an option to bypass the header check on SO:COORDINATE. Use
+   -x HTSJDKReaderImpl:force-sorted=true to force Goby to consider an alignment sorted.
 3.1
  - Reorganize model prediction to facilitate installing new versions of the variationAnalysis jars.
  Goby 3.1 is now compatible with variationanalysis 1.1.1.

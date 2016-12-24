@@ -5,6 +5,7 @@ import org.campagnelab.goby.alignments.AlignmentReader;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ReadOriginInfo;
 import org.campagnelab.goby.alignments.ReferenceLocation;
+import org.campagnelab.goby.modes.formats.GenotypesOutputFormat;
 import org.campagnelab.goby.readers.sam.ConversionConfig;
 import org.campagnelab.goby.readers.sam.ConvertSamBAMReadToGobyAlignment;
 import org.campagnelab.goby.readers.sam.SamRecordParser;
@@ -18,6 +19,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.io.FilenameUtils;
+import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
+import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +37,16 @@ public class HTSJDKReaderImpl implements AlignmentReader {
     private SAMRecordIterator samRecordIterator;
     private int[] targetLengths;
     private String filename;
+    public static final DynamicOptionClient doc() {
+        return doc;
+    }
 
+    @RegisterThis
+    public static final DynamicOptionClient doc = new DynamicOptionClient(HTSJDKReaderImpl.class,
+            "force-sorted:HTSJDKReaderImpl, when true, assume all alignments are sorted. " +
+                    "When false, check the SO:coordinate flag in the header. Use this option only when you " +
+                    "know that each input alignment has been sorted."
+    );
     /**
      * Used to log debug and informational messages.
      */
@@ -529,6 +541,9 @@ public class HTSJDKReaderImpl implements AlignmentReader {
 
     @Override
     public boolean isSorted() {
+        if (doc().getBoolean("force-sorted")) {
+            return true;
+        }
         return parser.getFileHeader().getSortOrder() != SAMFileHeader.SortOrder.unsorted;
     }
 
