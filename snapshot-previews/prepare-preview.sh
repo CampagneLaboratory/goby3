@@ -1,4 +1,4 @@
-#!/usr/bin/env bash +x
+#!/usr/bin/env bash
 
 if [ $# -ne 2 ]; then
     echo "usage: prepare-previews GOBY_VERSION-SNAPSHOT DL_VERSION-SNAPSHOT"
