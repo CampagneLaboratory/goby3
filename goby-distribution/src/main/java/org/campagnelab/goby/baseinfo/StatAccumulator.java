@@ -12,7 +12,7 @@ import java.util.function.Function;
  */
 public abstract class StatAccumulator {
     protected final Function<? super BaseInformationRecords.BaseInformation, ? extends Float> statCalculation;
-    protected float minimumValue = Float.MAX_VALUE;
+    protected float minimumValue = Float.POSITIVE_INFINITY;
     protected float maximumValue = Float.NEGATIVE_INFINITY;
     protected String propertyName;
 

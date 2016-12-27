@@ -52,6 +52,9 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorNumVariationsInRead());
         ACCUMULATORS.add(new StatAccumulatorBaseQuality());
         ACCUMULATORS.add(new StatAccumulatorInsertSizes());
+        ACCUMULATORS.add(new StatAccumulatorTargetAlignedLength());
+        ACCUMULATORS.add(new StatAccumulatorQueryAlignedLength());
+        ACCUMULATORS.add(new StatAccumulatorPairFlags());
         // NB: must modify accumulator in static methods below as well.
     }
 
@@ -118,6 +121,9 @@ public class SequenceBaseInformationWriter implements Closeable {
         accumulators.add(new StatAccumulatorReadMappingQuality());
         accumulators.add(new StatAccumulatorNumVariationsInRead());
         accumulators.add(new StatAccumulatorInsertSizes());
+        accumulators.add(new StatAccumulatorTargetAlignedLength());
+        accumulators.add(new StatAccumulatorQueryAlignedLength());
+        accumulators.add(new StatAccumulatorPairFlags());
         // NB: Add new accumulators here as well.
 
         long numTotal = 0;
