@@ -7,7 +7,7 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
  */
 public class StatAccumulatorQueryAlignedLength extends StatAccumulator {
     public StatAccumulatorQueryAlignedLength() {
-        super("stats.queryAlignedLengths", null);
+        super("stats.queryAlignedLength", null);
     }
 
     @Override
