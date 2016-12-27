@@ -155,14 +155,14 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         if (withGenotypeMap && addTrueGenotypeHelper == null) {
             addTrueGenotypeHelper = configureTrueGenotypeHelper(genome,iterator.isCallIndels());
         }
-        if (withGenotypeMap && samplingRate < 1.0) {
+        if (!withGenotypeMap && samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
                 // do not process the site.
                 return;
             }
         }
         AddTrueGenotypeHelperI.WillKeepI willKeep = null;
-        if (!withGenotypeMap) {
+        if (withGenotypeMap) {
             String alignmentReferenceId = iterator.getReferenceId(referenceIndex).toString();
             int genomeTargetIndex = iterator.getGenome().getReferenceIndex(alignmentReferenceId);
             String referenceBase = Character.toString(genome.get(genomeTargetIndex, position));
