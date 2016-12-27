@@ -7,7 +7,7 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
  */
 public class StatAccumulatorPairFlags extends StatAccumulator {
     public StatAccumulatorPairFlags() {
-        super("stats.pairFlags", null);
+        super("stats.pairFlag", null);
     }
 
     @Override
