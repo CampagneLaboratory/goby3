@@ -3,6 +3,8 @@ package org.campagnelab.goby.predictions;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 
+import java.util.Properties;
+
 /**
  * Encapsulates the AddTrueGenotype logic. Moved the class from variationanalysis to use in generating .sbi files.
  * Created by fac2003 on 12/27/16.
@@ -53,6 +55,11 @@ public interface AddTrueGenotypeHelperI {
      */
     BaseInformationRecords.BaseInformation labeledEntry();
 
+    /**
+     * Returns statistics about the addition of true genotypes.
+     * @return
+     */
+    public Properties getStatProperties() ;
     interface WillKeepI {
 
         boolean isKeep();

@@ -232,6 +232,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public void close() {
         //    pgReadWrite.stop();
         try {
+            sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
             sbiWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
