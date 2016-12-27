@@ -155,6 +155,10 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
     private int previousReference = -1;
     WarningCounter refBaseWarning = new WarningCounter();
 
+    public boolean isCallIndels() {
+        return callIndels;
+    }
+
     /**
      * Enable or disable calling indels.
      *

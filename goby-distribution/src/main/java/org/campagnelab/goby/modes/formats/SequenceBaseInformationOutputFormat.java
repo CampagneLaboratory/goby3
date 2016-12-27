@@ -8,6 +8,7 @@ import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
+import org.campagnelab.goby.predictions.AddTrueGenotypeHelperI;
 import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
@@ -49,6 +50,9 @@ import java.io.IOException;
 public class SequenceBaseInformationOutputFormat implements SequenceVariationOutputFormat {
 
     private int numberOfSamples;
+    private String trueGenotypeMap;
+    private boolean withGenotypeMap;
+
 
     public static final DynamicOptionClient doc() {
         return doc;
@@ -57,7 +61,12 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SequenceBaseInformationOutputFormat.class,
             "sampling-rate:float, ratio of sites to write to output. The default writes all sites. Use 0.1 to sample 10% of sites.:1.0",
-            "random-seed:long, random seed used for sampling sites.:2390239"
+            "random-seed:long, random seed used for sampling sites.:2390239",
+            "true-genotype-map:string, filename for the true genotype map (.varmap), produced by vcf-to-map.:null",
+            "sample-index:int, index of the sample to annotate (needed when map is provided).:0",
+            "true-label-annotator:string, classname for the true genotype label annotator. The implementation is provided by " +
+                    "the variationanalysis project's genotype.jar:org.campagnelab.dl.genotype.helpers.AddTrueGenotypeHelper"
+
     );
 
 
@@ -92,9 +101,9 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     }
                 }
             }
-        } else{
+        } else {
             for (int readerIndex = 0; readerIndex < readerIndexToGroupIndex.length; readerIndex++) {
-                samplePermutation[readerIndex] =readerIndex;
+                samplePermutation[readerIndex] = readerIndex;
             }
         }
 
@@ -106,7 +115,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 readerIdxs = new Integer[]{samplePermutation[0], samplePermutation[1]};
                 break;
             default: //case 3, extend switch case in the future to handle more experimental designs.
-                readerIdxs = new Integer[]{samplePermutation[0],samplePermutation[1], samplePermutation[2]};
+                readerIdxs = new Integer[]{samplePermutation[0], samplePermutation[1], samplePermutation[2]};
                 break;
         }
         int index = 0;
@@ -126,36 +135,78 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        trueGenotypeMap = doc().getString("true-genotype-map");
+        withGenotypeMap = trueGenotypeMap != null;
     }
 
     Integer[] readerIdxs;
 
     public void allocateStorage(int numberOfSamples, int numberOfGroups) {
-        this.numberOfSamples=numberOfSamples;
+        this.numberOfSamples = numberOfSamples;
+
+
     }
 
+    AddTrueGenotypeHelperI addTrueGenotypeHelper;
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
-        if (samplingRate < 1.0) {
+        final RandomAccessSequenceInterface genome = iterator.getGenome();
+        if (withGenotypeMap && addTrueGenotypeHelper == null) {
+            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome,iterator.isCallIndels());
+        }
+        if (withGenotypeMap && samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
                 // do not process the site.
+                return;
+            }
+        }
+        AddTrueGenotypeHelperI.WillKeepI willKeep = null;
+        if (!withGenotypeMap) {
+            String alignmentReferenceId = iterator.getReferenceId(referenceIndex).toString();
+            int genomeTargetIndex = iterator.getGenome().getReferenceIndex(alignmentReferenceId);
+            String referenceBase = Character.toString(genome.get(genomeTargetIndex, position));
+            willKeep = addTrueGenotypeHelper.willKeep(position, alignmentReferenceId, referenceBase);
+            if (!willKeep.isKeep()) {
+                // do not process this record at all.
                 return;
             }
         }
 
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
         try {
-            final BaseInformationRecords.BaseInformation baseInfo = ProtoHelper.toProto(iterator.getGenome(),
+
+            BaseInformationRecords.BaseInformation baseInfo = ProtoHelper.toProto(iterator.getGenome(),
                     iterator.getReferenceId(referenceIndex).toString(),
                     sampleCounts, referenceIndex, position, list, readerIdxs);
-
+            if (withGenotypeMap && addTrueGenotypeHelper.addTrueGenotype(willKeep, baseInfo)) {
+                baseInfo = addTrueGenotypeHelper.labeledEntry();
+                assert baseInfo != null : " labeled entry cannot be null";
+            }
             sbiWriter.appendEntry(baseInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         count++;
 
+
+    }
+
+    private AddTrueGenotypeHelperI configureTrueGenotypeHelper(RandomAccessSequenceInterface genome, boolean callIndels){
+        final String className = doc().getString("true-label-annotator");
+        try {
+
+            AddTrueGenotypeHelperI o= (AddTrueGenotypeHelperI) Class.forName(className).newInstance();
+            o.configure(trueGenotypeMap,
+                    genome,
+                    doc.getInteger("sample-index"),
+                    callIndels,
+                    samplingRate);
+            this.addTrueGenotypeHelper=o;
+            return o;
+        } catch (ClassNotFoundException|IllegalAccessException|InstantiationException e) {
+            throw new RuntimeException("Unable to initialize true label annotator with classname: "+className);
+        }
 
     }
 
