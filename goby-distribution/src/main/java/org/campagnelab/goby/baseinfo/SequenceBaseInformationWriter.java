@@ -93,7 +93,11 @@ public class SequenceBaseInformationWriter implements Closeable {
     }
 
     private Properties getCustomProperties() {
-        return customProperties;
+        if (customProperties!=null) {
+            return customProperties;
+        }else {
+            return new Properties();
+        }
     }
 
     /**
