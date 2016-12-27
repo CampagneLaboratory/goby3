@@ -101,6 +101,8 @@ public abstract class IterateSortedAlignmentsListImpl
         info.qualityScore = 40;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
         info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
+      // add a link to the entry that aligns here, to access more data as needed:
+        info.alignmentEntry=alignmentEntry;
         if (alignmentEntry.hasInsertSize()) {
             info.insertSize = alignmentEntry.getInsertSize();
         }
@@ -138,6 +140,8 @@ public abstract class IterateSortedAlignmentsListImpl
         info.qualityScore = toQual;
         info.matchesForwardStrand = !alignmentEntry.getMatchingReverseStrand();
         info.numVariationsInRead=alignmentEntry.getSequenceVariationsCount();
+        // add a link to the entry that aligns here, to access more data as needed:
+        info.alignmentEntry=alignmentEntry;
         if (alignmentEntry.hasInsertSize()) {
             info.insertSize = alignmentEntry.getInsertSize();
         }

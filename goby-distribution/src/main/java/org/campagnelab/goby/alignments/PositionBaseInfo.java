@@ -46,6 +46,7 @@ public class PositionBaseInfo {
      * The insert size between the two strands of the read
      */
     public int insertSize;
+    public Alignments.AlignmentEntry alignmentEntry;
 
     @Override
     public String toString() {

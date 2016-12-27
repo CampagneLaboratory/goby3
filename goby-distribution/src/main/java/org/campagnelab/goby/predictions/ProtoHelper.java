@@ -24,7 +24,7 @@ import java.util.Random;
 public class ProtoHelper {
     public static final int POSITIVE_STRAND = 0;
     public static final int NEGATIVE_STRAND = 1;
-    static final int contextLength = 21;
+    static final int contextLength = 30 * 2 + 1;
     private static final Logger LOG = LoggerFactory.getLogger(ProtoHelper.class);
 
     private static String defaultGenomicContext;
@@ -81,18 +81,21 @@ public class ProtoHelper {
         IntArrayList[][][] readIdxs = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][] numVariationsInReads = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] insertSizes = new IntArrayList[numSamples][maxGenotypeIndex];
+        IntArrayList[][] targetAlignedLengths = new IntArrayList[numSamples][maxGenotypeIndex];
+        IntArrayList[][] queryAlignedLengths = new IntArrayList[numSamples][maxGenotypeIndex];
+        IntArrayList[][] pairFlags = new IntArrayList[numSamples][maxGenotypeIndex];
 
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
-            final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
-
-
             for (int genotypeIndex = 0; genotypeIndex < maxGenotypeIndex; genotypeIndex++) {
-                for (int k = 0; k < 2; k++) {
-                    qualityScores[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
-                    readMappingQuality[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
-                    readIdxs[sampleIndex][genotypeIndex][k] = new IntArrayList(1024);
+                for (int strandIndex = 0; strandIndex < 2; strandIndex++) {
+                    qualityScores[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
+                    readMappingQuality[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
+                    readIdxs[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     insertSizes[sampleIndex][genotypeIndex] = new IntArrayList(1024);
+                    targetAlignedLengths[sampleIndex][genotypeIndex] = new IntArrayList(1024);
+                    queryAlignedLengths[sampleIndex][genotypeIndex] = new IntArrayList(1024);
+                    pairFlags[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                 }
             }
         }
@@ -107,8 +110,12 @@ public class ProtoHelper {
                 readMappingQuality[sampleIndex][baseIndex][strandInd].add(baseInfo.readMappingQuality & 0xFF);
                 numVariationsInReads[sampleIndex][baseIndex].add(baseInfo.numVariationsInRead);
                 insertSizes[sampleIndex][baseIndex].add(baseInfo.insertSize);
+                baseInfo.alignmentEntry.getTargetAlignedLength();
                 //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
                 readIdxs[sampleIndex][baseIndex][strandInd].add(baseInfo.readIndex);
+                targetAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getTargetAlignedLength());
+                queryAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getQueryAlignedLength());
+                pairFlags[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getPairFlags());
             }
         }
         BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
@@ -133,7 +140,10 @@ public class ProtoHelper {
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
             transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex],
-                    numVariationsInReads[sampleIndex], insertSizes[sampleIndex], sampleBuilder, sampleCountInfo,
+                    numVariationsInReads[sampleIndex], insertSizes[sampleIndex],
+                    targetAlignedLengths[sampleIndex], queryAlignedLengths[sampleIndex],
+                    pairFlags[sampleIndex],
+                    sampleBuilder, sampleCountInfo,
                     referenceGenotype, maxGenotypeIndex);
             sampleBuilder.setFormattedCounts(sampleCounts[sampleToReaderIdxs[sampleIndex]].toString());
             builder.addSamples(sampleBuilder.build());
@@ -181,7 +191,18 @@ public class ProtoHelper {
         }
     }
 
-    private static void transfer(IntArrayList[][] qualityScore, IntArrayList[][] intArrayLists, IntArrayList[][] readIdx, IntArrayList[] numVariationsInRead, IntArrayList[] insertSize, BaseInformationRecords.SampleInfo.Builder sampleBuilder, SampleCountInfo sampleCountInfo, String referenceGenotype, int genotypeMaxIndex) {
+    private static void transfer(IntArrayList[][] qualityScore,
+                                 IntArrayList[][] intArrayLists,
+                                 IntArrayList[][] readIdx,
+                                 IntArrayList[] numVariationsInRead,
+                                 IntArrayList[] insertSize,
+                                 IntArrayList[] targetAlignedLength,
+                                 IntArrayList[] queryAlignedLength,
+                                 IntArrayList[] pairFlags,
+                                 BaseInformationRecords.SampleInfo.Builder sampleBuilder,
+                                 SampleCountInfo sampleCountInfo,
+                                 String referenceGenotype,
+                                 int genotypeMaxIndex) {
         for (int genotypeIndex = 0; genotypeIndex < genotypeMaxIndex; genotypeIndex++) {
             BaseInformationRecords.CountInfo.Builder infoBuilder = BaseInformationRecords.CountInfo.newBuilder();
             if (genotypeIndex == 0) {
@@ -206,6 +227,9 @@ public class ProtoHelper {
 
             infoBuilder.addAllNumVariationsInReads(compressFreq(numVariationsInRead[genotypeIndex]));
             infoBuilder.addAllInsertSizes(compressFreq(insertSize[genotypeIndex]));
+            infoBuilder.addAllTargetAlignedLengths(compressFreq(targetAlignedLength[genotypeIndex]));
+            infoBuilder.addAllQueryAlignedLengths(compressFreq(queryAlignedLength[genotypeIndex]));
+            infoBuilder.addAllPairFlags(compressFreq(pairFlags[genotypeIndex]));
 
             infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
             sampleBuilder.addCounts(infoBuilder.build());
