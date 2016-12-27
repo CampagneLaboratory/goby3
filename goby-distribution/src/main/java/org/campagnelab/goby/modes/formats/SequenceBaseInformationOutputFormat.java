@@ -153,7 +153,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
         final RandomAccessSequenceInterface genome = iterator.getGenome();
         if (withGenotypeMap && addTrueGenotypeHelper == null) {
-            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome,iterator.isCallIndels());
+            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
         }
         if (!withGenotypeMap && samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
@@ -192,20 +192,20 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     }
 
-    private AddTrueGenotypeHelperI configureTrueGenotypeHelper(RandomAccessSequenceInterface genome, boolean callIndels){
+    private AddTrueGenotypeHelperI configureTrueGenotypeHelper(RandomAccessSequenceInterface genome, boolean callIndels) {
         final String className = doc().getString("true-label-annotator");
         try {
 
-            AddTrueGenotypeHelperI o= (AddTrueGenotypeHelperI) Class.forName(className).newInstance();
+            AddTrueGenotypeHelperI o = (AddTrueGenotypeHelperI) Class.forName(className).newInstance();
             o.configure(trueGenotypeMap,
                     genome,
                     doc.getInteger("sample-index"),
                     callIndels,
                     samplingRate);
-            this.addTrueGenotypeHelper=o;
+            this.addTrueGenotypeHelper = o;
             return o;
-        } catch (ClassNotFoundException|IllegalAccessException|InstantiationException e) {
-            throw new RuntimeException("Unable to initialize true label annotator with classname: "+className);
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException("Unable to initialize true label annotator with classname: " + className);
         }
 
     }
@@ -232,7 +232,9 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public void close() {
         //    pgReadWrite.stop();
         try {
-            sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
+            if (withGenotypeMap) {
+                sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
+            }
             sbiWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
