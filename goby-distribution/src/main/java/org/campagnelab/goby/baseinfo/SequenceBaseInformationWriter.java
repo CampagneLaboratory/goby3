@@ -74,11 +74,26 @@ public class SequenceBaseInformationWriter implements Closeable {
     @Override
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
-        Properties p = new Properties();
+        Properties p = getCustomProperties();
         for (StatAccumulator accumulator : ACCUMULATORS) {
             accumulator.setProperties(p);
         }
         writeProperties(basename, recordIndex, p);
+    }
+
+    private Properties customProperties;
+
+    /**
+     * Define custom properties to be written with in the .sbip along with all properties handled by the
+     * writer.
+     * @param customProperties
+     */
+    public void setCustomProperties(Properties customProperties) {
+        this.customProperties = customProperties;
+    }
+
+    private Properties getCustomProperties() {
+        return customProperties;
     }
 
     /**
