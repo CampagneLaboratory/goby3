@@ -72,8 +72,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     static private Logger LOG = LoggerFactory.getLogger(SequenceBaseInformationOutputFormat.class);
     private SequenceBaseInformationWriter sbiWriter;
-    private int count = 0;
-
 
     private float samplingRate;
     private XoRoShiRo128PlusRandom randomGenerator;
@@ -187,8 +185,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        count++;
-
 
     }
 
@@ -204,7 +200,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     samplingRate);
             this.addTrueGenotypeHelper = o;
             return o;
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException| NullPointerException e) {
             throw new RuntimeException("Unable to initialize true label annotator with classname: " + className);
         }
 
@@ -241,7 +237,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(count);
     }
 
     public void setGenome(RandomAccessSequenceInterface genome) {
