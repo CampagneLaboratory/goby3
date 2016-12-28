@@ -3,11 +3,11 @@ package org.campagnelab.goby.modes.formats;
 
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
+import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
+import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.baseinfo.SequenceBaseInformationWriter;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
-import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
-import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.predictions.AddTrueGenotypeHelperI;
 import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
@@ -234,8 +234,10 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         try {
             if (withGenotypeMap) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
+                addTrueGenotypeHelper.printStats();
             }
             sbiWriter.close();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -59,7 +59,13 @@ public interface AddTrueGenotypeHelperI {
      * Returns statistics about the addition of true genotypes.
      * @return
      */
-    public Properties getStatProperties() ;
+     Properties getStatProperties() ;
+
+    /**
+     * Print statistics to the console.
+     */
+     void printStats();
+
     interface WillKeepI {
 
         boolean isKeep();
