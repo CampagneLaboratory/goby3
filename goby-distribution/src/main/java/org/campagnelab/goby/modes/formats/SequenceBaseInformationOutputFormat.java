@@ -52,6 +52,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     private int numberOfSamples;
     private String trueGenotypeMap;
     private boolean withGenotypeMap;
+    private int genomicContextLength;
 
 
     public static final DynamicOptionClient doc() {
@@ -62,10 +63,11 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public static final DynamicOptionClient doc = new DynamicOptionClient(SequenceBaseInformationOutputFormat.class,
             "sampling-rate:float, ratio of sites to write to output. The default writes all sites. Use 0.1 to sample 10% of sites.:1.0",
             "random-seed:long, random seed used for sampling sites.:2390239",
-            "true-genotype-map:string, filename for the true genotype map (.varmap), produced by vcf-to-map.:null",
+            "true-genotype-map:string, filename for the true genotype map (.varmap), produced by vcf-to-map.:nil",
             "sample-index:int, index of the sample to annotate (needed when map is provided).:0",
             "true-label-annotator:string, classname for the true genotype label annotator. The implementation is provided by " +
-                    "the variationanalysis project's genotype.jar:org.campagnelab.dl.genotype.helpers.AddTrueGenotypeHelper"
+                    "the variationanalysis project's genotype.jar:org.campagnelab.dl.genotype.helpers.AddTrueGenotypeHelper",
+            "genomic-context-length:int, length of genomic context to capture, centered around a base.:21"
 
     );
 
@@ -134,15 +136,14 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             throw new RuntimeException(e);
         }
         trueGenotypeMap = doc().getString("true-genotype-map");
-        withGenotypeMap = trueGenotypeMap != null;
+        withGenotypeMap = !"nil".equals(trueGenotypeMap);
     }
 
     Integer[] readerIdxs;
 
     public void allocateStorage(int numberOfSamples, int numberOfGroups) {
         this.numberOfSamples = numberOfSamples;
-
-
+        genomicContextLength = doc.getInteger("genomic-context-length");
     }
 
     AddTrueGenotypeHelperI addTrueGenotypeHelper;
@@ -174,9 +175,14 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
         try {
 
-            BaseInformationRecords.BaseInformation baseInfo = ProtoHelper.toProto(iterator.getGenome(),
+            BaseInformationRecords.BaseInformation baseInfo = ProtoHelper.toProto(
+                    iterator.getGenome(),
                     iterator.getReferenceId(referenceIndex).toString(),
-                    sampleCounts, referenceIndex, position, list, readerIdxs);
+                    sampleCounts,
+                    referenceIndex, position, list,
+                    readerIdxs,
+                    genomicContextLength);
+
             if (withGenotypeMap && addTrueGenotypeHelper.addTrueGenotype(willKeep, baseInfo)) {
                 baseInfo = addTrueGenotypeHelper.labeledEntry();
                 assert baseInfo != null : " labeled entry cannot be null";

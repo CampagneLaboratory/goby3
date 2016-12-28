@@ -24,24 +24,57 @@ import java.util.Random;
 public class ProtoHelper {
     public static final int POSITIVE_STRAND = 0;
     public static final int NEGATIVE_STRAND = 1;
-    static final int contextLength = 30 * 2 + 1;
+
     private static final Logger LOG = LoggerFactory.getLogger(ProtoHelper.class);
 
-    private static String defaultGenomicContext;
     private static ProgressLogger baseProgressLogger = new ProgressLogger(LOG);
 
     static {
         baseProgressLogger.displayLocalSpeed = true;
         baseProgressLogger.start();
-        defaultGenomicContext = "";
+
+    }
+
+    private static String defaultGenomicContext(int contextLength) {
+
+        String defaultGenomicContext = "";
         for (int i = 0; i < contextLength; i++) {
             defaultGenomicContext += "N";
         }
+
+        return defaultGenomicContext;
     }
 
-    static private MutableString genomicContext = new MutableString(defaultGenomicContext.length());
+    static private MutableString genomicContext = new MutableString();
 
     private static BaseToStringHelper baseConversion = new BaseToStringHelper();
+
+    /**
+     * Convert to proto with a 21 bp genomic context length.
+     *
+     * @param genome
+     * @param referenceID
+     * @param sampleCounts
+     * @param referenceIndex
+     * @param position
+     * @param list
+     * @param sampleToReaderIdxs
+     * @return
+     */
+    public static BaseInformationRecords.BaseInformation toProto(RandomAccessSequenceInterface genome,
+                                                                 String referenceID,
+                                                                 SampleCountInfo sampleCounts[],
+                                                                 int referenceIndex, int position,
+                                                                 DiscoverVariantPositionData list,
+                                                                 Integer[] sampleToReaderIdxs) {
+
+        return toProto(genome,
+                referenceID,
+                sampleCounts,
+                referenceIndex, position,
+                list,
+                sampleToReaderIdxs, 21);
+    }
 
     /**
      * Returns a serialized record of a given position in protobuf format. Required step before mapping to features.
@@ -63,7 +96,9 @@ public class ProtoHelper {
                                                                  SampleCountInfo sampleCounts[],
                                                                  int referenceIndex, int position,
                                                                  DiscoverVariantPositionData list,
-                                                                 Integer[] sampleToReaderIdxs) {
+                                                                 Integer[] sampleToReaderIdxs, int contextLength) {
+
+
         int numSamples = sampleToReaderIdxs.length;
 
         // pgReadWrite.update();
@@ -122,7 +157,7 @@ public class ProtoHelper {
         builder.setMutated(false);
         builder.setPosition(position);
         builder.setReferenceId(referenceID);
-        transferGenomicContext(genome, referenceIndex, position, list, builder);
+        transferGenomicContext(contextLength, genome, referenceIndex, position, list, builder);
 
 
         builder.setReferenceIndex(referenceIndex);
@@ -155,13 +190,13 @@ public class ProtoHelper {
 
     private static Random random = new Random();
 
-    private static void transferGenomicContext(RandomAccessSequenceInterface genome, int referenceIndex, int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder) {
+    private static void transferGenomicContext(int contextLength, RandomAccessSequenceInterface genome, int referenceIndex, int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder) {
         // store 10 bases of genomic context around the site:
         {
             genomicContext.setLength(0);
             int referenceSequenceLength = genome.getLength(referenceIndex);
             if (referenceSequenceLength <= 0) {
-                builder.setGenomicSequenceContext(defaultGenomicContext);
+                builder.setGenomicSequenceContext(defaultGenomicContext(contextLength));
             } else {
                 //derive context length
                 int cl = (contextLength - 1) / 2;
@@ -179,10 +214,7 @@ public class ProtoHelper {
                 for (int i = genomicEnd; i > referenceSequenceLength; i--) {
                     genomicContext.insert(index++, "N");
                 }
-              /*  if (random.nextDouble() < 0.01) {
-                    System.out.println(genomicContext);
-                }*/
-                builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext);
+                builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
             }
             if (list.size() > 0) {
 
