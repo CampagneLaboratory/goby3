@@ -130,10 +130,10 @@ message CountInfo {
     repeated NumberWithFrequency pairFlags = 27;
 
     /** The index in the read of  all bases matching this genotype on the forward strand */
-    repeated NumberWithFrequency numVariationsInPositionForwardStrand = 28;
+    repeated NumberWithFrequency distancesToReadVariationsForwardStrand = 28;
 
     /** The index in the read of  all bases matching this genotype on the reverse strand */
-    repeated NumberWithFrequency numVariationsInPositionReverseStrand = 29;
+    repeated NumberWithFrequency distancesToReadVariationsReverseStrand = 29;
 
     /** True iff the genotype is called in this sample. In other words, this field is true when the genotype caller believes
      that this genotype is present in the sample. */

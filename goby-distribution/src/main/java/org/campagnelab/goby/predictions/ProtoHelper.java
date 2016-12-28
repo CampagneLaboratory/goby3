@@ -115,7 +115,7 @@ public class ProtoHelper {
         IntArrayList[][][] qualityScores = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] readMappingQuality = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] readIdxs = new IntArrayList[numSamples][maxGenotypeIndex][2];
-        IntArrayList[][][] numVariationsInPosition = new IntArrayList[numSamples][maxGenotypeIndex][2];
+        IntArrayList[][][] distancesToReadVariations = new IntArrayList[numSamples][maxGenotypeIndex][2];
 
         IntArrayList[][] numVariationsInReads = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] insertSizes = new IntArrayList[numSamples][maxGenotypeIndex];
@@ -130,7 +130,7 @@ public class ProtoHelper {
                     qualityScores[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     readMappingQuality[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     readIdxs[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
-                    numVariationsInPosition[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
+                    distancesToReadVariations[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     insertSizes[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     targetAlignedLengths[sampleIndex][genotypeIndex] = new IntArrayList(1024);
@@ -155,7 +155,7 @@ public class ProtoHelper {
                 readIdxs[sampleIndex][baseIndex][strandInd].add(baseInfo.readIndex);
                 for (Alignments.SequenceVariation var : baseInfo.alignmentEntry.getSequenceVariationsList()) {
                     int delta = baseInfo.readIndex - var.getReadIndex();
-                    numVariationsInPosition[sampleIndex][baseIndex][strandInd].add(delta);
+                    distancesToReadVariations[sampleIndex][baseIndex][strandInd].add(delta);
                 }
                 targetAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getTargetAlignedLength());
                 queryAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getQueryAlignedLength());
@@ -183,7 +183,7 @@ public class ProtoHelper {
             String referenceGenotype = null;
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
-            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], numVariationsInPosition[sampleIndex],
+            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], distancesToReadVariations[sampleIndex],
                     numVariationsInReads[sampleIndex], insertSizes[sampleIndex],
                     targetAlignedLengths[sampleIndex], queryAlignedLengths[sampleIndex],
                     pairFlags[sampleIndex],
@@ -235,7 +235,7 @@ public class ProtoHelper {
     private static void transfer(IntArrayList[][] qualityScore,
                                  IntArrayList[][] intArrayLists,
                                  IntArrayList[][] readIdx,
-                                 IntArrayList[][] numVariationsInPosition,
+                                 IntArrayList[][] distancesToReadVariations,
                                  IntArrayList[] numVariationsInRead,
                                  IntArrayList[] insertSize,
                                  IntArrayList[] targetAlignedLength,
@@ -264,8 +264,8 @@ public class ProtoHelper {
             infoBuilder.addAllReadIndicesForwardStrand(compressFreq(readIdx[genotypeIndex][POSITIVE_STRAND]));
             infoBuilder.addAllReadIndicesReverseStrand(compressFreq(readIdx[genotypeIndex][NEGATIVE_STRAND]));
 
-            infoBuilder.addAllNumVariationsInPositionForwardStrand(compressFreq(numVariationsInPosition[genotypeIndex][POSITIVE_STRAND]));
-            infoBuilder.addAllNumVariationsInPositionReverseStrand(compressFreq(numVariationsInPosition[genotypeIndex][NEGATIVE_STRAND]));
+            infoBuilder.addAllDistancesToReadVariationsForwardStrand(compressFreq(distancesToReadVariations[genotypeIndex][POSITIVE_STRAND]));
+            infoBuilder.addAllDistancesToReadVariationsReverseStrand(compressFreq(distancesToReadVariations[genotypeIndex][NEGATIVE_STRAND]));
 
             infoBuilder.addAllReadMappingQualityForwardStrand(compressFreq(intArrayLists[genotypeIndex][POSITIVE_STRAND]));
             infoBuilder.addAllReadMappingQualityReverseStrand(compressFreq(intArrayLists[genotypeIndex][NEGATIVE_STRAND]));
