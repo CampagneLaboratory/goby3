@@ -12,11 +12,11 @@ public class StatAccumulatorDistancesToReadVariations extends StatAccumulator {
     public static final String STATS_DISTANCES_FORWARD = "stats.distancesToReadVariations.forward";
     public static final String STATS_DISTANCES_REVERSE = "stats.distancesToReadVariations.reverse";
 
-    protected float minimumValueDistForward = Float.MAX_VALUE;
-    protected float maximumValueDistForward = Float.MIN_VALUE;
+    protected float minimumValueDistForward = Float.POSITIVE_INFINITY;
+    protected float maximumValueDistForward = Float.NEGATIVE_INFINITY;
 
-    protected float minimumValueDistReverse = Float.MAX_VALUE;
-    protected float maximumValueDistReverse = Float.MIN_VALUE;
+    protected float minimumValueDistReverse = Float.POSITIVE_INFINITY;
+    protected float maximumValueDistReverse = Float.NEGATIVE_INFINITY;
 
     private String propertyName;
 

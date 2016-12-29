@@ -13,11 +13,11 @@ public class StatAccumulatorBaseQuality extends StatAccumulator {
     public static final String STATS_BASEQUALITY_FORWARD = "stats.baseQuality.forward";
     public static final String STATS_BASEQUALITY_REVERSE = "stats.baseQuality.reverse";
 
-    protected float minimumValueQualForward = Float.MAX_VALUE;
-    protected float maximumValueQualForward = Float.MIN_VALUE;
+    protected float minimumValueQualForward = Float.POSITIVE_INFINITY;
+    protected float maximumValueQualForward = Float.NEGATIVE_INFINITY;
 
-    protected float minimumValueQualReverse = Float.MAX_VALUE;
-    protected float maximumValueQualReverse = Float.MIN_VALUE;
+    protected float minimumValueQualReverse = Float.POSITIVE_INFINITY;
+    protected float maximumValueQualReverse = Float.NEGATIVE_INFINITY;
 
     private String propertyName;
 

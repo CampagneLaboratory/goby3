@@ -13,11 +13,11 @@ public class StatAccumulatorReadMappingQuality extends StatAccumulator {
     public static final String STATS_READMAPPINGQUALITY_FORWARD = "stats.readMappingQuality.forward";
     public static final String STATS_READMAPPINGQUALITY_REVERSE = "stats.readMappingQuality.reverse";
 
-    protected float minimumValueForward = Float.MAX_VALUE;
-    protected float maximumValueForward = Float.MIN_VALUE;
+    protected float minimumValueForward = Float.POSITIVE_INFINITY;
+    protected float maximumValueForward = Float.NEGATIVE_INFINITY;
 
-    protected float minimumValueReverse = Float.MAX_VALUE;
-    protected float maximumValueReverse = Float.MIN_VALUE;
+    protected float minimumValueReverse = Float.POSITIVE_INFINITY;
+    protected float maximumValueReverse = Float.NEGATIVE_INFINITY;
 
     private String propertyName;
 
