@@ -35,7 +35,7 @@ public class StatAccumulatorBaseQuality extends StatAccumulator {
             properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualForward));
 
         propertyName = STATS_BASEQUALITY_REVERSE;
-        if (isDefined(minimumValueQualForward))
+        if (isDefined(minimumValueQualReverse))
             properties.setProperty(propertyName + ".min", Float.toString(minimumValueQualReverse));
         if (isDefined(maximumValueQualReverse))
             properties.setProperty(propertyName + ".max", Float.toString(maximumValueQualReverse));
