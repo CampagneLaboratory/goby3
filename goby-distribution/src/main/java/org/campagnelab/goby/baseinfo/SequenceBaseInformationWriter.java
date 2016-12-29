@@ -21,7 +21,6 @@ package org.campagnelab.goby.baseinfo;
 
 import edu.cornell.med.icb.util.VersionUtils;
 import org.apache.commons.io.IOUtils;
-import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformation;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
 import org.campagnelab.goby.compression.MessageChunksWriter;
@@ -90,6 +89,7 @@ public class SequenceBaseInformationWriter implements Closeable {
     /**
      * Define custom properties to be written with in the .sbip along with all properties handled by the
      * writer.
+     *
      * @param customProperties
      */
     public void setCustomProperties(Properties customProperties) {
@@ -97,9 +97,9 @@ public class SequenceBaseInformationWriter implements Closeable {
     }
 
     private Properties getCustomProperties() {
-        if (customProperties!=null) {
+        if (customProperties != null) {
             return customProperties;
-        }else {
+        } else {
             return new Properties();
         }
     }
@@ -133,11 +133,17 @@ public class SequenceBaseInformationWriter implements Closeable {
             for (StatAccumulator accumulator : accumulators) {
                 accumulator.mergeWith(p);
             }
+            // TODO implement custom merge of values for matching property keys
             numTotal += Long.parseLong(p.get("numRecords").toString());
         }
         Properties merged = new Properties();
+        // if at least one properties in list, transfer its values:
+
+        // TODO implement custom merge of values for matching property keys (e.g., true-genotype keys)
+        if (properties.size() >= 1) merged.putAll(properties.get(0));
         merged.setProperty("numRecords", Long.toString(numTotal));
         merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
+        // give accumulators a chance to update their stats:
         for (StatAccumulator accumulator : accumulators) {
             accumulator.setProperties(merged);
         }
