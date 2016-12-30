@@ -31,7 +31,7 @@ public abstract class StatAccumulator {
     }
 
     protected boolean isDefined(float v) {
-        return v != Float.MAX_VALUE && v != Float.MIN_VALUE;
+        return v != Float.POSITIVE_INFINITY && v != Float.NEGATIVE_INFINITY;
     }
 
     /**
@@ -48,10 +48,10 @@ public abstract class StatAccumulator {
 
 
     void setProperties(Properties properties) {
-        if (minimumValue != Float.MAX_VALUE) {
+        if (minimumValue != Float.POSITIVE_INFINITY) {
             properties.setProperty(propertyName + ".min", Float.toString(minimumValue));
         }
-        if (maximumValue != Float.MIN_VALUE) {
+        if (maximumValue != Float.NEGATIVE_INFINITY) {
             properties.setProperty(propertyName + ".max", Float.toString(maximumValue));
         }
     }
