@@ -168,7 +168,8 @@ public class ProtoHelper {
         builder.setMutated(false);
         builder.setPosition(position);
         builder.setReferenceId(referenceID);
-        transferGenomicContext(contextLength, genome, referenceIndex, position, list, builder);
+        int genomeReferenceIndex=genome.getReferenceIndex(referenceID);
+        transferGenomicContext(contextLength, genome, genomeReferenceIndex, position, list, builder);
 
 
         builder.setReferenceIndex(referenceIndex);
@@ -201,11 +202,12 @@ public class ProtoHelper {
 
     private static Random random = new Random();
 
-    private static void transferGenomicContext(int contextLength, RandomAccessSequenceInterface genome, int referenceIndex, int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder) {
+    private static void transferGenomicContext(int contextLength, RandomAccessSequenceInterface genome, int genomeReferenceIndex,
+                                               int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder) {
         // store 10 bases of genomic context around the site:
         {
             genomicContext.setLength(0);
-            int referenceSequenceLength = genome.getLength(referenceIndex);
+            int referenceSequenceLength = genome.getLength(genomeReferenceIndex);
             if (referenceSequenceLength <= 0) {
                 builder.setGenomicSequenceContext(defaultGenomicContext(contextLength));
             } else {
@@ -215,7 +217,7 @@ public class ProtoHelper {
                 final int genomicEnd = Math.min(position + (cl + 1), referenceSequenceLength);
                 int index = 0;
                 for (int refPos = genomicStart; refPos < genomicEnd; refPos++) {
-                    genomicContext.insert(index++, baseConversion.convert(genome.get(referenceIndex, refPos)));
+                    genomicContext.insert(index++, baseConversion.convert(genome.get(genomeReferenceIndex, refPos)));
                 }
                 //pad zeros as needed
                 for (int i = genomicStart; i < 0; i++) {
