@@ -217,24 +217,24 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                             final int referenceIndex, int position, final DiscoverVariantPositionData list,
                             final int groupIndexA, final int groupIndexB) {
 
-        position = position + 1; // report  1-based position
+        int positionFormat = position + 1;  // report  1-based position
         fillVariantCountArrays(sampleCounts);
 
         CharSequence currentReferenceId = iterator.getReferenceId(referenceIndex);
         statsWriter.setId(".");
         statsWriter.setInfo(biomartFieldIndex,
-                String.format("%s:%d:%d", currentReferenceId, position,
-                        position));
+                String.format("%s:%d:%d", currentReferenceId, positionFormat,
+                        positionFormat));
         statsWriter.setChromosome(currentReferenceId);
 
-        statsWriter.setPosition(position);
+        statsWriter.setPosition(positionFormat);
         /*    //   int location = 8930385;
        int location = 8930369;
        if (position == location || position - 1 == location || position + 1 == location) {
            System.out.println("STOP");
        } */
         predictGenotypes(sampleCounts, currentReferenceId.toString(), position, referenceIndex, list);
-        writeGenotypes(statsWriter, sampleCounts, position);
+        writeGenotypes(statsWriter, sampleCounts, positionFormat);
 
         writeZygozity(sampleCounts);
         if (!alleleSet.isEmpty()) {
