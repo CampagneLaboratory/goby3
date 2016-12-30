@@ -13,8 +13,8 @@
     <name>Goby Full Distribution</name>
     <url>http://goby.campagnelab.org</url>
     <properties>
-        <nd4j.version>0.5.0</nd4j.version>
-        <dl4j.version>0.5.0</dl4j.version>
+        <nd4j.version>0.7.1</nd4j.version>
+        <dl4j.version>0.7.1</dl4j.version>
     </properties>
     <build>
         <resources>
@@ -310,12 +310,6 @@
                     <artifactId>log4j-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.deeplearning4j</groupId>
-            <artifactId>deeplearning4j-ui</artifactId>
-            <version>${dl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.nd4j</groupId>
