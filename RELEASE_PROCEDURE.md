@@ -92,10 +92,20 @@ As for the staged artifact, we check that the release and its dependencies are r
     -Dartifact=org.campagnelab.goby:goby-io:3.0.3
 ```
 
+## Prepare a snapshot release
+1. Build goby and push the jars to the local maven repo (i.e., mvn install).
+2. Build variationanalysis (run build-cpu.sh to also install those jars)
+3. Run the snapshot script to bundle these elements together:
+
+```sh
+  cd snapshot-previews
+  /prepare-preview.sh [GOBY.VERSION]-SNAPSHOT [VARIATIONANALYSIS.VERSION]-SNAPSHOT
+```
+
 ## Prepare the release files
 ```sh
   cd goby3/formal-releases
-  ./prepare-release.sh
+  ./prepare-release.sh [VARIATIONANALYSIS.VERSION]
 ```
 
 The version of the release is set according to the goby-framework version declared in the goby3/pom.xml. Snapshot versions are not accepted for formal releases.
