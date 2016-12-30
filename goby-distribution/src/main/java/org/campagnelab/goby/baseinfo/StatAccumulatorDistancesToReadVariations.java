@@ -5,8 +5,8 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import java.util.Properties;
 
 /**
- * Store the range of basequality forward and reverse strand.
- * Created by fac2003 on 10/20/16.
+ * Store the range of distances to read variations from position.
+ * Created by rct66 on 12/29/16.
  */
 public class StatAccumulatorDistancesToReadVariations extends StatAccumulator {
     public static final String STATS_DISTANCES_FORWARD = "stats.distancesToReadVariations.forward";

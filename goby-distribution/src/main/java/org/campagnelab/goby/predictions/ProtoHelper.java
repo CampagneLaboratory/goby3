@@ -139,7 +139,6 @@ public class ProtoHelper {
                 }
             }
         }
-
         for (PositionBaseInfo baseInfo : list) {
             int baseIndex = sampleCounts[sampleToReaderIdxs[baseInfo.readerIndex]].baseIndex(baseInfo.to);
             int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
@@ -154,8 +153,11 @@ public class ProtoHelper {
                 //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
                 readIdxs[sampleIndex][baseIndex][strandInd].add(baseInfo.readIndex);
                 for (Alignments.SequenceVariation var : baseInfo.alignmentEntry.getSequenceVariationsList()) {
-                    int delta = baseInfo.readIndex - var.getReadIndex();
+                    int varIndex = var.getReadIndex();
+                    int delta = baseInfo.readIndex - varIndex;
                     distancesToReadVariations[sampleIndex][baseIndex][strandInd].add(delta);
+
+
                 }
                 targetAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getTargetAlignedLength());
                 queryAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getQueryAlignedLength());
