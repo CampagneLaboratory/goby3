@@ -156,7 +156,9 @@ public abstract class IterateSortedAlignmentsListImpl
         final int position = info.position;
         DiscoverVariantPositionData list = positionToBases.get(position);
         if (list == null) {
-            list = new DiscoverVariantPositionData(position,getGenome()!=null?getGenome().get(currentReferenceIndex,position):'\0');
+            int genomeReferenceIndex=alignmentToGenomeTargetIndices[currentReferenceIndex];
+            char referenceBase = getGenome() != null ? getGenome().get(genomeReferenceIndex, position) : '\0';
+            list = new DiscoverVariantPositionData(position, referenceBase);
             list.SUB_SAMPLE_SIZE=SUB_SAMPLE_SIZE;
             positionToBases.put(position, list);
         } else {
