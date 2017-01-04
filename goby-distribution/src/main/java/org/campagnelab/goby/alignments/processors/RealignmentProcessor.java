@@ -128,7 +128,9 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                 entry = iterator.skipTo(targetIndex, position);
 
                 if (entry != null) {
-
+//if (entry.getPosition()==11056072) {
+//    System.out.println("STOP");
+//}
                     final int entryTargetIndex = entry.getTargetIndex();
                     minTargetIndex = Math.min(minTargetIndex, entry.getTargetIndex());
                     currentTargetIndex = minTargetIndex;
@@ -227,7 +229,6 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         int currentBestScore = 0;
         ObservedIndel bestScoreIndel = null;
         boolean bestScoreDirection = false;
-
 
         for (ObservedIndel indel : tinfo.potentialIndels) {
             if (entryOverlapsIndel(indel, entry)) {
@@ -461,11 +462,11 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                 final char toBase = var.getTo().charAt(j);
                 final int index = newGenomicPosition + j;
                 if (index < 0 || index > genome.getLength(genomeTargetIndex)) {
-                    score += -10;
+                    score += -20;
                 } else {
                     final boolean compatible = genome.get(genomeTargetIndex, newGenomicPosition + j) == toBase;
 
-                    score += compatible ? 1 : 0;
+                    score += compatible ? 1 : -1;
                     // store which reference positions are different from the reference:
 
                     variantPositions.add(var.getPosition() + entryPosition + j - 1);
@@ -478,13 +479,11 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         // startAlignment and endAlignment are zero-based
         int startAlignment = shiftForward ? entryPosition + indelOffsetInAlignment : entryPosition;
         int endAlignment = shiftForward ? entry.getTargetAlignedLength() + entryPosition : indelOffsetInAlignment + entryPosition + (direction * indelLength);
-
-
-        //       String pre = getGenomeSegment(genome, targetIndex, startAlignment, endAlignment);
-//
-
-//         String post = getGenomeSegment(genome, targetIndex, startAlignment + indelLength, endAlignment + indelLength);
-        //   System.out.printf(" pre and post alignments: %n%s\n%s%n", pre, post);
+//        if (entry.getPosition()==11056072) {
+//            String pre = getGenomeSegment(genome, genomeTargetIndex, startAlignment, endAlignment);
+//            String post = getGenomeSegment(genome, genomeTargetIndex, startAlignment + indelLength, endAlignment + indelLength);
+//            System.out.printf(" pre and post alignments: %n%s\n%s%n", pre, post);
+//        }
         // pos is zero-based:
         endAlignment = Math.min(endAlignment, genome.getLength(genomeTargetIndex) - 1);
         for (int pos = startAlignment; pos < endAlignment; pos++) {
