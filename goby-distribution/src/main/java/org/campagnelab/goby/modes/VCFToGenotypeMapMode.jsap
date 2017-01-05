@@ -25,6 +25,12 @@
             <required>false</required>
             <help>The output filename.</help>
         </flaggedOption>
+        <flaggedOption>
+            <id>chromosome-prefix</id>
+            <longFlag>chromosome-prefix</longFlag>
+            <required>false</required>
+            <help>A prefix to append to chromsome names (e.g., chr).</help>
+        </flaggedOption>
         <unflaggedOption>
             <id>vcfInput</id>
             <required>true</required>

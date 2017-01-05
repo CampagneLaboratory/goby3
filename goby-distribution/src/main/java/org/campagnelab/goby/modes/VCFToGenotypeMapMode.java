@@ -22,14 +22,17 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.io.BinIO;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.goby.readers.vcf.VCFParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import it.unimi.dsi.fastutil.io.BinIO;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 
 /**
@@ -64,8 +67,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      */
     private static final String MODE_DESCRIPTION = "Create a genotype map from a VCF file. " +
             "The resulting map can be used to annotate an sbi dataset with true genotype labels. " +
-            "See the variationanalysis project for details."
-           ;
+            "See the variationanalysis project for details.";
+    private String chrPrefix;
 
 
     @Override
@@ -92,7 +95,10 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         final JSAPResult jsapResult = parseJsapArguments(args);
         setInputFilenames(jsapResult.getString("vcfInput"));
         outputMapname = jsapResult.getString("output");
-
+        chrPrefix = jsapResult.getString("chromosome-prefix");
+        if (chrPrefix == null) {
+            chrPrefix = "";
+        }
         chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<String>>(40);
 
         return this;
@@ -162,7 +168,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         CharSequence ref = null;
         pg.start();
         while (parser.hasNextDataLine()) {
-            String chromosomeName = parser.getColumnValue(chromosomeColumnIndex).toString();
+            String chromosomeName = chrPrefix+parser.getColumnValue(chromosomeColumnIndex).toString();
+
             String posOld = positionStr;
             CharSequence refOld = ref;
 
@@ -174,10 +181,10 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 //            }
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
             CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample - 1);
-            if (gt.equals("GT")){
+            if (gt.equals("GT")) {
                 gt = parser.getStringFieldValue(globalFieldIndexSample);
             }
-            assert (gt != "GT"):"GT is not a valid genotype, vcf misread.";
+            assert (gt != "GT") : "GT is not a valid genotype, vcf misread.";
             final String paddedAlt = alt + ",N";
             final String[] alts = paddedAlt.toString().split(",");
             if (!chMap.containsKey(chromosomeName)) {
@@ -186,7 +193,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             String expandedGT = convertGT(gt.toString(), ref.toString(), alts[0], alts[1]);
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
-            int positionGoby=positionVCF-1;
+            int positionGoby = positionVCF - 1;
             chMap.get(chromosomeName).put(positionGoby, expandedGT);
             parser.next();
             pg.update();
@@ -201,18 +208,18 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
     * This is only compatible with VCF's with ONE SAMPLE, as in the platinum genome vcf's.
      */
     private String convertGT(String origGT, String ref, String alt1, String alt2) {
-        int maxLength = Math.max(ref.length(),Math.max(alt1.length(),alt2.length()));
+        int maxLength = Math.max(ref.length(), Math.max(alt1.length(), alt2.length()));
         StringBuffer padRef = new StringBuffer(ref);
         StringBuffer padAlt1 = new StringBuffer(alt1);
         StringBuffer padAlt2 = new StringBuffer(alt2);
-        for (int i = 1; i <= maxLength; i++){
-            if (padRef.length() < maxLength){
+        for (int i = 1; i <= maxLength; i++) {
+            if (padRef.length() < maxLength) {
                 padRef.append("-");
             }
-            if (padAlt1.length() < maxLength){
+            if (padAlt1.length() < maxLength) {
                 padAlt1.append("-");
             }
-            if (padAlt2.length() < maxLength){
+            if (padAlt2.length() < maxLength) {
                 padAlt2.append("-");
             }
         }
