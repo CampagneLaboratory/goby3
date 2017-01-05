@@ -464,7 +464,10 @@ public class CompactFileStatsMode extends AbstractGobyMode {
 
                 // across this file
 
-                allQueryIndices.observe(entry.getReadIndex());
+                final int readIndex = entry.getReadIndex();
+                if (readIndex != -1) {
+                    allQueryIndices.observe(readIndex);
+                }
                 totalReadLength += readLength;
                 totalReadLengthPair += entry.getReadLengthPair();
 
