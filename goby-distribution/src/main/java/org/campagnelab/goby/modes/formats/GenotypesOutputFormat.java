@@ -58,6 +58,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     private double[] modelProbabilities;
     private int modelCallIndex;
     private int modelProbabilityIndex;
+    private int altGenotypeCount;
 
     public static final DynamicOptionClient doc() {
         return doc;
@@ -237,9 +238,14 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         writeGenotypes(statsWriter, sampleCounts, positionFormat);
 
         writeZygozity(sampleCounts);
+
+        // Do not write record if alleleSet is empty, IGV VCF track cannot handle that.
         if (!alleleSet.isEmpty()) {
-            // Do not write record if alleleSet is empty, IGV VCF track cannot handle that.
-            statsWriter.writeRecord();
+            // do not write sites that only match the reference. Save storage since we know the answer.
+            if (altGenotypeCount > 0) {
+
+                statsWriter.writeRecord();
+            }
         }
 
         if (ALT_FORMAT) {
@@ -356,7 +362,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             statsWriter.setSampleValue(failBaseCountFieldIndex, sampleIndex, sci.failedCount);
 
             int baseIndex = 0;
-            int altGenotypeCount = 0;
+            altGenotypeCount = 0;
             genotypeBuffer.setLength(0);
 
             final MutableString baseCountString = new MutableString();
