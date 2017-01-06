@@ -625,8 +625,8 @@ public class FastaToCompactMode extends AbstractGobyMode {
             }
 
             writer.appendEntry(entryIndex);
-// skip the numbers used by the other threads.
-            entryIndex += numThreads;
+            // skip the numbers used by the other threads, unless numThreads is undefined.
+            entryIndex += numThreads==-1? 1: numThreads;
         }
     }
 
