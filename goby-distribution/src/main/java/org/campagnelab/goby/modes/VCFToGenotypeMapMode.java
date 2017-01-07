@@ -149,7 +149,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         try {
             parser.readHeader();
         } catch (VCFParser.SyntaxException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Unable to parse VCF header",e);
         }
 
         final int chromosomeColumnIndex = parser.getGlobalFieldIndex("CHROM", "VALUE");
@@ -168,7 +168,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         CharSequence ref = null;
         pg.start();
         while (parser.hasNextDataLine()) {
-            String chromosomeName = chrPrefix+parser.getColumnValue(chromosomeColumnIndex).toString();
+            String chromosomeName = chrPrefix + parser.getColumnValue(chromosomeColumnIndex).toString();
 
             String posOld = positionStr;
             CharSequence refOld = ref;
@@ -180,11 +180,11 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 //                break;
 //            }
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
-            CharSequence gt = parser.getStringFieldValue(globalFieldIndexSample - 1);
-            if (gt.equals("GT")) {
-                gt = parser.getStringFieldValue(globalFieldIndexSample);
-            }
-            assert (gt != "GT") : "GT is not a valid genotype, vcf misread.";
+
+            String value = parser.getColumnValue(parser.getColumns().find(sampleName).columnIndex).toString();
+            String gt=value.substring(0, value.indexOf(':'));
+
+            assert (!"GT".equals(gt) && gt.length() != 0) : "GT is not a valid genotype, vcf misread.";
             final String paddedAlt = alt + ",N";
             final String[] alts = paddedAlt.toString().split(",");
             if (!chMap.containsKey(chromosomeName)) {
