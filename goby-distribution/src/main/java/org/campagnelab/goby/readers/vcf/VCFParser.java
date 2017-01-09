@@ -32,10 +32,7 @@ import htsjdk.samtools.util.BlockCompressedInputStream;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Parser for files in the <a href="http://vcftools.sourceforge.net/specs.html">Variant Call Format</a>, or in plain TSV format.
@@ -925,6 +922,11 @@ public class VCFParser implements Closeable {
             return;
         }
         if ("fileformat".equals(columnName) || "samtoolsVersion".equals(columnName)) {
+            return;
+        }
+        String[] array=new String[]{"FILTER", "INFO","FORMAT"};
+        ObjectArrayList<String> fixedColumnNames=ObjectArrayList.wrap(array);
+        if (!fixedColumnNames.contains(columnName)) {
             return;
         }
         if (!infoDefinition.startsWith("<") && !infoDefinition.endsWith(">")) {
