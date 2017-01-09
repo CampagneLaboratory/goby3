@@ -235,7 +235,9 @@ public class SuggestPositionSlicesMode extends AbstractGobyMode {
                 // we switch to a new chromosome, introduce a new breakpoint at the end of the previous chromosome:
                 if (lastTargetIndex != -1) {
                     result.add(new ReferenceLocation(lastTargetIndex, reader.getTargetLength(lastTargetIndex) - 1));
-                    result.add(new ReferenceLocation(breakpoint.targetIndex, 0));
+                    if (breakpoint.position != 0){
+                        result.add(new ReferenceLocation(breakpoint.targetIndex, 0));
+                    }
                     System.out.println("Adding breakpoint at end of " + lastTargetIndex);
                     numBreakPointAdded++;
                 }
