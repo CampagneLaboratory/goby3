@@ -182,7 +182,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             final CharSequence alt = parser.getColumnValue(altColumnIndex);
 
             String value = parser.getColumnValue(parser.getColumns().find(sampleName).columnIndex).toString();
-            String gt=value.substring(0, value.indexOf(':'));
+            int endIndex = value.indexOf(':');
+            String gt=value.substring(0, endIndex==-1?value.length():endIndex);
 
             assert (!"GT".equals(gt) && gt.length() != 0) : "GT is not a valid genotype, vcf misread.";
             final String paddedAlt = alt + ",N";
