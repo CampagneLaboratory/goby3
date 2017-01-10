@@ -31,8 +31,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.zip.GZIPInputStream;
 
 
 /**
@@ -145,7 +147,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
     public void execute() throws IOException {
 
         int numVcfItems = 0;
-        VCFParser parser = new VCFParser(new FileReader(vcfFile));
+
+        VCFParser parser = new VCFParser(vcfFile.getAbsolutePath());
         try {
             parser.readHeader();
         } catch (VCFParser.SyntaxException e) {
