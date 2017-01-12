@@ -123,7 +123,12 @@ WarningCounter warnOnce=new WarningCounter(1);
 
         String md = samRecord.getStringAttribute(SAMTag.MD.name());
         if (md != null) {
-            allRefBases = new String(SequenceUtil.makeReferenceFromAlignment(samRecord, true));
+            try {
+                allRefBases = new String(SequenceUtil.makeReferenceFromAlignment(samRecord, true));
+            } catch (htsjdk.samtools.SAMException e){
+                System.out.println("Illegal MD pattern skipped");
+                return null;
+            }
         } else {
             allRefBases = null;
             warnOnce.info(LOG, "MD tags not found. Reference bases of variations will be imported as 'N' for this alignment.");
