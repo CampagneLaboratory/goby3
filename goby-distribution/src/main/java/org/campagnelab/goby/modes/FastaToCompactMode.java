@@ -573,6 +573,7 @@ public class FastaToCompactMode extends AbstractGobyMode {
     }
 
     private void convert(ReadsWriter writer, String inputFilename) throws IOException {
+        System.out.println("Goby 3.2.1-SNAPSHOT fix");
         FastXReader pairReader = null;
         if (processPairs) {
             final String pairInputFilename = pairFilename(inputFilename);
