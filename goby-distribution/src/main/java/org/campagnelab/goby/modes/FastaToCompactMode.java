@@ -21,16 +21,6 @@ package org.campagnelab.goby.modes;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import edu.rit.pj.PJProperties;
-import org.campagnelab.goby.compression.MessageChunksWriter;
-import org.campagnelab.goby.readers.FastXEntry;
-import org.campagnelab.goby.readers.FastXReader;
-import org.campagnelab.goby.reads.QualityEncoding;
-import org.campagnelab.goby.reads.ReadCodec;
-import org.campagnelab.goby.reads.ReadsWriter;
-import org.campagnelab.goby.reads.ReadsWriterImpl;
-import org.campagnelab.goby.cli.DoInParallel;
-import org.campagnelab.goby.util.FileExtensionHelper;
-import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 import it.unimi.dsi.fastutil.io.FastBufferedOutputStream;
 import it.unimi.dsi.lang.MutableString;
 import org.apache.commons.io.FileUtils;
@@ -38,18 +28,22 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.campagnelab.goby.cli.DoInParallel;
+import org.campagnelab.goby.compression.MessageChunksWriter;
+import org.campagnelab.goby.readers.FastXEntry;
+import org.campagnelab.goby.readers.FastXReader;
+import org.campagnelab.goby.reads.QualityEncoding;
+import org.campagnelab.goby.reads.ReadCodec;
+import org.campagnelab.goby.reads.ReadsWriter;
+import org.campagnelab.goby.reads.ReadsWriterImpl;
+import org.campagnelab.goby.util.FileExtensionHelper;
+import org.campagnelab.goby.util.dynoptions.DynamicOptionRegistry;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Properties;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Converts a <a href="http://en.wikipedia.org/wiki/FASTA_format">FASTA</a>
@@ -416,7 +410,7 @@ public class FastaToCompactMode extends AbstractGobyMode {
             if (concatenate) {
                 concat(inputFilenames, reqOutputFilename);
             } else {
-                if (numThreads == -1) {
+                if (numThreads <0) {
 
                     int defaultThreadCount = PJProperties.getPjNt();
                     if (defaultThreadCount == 0) {
@@ -424,7 +418,9 @@ public class FastaToCompactMode extends AbstractGobyMode {
                     }
                     numThreads = defaultThreadCount;
                 }
-
+                if (numThreads < 0) {
+                    numThreads = 1;
+                }
                 final DoInParallel loop = new DoInParallel(numThreads) {
                     @Override
                     public void action(final DoInParallel forDataAccess, final String inputBasename, final int loopIndex) {
@@ -627,8 +623,9 @@ public class FastaToCompactMode extends AbstractGobyMode {
 
             writer.appendEntry(entryIndex);
             // skip the numbers used by the other threads, unless numThreads is undefined.
-            entryIndex += numThreads==-1? 1: numThreads;
-            assert entryIndex>=0: "entryIndex must never be negative.";
+            int increment = numThreads < 0 ? 1 : numThreads;
+            entryIndex += increment;
+            assert entryIndex >= 0 : "entryIndex must never be negative.";
         }
     }
 
