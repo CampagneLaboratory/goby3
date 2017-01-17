@@ -211,6 +211,7 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
         final ProgressLogger progress = new ProgressLogger();
         progress.displayFreeMemory = false;
         progress.expectedUpdates=alignmentReader.getNumberOfAlignedReads();
+        System.out.println(alignmentReader.getNumberOfAlignedReads() + " expected number of reads.");
         int entriesInOutputFile = 0;
         long numLogicalEntries = 0;
         long numEntries = 0;

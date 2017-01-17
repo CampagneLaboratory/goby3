@@ -197,7 +197,12 @@ public class HTSJDKReaderImpl implements AlignmentReader {
 
     private void cacheMore(SAMRecordIterator samRecordIterator) throws IOException {
         do {
-            final SAMRecord samRecord = samRecordIterator.next();
+            SAMRecord samRecord = null;
+            try {
+                 samRecord  = samRecordIterator.next();
+            } catch (java.util.NoSuchElementException e) {
+                System.out.println("samRecordIterator no next element exception caught");
+            }
             if (samRecord != null) {
                 config.numberOfReads++;
                 convertReads.setSamRecord(samRecord);

@@ -173,6 +173,7 @@ public class ConcatSortedAlignmentReader extends ConcatAlignmentReader {
                                 bucket.entry.getPosition(), activeIndex));
                     }
 
+
                 } else {
                     // the first entry in the heap is at or after the skipTo location. We are done cleaning up the heap.
                     break;
