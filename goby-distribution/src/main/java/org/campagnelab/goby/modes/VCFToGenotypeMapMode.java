@@ -54,7 +54,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      */
     private File vcfFile;
     private Object2ObjectMap<String, Int2ObjectMap<String>> chMap;
-    private Object2ObjectMap<String, Int2ObjectMap<String>> indelMap;
     /**
      * The output map filename.
      */
@@ -104,7 +103,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             chrPrefix = "";
         }
         chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<String>>(40);
-        indelMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<String>>(40);
 
         return this;
     }
@@ -201,28 +199,21 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             if (!chMap.containsKey(chromosomeName)) {
                 chMap.put(chromosomeName, new Int2ObjectArrayMap<String>(50000));
             }
-            if (!indelMap.containsKey(chromosomeName)) {
-                indelMap.put(chromosomeName, new Int2ObjectArrayMap<String>(50000));
-            }
+
 
             String expandedGT = convertGT(gt.toString(), ref.toString(), alts[0], alts[1]);
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
             if (expandedGT.length() < 4) {
-                //SNP
-                chMap.get(chromosomeName).put(positionGoby, expandedGT);
-            } else {
-                //indel
-                indelMap.get(chromosomeName).put(positionGoby, paddedRef+":"+expandedGT);
+                chMap.get(chromosomeName).put(positionGoby, paddedRef + ":" + expandedGT);
             }
             parser.next();
             pg.update();
         }
         pg.stop();
 
-        BinIO.storeObject(chMap, new File(FilenameUtils.getFullPath(outputMapname)+"snps_"+FilenameUtils.getName(outputMapname)));
-        BinIO.storeObject(indelMap, new File(FilenameUtils.getFullPath(outputMapname)+"indels_"+FilenameUtils.getName(outputMapname)) );
+        BinIO.storeObject(chMap, new File(outputMapname));
     }
 
 
