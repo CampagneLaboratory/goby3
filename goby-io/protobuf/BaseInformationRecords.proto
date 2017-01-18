@@ -46,6 +46,10 @@ message BaseInformation {
     Homozygotes are written for instance, A/A while A/T-- is a heterozygote genotype with one allele A another T--*[ */
     optional string trueGenotype = 9;
 
+    /** This should generally correspond with the reference base, but in the case of some indels will be different.
+    Eg: A (snp or no variant) , A--- (insertion) or ACAG. (deletion)[ */
+    optional string trueFrom = 11;
+
     /** Genomic context centered on the base: bases around the base. If 11 bases are stored, 5 bases of context are
     stored on either side. */
     optional string genomicSequenceContext = 15;
@@ -68,6 +72,7 @@ message SampleInfo {
      when true labels have been added (using add-true-genotypes.sh from variationanalysis).
      */
     optional bool isVariant = 4;
+
 
 }
 

@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.campagnelab.goby.readers.vcf.VCFParser;
+import org.campagnelab.goby.util.VariantMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +54,13 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      * The input files.
      */
     private File vcfFile;
-    private Object2ObjectMap<String, Int2ObjectMap<String>> chMap;
+    private VariantMapHelper chMap;
     /**
      * The output map filename.
      */
     private String outputMapname;
 
-
+    private final boolean PAD_ALLELES = false;
     /**
      * The mode name.
      */
@@ -102,8 +103,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         if (chrPrefix == null) {
             chrPrefix = "";
         }
-        chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<String>>(40);
-
+        chMap = new VariantMapHelper();
         return this;
     }
 
@@ -196,24 +196,19 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             assert (!"GT".equals(gt) && gt.length() != 0) : "GT is not a valid genotype, vcf misread.";
             final String paddedAlt = alt + ",N";
             final String[] alts = paddedAlt.toString().split(",");
-            if (!chMap.containsKey(chromosomeName)) {
-                chMap.put(chromosomeName, new Int2ObjectArrayMap<String>(50000));
-            }
-
-
             String expandedGT = convertGT(gt.toString(), ref.toString(), alts[0], alts[1]);
+            String[] expandedAlleles = expandedGT.split("\\||\\\\|/");
+
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
-            if (expandedGT.length() < 4) {
-                chMap.get(chromosomeName).put(positionGoby, paddedRef + ":" + expandedGT);
-            }
+            chMap.addVariant(chromosomeName,positionGoby,paddedRef,expandedAlleles[0],expandedAlleles[1]);
             parser.next();
             pg.update();
         }
         pg.stop();
 
-        BinIO.storeObject(chMap, new File(outputMapname));
+        chMap.saveMap(outputMapname);
     }
 
 
@@ -226,19 +221,21 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         StringBuffer padRef = new StringBuffer(ref);
         StringBuffer padAlt1 = new StringBuffer(alt1);
         StringBuffer padAlt2 = new StringBuffer(alt2);
-        for (int i = 1; i <= maxLength; i++) {
-            if (padRef.length() < maxLength) {
-                padRef.append("-");
-                paddedRef = padRef.toString();
-            }
-            if (padAlt1.length() < maxLength) {
-                padAlt1.append("-");
-            }
-            if (padAlt2.length() < maxLength) {
-                padAlt2.append("-");
+        if (PAD_ALLELES){
+            for (int i = 1; i <= maxLength; i++) {
+                if (padRef.length() < maxLength) {
+                    padRef.append("-");
+                }
+
+                if (padAlt1.length() < maxLength) {
+                    padAlt1.append("-");
+                }
+                if (padAlt2.length() < maxLength) {
+                    padAlt2.append("-");
+                }
             }
         }
-
+        paddedRef = padRef.toString();
         //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
         return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
     }

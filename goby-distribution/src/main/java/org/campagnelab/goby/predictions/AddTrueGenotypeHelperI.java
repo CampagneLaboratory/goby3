@@ -72,6 +72,8 @@ public interface AddTrueGenotypeHelperI {
 
         String getTrueGenotype();
 
+        String getTrueFrom();
+
         boolean isVariant();
 
     }
