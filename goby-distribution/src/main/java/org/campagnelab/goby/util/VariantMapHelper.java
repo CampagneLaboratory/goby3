@@ -5,10 +5,15 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.io.BinIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
+import org.campagnelab.goby.reads.RandomAccessSequenceCache;
+import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by rct66 on 1/17/17.
@@ -21,6 +26,12 @@ public class VariantMapHelper {
 
 
     private Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>> chMap;
+    private RandomAccessSequenceInterface genome;
+    private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
+
+
+
+
 
 
     /**
@@ -29,15 +40,18 @@ public class VariantMapHelper {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public VariantMapHelper(String pathToMap) throws IOException, ClassNotFoundException {
+    public VariantMapHelper(String pathToMap, String genomePath) throws IOException, ClassNotFoundException {
         chMap = (Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>>) BinIO.loadObject(pathToMap);
     }
 
     /**
      * Generate a new empty variant map
      */
-    public VariantMapHelper(){
+    public VariantMapHelper(RandomAccessSequenceInterface genome){
         chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>>(40);
+        this.genome = genome;
+        this.equivalentIndelRegionCalculator = new EquivalentIndelRegionCalculator(genome);
+
     }
 
     /**
@@ -45,11 +59,12 @@ public class VariantMapHelper {
      * @param chrom
      * @param pos
      * @param reference
-     * @param trueAllele1
-     * @param trueAllele2
+     * @param trueAlleles
      */
-    public void addVariant(String chrom, int pos, String reference, String trueAllele1, String trueAllele2){
-        Variant var = new Variant(reference,trueAllele1,trueAllele2);
+    public void addVariant(int pos, String chrom, String reference, List<String> trueAlleles){
+        //zero-based positions
+        int gobyPos = pos-1;
+        Variant var = new Variant(reference,trueAlleles,gobyPos,genome.getReferenceIndex(chrom));
         addVariant(chrom,pos,var);
     }
 
@@ -64,7 +79,8 @@ public class VariantMapHelper {
         if (!chMap.containsKey(chrom)) {
             chMap.put(chrom, new Int2ObjectArrayMap<Variant>(50000));
         }
-        chMap.get(chrom).put(pos, var);
+//        chMap.
+//        chMap.get(chrom).put(pos, var);
     }
 
 
@@ -85,7 +101,7 @@ public class VariantMapHelper {
          * @return
          */
     public Variant getVariant(String chrom, int pos){
-        if (!chMap.containsKey(chrom)) {
+        if (chMap.containsKey(chrom)) {
             return chMap.get(chrom).get(pos);
         }
         return null;

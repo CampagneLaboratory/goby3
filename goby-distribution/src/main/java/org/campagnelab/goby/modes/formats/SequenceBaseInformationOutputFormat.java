@@ -203,6 +203,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     genome,
                     doc.getInteger("sample-index"),
                     callIndels,
+                    !callIndels,
                     samplingRate);
             this.addTrueGenotypeHelper = o;
             return o;

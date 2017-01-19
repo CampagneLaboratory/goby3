@@ -27,7 +27,10 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
+import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
 import org.campagnelab.goby.readers.vcf.VCFParser;
+import org.campagnelab.goby.reads.RandomAccessSequenceCache;
+import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.VariantMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 
 
@@ -59,6 +63,11 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      * The output map filename.
      */
     private String outputMapname;
+
+    /**
+     * goby format genome
+     */
+    private RandomAccessSequenceInterface genome;
 
     private final boolean PAD_ALLELES = false;
     /**
@@ -103,7 +112,11 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         if (chrPrefix == null) {
             chrPrefix = "";
         }
-        chMap = new VariantMapHelper();
+        genome = DiscoverSequenceVariantsMode.configureGenome(jsapResult);
+
+
+
+        chMap = new VariantMapHelper(genome);
         return this;
     }
 
@@ -202,7 +215,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
-            chMap.addVariant(chromosomeName,positionGoby,paddedRef,expandedAlleles[0],expandedAlleles[1]);
+            chMap.addVariant(positionGoby,chromosomeName,paddedRef,Arrays.asList(expandedAlleles));
             parser.next();
             pg.update();
         }

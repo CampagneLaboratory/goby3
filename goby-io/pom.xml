@@ -145,6 +145,7 @@
                         <exclude>**/*.jsap</exclude>
                     </excludes>
                     <includes>
+                        <include>org/campagnelab/goby/algorithmic/algorithm/EquivalentIndelRegionCalculator**</include>
                         <include>org/campagnelab/goby/algorithmic/compression/**</include>
                         <include>org/campagnelab/goby/algorithmic/dsv/**</include>
                         <include>org/campagnelab/goby/algorithmic/indels/**</include>

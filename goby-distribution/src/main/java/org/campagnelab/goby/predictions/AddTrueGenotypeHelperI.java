@@ -23,6 +23,19 @@ public interface AddTrueGenotypeHelperI {
                    int sampleIndex, boolean considerIndels, float referenceSamplingRate);
 
     /**
+     * Configure the helper.
+     *
+     * @param mapFilename
+     * @param genome
+     * @param sampleIndex
+     * @param considerIndels
+     * @param indelsAsRef denotes whether to include the ref base of indels if they are not considered.
+     * @param referenceSamplingRate
+     */
+    void configure(String mapFilename, RandomAccessSequenceInterface genome,
+                   int sampleIndex, boolean considerIndels, boolean indelsAsRef, float referenceSamplingRate);
+
+    /**
      * Label a record with true genotype. Return true when the record should  be written to the output.
      * The result considers whether the site contains a true variant (always kept), or whether the site
      * has been sampled from reference matching sites (using referenceSamplingRate).

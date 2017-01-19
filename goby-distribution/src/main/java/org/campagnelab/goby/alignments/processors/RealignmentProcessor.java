@@ -531,7 +531,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         for (int i = 0; i < entry.getSequenceVariationsCount(); ++i) {
             final Alignments.SequenceVariation var = entry.getSequenceVariations(i);
             if (isIndel(var)) {
-                // start and last position are zero-based:           A--CAC start=1 end=3
+                // start and last position are zero-based:          A--CAC start=1 end=3
                 final int startPosition = var.getPosition() + entryPosition - 1;
                 final int lastPosition = var.getPosition() + entryPosition +
                         Math.max(var.getFrom().length(), var.getTo().length()) - 1;
