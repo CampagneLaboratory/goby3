@@ -1,3 +1,12 @@
+3.2.1
+ - fast-co-compact: fix a big introduced on 10/6/2016 which created negative read entries.
+ - Sequence Base Information (sbi/sbip) format: support adding true genotypes using a varmap.
+ - catch a number of exception that can be thrown by HTSJDK when processing BAM files. Exceptions
+   are caught so that an error on one alignment does not interrupt processing of an entire alignment.
+   Errors are shown in log.
+ - vcf-to-genotype-map mode now supports (b)gzipped vcf input.
+ - vcf-to-genotype-map: fix bug that manifested itself when the vcf had a single genotype field.
+ - vcf-to-genotype-map: add chromosome-prefix argument to help import VCF where the chr prefix is missing.
 3.2
  - Remove memory leak when reading SAM/BAM files. This was the likely cause for running out of memory error in
  compression benchmarks (had nothing to do with compression but with the conversion of SAM/BAM to goby representation).
