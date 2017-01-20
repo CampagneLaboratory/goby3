@@ -1,6 +1,5 @@
 3.2.1
  - fast-co-compact: fix a big introduced on 10/6/2016 which created negative read entries.
- - Sequence Base Information (sbi/sbip) format: support adding true genotypes using a varmap.
  - catch a number of exception that can be thrown by HTSJDK when processing BAM files. Exceptions
    are caught so that an error on one alignment does not interrupt processing of an entire alignment.
    Errors are shown in log.
