@@ -25,20 +25,19 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.io.BinIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
 import org.campagnelab.goby.readers.vcf.VCFParser;
 import org.campagnelab.goby.reads.RandomAccessSequenceCache;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.util.Variant;
 import org.campagnelab.goby.util.VariantMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 
@@ -187,6 +186,15 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         String positionStr = null;
         CharSequence ref = null;
+
+        //get expected number of lines to give time prediction
+        LineNumberReader  lnr = new LineNumberReader(new FileReader(vcfFile));
+        lnr.skip(Long.MAX_VALUE);
+        pg.expectedUpdates = lnr.getLineNumber() + 1; //Add 1 because line index starts at 0
+        // the LineNumberReader object should be closed to prevent resource leak
+        lnr.close();
+
+
         pg.start();
         while (parser.hasNextDataLine()) {
             String chromosomeName = chrPrefix + parser.getColumnValue(chromosomeColumnIndex).toString();
@@ -215,13 +223,16 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
-            chMap.addVariant(positionGoby,chromosomeName,paddedRef,Arrays.asList(expandedAlleles));
+            chMap.addVariant(positionGoby,chromosomeName,paddedRef,new ObjectArraySet<String>(expandedAlleles));
             parser.next();
             pg.update();
         }
         pg.stop();
 
         chMap.saveMap(outputMapname);
+        System.out.println("NumIndels Encountered: " + Variant.numIndelsEncountered +
+                "\nNumber of indels ignored due to variant overlap: " + chMap.numOverlaps +
+                "\nNumber of mis-matching 'from's of indels ignored: " + Variant.numFromMistmaches);
     }
 
 

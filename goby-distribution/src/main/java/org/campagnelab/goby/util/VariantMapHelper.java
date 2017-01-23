@@ -3,17 +3,17 @@ package org.campagnelab.goby.util;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.io.BinIO;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
-import org.campagnelab.goby.reads.RandomAccessSequenceCache;
+import org.campagnelab.goby.modes.VCFToGenotypeMapMode;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by rct66 on 1/17/17.
@@ -24,10 +24,13 @@ public class VariantMapHelper {
 
 
 
-
+    static WarningCounter overLappingIndels = new WarningCounter(10);
+    public int numOverlaps = 0;
     private Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>> chMap;
     private RandomAccessSequenceInterface genome;
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
+    private static final Logger LOG = LoggerFactory.getLogger(VCFToGenotypeMapMode.class);
+
 
 
 
@@ -40,7 +43,7 @@ public class VariantMapHelper {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public VariantMapHelper(String pathToMap, String genomePath) throws IOException, ClassNotFoundException {
+    public VariantMapHelper(String pathToMap) throws IOException, ClassNotFoundException {
         chMap = (Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>>) BinIO.loadObject(pathToMap);
     }
 
@@ -61,27 +64,29 @@ public class VariantMapHelper {
      * @param reference
      * @param trueAlleles
      */
-    public void addVariant(int pos, String chrom, String reference, List<String> trueAlleles){
-        //zero-based positions
-        int gobyPos = pos-1;
-        Variant var = new Variant(reference,trueAlleles,gobyPos,genome.getReferenceIndex(chrom));
-        addVariant(chrom,pos,var);
-    }
-
-
-    /**
-     * Add variant to map with var object
-     * @param chrom
-     * @param pos
-     * @param var
-     */
-    public void addVariant(String chrom, int pos, Variant var){
+    public void addVariant(int pos, String chrom, String reference, Set<String> trueAlleles){
+        //make sure there is a map for this chromosome
         if (!chMap.containsKey(chrom)) {
             chMap.put(chrom, new Int2ObjectArrayMap<Variant>(50000));
         }
-//        chMap.
-//        chMap.get(chrom).put(pos, var);
+        //zero-based positions
+        int gobyPos = pos-1;
+        Variant var = new Variant(reference,trueAlleles,gobyPos,genome.getReferenceIndex(chrom));
+        Map<Integer,Variant> realignedVars = var.realign(equivalentIndelRegionCalculator);
+        for (Variant reVar : realignedVars.values()){
+            if (chMap.get(chrom).containsKey(reVar.position)) {
+
+                overLappingIndels.warn(LOG,
+                        "realigned var overlap at pos " + reVar.position +
+                        "\nin map from,to: " +  chMap.get(chrom).get(reVar.position).reference + chMap.get(chrom).get(reVar.position).trueAlleles +
+                        "\nintended adding from,to: " +  reVar.reference + reVar.trueAlleles);
+                numOverlaps++;
+            } else {
+                chMap.get(chrom).put(reVar.position,reVar);
+            }
+        }
     }
+
 
 
     /**
