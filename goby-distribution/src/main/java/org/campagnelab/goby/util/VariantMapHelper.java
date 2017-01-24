@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.io.BinIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
-import org.campagnelab.goby.modes.VCFToGenotypeMapMode;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class VariantMapHelper {
     private Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>> chMap;
     private RandomAccessSequenceInterface genome;
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
-    private static final Logger LOG = LoggerFactory.getLogger(VCFToGenotypeMapMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VariantMapHelper.class);
 
 
 

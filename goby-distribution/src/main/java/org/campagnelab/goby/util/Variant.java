@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
 import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
-import org.campagnelab.goby.modes.VCFToGenotypeMapMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class Variant implements Serializable {
     public int position;
     public int referenceIndex;
     int maxLen;
-    private static final Logger LOG = LoggerFactory.getLogger(VCFToGenotypeMapMode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Variant.class);
     static WarningCounter fromMismatch = new WarningCounter(10);
     public static int numFromMistmaches = 0;
     public static int numIndelsEncountered = 0;
