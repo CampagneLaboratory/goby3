@@ -60,27 +60,63 @@ public class Variant implements Serializable {
             if (s.equals(reference)) {
                 continue;
             }
-            //create indel strings without vcf first base
-            String refAffix = pad(maxLen, reference).substring(1);
-            String alleleAffix = pad(maxLen, s).substring(1);
+            int maxLenRefThisAllele = Math.max(reference.length(), s.length());
+            String refAffix = pad(maxLenRefThisAllele, reference);
+            String alleleAffix = pad(maxLenRefThisAllele, s);
+
+            int allelePos = position;
+            int diffStart;
+            //clip the start further if it is the same.
+            for (diffStart = 0; diffStart < refAffix.length(); diffStart++){
+                if (refAffix.charAt(diffStart)!=alleleAffix.charAt(diffStart)){
+                    refAffix = refAffix.substring(diffStart);
+                    alleleAffix = alleleAffix.substring(diffStart);
+                    allelePos += diffStart;
+                    break;
+                }
+            }
+            for (diffStart = refAffix.length()-1; diffStart >= 0; diffStart--){
+                if (refAffix.charAt(diffStart)!=alleleAffix.charAt(diffStart)){
+                    refAffix = refAffix.substring(0,diffStart+1);
+                    alleleAffix = alleleAffix.substring(0,diffStart+1);
+                    break;
+                }
+            }
+
+
 
 
             EquivalentIndelRegion result = new EquivalentIndelRegion();
             ObservedIndel indel = null;
 
-            //very rare case where indel and snp are at same position: ie CA -> C/AA
-            if (refAffix.equals(alleleAffix)){
-                result.from = reference.substring(0,reference.length()-1);
-                result.to = s.substring(0,s.length()-1);
-                result.startPosition = position;
+            //very rare case where indel and snp are at same position: ie CA -> C/AA or G -> A,GTC
+            if (refAffix.length() <= 1 && !(refAffix.contains("-") || alleleAffix.contains("-"))){
+                result.from = reference.substring(0,reference.length());
+                result.to = s.substring(0,s.length());
+                result.startPosition = allelePos;
             } else {
                 //get new indel with goby
-                indel = new ObservedIndel(position, position + Math.max(refAffix.length(), alleleAffix.length()), refAffix, alleleAffix);
+                indel = new ObservedIndel(allelePos, allelePos + Math.max(refAffix.length(), alleleAffix.length()), refAffix, alleleAffix);
                 result = equivalentIndelRegionCalculator.determine(referenceIndex, indel);
                 numIndelsEncountered++;
             }
+            String refBase;
+            String trueAlleleWithRef;
+            String trueFromWithRef;
+            if (result.flankLeft!=null){
+                //realigne indel case:
+                refBase = result.flankLeft.substring(result.flankLeft.length()-1);
+                trueAlleleWithRef = refBase + result.to + result.flankRight.substring(0,1);
+                trueFromWithRef = refBase + result.from;
+            } else {
+                //snp case, no need to prepend reference base.
+                refBase = result.from;
+                trueAlleleWithRef = result.to;
+                trueFromWithRef = result.from;
+            }
+
             if (equivVariants.containsKey(result.startPosition)) {
-                if (!equivVariants.get(result.startPosition).reference.equals(result.from)) {
+                if (!equivVariants.get(result.startPosition).reference.equals(trueFromWithRef)) {
                     fromMismatch.warn(LOG,
                         "\nrealigning from VCF: " + this
                         + "\n" + "current allele observedIndel: " + ((indel==null)?"NA, snp encountered":indel)
@@ -89,17 +125,17 @@ public class Variant implements Serializable {
                         + "\n" + "Goby realigner produced two different from fields at the same start position\n");
                     numFromMistmaches++;
                 }
-                equivVariants.get(result.startPosition).trueAlleles.add(result.to);
+                equivVariants.get(result.startPosition).trueAlleles.add(trueAlleleWithRef);
             } else {
-                Set<String> trueAllele = new ObjectArraySet<>();
+                Set<String> trueAlleles = new ObjectArraySet<>();
                 //start out with assumption that reference is a true allele
-                trueAllele.add(result.from);
-                trueAllele.add(result.to);
-                equivVariants.put(result.startPosition, new Variant(result.from, trueAllele, result.startPosition, referenceIndex));
+                trueAlleles.add(refBase);
+                trueAlleles.add(trueAlleleWithRef);
+                equivVariants.put(result.startPosition, new Variant(trueFromWithRef, trueAlleles, result.startPosition, referenceIndex));
             }
             //if we have moved ploidy number of alleles into a position, remove its reference
             if (equivVariants.get(result.startPosition).trueAlleles.size() > this.trueAlleles.size()) {
-                equivVariants.get(result.startPosition).trueAlleles.remove(result.from);
+                equivVariants.get(result.startPosition).trueAlleles.remove(refBase);
             }
         }
         return equivVariants;

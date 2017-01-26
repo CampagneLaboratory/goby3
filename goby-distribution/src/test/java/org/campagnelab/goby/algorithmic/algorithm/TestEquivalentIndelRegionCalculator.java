@@ -40,7 +40,8 @@ public class TestEquivalentIndelRegionCalculator {
             "ACTCAAAGACT",  // will insert one A in the three consecutive As
             "AAACAGATCCCACA",  // will insert AG between C and AG
             "GGGGATATATATATACGAGGG",  // will remove AT somewhere between GGGA and CGA
-            "AAAACTTGGGG"  // will insert a T in the T's
+            "AAAACTTGGGG",  // will insert a T in the T's
+            "ACTCAAAAAAAAAAAAACAAA"  // will insert a T in the T's
     };
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
 
@@ -138,6 +139,33 @@ public class TestEquivalentIndelRegionCalculator {
          *                      "AAAACTTGGGG"
          */
     }
+
+//    @Test
+//    public void testSequence4() throws Exception {
+//        ObservedIndel indel = new ObservedIndel(4, 5, "A-", "AA");
+//        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(3, indel);
+//        assertEquals(3, result.referenceIndex);
+//        assertEquals(4, result.startPosition);
+//        assertEquals(7, result.endPosition);
+//        assertEquals("-TT", result.from);
+//        assertEquals("TTT", result.to);
+//        assertEquals("AAAC", result.flankLeft);
+//        assertEquals("GGGG", result.flankRight);
+//        assertEquals("AAAC-TTGGGG", result.fromInContext());
+//        assertEquals("AAACTTTGGGG", result.toInContext());
+//
+//
+//        /**
+//         * Construct an indel observation.
+//         *
+//         * @param startPosition The position where the indel starts, zero-based, position of the base at the left of the first gap.
+//         * @param endPosition   The position where the indel ends, zero-based, position of the base at the right of the first gap.
+//         * @param from          Bases in the reference
+//         * @param to            Bases in the read
+//         * @param readIndex     Index of the base in the read at the left of where the indel is observed.
+//         *                      "AAAACTTGGGG"
+//         */
+//    }
 
 
 

@@ -223,7 +223,11 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
-            chMap.addVariant(positionGoby,chromosomeName,paddedRef,new ObjectArraySet<String>(expandedAlleles));
+            ObjectArraySet<String> alleleSet = new ObjectArraySet<>(expandedAlleles.length);
+            for (int i = 0; i < expandedAlleles.length; i++){
+                alleleSet.add(expandedAlleles[i]);
+            }
+            chMap.addVariant(positionGoby,chromosomeName,paddedRef,alleleSet);
             parser.next();
             pg.update();
         }
@@ -232,7 +236,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         chMap.saveMap(outputMapname);
         System.out.println("NumIndels Encountered: " + Variant.numIndelsEncountered +
                 "\nNumber of indels ignored due to variant overlap: " + chMap.numOverlaps +
-                "\nNumber of mis-matching 'from's of indels ignored: " + Variant.numFromMistmaches);
+                "\nNumber of ignored, mis-matching 'from's of indels: " + Variant.numFromMistmaches);
     }
 
 

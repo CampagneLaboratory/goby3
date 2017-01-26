@@ -59,17 +59,16 @@ public class VariantMapHelper {
     /**
      * add variant to map with reference and true genotype strings.
      * @param chrom
-     * @param pos
+     * @param gobyPos
      * @param reference
      * @param trueAlleles
      */
-    public void addVariant(int pos, String chrom, String reference, Set<String> trueAlleles){
+    public void addVariant(int gobyPos, String chrom, String reference, Set<String> trueAlleles){
         //make sure there is a map for this chromosome
         if (!chMap.containsKey(chrom)) {
             chMap.put(chrom, new Int2ObjectArrayMap<Variant>(50000));
         }
         //zero-based positions
-        int gobyPos = pos-1;
         Variant var = new Variant(reference,trueAlleles,gobyPos,genome.getReferenceIndex(chrom));
         Map<Integer,Variant> realignedVars = var.realign(equivalentIndelRegionCalculator);
         for (Variant reVar : realignedVars.values()){
@@ -77,8 +76,8 @@ public class VariantMapHelper {
 
                 overLappingIndels.warn(LOG,
                         "realigned var overlap at pos " + reVar.position +
-                        "\nin map from,to: " +  chMap.get(chrom).get(reVar.position).reference + chMap.get(chrom).get(reVar.position).trueAlleles +
-                        "\nintended adding from,to: " +  reVar.reference + reVar.trueAlleles);
+                        "\nin map from,to: " +  chMap.get(chrom).get(reVar.position).reference + "," + chMap.get(chrom).get(reVar.position).trueAlleles +
+                        "\nintended adding from,to: " +  reVar.reference + "," + reVar.trueAlleles);
                 numOverlaps++;
             } else {
                 chMap.get(chrom).put(reVar.position,reVar);
