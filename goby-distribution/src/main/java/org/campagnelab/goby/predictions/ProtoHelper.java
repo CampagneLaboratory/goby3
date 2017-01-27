@@ -256,7 +256,16 @@ public class ProtoHelper {
                 // this method may be expensive, don't call more than needed:
                 referenceGenotype = sampleCountInfo.getReferenceGenotype();
             }
-            infoBuilder.setFromSequence(referenceGenotype);
+            if (genotypeIndex < sampleCountInfo.BASE_MAX_INDEX){
+                // if no indel
+                try {
+                    infoBuilder.setFromSequence(referenceGenotype.substring(0,1));
+                } catch (NullPointerException e) {
+                    infoBuilder.setFromSequence("");
+                }
+            } else {
+                infoBuilder.setFromSequence(sampleCountInfo.getIndelGenotype(genotypeIndex).fromInContext());
+            }
             infoBuilder.setToSequence(sampleCountInfo.getGenotypeString(genotypeIndex));
             infoBuilder.setMatchesReference(sampleCountInfo.isReferenceGenotype(genotypeIndex));
             infoBuilder.setGenotypeCountForwardStrand(sampleCountInfo.getGenotypeCount(genotypeIndex, true));

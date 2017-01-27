@@ -87,6 +87,7 @@ public class Variant implements Serializable {
 
 
             EquivalentIndelRegion result = new EquivalentIndelRegion();
+
             ObservedIndel indel = null;
 
             //very rare case where indel and snp are at same position: ie CA -> C/AA or G -> A,GTC
@@ -96,7 +97,7 @@ public class Variant implements Serializable {
                 result.startPosition = allelePos;
             } else {
                 //get new indel with goby
-                indel = new ObservedIndel(allelePos, allelePos + Math.max(refAffix.length(), alleleAffix.length()), refAffix, alleleAffix);
+                indel = new ObservedIndel(allelePos, refAffix, alleleAffix, referenceIndex);
                 result = equivalentIndelRegionCalculator.determine(referenceIndex, indel);
                 numIndelsEncountered++;
             }
@@ -104,10 +105,13 @@ public class Variant implements Serializable {
             String trueAlleleWithRef;
             String trueFromWithRef;
             if (result.flankLeft!=null){
-                //realigne indel case:
+//                //realigne indel case:
+//                refBase = result.flankLeft.substring(result.flankLeft.length()-1);
+//                trueAlleleWithRef = refBase + result.to + result.flankRight.substring(0,1);
+//                trueFromWithRef = refBase + result.from;
                 refBase = result.flankLeft.substring(result.flankLeft.length()-1);
-                trueAlleleWithRef = refBase + result.to + result.flankRight.substring(0,1);
-                trueFromWithRef = refBase + result.from;
+                trueAlleleWithRef = result.toInContext();
+                trueFromWithRef = result.fromInContext();
             } else {
                 //snp case, no need to prepend reference base.
                 refBase = result.from;

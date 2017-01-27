@@ -53,6 +53,8 @@ public class VariantMapHelper {
         chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>>(40);
         this.genome = genome;
         this.equivalentIndelRegionCalculator = new EquivalentIndelRegionCalculator(genome);
+        this.equivalentIndelRegionCalculator.setFlankLeftSize(1); // VCF output requires one base before the indel
+        this.equivalentIndelRegionCalculator.setFlankRightSize(0);
 
     }
 
