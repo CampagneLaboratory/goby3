@@ -199,8 +199,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         while (parser.hasNextDataLine()) {
             String chromosomeName = chrPrefix + parser.getColumnValue(chromosomeColumnIndex).toString();
 
-            String posOld = positionStr;
-            CharSequence refOld = ref;
 
             positionStr = parser.getColumnValue(positionColumnIndex).toString();
             ref = parser.getColumnValue(refColumnIndex);

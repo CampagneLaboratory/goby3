@@ -41,7 +41,8 @@ public class TestEquivalentIndelRegionCalculator {
             "AAACAGATCCCACA",  // will insert AG between C and AG
             "GGGGATATATATATACGAGGG",  // will remove AT somewhere between GGGA and CGA
             "AAAACTTGGGG",  // will insert a T in the T's
-            "ACTCAAAAAAAAAAAAACAAA"  // will insert a T in the T's
+            "ACACACACACACACACAGAGAGACACACAC",  //
+            "AATTGTTTTTTTGTTTGTTTGTTTTTTGA"
     };
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
 
@@ -140,12 +141,49 @@ public class TestEquivalentIndelRegionCalculator {
          */
     }
 
+    @Test
+    //alignment test
+    public void testSequence4() throws Exception {
+        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+        equivalentIndelRegionCalculator.setFlankRightSize(0);
+        ObservedIndel indel = new ObservedIndel(15,  "----------", "ACACACACAG",4);
+        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(4, indel);
+        assertEquals(4, result.referenceIndex);
+        assertEquals(15, result.startPosition);
+        assertEquals(25, result.endPosition);
+        assertEquals("----------AGAGAGACA", result.from);
+        assertEquals("ACACACACAGAGAGAGACA", result.to);
+        assertEquals("C", result.flankLeft);
+        assertEquals("", result.flankRight);
+
+    }
+//
 //    @Test
-//    public void testSequence4() throws Exception {
-//        ObservedIndel indel = new ObservedIndel(4, 5, "A-", "AA");
-//        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(3, indel);
-//        assertEquals(3, result.referenceIndex);
-//        assertEquals(4, result.startPosition);
+//    //alignment test
+//    public void testSequence5() throws Exception {
+//        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+//        equivalentIndelRegionCalculator.setFlankRightSize(0);
+//        ObservedIndel indel = new ObservedIndel(15,  "------------", "ACACACACACAG",4);
+//        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(4, indel);
+//        assertEquals(4, result.referenceIndex);
+//        assertEquals(15, result.startPosition);
+//        assertEquals(27, result.endPosition);
+//        assertEquals("------------AGAGAGACACA", result.from);
+//        assertEquals("ACACACACACAGAGAGAGACACA", result.to);
+//        assertEquals("C", result.flankLeft);
+//        assertEquals("", result.flankRight);
+//
+//    }
+
+//    @Test
+//    //vcf test
+//    public void testSequence5() throws Exception {
+//        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+//        equivalentIndelRegionCalculator.setFlankRightSize(0);
+//        ObservedIndel indel = new ObservedIndel(7,  "-", "ACACACACAG", 4);
+//        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(4, indel);
+//        assertEquals(4, result.referenceIndex);
+//        assertEquals(7, result.startPosition);
 //        assertEquals(7, result.endPosition);
 //        assertEquals("-TT", result.from);
 //        assertEquals("TTT", result.to);
@@ -163,11 +201,37 @@ public class TestEquivalentIndelRegionCalculator {
 //         * @param from          Bases in the reference
 //         * @param to            Bases in the read
 //         * @param readIndex     Index of the base in the read at the left of where the indel is observed.
-//         *                      "AAAACTTGGGG"
+//         *                      ""ACACACACAGAGAGACACACAC"  //"
 //         */
 //    }
 
 
+    @Test
+    //alignment test
+    public void testSequence5() throws Exception {
+        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+        equivalentIndelRegionCalculator.setFlankRightSize(0);
+        ObservedIndel indel = new ObservedIndel(9,  "TTTG", "----",5);
+        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(5, indel);
+        assertEquals(5, result.referenceIndex);
+        assertEquals(9, result.startPosition);
+        assertEquals("TTGTTTGTTTGTTT", result.from);
+        assertEquals("----TTGTTTGTTT", result.to);
+        assertEquals("T", result.flankLeft);
+        assertEquals("", result.flankRight);
+
+    }
+
+    /**
+     //         * Construct an indel observation.
+     //         *
+     //         * @param startPosition The position where the indel starts, zero-based, position of the base at the left of the first gap.
+     //         * @param endPosition   The position where the indel ends, zero-based, position of the base at the right of the first gap.
+     //         * @param from          Bases in the reference
+     //         * @param to            Bases in the read
+     //         * @param readIndex     Index of the base in the read at the left of where the indel is observed.
+     //         *                      ""AATTGTTTTTTTGTTTGTTTGTTTTTTGA"  //"
+     //         */
 
     @Test
     public void testIndexLargerThanSize() throws Exception {

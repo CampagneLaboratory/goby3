@@ -64,7 +64,16 @@ public class Variant implements Serializable {
             String refAffix = pad(maxLenRefThisAllele, reference);
             String alleleAffix = pad(maxLenRefThisAllele, s);
 
-            int allelePos = position;
+            //we are going to clip left flank and incrememt position for each clip, but gobyPos should point to pos before first "-",
+            //we subtract 1 to reflect this.
+            int allelePos = position-1;
+
+            //now we are going to increment pos by 1 IF we have a deletion:
+            //this reflects current goby behavior, but not necessarily most correct.
+            if (alleleAffix.contains("-")){
+                allelePos++;
+            }
+
             int diffStart;
             //clip the start further if it is the same.
             for (diffStart = 0; diffStart < refAffix.length(); diffStart++){
@@ -75,6 +84,7 @@ public class Variant implements Serializable {
                     break;
                 }
             }
+
             for (diffStart = refAffix.length()-1; diffStart >= 0; diffStart--){
                 if (refAffix.charAt(diffStart)!=alleleAffix.charAt(diffStart)){
                     refAffix = refAffix.substring(0,diffStart+1);
