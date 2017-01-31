@@ -1,6 +1,8 @@
 package org.campagnelab.goby.modes.formats;
 
 
+import it.unimi.dsi.fastutil.ints.IntHeapPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
@@ -53,6 +55,11 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     private String trueGenotypeMap;
     private boolean withGenotypeMap;
     private int genomicContextLength;
+    private IntHeapPriorityQueue encounteredQeuue = new IntHeapPriorityQueue(100);
+    private IntOpenHashSet encounteredSet = new IntOpenHashSet(100);
+    private int duplicatePositions;
+    int maxDupCount = 0;
+    private int indelsAdded;
 
 
     public static final DynamicOptionClient doc() {
@@ -150,6 +157,27 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
+
+
+        if (encounteredSet.contains(position)){
+            //don't write duplicate records for the same position
+            duplicatePositions++;
+            int skippedCounts = sampleCounts[0].getSumCounts();
+            maxDupCount = Math.max(skippedCounts, maxDupCount);
+            return;
+        }
+        encounteredSet.add(position);
+        encounteredQeuue.enqueue(position);
+        if (encounteredSet.size() > 100){
+            int toRm = encounteredQeuue.dequeueInt();
+            encounteredSet.remove(toRm);
+        }
+
+
+        if (sampleCounts[0].hasIndels()){
+            indelsAdded++;
+        }
+
         final RandomAccessSequenceInterface genome = iterator.getGenome();
         if (withGenotypeMap && addTrueGenotypeHelper == null) {
             addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
@@ -234,6 +262,8 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void close() {
         //    pgReadWrite.stop();
+        System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward");
+        System.out.println(indelsAdded + " indels added");
         try {
             if (withGenotypeMap) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());

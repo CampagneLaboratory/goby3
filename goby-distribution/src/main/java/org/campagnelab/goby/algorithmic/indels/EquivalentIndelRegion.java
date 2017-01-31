@@ -119,7 +119,9 @@ public class EquivalentIndelRegion {
         return startPosition == other.startPosition
                 && endPosition == other.endPosition
                 && referenceIndex == other.referenceIndex
-                && sampleIndex == other.sampleIndex;
+                && sampleIndex == other.sampleIndex
+                && from.equals(other.from)
+                && to.equals(other.to);
 
     }
 

@@ -202,7 +202,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                             genome.getReferenceName(genomeTargetIndex) + ", " +
                             "refIndex=" + referenceIndex + ", " + "keyPos=" + keyPos + ", '" + genome.get(genomeRefIndex, keyPos) + "' (genome) != '" + indelCandidateRegion.fromInContext().charAt(0) + "' (first base)";
 
-         indelCandidateRegion.sampleIndex = sampleIndex;
+            indelCandidateRegion.sampleIndex = sampleIndex;
 
             DiscoverVariantPositionData positionBaseInfos = positionToBases.get(keyPos);
             //   System.out.printf("Observing indel at position %d %n", keyPos);
