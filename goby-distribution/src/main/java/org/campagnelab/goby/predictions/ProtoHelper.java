@@ -169,7 +169,7 @@ public class ProtoHelper {
         builder.setPosition(position);
         builder.setReferenceId(referenceID);
         int genomeReferenceIndex=genome.getReferenceIndex(referenceID);
-        transferGenomicContext(contextLength, genome, genomeReferenceIndex, position, list, builder);
+        transferGenomicContext(contextLength, genome, genomeReferenceIndex, position, list, builder, sampleCounts);
 
 
         builder.setReferenceIndex(referenceIndex);
@@ -203,7 +203,7 @@ public class ProtoHelper {
     private static Random random = new Random();
 
     private static void transferGenomicContext(int contextLength, RandomAccessSequenceInterface genome, int genomeReferenceIndex,
-                                               int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder) {
+                                               int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder, SampleCountInfo[] sampleCounts) {
         // store 10 bases of genomic context around the site:
         {
             genomicContext.setLength(0);
@@ -229,9 +229,15 @@ public class ProtoHelper {
                 }
                 builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
             }
-            if (list.size() > 0) {
 
+            try {
                 builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
+            } catch (NullPointerException e1) {
+                try {
+                builder.setReferenceBase((sampleCounts[0].getReferenceGenotype().substring(0,1)));
+                } catch (NullPointerException e2){
+                   builder.setReferenceBase(Character.toString(genome.get(genomeReferenceIndex,position)));
+                }
             }
         }
     }
@@ -257,7 +263,7 @@ public class ProtoHelper {
                 referenceGenotype = sampleCountInfo.getReferenceGenotype();
             }
             if (genotypeIndex < sampleCountInfo.BASE_MAX_INDEX){
-                // if no indel
+                // if not indel
                 try {
                     infoBuilder.setFromSequence(referenceGenotype.substring(0,1));
                 } catch (NullPointerException e) {
