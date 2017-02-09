@@ -63,7 +63,7 @@ public class EntropicIndelArtifactFilter extends GenotypeFilter {
         for (SampleCountInfo sci : sampleCounts) {
             if (sci.hasIndels()) {
                 for (EquivalentIndelRegion indel : sci.getEquivalentIndelRegions()) {
-                    if (indel.getFrequency() > 0) {
+                    if (indel.getReverseFrequency() + indel.getReverseFrequency() > 0) {
                         distinctIndelsWithCount[sci.sampleIndex]++;
                         candidateIndels.add(indel);
                         numScreened++;

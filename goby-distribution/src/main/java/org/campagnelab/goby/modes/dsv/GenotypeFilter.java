@@ -127,7 +127,7 @@ public abstract class GenotypeFilter {
             // remove candidate indels if they don't make the frequency threshold (threshold determined by bases observed
             // at that position):
             for (final EquivalentIndelRegion indel : list.getIndels()) {
-                if (indel != null && indel.getFrequency() < getThresholdForSample(indel.sampleIndex)) {
+                if (indel != null && indel.getForwardFrequency() + indel.getReverseFrequency() < getThresholdForSample(indel.sampleIndex)) {
                     indel.markFiltered();
                     list.failIndel(indel);
                     sampleCounts[indel.sampleIndex].removeIndel(indel);

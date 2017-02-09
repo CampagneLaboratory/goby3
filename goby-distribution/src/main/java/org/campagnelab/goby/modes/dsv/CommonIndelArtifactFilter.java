@@ -35,13 +35,13 @@ public class CommonIndelArtifactFilter extends GenotypeFilter {
 
         if (list.hasCandidateIndels()) {
             for (EquivalentIndelRegion indel : list.getIndels()) {
-                if (indel != null && indel.getFrequency()>0) {
+                if (indel != null && indel.getForwardFrequency() + indel.getReverseFrequency()>0) {
                     int depthAtPosition = 0;
                     for (SampleCountInfo sci : sampleCounts) {
                         depthAtPosition += sci.getSumCounts();
                     }
                     final int repeatLength = countRepetitiveBases(indel);
-                    final int actualIndelFrequency = indel.getFrequency();
+                    final int actualIndelFrequency = indel.getForwardFrequency() +indel.getReverseFrequency();
                     int gapLength = calculateGapLength(indel);
                     double indelFractionOfDepth = actualIndelFrequency / depthAtPosition;
                     int depthLessThan10 = depthAtPosition < 10 ? 1 : 0;
