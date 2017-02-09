@@ -211,4 +211,10 @@ public class EquivalentIndelRegion {
     public int getForwardFrequency() {
         return filtered ? 0 : forwardFrequency;
     }
+
+    /**
+     * Return the total frequency of this indel. Filtered indels always return zero.
+     * @return frequency of the indel.
+     */
+    public int getFrequency()  { return filtered ? 0 : reverseFrequency + forwardFrequency; }
 }

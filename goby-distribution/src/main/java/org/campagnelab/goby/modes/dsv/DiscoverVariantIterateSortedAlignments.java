@@ -280,12 +280,12 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                     // only add indels to sample counts info if they were not removed by a previous base filter.
                     if (!indel.isFiltered()) {
                         if (indel.matchesReference()) {
-                            sampleCounts[indel.sampleIndex].refCount += indel.getForwardFrequency() + indel.getReverseFrequency();
+                            sampleCounts[indel.sampleIndex].refCount += indel.getFrequency();
 
                         } else {
                             sumVariantCounts++;
-                            sampleCounts[indel.sampleIndex].varCount += indel.getForwardFrequency() + indel.getReverseFrequency();
-                            sumVariantCounts += indel.getForwardFrequency() + indel.getReverseFrequency();
+                            sampleCounts[indel.sampleIndex].varCount += indel.getFrequency();
+                            sumVariantCounts += indel.getFrequency();
                         }
                         sampleCounts[indel.sampleIndex].distinctReadIndices.addAll(indel.readIndices);
                         distinctReadIndices.addAll(indel.readIndices);

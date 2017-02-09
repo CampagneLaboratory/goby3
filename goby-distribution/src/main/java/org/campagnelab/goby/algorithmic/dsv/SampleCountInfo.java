@@ -437,7 +437,7 @@ public class SampleCountInfo {
         } else {
             if (hasIndels()) {
                 final int indelIndex = genotypeIndex - BASE_MAX_INDEX;
-                return indels.get(indelIndex).getForwardFrequency() + indels.get(indelIndex).getReverseFrequency();
+                return indels.get(indelIndex).getFrequency();
             }
         }
         throw new IllegalArgumentException("The genotype index argument was out of range: " + genotypeIndex);
