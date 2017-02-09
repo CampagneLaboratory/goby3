@@ -46,18 +46,10 @@ public class EquivalentIndelRegion {
     public String flankRight;
 
     /**
-     * Return the frequency of this indel. Filtered indels always return zero.
-     *
-     * @return frequency of the indel.
-     */
-    public int getFrequency() {
-        return filtered ? 0 : frequency;
-    }
-
-    /**
      * The number of times the candidate indel was observed. Start at one, increment as needed.
      */
-    private int frequency = 1;
+    private int forwardFrequency = 0;
+    private int reverseFrequency = 0;
     /**
      * The index of the sample where these indels were observed.
      */
@@ -138,8 +130,8 @@ public class EquivalentIndelRegion {
     @Override
 
     public String toString() {
-        return String.format("indel count=%d %s %s/%s %s %d-%d filtered=%b",
-                getFrequency(), flankLeft, from, to, flankRight,
+        return String.format("indel count=%d,%d %s %s/%s %s %d-%d filtered=%b",
+                getForwardFrequency(),getReverseFrequency(), flankLeft, from, to, flankRight,
                 startPosition, endPosition, filtered);
     }
 
@@ -188,13 +180,35 @@ public class EquivalentIndelRegion {
         return filtered;
     }
 
-    public void incrementFrequency() {
-        ++frequency;
+
+    public void incrementForwardFrequency() {
+        this.forwardFrequency++;
+    }
+    public void incrementReverseFrequency() { this.reverseFrequency++; }
+
+
+
+    public void setForwardFrequency(int frequency) {
+        this.forwardFrequency = frequency;
+    }
+    public void setReverseFrequency(int frequency) {
+        this.reverseFrequency = frequency;
     }
 
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
+    /**
+     * Return the forward frequency of this indel. Filtered indels always return zero.
+     *
+     * @return frequency of the indel.
+     */
+    public int getReverseFrequency() {
+        return filtered ? 0 : reverseFrequency;
     }
 
-
+    /**
+     * Return the forward frequency of this indel. Filtered indels always return zero.
+     * @return frequency of the indel.
+     */
+    public int getForwardFrequency() {
+        return filtered ? 0 : forwardFrequency;
+    }
 }

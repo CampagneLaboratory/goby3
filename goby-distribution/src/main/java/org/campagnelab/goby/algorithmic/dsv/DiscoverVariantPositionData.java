@@ -94,8 +94,9 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
      * This method is called if a candidate indel is observed whose start position overlaps with position.
      *
      * @param candidateIndel the candidate indels observed with the same startPosition == position
+     * @param matchingReverseStrand
      */
-    public void observeCandidateIndel(final EquivalentIndelRegion candidateIndel) {
+    public void observeCandidateIndel(final EquivalentIndelRegion candidateIndel, boolean matchingReverseStrand) {
         if (candidateIndels == null) {
             candidateIndels = new ObjectArraySet<EquivalentIndelRegion>();
         }
@@ -106,7 +107,11 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
         } else {
             for (final EquivalentIndelRegion eir : candidateIndels) {
                 if (eir.equals(candidateIndel)) {
-                    eir.incrementFrequency();
+                    if (matchingReverseStrand){
+                        eir.incrementReverseFrequency();
+                    } else {
+                        eir.incrementForwardFrequency();
+                    }
                     // since the EIR match, increase the number of distinct read indices observed for the overlap:
                     eir.readIndices.addAll(candidateIndel.readIndices);
                 }

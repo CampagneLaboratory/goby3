@@ -100,7 +100,11 @@ public class SampleCountInfo {
             int previousStartPosition = -1;
             for (final EquivalentIndelRegion prevIndel : indels) {
                 if (prevIndel.equals(indel)) {
-                    prevIndel.incrementFrequency();
+                    if (indel.getReverseFrequency() != 0){
+                        prevIndel.incrementReverseFrequency();
+                    } else {
+                        prevIndel.incrementForwardFrequency();
+                    }
                 }
                 previousStartPosition = prevIndel.startPosition;
 
@@ -433,7 +437,7 @@ public class SampleCountInfo {
         } else {
             if (hasIndels()) {
                 final int indelIndex = genotypeIndex - BASE_MAX_INDEX;
-                return indels.get(indelIndex).getFrequency();
+                return indels.get(indelIndex).getForwardFrequency() + indels.get(indelIndex).getReverseFrequency();
             }
         }
         throw new IllegalArgumentException("The genotype index argument was out of range: " + genotypeIndex);
@@ -452,7 +456,12 @@ public class SampleCountInfo {
         } else {
             if (hasIndels()) {
                 final int indelIndex = genotypeIndex - BASE_MAX_INDEX;
-                return indels.get(indelIndex).getFrequency();
+                if (matchesForwardStrand){
+                    return indels.get(indelIndex).getForwardFrequency();
+                } else {
+                    return indels.get(indelIndex).getReverseFrequency();
+
+                }
             }
         }
         throw new IllegalArgumentException("The genotype index argument was out of range: " + genotypeIndex);
@@ -476,7 +485,11 @@ public class SampleCountInfo {
             if (hasIndels()) {
                 final int indelIndex = genotypeIndex - BASE_MAX_INDEX;
                 EquivalentIndelRegion equivalentIndelRegion = indels.get(indelIndex);
-                equivalentIndelRegion.setFrequency(count);
+                if (matchesForwardStrand){
+                    equivalentIndelRegion.setForwardFrequency(count);
+                } else {
+                    equivalentIndelRegion.setReverseFrequency(count);
+                }
                 equivalentIndelRegion.removeFiltered();
                 return;
             }

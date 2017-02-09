@@ -32,6 +32,7 @@ import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculato
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
 import org.campagnelab.goby.alignments.PositionToBasesMap;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
@@ -175,7 +176,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
     public void observeIndel(final PositionToBasesMap<DiscoverVariantPositionData> positionToBases,
                              final int referenceIndex,
                              final int startPosition, final String from, final String to,
-                             final int sampleIndex, final int readIndex) {
+                             final int sampleIndex, final int readIndex, Alignments.AlignmentEntry alignmentEntry) {
 
         if (callIndels) {
             final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex);
@@ -212,7 +213,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                 positionToBases.put(keyPos, positionBaseInfos);
             }
 
-            positionBaseInfos.observeCandidateIndel(indelCandidateRegion);
+            positionBaseInfos.observeCandidateIndel(indelCandidateRegion, alignmentEntry.getMatchingReverseStrand());
             //  printBasesAround(keyPos, positionToBases);
         }
 
@@ -279,12 +280,12 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                     // only add indels to sample counts info if they were not removed by a previous base filter.
                     if (!indel.isFiltered()) {
                         if (indel.matchesReference()) {
-                            sampleCounts[indel.sampleIndex].refCount += indel.getFrequency();
+                            sampleCounts[indel.sampleIndex].refCount += indel.getForwardFrequency() + indel.getReverseFrequency();
 
                         } else {
                             sumVariantCounts++;
-                            sampleCounts[indel.sampleIndex].varCount += indel.getFrequency();
-                            sumVariantCounts += indel.getFrequency();
+                            sampleCounts[indel.sampleIndex].varCount += indel.getForwardFrequency() + indel.getReverseFrequency();
+                            sumVariantCounts += indel.getForwardFrequency() + indel.getReverseFrequency();
                         }
                         sampleCounts[indel.sampleIndex].distinctReadIndices.addAll(indel.readIndices);
                         distinctReadIndices.addAll(indel.readIndices);

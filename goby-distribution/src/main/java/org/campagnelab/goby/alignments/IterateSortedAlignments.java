@@ -479,12 +479,11 @@ public abstract class IterateSortedAlignments<T> {
                     }
                     //
                     if (isInsertionOrDeletion(var)) {
-
                         observeIndel(positionToBases, referenceIndex,
                                 alignmentEntry.getPosition() + var.getPosition() - 1 /* make start position zero-based */,
                                 var.getFrom(), var.getTo(),
                                 alignmentEntry.getSampleIndex(),
-                                var.getReadIndex());
+                                var.getReadIndex(), alignmentEntry);
 
                     }
                 }
@@ -722,20 +721,20 @@ public abstract class IterateSortedAlignments<T> {
 
     /**
      * Implement this call-back method to observe a candidate indel that begins at startPosition.
-     *
-     * @param positionToBases map from eir start positions to info about indels whose eir start at the location.
+     *  @param positionToBases map from eir start positions to info about indels whose eir start at the location.
      * @param referenceIndex  The reference sequence where the indel candidate is observed.
      * @param startPosition   The position where the indel start, according to pair-wise sequence alignment (before eir calculation)
      * @param from            from bases (before eir calculation)
      * @param to              to bases (before eir calculation)
      * @param sampleIndex     Index of the sample where the indel was observed.
      * @param readIndex       Index of the base in the read at the left of where the indel is observed.
+     * @param alignmentEntry
      */
     public void observeIndel(final PositionToBasesMap<T> positionToBases,
                              final int referenceIndex,
                              final int startPosition,
                              final String from, final String to,
-                             final int sampleIndex, final int readIndex) {
+                             final int sampleIndex, final int readIndex, Alignments.AlignmentEntry alignmentEntry) {
     }
 
 
