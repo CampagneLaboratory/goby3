@@ -223,7 +223,8 @@ public class TestCompareGroupsVCFOutputFormat {
         indel1.flankLeft = "T";
         indel1.flankRight = "";
         indel1.sampleIndex = 0;
-        indel1.setFrequency(5);
+        indel1.setForwardFrequency(3);
+        indel1.setReverseFrequency(2);
         EquivalentIndelRegion indel2 = new EquivalentIndelRegion();
         indel2.startPosition = 1;
         indel2.endPosition = 3;
@@ -233,12 +234,14 @@ public class TestCompareGroupsVCFOutputFormat {
         indel2.flankLeft = "T";
         indel2.flankRight = "";
         indel1.sampleIndex = 0;
-        indel2.setFrequency(10);
+        indel2.setForwardFrequency(6);
+        indel2.setReverseFrequency(4);
         sampleCounts[0].addIndel(indel1);
         sampleCounts[0].addIndel(indel2);
         EquivalentIndelRegion indel3 = indel2.copy();
         indel3.sampleIndex = 1;
-        indel3.setFrequency(3);
+        indel3.setForwardFrequency(2);
+        indel3.setReverseFrequency(1);
 
         sampleCounts[1].addIndel(indel3);
         return sampleCounts;
