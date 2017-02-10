@@ -70,7 +70,8 @@ public class Variant implements Serializable {
 
             //now we are going to increment pos by 1 IF we have a deletion:
             //this reflects current goby behavior, but not necessarily most correct.
-            if (alleleAffix.contains("-")){
+            //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
+            if (alleleAffix.contains("-") || (alleleAffix.length()==1 && refAffix.length()==1)){
                 allelePos++;
             }
 
@@ -100,13 +101,13 @@ public class Variant implements Serializable {
 
             ObservedIndel indel = null;
 
-            //very rare case where indel and snp are at same position: ie CA -> C/AA or G -> A,GTC
-            if (refAffix.length() <= 1 && !(refAffix.contains("-") || alleleAffix.contains("-"))){
-                result.from = reference.substring(0,reference.length());
-                result.to = s.substring(0,s.length());
-                result.startPosition = allelePos;
-            } else {
-                //get new indel with goby
+                //very rare case where indel and snp are at same position: ie CA -> C/AA or G -> A,GTC
+                if (refAffix.length() <= 1 && !(refAffix.contains("-") || alleleAffix.contains("-"))){
+                    result.from = reference.substring(0,reference.length());
+                    result.to = s.substring(0,s.length());
+                    result.startPosition = allelePos;
+                } else {
+                    //get new indel with goby
                 indel = new ObservedIndel(allelePos, refAffix, alleleAffix, referenceIndex);
                 result = equivalentIndelRegionCalculator.determine(referenceIndex, indel);
                 numIndelsEncountered++;

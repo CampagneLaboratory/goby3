@@ -214,8 +214,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
             assert (!"GT".equals(gt) && gt.length() != 0) : "GT is not a valid genotype, vcf misread.";
             final String paddedAlt = alt + ",N";
-            final String[] alts = paddedAlt.toString().split(",");
-            String expandedGT = convertGT(gt.toString(), ref.toString(), alts[0], alts[1]);
+            final String[] alts = paddedAlt.split(",");
+            String expandedGT = convertGT(gt, ref.toString(), alts[0], alts[1]);
             String[] expandedAlleles = expandedGT.split("\\||\\\\|/");
 
             final int positionVCF = Integer.parseInt(positionStr);
