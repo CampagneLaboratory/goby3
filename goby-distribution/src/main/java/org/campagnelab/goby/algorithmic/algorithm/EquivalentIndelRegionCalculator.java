@@ -132,6 +132,7 @@ public class EquivalentIndelRegionCalculator {
      * @return the span of equivalent indel regions , or null, if the indel positions are outside the boundaries of the genome sequence.
      */
     public EquivalentIndelRegion determine(final int referenceIndex, final ObservedIndel indel) {
+        assert referenceIndex>=0 : "reference index canot be negative";
         final EquivalentIndelRegion result = new EquivalentIndelRegion();
         result.startPosition = indel.getStart();
         result.endPosition = indel.getEnd();

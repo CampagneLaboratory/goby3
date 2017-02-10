@@ -29,16 +29,16 @@
             <id>chromosome-prefix</id>
             <longFlag>chromosome-prefix</longFlag>
             <required>false</required>
-            <help>A prefix to append to chromsome names (e.g., chr).</help>
+            <help>A prefix to append to chromsome names (e.g., +chr) or to remove (e.g., -chr).</help>
         </flaggedOption>
         <flaggedOption>
-                    <id>genome</id>
-                    <longFlag>genome</longFlag>
-                    <required>true</required>
-                    <help>A genome basename. The genome must have been processed by build-sequence-cache mode to produce the
-                        compressed, random access files this mode needs.
-                    </help>
-                </flaggedOption>
+            <id>genome</id>
+            <longFlag>genome</longFlag>
+            <required>true</required>
+            <help>A genome basename. The genome must have been processed by build-sequence-cache mode to produce the
+                compressed, random access files this mode needs.
+            </help>
+        </flaggedOption>
         <unflaggedOption>
             <id>vcfInput</id>
             <required>true</required>

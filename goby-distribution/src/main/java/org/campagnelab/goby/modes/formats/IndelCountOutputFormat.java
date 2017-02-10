@@ -109,7 +109,7 @@ public class IndelCountOutputFormat implements SequenceVariationOutputFormat {
         if (list.hasCandidateIndels()) {
             for (final EquivalentIndelRegion indel : list.getIndels()) {
 
-                if (indel.getForwardFrequency() + indel.getReverseFrequency() >= Math.max(MIN_COVERAGE_THRESHOLD, list.size() / 3)) {
+                if (indel.getFrequency() >= Math.max(MIN_COVERAGE_THRESHOLD, list.size() / 3)) {
                     // frequency must be at least 5 or a third of the number of bases at position, whichever is smaller.
                     // System.out.printf("sample %d referenceIndex %d position: %d %s %n", indel.sampleIndex, referenceIndex, position, indel);
                     sampleIndelCounts[indel.sampleIndex]++;
@@ -206,7 +206,7 @@ public class IndelCountOutputFormat implements SequenceVariationOutputFormat {
                 if (list.hasCandidateIndels()) {
                     for (final EquivalentIndelRegion indel : list.getIndels()) {
 
-                        if (indel.getForwardFrequency() + indel.getReverseFrequency() >= Math.max(MIN_COVERAGE_THRESHOLD, list.size() / 3)) {
+                        if (indel.getFrequency() >= Math.max(MIN_COVERAGE_THRESHOLD, list.size() / 3)) {
                             // frequency must be at least 5 or a third of the number of bases at position, whichever is smaller.
                             // System.out.printf("sample %d referenceIndex %d position: %d %s %n", indel.sampleIndex, referenceIndex, position, indel);
 
