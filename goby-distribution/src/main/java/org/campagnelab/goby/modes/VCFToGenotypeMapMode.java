@@ -81,6 +81,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             "The resulting map can be used to annotate an sbi dataset with true genotype labels. " +
             "See the variationanalysis project for details.";
     private String chrPrefix;
+    private boolean addPrefix;
+    private boolean removePrefix;
 
 
     @Override
@@ -110,6 +112,15 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         chrPrefix = jsapResult.getString("chromosome-prefix");
         if (chrPrefix == null) {
             chrPrefix = "";
+        }else {
+            if (chrPrefix.startsWith("+")) {
+                addPrefix=true;
+                chrPrefix=chrPrefix.substring(1);
+            }
+            if (chrPrefix.startsWith("-")) {
+                removePrefix=true;
+                chrPrefix=chrPrefix.substring(1);
+            }
         }
         genome = DiscoverSequenceVariantsMode.configureGenome(jsapResult);
 
@@ -197,7 +208,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         pg.start();
         while (parser.hasNextDataLine()) {
-            String chromosomeName = chrPrefix + parser.getColumnValue(chromosomeColumnIndex).toString();
+            String chromosomeName = adjustPrefix(parser.getColumnValue(chromosomeColumnIndex).toString());
 
 
             positionStr = parser.getColumnValue(positionColumnIndex).toString();
@@ -225,6 +236,10 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             for (int i = 0; i < expandedAlleles.length; i++){
                 alleleSet.add(expandedAlleles[i]);
             }
+            if (genome.getReferenceIndex(chromosomeName)<0) {
+                System.out.printf("Unable to find chromosome %s in genome",chromosomeName);
+                System.exit(1);
+            }
             chMap.addVariant(positionGoby,chromosomeName,paddedRef,alleleSet);
             parser.next();
             pg.update();
@@ -235,6 +250,18 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         System.out.println("NumIndels Encountered: " + Variant.numIndelsEncountered +
                 "\nNumber of indels ignored due to variant overlap: " + chMap.numOverlaps +
                 "\nNumber of ignored, mis-matching 'from's of indels: " + Variant.numFromMistmaches);
+    }
+
+    private String adjustPrefix(String chrName  ) {
+        if (addPrefix) {
+            return chrPrefix + chrName;
+        }
+        if (removePrefix) {
+            if (chrName.startsWith(chrPrefix)) {
+                return chrName.substring(chrPrefix.length());
+            }
+        }
+        return chrName;
     }
 
 
