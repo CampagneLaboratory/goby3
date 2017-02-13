@@ -68,10 +68,8 @@ public class Variant implements Serializable {
             //we subtract 1 to reflect this.
             int allelePos = position-1;
 
-            //now we are going to increment pos by 1 IF we have a deletion:
-            //this reflects current goby behavior, but not necessarily most correct.
             //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
-            if (alleleAffix.contains("-") || (alleleAffix.length()==1 && refAffix.length()==1)){
+            if (alleleAffix.length()==1 && refAffix.length()==1){
                 allelePos++;
             }
 

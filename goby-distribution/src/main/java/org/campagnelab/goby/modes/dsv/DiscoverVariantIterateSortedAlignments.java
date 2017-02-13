@@ -175,10 +175,15 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
     @Override
     public void observeIndel(final PositionToBasesMap<DiscoverVariantPositionData> positionToBases,
                              final int referenceIndex,
-                             final int startPosition, final String from, final String to,
+                             int startPosition, final String from, final String to,
                              final int sampleIndex, final int readIndex, Alignments.AlignmentEntry alignmentEntry) {
 
         if (callIndels) {
+
+            if (to.contains("-")){
+                //set deletion pos to position of base before first deleted base
+                startPosition--;
+            }
             final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex);
             int flankLeftSize = 1;
             equivalentIndelRegionCalculator.setFlankLeftSize(flankLeftSize); // VCF output requires one base before the indel

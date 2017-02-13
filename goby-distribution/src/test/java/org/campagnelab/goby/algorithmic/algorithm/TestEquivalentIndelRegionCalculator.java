@@ -42,7 +42,8 @@ public class TestEquivalentIndelRegionCalculator {
             "GGGGATATATATATACGAGGG",  // will remove AT somewhere between GGGA and CGA
             "AAAACTTGGGG",  // will insert a T in the T's
             "ACACACACACACACACAGAGAGACACACAC",  //
-            "AATTGTTTTTTTGTTTGTTTGTTTTTTGA"
+            "AATTGTTTTTTTGTTTGTTTGTTTTTTGA",
+            "TAGAATTTATATCTTAGATTATTTATTTGATTA"
     };
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
 
@@ -218,6 +219,40 @@ public class TestEquivalentIndelRegionCalculator {
         assertEquals("TTGTTTGTTTGTTT", result.from);
         assertEquals("----TTGTTTGTTT", result.to);
         assertEquals("T", result.flankLeft);
+        assertEquals("", result.flankRight);
+
+    }
+
+
+
+//    @Test (previous EIR behavior test. deprecated now that we feed pos before deletion.)
+//    //alignment test
+//    public void testSequence6() throws Exception {
+//        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+//        equivalentIndelRegionCalculator.setFlankRightSize(0);
+//        ObservedIndel indel = new ObservedIndel(18,  "TTAT", "----",6);
+//        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(6, indel);
+//        assertEquals(6, result.referenceIndex);
+//        assertEquals(18, result.startPosition);
+//        assertEquals("TTATTTAT", result.from);
+//        assertEquals("----TTAT", result.to);
+//        assertEquals("A", result.flankLeft);
+//        assertEquals("", result.flankRight);
+//
+//    }
+
+    @Test
+    //alignment test
+    public void testSequence7() throws Exception {
+        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+        equivalentIndelRegionCalculator.setFlankRightSize(0);
+        ObservedIndel indel = new ObservedIndel(17,  "TTAT", "----",6);
+        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(6, indel);
+        assertEquals(6, result.referenceIndex);
+        assertEquals(17, result.startPosition);
+        assertEquals("TTATT", result.from);
+        assertEquals("----T", result.to);
+        assertEquals("A", result.flankLeft);
         assertEquals("", result.flankRight);
 
     }
