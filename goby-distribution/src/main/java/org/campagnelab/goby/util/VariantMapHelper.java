@@ -30,12 +30,6 @@ public class VariantMapHelper {
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
     private static final Logger LOG = LoggerFactory.getLogger(VariantMapHelper.class);
 
-
-
-
-
-
-
     /**
      * Load map from path
      * @param pathToMap
@@ -87,8 +81,6 @@ public class VariantMapHelper {
         }
     }
 
-
-
     /**
      * Save current map to specified file.
      * @param pathToMap
@@ -96,20 +88,6 @@ public class VariantMapHelper {
      */
     public void saveMap(String pathToMap) throws IOException {
         BinIO.storeObject(chMap, new File(pathToMap));
-    }
-
-
-        /**
-         * Get variant returns a variant located at the specified chrom and position. Returns null if there is no variant.
-         * @param chrom
-         * @param pos
-         * @return
-         */
-    public Variant getVariant(String chrom, int pos){
-        if (chMap.containsKey(chrom)) {
-            return chMap.get(chrom).get(pos);
-        }
-        return null;
     }
 
 
