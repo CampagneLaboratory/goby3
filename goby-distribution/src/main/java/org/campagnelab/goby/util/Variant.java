@@ -182,14 +182,20 @@ public class Variant implements Serializable {
 
 
     static public class FromTo {
-        public final String from;
-        public final String to;
+
+        private String from;
+        private String to;
 
         public FromTo(String from, String to){
             this.from = from;
             this.to = to;
         }
 
+
+        public void makeUpperCase(){
+            from = from.toUpperCase();
+            to = to.toUpperCase();
+        }
 
         public boolean isRef(){
             return from.equals(to);
@@ -217,7 +223,15 @@ public class Variant implements Serializable {
 
         @Override
         public String toString(){
-            return "from: " + from + " , to: " + to;
+            return "from:" + from + " to:" + to;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public String getTo() {
+            return to;
         }
     }
 }
