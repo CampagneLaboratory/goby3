@@ -73,7 +73,7 @@ public class VariantMapHelper {
 
                 overLappingIndels.warn(LOG,
                         "\nin map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
-                        "\nintended adding from,to: " +  reVar.trueAlleles);
+                        "\nintended adding from,to: " +  reVar.trueAlleles + "\nat " + chrom + ":" + reVar.position);
                 numOverlaps++;
             } else {
                 chMap.get(chrom).put(reVar.position, reVar);

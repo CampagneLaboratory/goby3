@@ -181,7 +181,7 @@ public class Variant implements Serializable {
     }
 
 
-    static public class FromTo {
+    static public class FromTo implements Serializable {
 
         private String from;
         private String to;
