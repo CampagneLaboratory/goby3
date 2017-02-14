@@ -21,6 +21,7 @@ package org.campagnelab.goby.algorithmic.dsv;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
 
 import java.util.Collections;
@@ -92,33 +93,26 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
 
     /**
      * This method is called if a candidate indel is observed whose start position overlaps with position.
-     *
-     * @param candidateIndel the candidate indels observed with the same startPosition == position
-     * @param matchingReverseStrand
+     *  @param candidateIndel the candidate indels observed with the same startPosition == position
+     * @param alignmentEntry
      */
-    public void observeCandidateIndel(final EquivalentIndelRegion candidateIndel, boolean matchingReverseStrand) {
+    public void observeCandidateIndel(final EquivalentIndelRegion candidateIndel, Alignments.AlignmentEntry alignmentEntry) {
         if (candidateIndels == null) {
             candidateIndels = new ObjectArraySet<EquivalentIndelRegion>();
         }
         if (!candidateIndels.contains(candidateIndel)) {
+            candidateIndel.supportingEntries.add(alignmentEntry);
             candidateIndels.add(candidateIndel);
             // System.out.println(candidateIndels);
             // assert candidateIndels.contains(candidateIndel) : "indel must have been added.";
         } else {
             for (final EquivalentIndelRegion eir : candidateIndels) {
                 if (eir.equals(candidateIndel)) {
-                    if (matchingReverseStrand){
-                        eir.incrementReverseFrequency();
-                    } else {
-                        eir.incrementForwardFrequency();
-                    }
-                    // since the EIR match, increase the number of distinct read indices observed for the overlap:
-                    eir.readIndices.addAll(candidateIndel.readIndices);
+                    eir.mergeInto(candidateIndel,alignmentEntry);
                 }
             }
         }
-        // TODO find the base that occurs at first position of indel (flanking) and remove 1 count, 1 read index and 1 base qual, etc.
-    }
+         }
 
     public ObjectArraySet<EquivalentIndelRegion> getIndels() {
 
