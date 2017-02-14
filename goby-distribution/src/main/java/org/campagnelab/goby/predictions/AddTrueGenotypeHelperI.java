@@ -2,8 +2,10 @@ package org.campagnelab.goby.predictions;
 
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
+import org.campagnelab.goby.util.Variant;
 
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Encapsulates the AddTrueGenotype logic. Moved the class from variationanalysis to use in generating .sbi files.
@@ -83,9 +85,8 @@ public interface AddTrueGenotypeHelperI {
 
         boolean isKeep();
 
-        String getTrueGenotype();
+        Set<Variant.FromTo> getTrueAlleles();
 
-        String getTrueFrom();
 
         boolean isVariant();
 

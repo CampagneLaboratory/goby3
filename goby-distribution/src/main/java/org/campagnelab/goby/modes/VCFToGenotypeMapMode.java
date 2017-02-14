@@ -131,9 +131,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
     }
 
 
-    //paddedRef for indel map
-    private String paddedRef = null;
-
 
     /**
      * Clear the input files list.
@@ -232,15 +229,15 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
-            ObjectArraySet<String> alleleSet = new ObjectArraySet<>(expandedAlleles.length);
+            ObjectArraySet<Variant.FromTo> alleleSet = new ObjectArraySet<>(expandedAlleles.length);
             for (int i = 0; i < expandedAlleles.length; i++){
-                alleleSet.add(expandedAlleles[i]);
+                alleleSet.add(new Variant.FromTo(ref.toString(), expandedAlleles[i]));
             }
             if (genome.getReferenceIndex(chromosomeName)<0) {
                 System.out.printf("Unable to find chromosome %s in genome",chromosomeName);
                 System.exit(1);
             }
-            chMap.addVariant(positionGoby,chromosomeName,paddedRef,alleleSet);
+            chMap.addVariant(positionGoby,chromosomeName,genome.get(genome.getReferenceIndex(chromosomeName),positionGoby),alleleSet);
             parser.next();
             pg.update();
         }
@@ -271,28 +268,28 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      */
     private String convertGT(String origGT, String ref, String alt1, String alt2) {
         int maxLength = Math.max(ref.length(), Math.max(alt1.length(), alt2.length()));
-        StringBuffer padRef = new StringBuffer(ref);
-        StringBuffer padAlt1 = new StringBuffer(alt1);
-        StringBuffer padAlt2 = new StringBuffer(alt2);
+        String padRef = ref;
+        String padAlt1 = alt1;
+        String padAlt2 = alt2;
         if (PAD_ALLELES){
-            for (int i = 1; i <= maxLength; i++) {
-                if (padRef.length() < maxLength) {
-                    padRef.append("-");
-                }
-
-                if (padAlt1.length() < maxLength) {
-                    padAlt1.append("-");
-                }
-                if (padAlt2.length() < maxLength) {
-                    padAlt2.append("-");
-                }
-            }
+            padRef = pad(ref,maxLength);
+            padAlt1 = pad(alt1,maxLength);
+            padAlt2 = pad(alt2,maxLength);
         }
-        paddedRef = padRef.toString();
         //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
         return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
     }
 
+
+    private String pad(String allele, int len){
+        StringBuilder padAllele = new StringBuilder(allele);
+        for (int i = 1; i <= len; i++) {
+            if (allele.length() < len) {
+                padAllele.append("-");
+            }
+        }
+        return padAllele.toString();
+    }
 
     /**
      * @param args command line arguments

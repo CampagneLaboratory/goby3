@@ -65,7 +65,7 @@ public class VariantMapHelper {
      * @param reference
      * @param trueAlleles
      */
-    public void addVariant(int gobyPos, String chrom, String reference, Set<String> trueAlleles){
+    public void addVariant(int gobyPos, String chrom, char reference, Set<Variant.FromTo> trueAlleles){
         //make sure there is a map for this chromosome
         if (!chMap.containsKey(chrom)) {
             chMap.put(chrom, new Int2ObjectArrayMap<Variant>(50000));
@@ -78,8 +78,8 @@ public class VariantMapHelper {
 
                 overLappingIndels.warn(LOG,
                         "realigned var overlap at pos " + reVar.position +
-                        "\nin map from,to: " +  chMap.get(chrom).get(reVar.position).reference + "," + chMap.get(chrom).get(reVar.position).trueAlleles +
-                        "\nintended adding from,to: " +  reVar.reference + "," + reVar.trueAlleles);
+                        "\nin map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
+                        "\nintended adding from,to: " +  reVar.trueAlleles);
                 numOverlaps++;
             } else {
                 chMap.get(chrom).put(reVar.position,reVar);

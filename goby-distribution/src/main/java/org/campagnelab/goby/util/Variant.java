@@ -18,8 +18,8 @@ import java.util.Set;
  * Will be stored in a map for use by AddTrueGenotypes.
  */
 public class Variant implements Serializable {
-    public String reference;
-    public Set<String> trueAlleles;
+    public String referenceBase;
+    public Set<FromTo> trueAlleles;
     public boolean isIndel;
     public int position;
     public int referenceIndex;
@@ -32,13 +32,13 @@ public class Variant implements Serializable {
 
 
     /**
-     * @param reference ref field of vcf
-     * @param alleles list of
+     * @param referenceBase refbase corresponding to base in genome at position
+     * @param alleles set of alleles containing a from and to field.
      * @param position zero-indexed position on genome
      * @param referenceIndex
      */
-    public Variant(String reference, Set<String> alleles, int position, int referenceIndex) {
-        this.reference = reference;
+    public Variant(char referenceBase, Set<FromTo> alleles, int position, int referenceIndex) {
+        this.referenceBase = Character.toString(referenceBase);
         this.trueAlleles = alleles;
         maxLen = getMaxLen();
         this.isIndel = (maxLen > 1);
@@ -55,44 +55,42 @@ public class Variant implements Serializable {
             equivVariants.put(position,this);
             return equivVariants;
         }
-        for (String s : trueAlleles) {
+        for (FromTo s : trueAlleles) {
             //ignore ref alleles, they are not written to new Varset.
-            if (s.equals(reference)) {
+            if (s.isRef()) {
                 continue;
             }
-            int maxLenRefThisAllele = Math.max(reference.length(), s.length());
-            String refAffix = pad(maxLenRefThisAllele, reference);
-            String alleleAffix = pad(maxLenRefThisAllele, s);
+            int maxLenRefThisAllele = Math.max(s.from.length(), s.to.length());
+            String fromAffix = pad(maxLenRefThisAllele, s.from);
+            String toAffix = pad(maxLenRefThisAllele, s.to);
 
             //we are going to clip left flank and incrememt position for each clip, but gobyPos should point to pos before first "-",
             //we subtract 1 to reflect this.
             int allelePos = position-1;
 
             //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
-            if (alleleAffix.length()==1 && refAffix.length()==1){
+            if (toAffix.length()==1 && fromAffix.length()==1){
                 allelePos++;
             }
 
             int diffStart;
             //clip the start further if it is the same.
-            for (diffStart = 0; diffStart < refAffix.length(); diffStart++){
-                if (refAffix.charAt(diffStart)!=alleleAffix.charAt(diffStart)){
-                    refAffix = refAffix.substring(diffStart);
-                    alleleAffix = alleleAffix.substring(diffStart);
+            for (diffStart = 0; diffStart < fromAffix.length(); diffStart++){
+                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
+                    fromAffix = fromAffix.substring(diffStart);
+                    toAffix = toAffix.substring(diffStart);
                     allelePos += diffStart;
                     break;
                 }
             }
 
-            for (diffStart = refAffix.length()-1; diffStart >= 0; diffStart--){
-                if (refAffix.charAt(diffStart)!=alleleAffix.charAt(diffStart)){
-                    refAffix = refAffix.substring(0,diffStart+1);
-                    alleleAffix = alleleAffix.substring(0,diffStart+1);
+            for (diffStart = fromAffix.length()-1; diffStart >= 0; diffStart--){
+                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
+                    fromAffix = fromAffix.substring(0,diffStart+1);
+                    toAffix = toAffix.substring(0,diffStart+1);
                     break;
                 }
             }
-
-
 
 
             EquivalentIndelRegion result = new EquivalentIndelRegion();
@@ -100,13 +98,13 @@ public class Variant implements Serializable {
             ObservedIndel indel = null;
 
                 //very rare case where indel and snp are at same position: ie CA -> C/AA or G -> A,GTC
-                if (refAffix.length() <= 1 && !(refAffix.contains("-") || alleleAffix.contains("-"))){
-                    result.from = reference.substring(0,reference.length());
-                    result.to = s.substring(0,s.length());
+                if (fromAffix.length() <= 1 && !(fromAffix.contains("-") || toAffix.contains("-"))){
+                    result.from = referenceBase;
+                    result.to = toAffix.substring(0,1);
                     result.startPosition = allelePos;
                 } else {
                     //get new indel with goby
-                indel = new ObservedIndel(allelePos, refAffix, alleleAffix, referenceIndex);
+                indel = new ObservedIndel(allelePos, fromAffix, toAffix, referenceIndex);
                 result = equivalentIndelRegionCalculator.determine(referenceIndex, indel);
                 numIndelsEncountered++;
             }
@@ -127,28 +125,21 @@ public class Variant implements Serializable {
                 trueAlleleWithRef = result.to;
                 trueFromWithRef = result.from;
             }
+            FromTo realigned = new FromTo(trueFromWithRef,trueAlleleWithRef);
+            FromTo reference = new FromTo(refBase,refBase);
 
             if (equivVariants.containsKey(result.startPosition)) {
-                if (!equivVariants.get(result.startPosition).reference.equals(trueFromWithRef)) {
-                    fromMismatch.warn(LOG,
-                        "\nrealigning from VCF: " + this
-                        + "\n" + "current allele observedIndel: " + ((indel==null)?"NA, snp encountered":indel)
-                        + "\n" + "trying to add EquivalentIndel: " + result
-                        + "\n" + "already in equivalent map: " + equivVariants.get(result.startPosition)
-                        + "\n" + "Goby realigner produced two different from fields at the same start position\n");
-                    numFromMistmaches++;
-                }
-                equivVariants.get(result.startPosition).trueAlleles.add(trueAlleleWithRef);
+                equivVariants.get(result.startPosition).trueAlleles.add(realigned);
             } else {
-                Set<String> trueAlleles = new ObjectArraySet<>();
+                Set<FromTo> trueAlleles = new ObjectArraySet<>();
                 //start out with assumption that reference is a true allele
-                trueAlleles.add(refBase);
-                trueAlleles.add(trueAlleleWithRef);
-                equivVariants.put(result.startPosition, new Variant(trueFromWithRef, trueAlleles, result.startPosition, referenceIndex));
+                trueAlleles.add(reference);
+                trueAlleles.add(realigned);
+                equivVariants.put(result.startPosition, new Variant(referenceBase.charAt(0), trueAlleles, result.startPosition, referenceIndex));
             }
             //if we have moved ploidy number of alleles into a position, remove its reference
             if (equivVariants.get(result.startPosition).trueAlleles.size() > this.trueAlleles.size()) {
-                equivVariants.get(result.startPosition).trueAlleles.remove(refBase);
+                equivVariants.get(result.startPosition).trueAlleles.remove(reference);
             }
         }
         return equivVariants;
@@ -169,10 +160,9 @@ public class Variant implements Serializable {
 
     private int getMaxLen(){
         int maxLen = 0;
-        for (String allele : trueAlleles){
-            maxLen = Math.max(maxLen,allele.length());
+        for (FromTo allele : trueAlleles){
+            maxLen = Math.max(maxLen,allele.maxLen());
         }
-        maxLen = Math.max(maxLen,reference.length());
         return maxLen;
 
     }
@@ -181,12 +171,53 @@ public class Variant implements Serializable {
     @Override
     public String toString() {
         return "Variant{" +
-                "reference='" + reference + '\'' +
+                "reference='" + referenceBase + '\'' +
                 ", trueAlleles=" + trueAlleles +
                 ", isIndel=" + isIndel +
                 ", position=" + position +
                 ", referenceIndex=" + referenceIndex +
                 ", maxLen=" + maxLen +
                 '}';
+    }
+
+
+    static public class FromTo {
+        public final String from;
+        public final String to;
+
+        public FromTo(String from, String to){
+            this.from = from;
+            this.to = to;
+        }
+
+
+        public boolean isRef(){
+            return from.equals(to);
+        }
+
+        public boolean isSnp(){
+            return (from.length() == 1 && to.length() == 1 && !isRef());
+        }
+
+        public int maxLen(){
+            return Math.max(from.length(), to.length());
+        }
+
+        @Override
+        public boolean equals(Object obj){
+            if (obj == null) {
+                return false;
+            }
+            if (!FromTo.class.isAssignableFrom(obj.getClass())) {
+                return false;
+            }
+            final FromTo other = (FromTo) obj;
+            return from.equals(other.from) && to.equals(other.to);
+        }
+
+        @Override
+        public String toString(){
+            return "from: " + from + " , to: " + to;
+        }
     }
 }
