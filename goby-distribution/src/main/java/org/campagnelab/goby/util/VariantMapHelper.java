@@ -60,7 +60,6 @@ public class VariantMapHelper {
      * @param reference
      * @param trueAlleles
      */
-    public void addVariant(int gobyPos, String chrom, String reference, Set<String> trueAlleles) {
     public void addVariant(int gobyPos, String chrom, char reference, Set<Variant.FromTo> trueAlleles){
         //make sure there is a map for this chromosome
         if (!chMap.containsKey(chrom)) {
