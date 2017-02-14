@@ -20,26 +20,21 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.io.BinIO;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.commons.io.FilenameUtils;
-import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.campagnelab.goby.readers.vcf.VCFParser;
-import org.campagnelab.goby.reads.RandomAccessSequenceCache;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.Variant;
 import org.campagnelab.goby.util.VariantMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.Arrays;
-import java.util.zip.GZIPInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 
 
 /**
@@ -123,9 +118,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             }
         }
         genome = DiscoverSequenceVariantsMode.configureGenome(jsapResult);
-
-
-
         chMap = new VariantMapHelper(genome);
         return this;
     }
@@ -174,6 +166,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         int numVcfItems = 0;
 
         VCFParser parser = new VCFParser(vcfFile.getAbsolutePath());
+
         try {
             parser.readHeader();
         } catch (VCFParser.SyntaxException e) {
@@ -191,17 +184,9 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         ProgressLogger pg = new ProgressLogger(LOG);
         pg.itemsName = "variants";
-
+        // we can't easily estimate the number of lines when the file is compressed (typically is).
         String positionStr = null;
         CharSequence ref = null;
-
-        //get expected number of lines to give time prediction
-        LineNumberReader  lnr = new LineNumberReader(new FileReader(vcfFile));
-        lnr.skip(Long.MAX_VALUE);
-        pg.expectedUpdates = lnr.getLineNumber() + 1; //Add 1 because line index starts at 0
-        // the LineNumberReader object should be closed to prevent resource leak
-        lnr.close();
-
 
         pg.start();
         while (parser.hasNextDataLine()) {

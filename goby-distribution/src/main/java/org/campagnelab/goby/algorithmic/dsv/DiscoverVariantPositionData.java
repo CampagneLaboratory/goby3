@@ -117,6 +117,7 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
                 }
             }
         }
+        // TODO find the base that occurs at first position of indel (flanking) and remove 1 count, 1 read index and 1 base qual, etc.
     }
 
     public ObjectArraySet<EquivalentIndelRegion> getIndels() {
