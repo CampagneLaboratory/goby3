@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
+import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.util.BaseToStringHelper;
 
 import java.util.Collections;
@@ -100,11 +101,13 @@ public class SampleCountInfo {
             int previousStartPosition = -1;
             for (final EquivalentIndelRegion prevIndel : indels) {
                 if (prevIndel.equals(indel)) {
-                    if (indel.getReverseFrequency() != 0){
+                for (Alignments.AlignmentEntry supportingEntry: indel.supportingEntries) {
+                    if (supportingEntry.getMatchingReverseStrand()) {
                         prevIndel.incrementReverseFrequency();
                     } else {
                         prevIndel.incrementForwardFrequency();
                     }
+                }
                 }
                 previousStartPosition = prevIndel.startPosition;
 
@@ -417,7 +420,11 @@ public class SampleCountInfo {
     public void suggestRemovingGenotype(int baseIndex, boolean matchesForwardStrand) {
 
         if (getGenotypeCount(baseIndex, matchesForwardStrand) - 1 >= 0) {
-
+            if (isReferenceGenotype(baseIndex)) {
+                refCount--;
+            }else{
+                varCount--;
+            }
             decrementGenotypeCount(baseIndex, matchesForwardStrand);
         }
 
@@ -456,7 +463,7 @@ public class SampleCountInfo {
         } else {
             if (hasIndels()) {
                 final int indelIndex = genotypeIndex - BASE_MAX_INDEX;
-                if (matchesForwardStrand){
+                if (matchesForwardStrand) {
                     return indels.get(indelIndex).getForwardFrequency();
                 } else {
                     return indels.get(indelIndex).getReverseFrequency();
@@ -485,7 +492,7 @@ public class SampleCountInfo {
             if (hasIndels()) {
                 final int indelIndex = genotypeIndex - BASE_MAX_INDEX;
                 EquivalentIndelRegion equivalentIndelRegion = indels.get(indelIndex);
-                if (matchesForwardStrand){
+                if (matchesForwardStrand) {
                     equivalentIndelRegion.setForwardFrequency(count);
                 } else {
                     equivalentIndelRegion.setReverseFrequency(count);

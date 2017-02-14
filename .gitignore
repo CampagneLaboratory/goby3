@@ -6,7 +6,6 @@
 *.exe
 *.o
 *.so
-.idea
 # Logs and databases #
 ######################
 *.log

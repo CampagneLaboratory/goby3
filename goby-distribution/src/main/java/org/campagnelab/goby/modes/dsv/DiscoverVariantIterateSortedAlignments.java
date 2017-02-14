@@ -84,6 +84,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
 
     Object statWriter;
     String[] samples;
+    RemoveBasesMatchingIndelsGenotypeFilter mandatoryFilter=new RemoveBasesMatchingIndelsGenotypeFilter();
 
     public void initialize(DiscoverSequenceVariantsMode mode,
                            OutputInfo outWriter,
@@ -93,8 +94,11 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
         format.defineColumns(outWriter, mode);
         format.setGenome(getGenome());
         format.setGenomeReferenceIndex(genomeRefIndex);
+        mandatoryFilter.initStorage(numberOfSamples);
         genotypeFilters = filters.toArray(new GenotypeFilter[filters.size()]);
-
+        for (GenotypeFilter filter : genotypeFilters) {
+            filter.initStorage(numberOfSamples);
+        }
     }
 
     public void finish() {
@@ -180,7 +184,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
 
         if (callIndels) {
 
-            if (to.contains("-")){
+            if (to.contains("-")) {
                 //set deletion pos to position of base before first deleted base
                 startPosition--;
             }
@@ -218,7 +222,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                 positionToBases.put(keyPos, positionBaseInfos);
             }
 
-            positionBaseInfos.observeCandidateIndel(indelCandidateRegion, alignmentEntry.getMatchingReverseStrand());
+            positionBaseInfos.observeCandidateIndel(indelCandidateRegion, alignmentEntry);
             //  printBasesAround(keyPos, positionToBases);
         }
 
@@ -369,6 +373,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                         fixer.fix(list, sampleCounts, filteredList);
                     }
 
+                     mandatoryFilter.filterGenotypes(list, sampleCounts, filteredList);
 
                     format.writeRecord(this, sampleCounts, referenceIndex, position, list, groupIndexA, groupIndexB);
 

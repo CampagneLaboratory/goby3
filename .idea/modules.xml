@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/goby-distribution/goby-distribution.iml" filepath="$PROJECT_DIR$/goby-distribution/goby-distribution.iml" />
+      <module fileurl="file://$PROJECT_DIR$/goby-framework.iml" filepath="$PROJECT_DIR$/goby-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/goby-io/goby-io.iml" filepath="$PROJECT_DIR$/goby-io/goby-io.iml" />
+      <module fileurl="file://$PROJECT_DIR$/goby-spi/goby-spi.iml" filepath="$PROJECT_DIR$/goby-spi/goby-spi.iml" />
+    </modules>
+  </component>
+</project>

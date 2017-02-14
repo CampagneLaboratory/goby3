@@ -19,7 +19,11 @@
 package org.campagnelab.goby.algorithmic.indels;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.lang.MutableString;
+import org.campagnelab.goby.alignments.Alignments;
+
+import java.util.Set;
 
 /**
  * Stores information about the span of equivalent indels.
@@ -44,7 +48,7 @@ public class EquivalentIndelRegion {
     public String to;
     public String flankLeft;
     public String flankRight;
-
+    public Set<Alignments.AlignmentEntry> supportingEntries=new ObjectArraySet<>();
     /**
      * The number of times the candidate indel was observed. Start at one, increment as needed.
      */
@@ -131,7 +135,7 @@ public class EquivalentIndelRegion {
 
     public String toString() {
         return String.format("indel count=%d,%d %s %s/%s %s %d-%d filtered=%b",
-                getForwardFrequency(),getReverseFrequency(), flankLeft, from, to, flankRight,
+                getForwardFrequency(), getReverseFrequency(), flankLeft, from, to, flankRight,
                 startPosition, endPosition, filtered);
     }
 
@@ -150,6 +154,9 @@ public class EquivalentIndelRegion {
         result.startPosition = startPosition;
         result.endPosition = endPosition;
         result.sampleIndex = sampleIndex;
+        result.supportingEntries.addAll(supportingEntries);
+        result.forwardFrequency=forwardFrequency;
+        result.reverseFrequency=reverseFrequency;
         return result;
 
     }
@@ -184,13 +191,16 @@ public class EquivalentIndelRegion {
     public void incrementForwardFrequency() {
         this.forwardFrequency++;
     }
-    public void incrementReverseFrequency() { this.reverseFrequency++; }
 
+    public void incrementReverseFrequency() {
+        this.reverseFrequency++;
+    }
 
 
     public void setForwardFrequency(int frequency) {
         this.forwardFrequency = frequency;
     }
+
     public void setReverseFrequency(int frequency) {
         this.reverseFrequency = frequency;
     }
@@ -206,6 +216,7 @@ public class EquivalentIndelRegion {
 
     /**
      * Return the forward frequency of this indel. Filtered indels always return zero.
+     *
      * @return frequency of the indel.
      */
     public int getForwardFrequency() {
@@ -214,7 +225,27 @@ public class EquivalentIndelRegion {
 
     /**
      * Return the total frequency of this indel. Filtered indels always return zero.
+     *
      * @return frequency of the indel.
      */
-    public int getFrequency()  { return filtered ? 0 : reverseFrequency + forwardFrequency; }
+    public int getFrequency() {
+        return filtered ? 0 : reverseFrequency + forwardFrequency;
+    }
+
+    /**
+     * Merge information from candidateIndel into this indel.
+     * @param candidateIndel
+     * @param alignmentEntry
+     */
+    public void mergeInto(EquivalentIndelRegion candidateIndel, Alignments.AlignmentEntry alignmentEntry) {
+        if (alignmentEntry.getMatchingReverseStrand()){
+            incrementReverseFrequency();
+        } else {
+            incrementForwardFrequency();
+        }
+        supportingEntries.addAll(candidateIndel.supportingEntries);
+        supportingEntries.add(alignmentEntry);
+        // since the EIR match, increase the number of distinct read indices observed for the overlap:
+        readIndices.addAll(candidateIndel.readIndices);
+    }
 }
