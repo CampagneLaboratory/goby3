@@ -91,5 +91,19 @@ public class VariantMapHelper {
     }
 
 
+`        /**
+         * Get variant returns a variant located at the specified chrom and position. Returns null if there is no variant.
+         * @param chrom
+         * @param pos
+         * @return
+         */
+    public Variant getVariant(String chrom, int pos){
+        if (chMap.containsKey(chrom)) {
+            return chMap.get(chrom).get(pos);
+        }
+        return null;
+    }
+
+
 }
 
