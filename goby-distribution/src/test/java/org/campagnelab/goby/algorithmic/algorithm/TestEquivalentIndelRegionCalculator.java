@@ -43,7 +43,8 @@ public class TestEquivalentIndelRegionCalculator {
             "AAAACTTGGGG",  // will insert a T in the T's
             "ACACACACACACACACAGAGAGACACACAC",  //
             "AATTGTTTTTTTGTTTGTTTGTTTTTTGA",
-            "TAGAATTTATATCTTAGATTATTTATTTGATTA"
+            "TAGAATTTATATCTTAGATTATTTATTTGATTA",
+            "TTTATAAGATTTATTAGTAACCAAACAAAGTGAAACACACA"
     };
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
 
@@ -108,7 +109,7 @@ public class TestEquivalentIndelRegionCalculator {
         // "GGGGA  TATATATACGAGGG"
         // "GGGGATATATATATACGAGGG" from
         // "GGGGATA--TATATATACGAGGG    to
-        //  0123456  78
+        //  0123456  78.3
         //"GGGGATATATATATACGAGGG"
 
 
@@ -151,9 +152,9 @@ public class TestEquivalentIndelRegionCalculator {
         EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(4, indel);
         assertEquals(4, result.referenceIndex);
         assertEquals(15, result.startPosition);
-        assertEquals(25, result.endPosition);
-        assertEquals("----------AGAGAGACA", result.from);
-        assertEquals("ACACACACAGAGAGAGACA", result.to);
+        assertEquals(30, result.endPosition);
+        assertEquals("----------AGAGAGACACACAC", result.from);
+        assertEquals("ACACACACAGAGAGAGACACACAC", result.to);
         assertEquals("C", result.flankLeft);
         assertEquals("", result.flankRight);
 
@@ -216,8 +217,8 @@ public class TestEquivalentIndelRegionCalculator {
         EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(5, indel);
         assertEquals(5, result.referenceIndex);
         assertEquals(9, result.startPosition);
-        assertEquals("TTGTTTGTTTGTTT", result.from);
-        assertEquals("----TTGTTTGTTT", result.to);
+        assertEquals("TTGTTT", result.from);
+        assertEquals("----TT", result.to);
         assertEquals("T", result.flankLeft);
         assertEquals("", result.flankRight);
 
@@ -250,9 +251,43 @@ public class TestEquivalentIndelRegionCalculator {
         EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(6, indel);
         assertEquals(6, result.referenceIndex);
         assertEquals(17, result.startPosition);
-        assertEquals("TTATT", result.from);
-        assertEquals("----T", result.to);
+        assertEquals("TTATTTATTT", result.from);
+        assertEquals("----TTATTT", result.to);
         assertEquals("A", result.flankLeft);
+        assertEquals("", result.flankRight);
+
+    }
+
+
+    @Test
+    //alignment test
+    public void testSequence8() throws Exception {
+        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+        equivalentIndelRegionCalculator.setFlankRightSize(0);
+        ObservedIndel indel = new ObservedIndel(20,  "CAAA", "----",7);
+        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(7, indel);
+        assertEquals(7, result.referenceIndex);
+        assertEquals(20, result.startPosition);
+        assertEquals("CAAACAAA", result.from);
+        assertEquals("----CAAA", result.to);
+        assertEquals("C", result.flankLeft);
+        assertEquals("", result.flankRight);
+
+    }
+
+    //same as 7 but insertion
+    @Test
+    //alignment test
+    public void testSequence9() throws Exception {
+        equivalentIndelRegionCalculator.setFlankLeftSize(1);
+        equivalentIndelRegionCalculator.setFlankRightSize(0);
+        ObservedIndel indel = new ObservedIndel(20,  "----", "GGGG",7);
+        EquivalentIndelRegion result = equivalentIndelRegionCalculator.determine(7, indel);
+        assertEquals(7, result.referenceIndex);
+        assertEquals(20, result.startPosition);
+        assertEquals("----CAAA", result.from);
+        assertEquals("GGGGCAAA", result.to);
+        assertEquals("C", result.flankLeft);
         assertEquals("", result.flankRight);
 
     }
