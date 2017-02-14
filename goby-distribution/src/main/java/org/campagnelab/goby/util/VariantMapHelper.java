@@ -22,7 +22,6 @@ import java.util.Set;
 public class VariantMapHelper {
 
 
-
     static WarningCounter overLappingIndels = new WarningCounter(10);
     public int numOverlaps = 0;
     private Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>> chMap;
@@ -30,14 +29,9 @@ public class VariantMapHelper {
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
     private static final Logger LOG = LoggerFactory.getLogger(VariantMapHelper.class);
 
-
-
-
-
-
-
     /**
      * Load map from path
+     *
      * @param pathToMap
      * @throws IOException
      * @throws ClassNotFoundException
@@ -49,7 +43,7 @@ public class VariantMapHelper {
     /**
      * Generate a new empty variant map
      */
-    public VariantMapHelper(RandomAccessSequenceInterface genome){
+    public VariantMapHelper(RandomAccessSequenceInterface genome) {
         chMap = new Object2ObjectOpenHashMap<String, Int2ObjectMap<Variant>>(40);
         this.genome = genome;
         this.equivalentIndelRegionCalculator = new EquivalentIndelRegionCalculator(genome);
@@ -60,37 +54,37 @@ public class VariantMapHelper {
 
     /**
      * add variant to map with reference and true genotype strings.
+     *
      * @param chrom
      * @param gobyPos
      * @param reference
      * @param trueAlleles
      */
-    public void addVariant(int gobyPos, String chrom, String reference, Set<String> trueAlleles){
+    public void addVariant(int gobyPos, String chrom, String reference, Set<String> trueAlleles) {
         //make sure there is a map for this chromosome
         if (!chMap.containsKey(chrom)) {
             chMap.put(chrom, new Int2ObjectArrayMap<Variant>(50000));
         }
         //zero-based positions
-        Variant var = new Variant(reference,trueAlleles,gobyPos,genome.getReferenceIndex(chrom));
-        Map<Integer,Variant> realignedVars = var.realign(equivalentIndelRegionCalculator);
-        for (Variant reVar : realignedVars.values()){
+        Variant var = new Variant(reference, trueAlleles, gobyPos, genome.getReferenceIndex(chrom));
+        Map<Integer, Variant> realignedVars = var.realign(equivalentIndelRegionCalculator);
+        for (Variant reVar : realignedVars.values()) {
             if (chMap.get(chrom).containsKey(reVar.position)) {
 
                 overLappingIndels.warn(LOG,
                         "realigned var overlap at pos " + reVar.position +
-                        "\nin map from,to: " +  chMap.get(chrom).get(reVar.position).reference + "," + chMap.get(chrom).get(reVar.position).trueAlleles +
-                        "\nintended adding from,to: " +  reVar.reference + "," + reVar.trueAlleles);
+                                "\nin map from,to: " + chMap.get(chrom).get(reVar.position).reference + "," + chMap.get(chrom).get(reVar.position).trueAlleles +
+                                "\nintended adding from,to: " + reVar.reference + "," + reVar.trueAlleles);
                 numOverlaps++;
             } else {
-                chMap.get(chrom).put(reVar.position,reVar);
+                chMap.get(chrom).put(reVar.position, reVar);
             }
         }
     }
 
-
-
     /**
      * Save current map to specified file.
+     *
      * @param pathToMap
      * @throws IOException
      */
@@ -99,13 +93,14 @@ public class VariantMapHelper {
     }
 
 
-        /**
-         * Get variant returns a variant located at the specified chrom and position. Returns null if there is no variant.
-         * @param chrom
-         * @param pos
-         * @return
-         */
-    public Variant getVariant(String chrom, int pos){
+    /**
+     * Get variant returns a variant located at the specified chrom and position. Returns null if there is no variant.
+     *
+     * @param chrom
+     * @param pos
+     * @return
+     */
+    public Variant getVariant(String chrom, int pos) {
         if (chMap.containsKey(chrom)) {
             return chMap.get(chrom).get(pos);
         }
