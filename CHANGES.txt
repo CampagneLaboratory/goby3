@@ -6,6 +6,9 @@
  varmaps from VCF.
  - Adjust VCF output for compatibility with REF/ALT conventions. This makes it possible to measure
  performance with standard tools such as RTG vcfeval (http://realtimegenomics.com/products/rtg-tools/).
+ - Keep counts of indels separately for forward and reverse strand.
+ - vcf-to-varmap mode: improved semantic of --chromosome-prefix option allows removing (e.g., -chr)
+  or adding (+chr) prefix to chromosome name.
 3.2.1
  - fast-co-compact: fix a bug introduced on 10/6/2016 which created negative read entries.
  - catch a number of exception that can be thrown by HTSJDK when processing BAM files. Exceptions
