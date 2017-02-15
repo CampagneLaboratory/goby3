@@ -1,5 +1,13 @@
+3.2.2
+ - Fix frequency of bases when indels are also present. Now correctly removes bases that
+ support the flanking sequence of the indel and do not double count.
+ - Many changes to how we store varmaps introduced to support indels (vcf-to-varmap).
+ The serialization format is incompatible with previous versions, so make sure you regenerate
+ varmaps from VCF.
+ - Adjust VCF output for compatibility with REF/ALT conventions. This makes it possible to measure
+ performance with standard tools such as RTG vcfeval (http://realtimegenomics.com/products/rtg-tools/).
 3.2.1
- - fast-co-compact: fix a big introduced on 10/6/2016 which created negative read entries.
+ - fast-co-compact: fix a bug introduced on 10/6/2016 which created negative read entries.
  - catch a number of exception that can be thrown by HTSJDK when processing BAM files. Exceptions
    are caught so that an error on one alignment does not interrupt processing of an entire alignment.
    Errors are shown in log.
