@@ -458,7 +458,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
         }
 
-        FormatIndelVCF formatIndelVCF = new FormatIndelVCF(statsWriter.refAlleles(), statsWriter.altAlleles());
+        FormatIndelVCF formatIndelVCF = new FormatIndelVCF(statsWriter.refAlleles().get(0), new ObjectArraySet<>(statsWriter.altAlleles()),statsWriter.refAlleles().get(0).charAt(0));
         statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
         statsWriter.clearAlternateAlleles();
         for (String alternateAllele : formatIndelVCF.toVCF) {
