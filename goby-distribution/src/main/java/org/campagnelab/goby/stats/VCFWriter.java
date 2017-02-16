@@ -89,7 +89,7 @@ public class VCFWriter {
     private boolean writeFieldGroupAssociations;
 
 
-    protected CharSequence getChromosome() {
+    public CharSequence getChromosome() {
         return this.chrom;
     }
 

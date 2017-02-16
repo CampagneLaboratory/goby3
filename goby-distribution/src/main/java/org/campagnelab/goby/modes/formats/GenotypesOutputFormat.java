@@ -458,11 +458,15 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
         }
 
-        FormatIndelVCF formatIndelVCF = new FormatIndelVCF(statsWriter.refAlleles().get(0), new ObjectArraySet<>(statsWriter.altAlleles()),statsWriter.refAlleles().get(0).charAt(0));
-        statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
-        statsWriter.clearAlternateAlleles();
-        for (String alternateAllele : formatIndelVCF.toVCF) {
-            statsWriter.setAlternateAllele(alternateAllele);
+        if (statsWriter.refAlleles().size() > 0) {
+            FormatIndelVCF formatIndelVCF = new FormatIndelVCF(statsWriter.refAlleles().get(0), new ObjectArraySet<>(statsWriter.altAlleles()), statsWriter.refAlleles().get(0).charAt(0));
+            statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
+            statsWriter.clearAlternateAlleles();
+            for (String alternateAllele : formatIndelVCF.toVCF) {
+                statsWriter.setAlternateAllele(alternateAllele);
+            }
+        } else {
+            LOG.warn("No ref found for {}:{}", statsWriter.getChromosome(), position);
         }
 
         if (indelFlagFieldIndex != -1) {    // set indel flag only when the field is defined (i.e., client has called setInfoFields)
