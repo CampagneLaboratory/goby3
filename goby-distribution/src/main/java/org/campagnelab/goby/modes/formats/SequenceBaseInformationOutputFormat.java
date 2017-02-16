@@ -74,7 +74,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             "sample-index:int, index of the sample to annotate (needed when map is provided).:0",
             "true-label-annotator:string, classname for the true genotype label annotator. The implementation is provided by " +
                     "the variationanalysis project's genotype.jar:org.campagnelab.dl.genotype.helpers.AddTrueGenotypeHelper",
-            "genomic-context-length:int, length of genomic context to capture, centered around a base.:21"
+            "genomic-context-length:int, length of genomic context to capture, centered around a base.:41"
 
     );
 
