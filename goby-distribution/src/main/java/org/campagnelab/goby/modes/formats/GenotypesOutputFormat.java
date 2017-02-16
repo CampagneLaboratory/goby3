@@ -26,6 +26,7 @@ import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
+import org.campagnelab.goby.predictions.FormatIndelVCF;
 import org.campagnelab.goby.predictions.GenotypePredictor;
 import org.campagnelab.goby.readers.vcf.ColumnType;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
@@ -455,6 +456,13 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             }
 
 
+        }
+
+        FormatIndelVCF formatIndelVCF = new FormatIndelVCF(statsWriter.refAlleles(), statsWriter.altAlleles());
+        statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
+        statsWriter.clearAlternateAlleles();
+        for (String alternateAllele : formatIndelVCF.toVCF) {
+            statsWriter.setAlternateAllele(alternateAllele);
         }
 
         if (indelFlagFieldIndex != -1) {    // set indel flag only when the field is defined (i.e., client has called setInfoFields)

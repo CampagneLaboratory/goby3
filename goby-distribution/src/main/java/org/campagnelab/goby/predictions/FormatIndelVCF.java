@@ -1,0 +1,80 @@
+package org.campagnelab.goby.predictions;
+
+import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.SortedSet;
+
+/**
+ * Generate an indel compatible with VCF v4.1
+ * Three steps:
+ * 1. Set ref bases in to sequence set to the from sequence. This is because goby treats ref bases differently from VCF, doesn't extend them to match the indel's from sequence.
+ *          IE: from: TGG to: T/T-G  -> from: TGG to: TGG/T-G
+ * 2. trim all alleles to index of last dash any allele,
+ *          IE: from: GTAC to: G--C/G-AC -> from: GTA to: G--/G-A
+ * 3. delete dashes
+ *          IE: from: GTA to: G--/G-A -> from: GTA to: G/GA
+ * Created by rct66 on 2/7/16.
+ */
+public class FormatIndelVCF {
+
+    public String fromVCF;
+    public Set<String> toVCF;
+
+    public FormatIndelVCF(ObjectArrayList<String> from, ObjectArrayList<String> to) {
+        this(from.get(0), new ObjectArraySet<>(to), from.get(0).charAt(0));
+    }
+
+    public FormatIndelVCF(String from, Set<String> to, char refBase){
+
+        //step 1. extend ref or snp to include remainder ref string
+        String refBaseStr = Character.toString(refBase);
+        for (String s: to) {
+            if (s.length() == 1) {
+                to.remove(s);
+                String refOrSnp = s + (from.length() > 1 ? from.substring(1,from.length()) : "");
+                to.add(refOrSnp);
+            }
+        }
+
+
+
+        //find newlen for step 2
+        int newLen = 1;
+        int maxLen = -1;
+        for (String s : to){
+            if (s.length() > maxLen){
+                maxLen = s.length();
+            }
+        }
+        maxLen = Math.max(maxLen,from.length());
+        for (int i = 0; i < maxLen; i++){
+            if (from.length() > i && from.charAt(i) == '-'){
+                newLen = i+1;
+            }
+            for (String s : to){
+                if (s.length() > i && s.charAt(i) == '-'){
+                    newLen = i+1;
+                }
+            }
+        }
+        //apply step 2 and 3
+        fromVCF = from.substring(0,Math.min(from.length(),newLen)).replace("-","");
+        toVCF = new ObjectArraySet<>();
+        for (String s : to){
+            toVCF.add(s.substring(0,Math.min(s.length(),newLen)).replace("-",""));
+        }
+
+
+
+
+    }
+
+
+
+}
