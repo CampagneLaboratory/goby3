@@ -89,7 +89,7 @@ public class VCFWriter {
     private boolean writeFieldGroupAssociations;
 
 
-    protected CharSequence getChromosome() {
+    public CharSequence getChromosome() {
         return this.chrom;
     }
 
@@ -846,5 +846,12 @@ public class VCFWriter {
 
     private ObjectArrayList<ObjectArrayList<String>> fieldGroups = new ObjectArrayList<ObjectArrayList<String>>();
 
+    public ObjectArrayList<String> refAlleles() {
+        return refAlleles;
+    }
+
+    public ObjectArrayList<String> altAlleles() {
+        return altAlleles;
+    }
 
 }
