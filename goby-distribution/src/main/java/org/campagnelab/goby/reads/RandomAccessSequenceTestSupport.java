@@ -61,7 +61,7 @@ public class RandomAccessSequenceTestSupport implements RandomAccessSequenceInte
 
 
     public String getReferenceName(int index) {
-        return "no-name";
+        return "no-name"+index;
     }
 
 

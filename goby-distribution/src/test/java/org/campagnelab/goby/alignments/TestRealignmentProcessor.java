@@ -20,25 +20,23 @@ package org.campagnelab.goby.alignments;
 
 import com.google.protobuf.ByteString;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
+import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.alignments.processors.InfoForTarget;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
 import org.campagnelab.goby.alignments.processors.RealignmentProcessor;
 import org.campagnelab.goby.modes.AbstractAlignmentToCompactMode;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.reads.RandomAccessSequenceTestSupport;
-import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
-import it.unimi.dsi.lang.MutableString;
-
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 /**
  * Test on the fly realignment around indels. See description of test-cases at
@@ -59,6 +57,15 @@ public class TestRealignmentProcessor {
 
     private String[] list2Refs() {
         return new String[]{"ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA"};
+    }
+ private String[] list2RefsDifferentTargets() {
+        return new String[]{
+                "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
+                "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
+                "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
+                "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
+                "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
+        };
     }
 
 
@@ -165,6 +172,7 @@ entry.position=0
     public void testProcessDifferentTargets() throws IOException {
         ObjectListIterator<Alignments.AlignmentEntry> list = buildListDifferentTargets();
         RealignmentProcessor realigner = new RealignmentProcessor(list);
+        realigner.setGenome(new RandomAccessSequenceTestSupport(list2RefsDifferentTargets()));
         Alignments.AlignmentEntry entry;
         int[] count = new int[5];
         while ((entry = realigner.nextRealignedEntry(0, 0)) != null) {
@@ -345,8 +353,8 @@ entry.position=0
 
         ObjectListIterator<Alignments.AlignmentEntry> list = list1.iterator();
         RealignmentProcessor realigner = new RealignmentProcessor(list);
-        IndexedIdentifier targetIds=new IndexedIdentifier();
-        realigner.setGenome(new RandomAccessSequenceTestSupport(list2Refs()),targetIds);
+        IndexedIdentifier targetIds = new IndexedIdentifier();
+        realigner.setGenome(new RandomAccessSequenceTestSupport(list2Refs()));
         Alignments.AlignmentEntry entry;
         while ((entry = realigner.nextRealignedEntry(0, 0)) != null) {
 
@@ -413,6 +421,7 @@ entry.position=0
         ObjectListIterator<Alignments.AlignmentEntry> iterator = new ObjectArrayList().iterator();
         RealignmentProcessor realigner = new RealignmentProcessor(iterator);
         RandomAccessSequenceInterface genome = new RandomAccessSequenceTestSupport(list2Refs());
+        realigner.setGenome(genome);
         Alignments.AlignmentEntry entry = makeEntry(0, "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA", "     CTGACTGAATTACTA", true).build();
         ObservedIndel indel = new ObservedIndel(14, 18, "CTAG", "----");
         assertEquals(3, realigner.score(entry, indel, true, 0, genome));
@@ -427,6 +436,7 @@ entry.position=0
         ObjectListIterator<Alignments.AlignmentEntry> iterator = new ObjectArrayList().iterator();
         RealignmentProcessor realigner = new RealignmentProcessor(iterator);
         RandomAccessSequenceInterface genome = new RandomAccessSequenceTestSupport(list2Refs());
+        realigner.setGenome(genome);
         Alignments.AlignmentEntry entry = makeEntry(0, "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA", "     CTGACTGAATTAGTA", true).build();
         ObservedIndel indel = new ObservedIndel(15, 19, "CTAG", "----");
         // expected score is 1 because despite the +3 you get for inserting the indel you have one base mismatch between the ref and the read.
@@ -532,7 +542,7 @@ entry.position=0
         assertEquals(20, entry.getSequenceVariations(0).getPosition());
         assertEquals("A", entry.getSequenceVariations(0).getFrom());
         assertEquals("T", entry.getSequenceVariations(0).getTo());
-        assertTrue( entry.getSequenceVariations(0).hasToQuality());
+        assertTrue(entry.getSequenceVariations(0).hasToQuality());
         assertEquals(Byte.MAX_VALUE, entry.getSequenceVariations(0).getToQuality().byteAt(0));
 
 
@@ -605,7 +615,7 @@ entry.position=0
         var.setPosition(varPosition);
         var.setReadIndex(varPosition);
         byte[] bytes = new byte[1];
-        bytes[0]=toQual;
+        bytes[0] = toQual;
         final ByteString buffer = ByteString.copyFrom(bytes);
         var.setToQuality(buffer);
         entry.addSequenceVariations(var);

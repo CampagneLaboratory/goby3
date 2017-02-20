@@ -553,8 +553,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
     public void setGenome(RandomAccessSequenceInterface genome) {
         this.genome = genome;
-        assert targetIdentifiers != null : "Target identifiers must be initialized";
-        targetMapper = new GenomeAlignmentTargetMapper(targetIdentifiers, genome);
+        targetMapper = new DummyGenomeAlignmentTargetMapper( genome);
     }
     public void setGenome(RandomAccessSequenceInterface genome, IndexedIdentifier targetIdentifiers ) {
         this.genome = genome;
