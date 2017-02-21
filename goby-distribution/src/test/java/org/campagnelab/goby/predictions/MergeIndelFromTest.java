@@ -27,28 +27,28 @@ ATTTGC 	A----C
 A-TTTG 	ATTTTG
 
 populate split indels
-base 	ins:from	ins:to	del:to	del:from	tail
-A
-T
-A			----	TTTG	C
-A	-	T			TTTG
+base:from	base:to	ins:from	ins:to	del:to	del:from	tail
+A	A
+A	T
+A	A			----	TTTG	C
+A	A	-	T			TTTG
 
 
 find longest del:from + tail	TTTGC
 replace del:from + tails
-A					TTTGC
-T					TTTGC
-A			----	TTTG	C
-A	-	T			TTTGC
+A	A					TTTGC
+A	T					TTTGC
+A	A			----	TTTG	C
+A	A	-	T			TTTGC
 
 
 
 get  max len of ins:from	1
 add - to all ins:from and ins:to so all ins:from have max
-A	-	-			TTTGC
-T	-	-			TTTGC
-A	-	-	----	TTTG	C
-A	-	T			TTTGC
+A	A	-	-			TTTGC
+A	T	-	-			TTTGC
+A	A	-	-	----	TTTG	C
+A	A	-	T			TTTGC
 
 
 
@@ -95,29 +95,29 @@ A----TTT	ATTTTTTT
 A-TT	ATTT
 
 populate split indels
-base 	ins:from	ins:to	del:to	del:from	tail
-A
-T
-A			-	T	T
-A	----	TTTT			TTT
-A	-	T			TT
+base 	base:to	ins:from	ins:to	del:to	del:from	tail
+A	A
+A	T
+A	A			-	T	T
+A	A	----	TTTT			TTT
+A	A	-	T			TT
 
 find longest del:from + tail	TTT
 replace del:from + tails
-A					TTT
-T					TTT
-A			-	T	TT
-A	----	TTTT			TTT
-A	-	T			TTT
+A	A					TTT
+A	T					TTT
+A	A			-	T	TT
+A	A	----	TTTT			TTT
+A	A	-	T			TTT
 
 
 get  max len of ins:from	4
 add - to all ins:from and ins:to so all ins:from have max
-A	----	----			TTT
-T	----	----			TTT
-A	----	----	-	T	TT
-A	----	TTTT			TTT
-A	----	---T			TTT
+A	A	----	----			TTT
+A	T	----	----			TTT
+A	A	----	----	-	T	TT
+A	A	----	TTTT			TTT
+A	A	----	---T			TTT
 
 
 
