@@ -18,6 +18,7 @@
 
 package org.campagnelab.goby.alignments.processors;
 
+import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 
@@ -44,8 +45,9 @@ public interface AlignmentProcessorInterface {
      * produced.
      *
      * @param genome The genome corresponding to the alignment
+     * @param targetIdentifiers
      */
-    void setGenome(RandomAccessSequenceInterface genome);
+    void setGenome(RandomAccessSequenceInterface genome, IndexedIdentifier targetIdentifiers);
 
     /**
      * Returns the number of entries actually modified by the processor. This is garanteed to be less or equal to

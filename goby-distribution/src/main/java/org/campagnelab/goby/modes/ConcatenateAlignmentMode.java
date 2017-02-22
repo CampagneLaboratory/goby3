@@ -239,7 +239,7 @@ public class ConcatenateAlignmentMode extends AbstractGobyMode {
                 System.err.println("A genome must be provided when realignment is requested.");
                 System.exit(1);
             }
-            processor.setGenome(genome);
+            processor.setGenome(genome,alignmentReader.getTargetIdentifiers());
         }
         assert processor != null : "processor cannot be null";
         Alignments.AlignmentEntry entry;

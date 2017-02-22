@@ -129,10 +129,12 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
         return to;
     }
 
-    public final boolean isReadInsertion() {
+    public final boolean isReferenceInsertion() {
         return to.contains("-");
     }
-
+    public final boolean isReadInsertion() {
+        return from.contains("-");
+    }
     @Override
     public int hashCode() {
         return startPosition ^ endPosition ^ from.hashCode() ^ to.hashCode();
