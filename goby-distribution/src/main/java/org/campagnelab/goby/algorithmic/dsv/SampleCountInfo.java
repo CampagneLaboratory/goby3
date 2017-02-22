@@ -103,6 +103,8 @@ public class SampleCountInfo {
                 if (prevIndel.equals(indel)) {
                     prevIndel.reverseReadIndices.addAll(indel.reverseReadIndices);
                     prevIndel.forwardReadIndices.addAll(indel.forwardReadIndices);
+                    prevIndel.forwardQualityScores.addAll(indel.forwardQualityScores);
+                    prevIndel.reverseQualityScores.addAll(indel.reverseQualityScores);
                     for (Alignments.AlignmentEntry supportingEntry: indel.supportingEntries) {
                         if (supportingEntry.getMatchingReverseStrand()) {
                             prevIndel.incrementReverseFrequency();

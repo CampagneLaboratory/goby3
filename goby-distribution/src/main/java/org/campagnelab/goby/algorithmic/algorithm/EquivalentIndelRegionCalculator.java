@@ -139,9 +139,14 @@ public class EquivalentIndelRegionCalculator {
         result.referenceIndex = referenceIndex;
         if (indel.getMatchesForwardStrand()){
             result.forwardReadIndices.add(indel.readIndex);
+            if (indel.hasQualityScores()){
+                result.forwardQualityScores.add(indel.getQualityScores());
+            }
         } else {
             result.reverseReadIndices.add(indel.readIndex);
-
+            if (indel.hasQualityScores()){
+                result.reverseQualityScores.add(indel.getQualityScores());
+            }
         }
         p.setLength(0);
         final boolean insertion = insertionInRead(indel);

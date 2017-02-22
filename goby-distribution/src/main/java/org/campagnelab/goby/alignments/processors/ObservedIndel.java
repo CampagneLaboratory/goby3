@@ -61,7 +61,7 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
         this.length = Math.max(from.length(), to.length());
     }
 
-    public boolean isHasQualityScores() {
+    public boolean hasQualityScores() {
         return hasQualityScores;
     }
 

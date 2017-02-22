@@ -72,7 +72,11 @@ public class EquivalentIndelRegion {
     /**
      * Quality scores across the length of the indel.
      */
-    public byte[] qualityScores;
+    public Set<byte[]> forwardQualityScores = new ObjectArraySet<>();
+     /**
+     * Quality scores across the length of the indel.
+     */
+    public Set<byte[]> reverseQualityScores = new ObjectArraySet<>();
     /**
      * Indicate that this indel was filtered out.
      */
@@ -253,5 +257,9 @@ public class EquivalentIndelRegion {
         // since the EIR match, increase the number of distinct read indices observed for the overlap:
         forwardReadIndices.addAll(candidateIndel.forwardReadIndices);
         reverseReadIndices.addAll(candidateIndel.reverseReadIndices);
+        forwardQualityScores.addAll(candidateIndel.forwardQualityScores);
+        reverseQualityScores.addAll(candidateIndel.reverseQualityScores);
+
+
     }
 }

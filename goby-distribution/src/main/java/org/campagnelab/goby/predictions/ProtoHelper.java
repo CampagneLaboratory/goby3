@@ -18,6 +18,7 @@ import org.campagnelab.goby.util.BaseToStringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -181,9 +182,19 @@ public class ProtoHelper {
                 int baseIndex = indelIndices.get(eqr);
                 readIdxs[sampleIndex][baseIndex][POSITIVE_STRAND].addAll(eqr.forwardReadIndices);
                 readIdxs[sampleIndex][baseIndex][NEGATIVE_STRAND].addAll(eqr.reverseReadIndices);
+                for (byte[] qualityArray : eqr.forwardQualityScores){
+                    for (byte quality : qualityArray){
+                        qualityScores[sampleIndex][baseIndex][POSITIVE_STRAND].add(quality & 0xFF);
+                    }
+                }
+                for (byte[] qualityArray : eqr.reverseQualityScores){
+                    for (byte quality : qualityArray){
+                        qualityScores[sampleIndex][baseIndex][NEGATIVE_STRAND].add(quality & 0xFF);
+                    }
+                }
                 for (Alignments.AlignmentEntry entry : eqr.supportingEntries){
                     int strandInd = entry.getMatchingReverseStrand()? NEGATIVE_STRAND : POSITIVE_STRAND;
-                    //qualityScores[sampleIndex][baseIndex][strandInd].add(entry.getReadQualityScores() & 0xFF);
+
                     readMappingQuality[sampleIndex][baseIndex][strandInd].add(entry.getMappingQuality() & 0xFF);
                     numVariationsInReads[sampleIndex][baseIndex].add(entry.getSequenceVariationsCount());
                     insertSizes[sampleIndex][baseIndex].add(entry.getInsertSize());
