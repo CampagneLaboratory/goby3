@@ -332,7 +332,7 @@ public abstract class IterateSortedAlignments<T> {
 
         final AlignmentProcessorInterface realigner = alignmentProcessorFactory.create(sortedReaders);
 
-        realigner.setGenome(getGenome());
+        realigner.setGenome(getGenome(), sortedReaders.getTargetIdentifiers());
         currentPosition=startPosition;
         while ((alignmentEntry = realigner.nextRealignedEntry(currentMinTargetIndex, currentPosition)) != null) {
 

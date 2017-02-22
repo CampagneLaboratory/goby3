@@ -18,6 +18,7 @@
 
 package org.campagnelab.goby.alignments.processors;
 
+import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
@@ -56,7 +57,7 @@ public class DummyProcessor implements AlignmentProcessorInterface {
         return reader.skipTo(targetIndex, position);
     }
 
-    public void setGenome(RandomAccessSequenceInterface genome) {
+    public void setGenome(RandomAccessSequenceInterface genome, IndexedIdentifier targetIdentifiers) {
 
     }
 

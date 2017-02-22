@@ -12,8 +12,9 @@ public class GenomeDebugHelper {
         MutableString before = new MutableString();
         MutableString after = new MutableString();
         char base;
-        genome.getRange(genomeTargetIndex, keyPos - 10, 10, before);
-        genome.getRange(genomeTargetIndex, keyPos + 10, 10, after);
+        int targetLength=genome.getLength(genomeTargetIndex);
+        genome.getRange(genomeTargetIndex, Math.max(0,keyPos - 10), 10, before);
+        genome.getRange(genomeTargetIndex, Math.min(keyPos + 10,targetLength), 10, after);
         base = genome.get(genomeTargetIndex, keyPos);
         System.out.printf("%s:%d %s|%c|%s%n", genome.getReferenceName(genomeTargetIndex),
                 keyPos, before, base, after

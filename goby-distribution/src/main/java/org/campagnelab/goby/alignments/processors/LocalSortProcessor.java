@@ -18,6 +18,7 @@
 
 package org.campagnelab.goby.alignments.processors;
 
+import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import it.unimi.dsi.fastutil.AbstractPriorityQueue;
@@ -155,8 +156,8 @@ public class LocalSortProcessor implements AlignmentProcessorInterface {
     }
 
     @Override
-    public void setGenome(RandomAccessSequenceInterface genome) {
-        delegate.setGenome(genome);
+    public void setGenome(RandomAccessSequenceInterface genome, IndexedIdentifier targetIdentifiers) {
+        delegate.setGenome(genome, targetIdentifiers);
     }
 
     @Override

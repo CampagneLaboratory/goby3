@@ -19,6 +19,7 @@
 package org.campagnelab.goby.alignments;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.TextFormat;
 import edu.cornell.med.icb.identifier.IndexedIdentifier;
 import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -48,6 +49,7 @@ import static org.junit.Assert.*;
  */
 public class TestRealignmentProcessor {
 
+
     private ObjectListIterator<Alignments.AlignmentEntry> buildList1() {
         ObjectList<Alignments.AlignmentEntry> list = new ObjectArrayList<Alignments.AlignmentEntry>();
         addIndel(list, 10, 50, 3, 20); // indel in middle of the read, would be correctly aligned.
@@ -58,7 +60,8 @@ public class TestRealignmentProcessor {
     private String[] list2Refs() {
         return new String[]{"ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA"};
     }
- private String[] list2RefsDifferentTargets() {
+
+    private String[] list2RefsDifferentTargets() {
         return new String[]{
                 "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
                 "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA",
@@ -377,34 +380,31 @@ entry.position=0
     }
 
 
-    /**
-     * Test case 7  TODO: enable this test for read insertion.
+      /**
+     * Test case 8:   read insertion.
      */
-    public void testCase7() throws IOException {
+    @Test
+    public void testCase8() throws IOException {
 
 
         ObjectList<Alignments.AlignmentEntry> list1 = new ObjectArrayList<Alignments.AlignmentEntry>();
-        addEntry(list1, 0, "ACTGACTGACTGAATTACTAGCTAAAGTTA", "     CTGACTGAACTAGTTACTAG");  // this read should be realigned to the right
-        addEntry(list1, 0, "ACTGACTGACTGAA----TTACTAGCTAAAGTTA", "     CTGACTGAACTAGTTACTAG"); // this read carries the candidate read insertion
-        // ACTGACTGACTGAA----TTACTAGCTAAAGTTA ref
-        //      CTGACTGAACTAGTTACTAG          read with insertion.    
+        addEntry(list1, 0, "GATACAAATCAC",  "    CAAAAT");  // this read should be realigned to the left
+        addEntry(list1, 0, "GATACAAA-TCAC", "    CAAAAT "); // this read carries the candidate read insertion
         ObjectListIterator<Alignments.AlignmentEntry> iterator = list1.iterator();
         RealignmentProcessor realigner = new RealignmentProcessor(iterator);
-        realigner.setGenome(new RandomAccessSequenceTestSupport(list2Refs()));
+        realigner.setGenome(new RandomAccessSequenceTestSupport(readInsertionGenomeSequences));
         Alignments.AlignmentEntry entry;
         while ((entry = realigner.nextRealignedEntry(0, 0)) != null) {
-
+             System.out.println("entry:"
+                     + entry.getSequenceVariationsList());
             if (entry.getQueryIndex() == 0) {
                 assertFalse(entry.getMatchingReverseStrand());
                 Alignments.SequenceVariation var = entry.getSequenceVariations(0);
-                assertEquals("----", var.getFrom());
-                assertEquals("CTAG", var.getTo());
-                assertEquals(10, var.getPosition());
-                assertEquals(10, var.getReadIndex());
-
+                assertEquals("-", var.getFrom());
+                assertEquals("A", var.getTo());
+            //    assertEquals(10, var.getPosition());
+           //     assertEquals(10, var.getReadIndex());
             }
-            System.out.println("entry:"
-                    + entry);
         }
     }
 
@@ -621,5 +621,67 @@ entry.position=0
         entry.addSequenceVariations(var);
         list.add(entry.build());
     }
+    String readInsertionGenomeSequences[]={"GATACAAATCACTGTGCAAAAAAAAAAAAAAAAAA"};
 
+    public ObjectList<Alignments.AlignmentEntry>  createAlignmentReadInsertions(){
+        ObjectList<Alignments.AlignmentEntry> list=new ObjectArrayList<>();
+        try {
+            Alignments.AlignmentEntry.Builder newBuilder = Alignments.AlignmentEntry.newBuilder();
+            TextFormat.getParser().merge(protoAlign1, newBuilder);
+            list.add(newBuilder.build());
+            newBuilder = Alignments.AlignmentEntry.newBuilder();
+            TextFormat.getParser().merge(protoAlignWithCandidateIndel, newBuilder);
+            list.add(newBuilder.build());
+           return list;
+        } catch(IOException e) {
+            throw new RuntimeException("Unable to parse protobuf alignment.");
+
+        }
+
+    }
+    private String protoAlign1="query_index: 8421057\n" +
+            "target_index: 2\n" +
+            "position: 195805416\n" +
+            "query_position: 1\n" +
+            "matching_reverse_strand: true\n" +
+            "multiplicity: 1\n" +
+            "query_length: 101\n" +
+            "query_aligned_length: 100\n" +
+            "target_aligned_length: 100\n" +
+            "sequence_variations {\n" +
+            "  to: \"AT\"\n" +
+            "  from: \"TC\"\n" +
+            "  position: 99\n" +
+            "  to_quality: \"\\\"\\037\"\n" +
+            "  read_index: 2\n" +
+            "}\n" +
+            "mapping_quality: 29\n" +
+            "pair_flags: 147\n" +
+            "fragment_index: 1\n" +
+            "insert_size: -312\n" +
+            "ambiguity: 1\n"
+           ;
+
+    String protoAlignWithCandidateIndel="query_index: 8421138\n" +
+            "target_index: 2\n" +
+            "position: 195805420\n" +
+            "query_position: 0\n" +
+            "matching_reverse_strand: false\n" +
+            "multiplicity: 1\n" +
+            "query_length: 101\n" +
+            "query_aligned_length: 101\n" +
+            "target_aligned_length: 100\n" +
+            "sequence_variations {\n" +
+            "  to: \"A\"\n" +
+            "  from: \"-\"\n" +
+            "  position: 91\n" +
+            "  to_quality: \"$\"\n" +
+            "  read_index: 92\n" +
+            "}\n" +
+            "mapping_quality: 28\n" +
+            "pair_flags: 163\n" +
+            "fragment_index: 0\n" +
+            "insert_size: 305\n" +
+            "ambiguity: 1"
+            ;
 }
