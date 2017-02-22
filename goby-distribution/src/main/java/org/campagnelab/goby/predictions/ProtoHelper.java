@@ -286,16 +286,16 @@ public class ProtoHelper {
             }
             builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
         }
-        // TODO : do not use exceptions to catch non-exceptional cases:
-        try {
-            builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
-        } catch (NullPointerException e1) {
-            try {
-            builder.setReferenceBase((sampleCounts[0].getReferenceGenotype().substring(0,1)));
-            } catch (NullPointerException e2){
-               builder.setReferenceBase(Character.toString(genome.get(genomeReferenceIndex,position)));
+        String refBase = baseConversion.convert(list.getReferenceBase());
+        if (refBase==null) {
+            String referenceGenotype = sampleCounts[0].getReferenceGenotype();
+            if (referenceGenotype.length() >= 1) {
+                refBase = sampleCounts[0].getReferenceGenotype().substring(0, 1);
+            } else {
+                refBase = Character.toString(genome.get(genomeReferenceIndex, position));
             }
         }
+        builder.setReferenceBase(refBase);
     }
 
     private static void transfer(IntArrayList[][] qualityScore,
