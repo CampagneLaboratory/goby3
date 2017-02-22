@@ -3,7 +3,7 @@ package org.campagnelab.goby.predictions;
 import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
@@ -170,7 +170,7 @@ public class ProtoHelper {
         //iterate over indels and populate data for those too
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             //make a map from EIR -> genotypeIndex
-            Map<EquivalentIndelRegion,Integer> indelIndices = new Object2ObjectArrayMap<>();
+            Object2IntArrayMap<EquivalentIndelRegion> indelIndices = new Object2IntArrayMap<>();
             for (int i = SampleCountInfo.BASE_MAX_INDEX; i < maxGenotypeIndex; i++){
                 indelIndices.put(sampleCounts[0].getIndelGenotype(i),i);
             }
@@ -178,7 +178,7 @@ public class ProtoHelper {
                 continue;
             }
             for (EquivalentIndelRegion eqr : sampleCounts[sampleIndex].getEquivalentIndelRegions()){
-                int baseIndex = indelIndices.get(eqr);
+                int baseIndex = indelIndices.getInt(eqr);
                 readIdxs[sampleIndex][baseIndex][POSITIVE_STRAND].addAll(eqr.forwardReadIndices);
                 readIdxs[sampleIndex][baseIndex][NEGATIVE_STRAND].addAll(eqr.reverseReadIndices);
                 for (Alignments.AlignmentEntry entry : eqr.supportingEntries){
@@ -282,7 +282,7 @@ public class ProtoHelper {
                 }
                 builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
             }
-
+            // TODO : do not use exceptions to catch non-exceptional cases:
             try {
                 builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
             } catch (NullPointerException e1) {
