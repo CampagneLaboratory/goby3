@@ -104,14 +104,12 @@ public class SampleCountInfo {
                     prevIndel.reverseReadIndices.addAll(indel.reverseReadIndices);
                     prevIndel.forwardReadIndices.addAll(indel.forwardReadIndices);
                     for (Alignments.AlignmentEntry supportingEntry: indel.supportingEntries) {
-                    if (supportingEntry.getMatchingReverseStrand()) {
-                        prevIndel.incrementReverseFrequency();
-                    } else {
-                        prevIndel.incrementForwardFrequency();
-
+                        if (supportingEntry.getMatchingReverseStrand()) {
+                            prevIndel.incrementReverseFrequency();
+                        } else {
+                            prevIndel.incrementForwardFrequency();
+                        }
                     }
-
-                }
                 }
                 previousStartPosition = prevIndel.startPosition;
 
