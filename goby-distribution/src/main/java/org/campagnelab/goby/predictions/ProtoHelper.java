@@ -182,16 +182,6 @@ public class ProtoHelper {
                 int baseIndex = indelIndices.getInt(eqr);
                 readIdxs[sampleIndex][baseIndex][POSITIVE_STRAND].addAll(eqr.forwardReadIndices);
                 readIdxs[sampleIndex][baseIndex][NEGATIVE_STRAND].addAll(eqr.reverseReadIndices);
-                for (byte[] qualityArray : eqr.forwardQualityScores){
-                    for (byte quality : qualityArray){
-                        qualityScores[sampleIndex][baseIndex][POSITIVE_STRAND].add(quality & 0xFF);
-                    }
-                }
-                for (byte[] qualityArray : eqr.reverseQualityScores){
-                    for (byte quality : qualityArray){
-                        qualityScores[sampleIndex][baseIndex][NEGATIVE_STRAND].add(quality & 0xFF);
-                    }
-                }
                 for (Alignments.AlignmentEntry entry : eqr.supportingEntries){
                     int strandInd = entry.getMatchingReverseStrand()? NEGATIVE_STRAND : POSITIVE_STRAND;
 
@@ -203,7 +193,7 @@ public class ProtoHelper {
                     Integer indelReadIndex = null;
                     //get this read index of this indel in this read by finding it in the variant list
                     for (Alignments.SequenceVariation var : entry.getSequenceVariationsList()) {
-                        if (var.getTo().equals(eqr.to) && var.getFrom().equals(eqr.from)) {
+                        if (var.getTo().equals(eqr.to) && var.getFrom().equals(eqr.from) && (eqr.forwardReadIndices.contains(var.getReadIndex()) || eqr.forwardReadIndices.contains(var.getReadIndex()))) {
                             indelReadIndex = var.getReadIndex();
                             continue;
                         }
@@ -216,7 +206,11 @@ public class ProtoHelper {
                         int varIndex = var.getReadIndex();
                         int delta = indelReadIndex - varIndex;
                         distancesToReadVariations[sampleIndex][baseIndex][strandInd].add(delta);
-
+                        if (var.hasToQuality()){
+                            for (byte quality : var.getToQuality()){
+                                qualityScores[sampleIndex][baseIndex][strandInd].add(quality & 0xFF);
+                            }
+                        }
                     }
                     targetAlignedLengths[sampleIndex][baseIndex].add(entry.getTargetAlignedLength());
                     queryAlignedLengths[sampleIndex][baseIndex].add(entry.getQueryAlignedLength());
