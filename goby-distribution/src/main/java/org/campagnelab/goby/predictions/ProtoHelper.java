@@ -173,6 +173,7 @@ public class ProtoHelper {
             //make a map from EIR -> genotypeIndex
             Object2IntArrayMap<EquivalentIndelRegion> indelIndices = new Object2IntArrayMap<>();
             for (int i = SampleCountInfo.BASE_MAX_INDEX; i < maxGenotypeIndex; i++){
+                // indels are aligned across samples, so we take the index/indel association from the first sample:
                 indelIndices.put(sampleCounts[0].getIndelGenotype(i),i);
             }
             if (sampleCounts[sampleIndex].getEquivalentIndelRegions() == null){
@@ -218,9 +219,6 @@ public class ProtoHelper {
                 }
             }
         }
-
-
-
 
         BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
         builder.setMutated(false);
