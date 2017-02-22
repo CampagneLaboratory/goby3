@@ -1,7 +1,7 @@
 package org.campagnelab.goby.predictions;
 
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.campagnelab.goby.util.Variant;
 
 import java.io.Serializable;

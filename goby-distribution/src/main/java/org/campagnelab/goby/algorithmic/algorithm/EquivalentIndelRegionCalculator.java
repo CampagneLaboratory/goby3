@@ -137,7 +137,12 @@ public class EquivalentIndelRegionCalculator {
         result.startPosition = indel.getStart();
         result.endPosition = indel.getEnd();
         result.referenceIndex = referenceIndex;
-        result.readIndices.add(indel.readIndex);
+        if (indel.getMatchesForwardStrand()){
+            result.forwardReadIndices.add(indel.readIndex);
+        } else {
+            result.reverseReadIndices.add(indel.readIndex);
+
+        }
         p.setLength(0);
         final boolean insertion = insertionInRead(indel);
         p.append(insertion ? indel.to() : indel.from());

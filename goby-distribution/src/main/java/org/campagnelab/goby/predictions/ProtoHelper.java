@@ -3,12 +3,14 @@ package org.campagnelab.goby.predictions;
 import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.lang.MutableString;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
+import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.PositionBaseInfo;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -107,7 +110,6 @@ public class ProtoHelper {
         int maxGenotypeIndex = 0;
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
-
             maxGenotypeIndex = Math.max(sampleCountInfo.getGenotypeMaxIndex(), maxGenotypeIndex);
         }
 
@@ -149,7 +151,7 @@ public class ProtoHelper {
                 readMappingQuality[sampleIndex][baseIndex][strandInd].add(baseInfo.readMappingQuality & 0xFF);
                 numVariationsInReads[sampleIndex][baseIndex].add(baseInfo.numVariationsInRead);
                 insertSizes[sampleIndex][baseIndex].add(baseInfo.insertSize);
-                baseInfo.alignmentEntry.getTargetAlignedLength();
+                targetAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getTargetAlignedLength());
                 //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
                 readIdxs[sampleIndex][baseIndex][strandInd].add(baseInfo.readIndex);
                 for (Alignments.SequenceVariation var : baseInfo.alignmentEntry.getSequenceVariationsList()) {
@@ -164,6 +166,57 @@ public class ProtoHelper {
                 pairFlags[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getPairFlags());
             }
         }
+
+        //iterate over indels and populate data for those too
+        for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
+            //make a map from EIR -> genotypeIndex
+            Map<EquivalentIndelRegion,Integer> indelIndices = new Object2ObjectArrayMap<>();
+            for (int i = SampleCountInfo.BASE_MAX_INDEX; i < maxGenotypeIndex; i++){
+                indelIndices.put(sampleCounts[0].getIndelGenotype(i),i);
+            }
+            if (sampleCounts[sampleIndex].getEquivalentIndelRegions() == null){
+                continue;
+            }
+            for (EquivalentIndelRegion eqr : sampleCounts[sampleIndex].getEquivalentIndelRegions()){
+                int baseIndex = indelIndices.get(eqr);
+                readIdxs[sampleIndex][baseIndex][POSITIVE_STRAND].addAll(eqr.forwardReadIndices);
+                readIdxs[sampleIndex][baseIndex][NEGATIVE_STRAND].addAll(eqr.reverseReadIndices);
+                for (Alignments.AlignmentEntry entry : eqr.supportingEntries){
+                    int strandInd = entry.getMatchingReverseStrand()? NEGATIVE_STRAND : POSITIVE_STRAND;
+                    //qualityScores[sampleIndex][baseIndex][strandInd].add(entry.getReadQualityScores() & 0xFF);
+                    readMappingQuality[sampleIndex][baseIndex][strandInd].add(entry.getMappingQuality() & 0xFF);
+                    numVariationsInReads[sampleIndex][baseIndex].add(entry.getSequenceVariationsCount());
+                    insertSizes[sampleIndex][baseIndex].add(entry.getInsertSize());
+                    targetAlignedLengths[sampleIndex][baseIndex].add(entry.getTargetAlignedLength());
+                    //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
+                    Integer indelReadIndex = null;
+                    //get this read index of this indel in this read by finding it in the variant list
+                    for (Alignments.SequenceVariation var : entry.getSequenceVariationsList()) {
+                        if (var.getTo().equals(eqr.to) && var.getFrom().equals(eqr.from)) {
+                            indelReadIndex = var.getReadIndex();
+                            continue;
+                        }
+                    }
+                    //now iterate over the other variants and add their read idx deltas.
+                    for (Alignments.SequenceVariation var : entry.getSequenceVariationsList()) {
+                        if ((var.getTo().equals(eqr.to) && var.getFrom().equals(eqr.from)) || indelReadIndex == null /* couldn't find indel variant */) {
+                            continue;
+                        }
+                        int varIndex = var.getReadIndex();
+                        int delta = indelReadIndex - varIndex;
+                        distancesToReadVariations[sampleIndex][baseIndex][strandInd].add(delta);
+
+                    }
+                    targetAlignedLengths[sampleIndex][baseIndex].add(entry.getTargetAlignedLength());
+                    queryAlignedLengths[sampleIndex][baseIndex].add(entry.getQueryAlignedLength());
+                    pairFlags[sampleIndex][baseIndex].add(entry.getPairFlags());
+                }
+            }
+        }
+
+
+
+
         BaseInformationRecords.BaseInformation.Builder builder = BaseInformationRecords.BaseInformation.newBuilder();
         builder.setMutated(false);
         builder.setPosition(position);

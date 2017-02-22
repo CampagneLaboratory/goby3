@@ -61,10 +61,14 @@ public class EquivalentIndelRegion {
     private boolean matchesReference;
     private boolean matchesRefCached;
     /**
-     * The indices of the first bases in the reads where the indel was observed. This is a set because an EIR may
-     * represent multiple read observations of an indel.
+     * same as above for only forward read indices.
      */
-    public IntArraySet readIndices = new IntArraySet();
+    public IntArraySet forwardReadIndices = new IntArraySet();
+    /**
+     * Same as above for only reverse read indices.
+     */
+    public IntArraySet reverseReadIndices = new IntArraySet();
+    /**
     /**
      * Quality scores across the length of the indel.
      */
@@ -232,6 +236,7 @@ public class EquivalentIndelRegion {
         return filtered ? 0 : reverseFrequency + forwardFrequency;
     }
 
+
     /**
      * Merge information from candidateIndel into this indel.
      * @param candidateIndel
@@ -246,6 +251,7 @@ public class EquivalentIndelRegion {
         supportingEntries.addAll(candidateIndel.supportingEntries);
         supportingEntries.add(alignmentEntry);
         // since the EIR match, increase the number of distinct read indices observed for the overlap:
-        readIndices.addAll(candidateIndel.readIndices);
+        forwardReadIndices.addAll(candidateIndel.forwardReadIndices);
+        reverseReadIndices.addAll(candidateIndel.reverseReadIndices);
     }
 }

@@ -188,7 +188,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                 //set deletion pos to position of base before first deleted base
                 startPosition--;
             }
-            final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex);
+            final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex,!alignmentEntry.getMatchingReverseStrand());
             int flankLeftSize = 1;
             equivalentIndelRegionCalculator.setFlankLeftSize(flankLeftSize); // VCF output requires one base before the indel
             equivalentIndelRegionCalculator.setFlankRightSize(0);
@@ -296,8 +296,10 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                             sampleCounts[indel.sampleIndex].varCount += indel.getFrequency();
                             sumVariantCounts += indel.getFrequency();
                         }
-                        sampleCounts[indel.sampleIndex].distinctReadIndices.addAll(indel.readIndices);
-                        distinctReadIndices.addAll(indel.readIndices);
+                        sampleCounts[indel.sampleIndex].distinctReadIndices.addAll(indel.forwardReadIndices);
+                        sampleCounts[indel.sampleIndex].distinctReadIndices.addAll(indel.reverseReadIndices);
+                        distinctReadIndices.addAll(indel.forwardReadIndices);
+                        distinctReadIndices.addAll(indel.reverseReadIndices);
                         sampleCounts[indel.sampleIndex].addIndel(indel);
                         hasIndel = true;
                     }

@@ -112,7 +112,7 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
                 }
             }
         }
-         }
+    }
 
     public ObjectArraySet<EquivalentIndelRegion> getIndels() {
 

@@ -101,12 +101,16 @@ public class SampleCountInfo {
             int previousStartPosition = -1;
             for (final EquivalentIndelRegion prevIndel : indels) {
                 if (prevIndel.equals(indel)) {
-                for (Alignments.AlignmentEntry supportingEntry: indel.supportingEntries) {
+                    prevIndel.reverseReadIndices.addAll(indel.reverseReadIndices);
+                    prevIndel.forwardReadIndices.addAll(indel.forwardReadIndices);
+                    for (Alignments.AlignmentEntry supportingEntry: indel.supportingEntries) {
                     if (supportingEntry.getMatchingReverseStrand()) {
                         prevIndel.incrementReverseFrequency();
                     } else {
                         prevIndel.incrementForwardFrequency();
+
                     }
+
                 }
                 }
                 previousStartPosition = prevIndel.startPosition;

@@ -41,6 +41,12 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
      */
     public int readIndex;
 
+    public ObservedIndel(final int startPosition, final String from, final String to, final int readIndex, final boolean matchesForwardStrand) {
+        //end position points to pos after last "-"? new: + 1
+        this(startPosition, from, to, readIndex);
+        this.matchesForwardStrand = matchesForwardStrand;
+    }
+
     public ObservedIndel(final int startPosition, final String from, final String to, final int readIndex) {
         //end position points to pos after last "-"? new: + 1
         this(startPosition, startPosition + Math.max(from.length(), to.length()) + 1, from, to);
@@ -71,10 +77,17 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
 
     private byte[] qualityScores;
     private boolean hasQualityScores;
+    private boolean matchesForwardStrand;
 
     public void setQualityScores(byte[] qualityScores) {
+        hasQualityScores = true;
         this.qualityScores = qualityScores;
     }
+
+    public void setMatchesForwardStrand(boolean matchesForwardStrand) {
+        this.matchesForwardStrand = matchesForwardStrand;
+    }
+
 
     /**
      * Return the span of the indel, in bases. This is the difference between endPosition and startPosition, measured on
@@ -177,5 +190,9 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
         a = this.to.compareTo(other.to);
         return a;
 
+    }
+
+    public boolean getMatchesForwardStrand() {
+        return matchesForwardStrand;
     }
 }
