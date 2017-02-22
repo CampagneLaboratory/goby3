@@ -29,7 +29,7 @@ public class Variant implements Serializable {
     public static int numFromMistmaches = 0;
     public static int numIndelsEncountered = 0;
 
-
+   public static final long serialVersionUID = -8298131465187158713L;
 
     /**
      * @param referenceBase refbase corresponding to base in genome at position
