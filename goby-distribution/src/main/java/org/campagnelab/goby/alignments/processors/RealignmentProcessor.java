@@ -235,9 +235,6 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                 for (boolean direction : directions) {
 
                     final int realignedScore = score(entry, indel, direction, currentBestScore, genome);
-                    if (entry.getQueryIndex() == 0) {
-                        System.out.println("score: " + realignedScore);
-                    }
                     if (realignedScore > currentBestScore) {
                         currentBestScore = realignedScore;
                         bestScoreIndel = indel;

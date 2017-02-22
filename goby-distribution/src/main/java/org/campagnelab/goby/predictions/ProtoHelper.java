@@ -263,39 +263,37 @@ public class ProtoHelper {
     private static void transferGenomicContext(int contextLength, RandomAccessSequenceInterface genome, int genomeReferenceIndex,
                                                int position, DiscoverVariantPositionData list, BaseInformationRecords.BaseInformation.Builder builder, SampleCountInfo[] sampleCounts) {
         // store 10 bases of genomic context around the site:
-        {
-            genomicContext.setLength(0);
-            int referenceSequenceLength = genome.getLength(genomeReferenceIndex);
-            if (referenceSequenceLength <= 0) {
-                builder.setGenomicSequenceContext(defaultGenomicContext(contextLength));
-            } else {
-                //derive context length
-                int cl = (contextLength - 1) / 2;
-                final int genomicStart = Math.max(position - cl, 0);
-                final int genomicEnd = Math.min(position + (cl + 1), referenceSequenceLength);
-                int index = 0;
-                for (int refPos = genomicStart; refPos < genomicEnd; refPos++) {
-                    genomicContext.insert(index++, baseConversion.convert(genome.get(genomeReferenceIndex, refPos)));
-                }
-                //pad zeros as needed
-                for (int i = genomicStart; i < 0; i++) {
-                    genomicContext.insert(0, "N");
-                }
-                index = genomicContext.length();
-                for (int i = genomicEnd; i > referenceSequenceLength; i--) {
-                    genomicContext.insert(index++, "N");
-                }
-                builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
+        genomicContext.setLength(0);
+        int referenceSequenceLength = genome.getLength(genomeReferenceIndex);
+        if (referenceSequenceLength <= 0) {
+            builder.setGenomicSequenceContext(defaultGenomicContext(contextLength));
+        } else {
+            //derive context length
+            int cl = (contextLength - 1) / 2;
+            final int genomicStart = Math.max(position - cl, 0);
+            final int genomicEnd = Math.min(position + (cl + 1), referenceSequenceLength);
+            int index = 0;
+            for (int refPos = genomicStart; refPos < genomicEnd; refPos++) {
+                genomicContext.insert(index++, baseConversion.convert(genome.get(genomeReferenceIndex, refPos)));
             }
-            // TODO : do not use exceptions to catch non-exceptional cases:
+            //pad zeros as needed
+            for (int i = genomicStart; i < 0; i++) {
+                genomicContext.insert(0, "N");
+            }
+            index = genomicContext.length();
+            for (int i = genomicEnd; i > referenceSequenceLength; i--) {
+                genomicContext.insert(index++, "N");
+            }
+            builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
+        }
+        // TODO : do not use exceptions to catch non-exceptional cases:
+        try {
+            builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
+        } catch (NullPointerException e1) {
             try {
-                builder.setReferenceBase(baseConversion.convert(list.getReferenceBase()));
-            } catch (NullPointerException e1) {
-                try {
-                builder.setReferenceBase((sampleCounts[0].getReferenceGenotype().substring(0,1)));
-                } catch (NullPointerException e2){
-                   builder.setReferenceBase(Character.toString(genome.get(genomeReferenceIndex,position)));
-                }
+            builder.setReferenceBase((sampleCounts[0].getReferenceGenotype().substring(0,1)));
+            } catch (NullPointerException e2){
+               builder.setReferenceBase(Character.toString(genome.get(genomeReferenceIndex,position)));
             }
         }
     }
