@@ -161,6 +161,7 @@
                         <include>org/campagnelab/goby/util/**</include>
                         <include>org/campagnelab/goby/parsers/**</include>
                         <include>org/campagnelab/goby/predictions/**</include>
+                        <include>org/campagnelab/goby/util/Variant*</include>
                         <include>org/campagnelab/dl/varanalysis/protobuf/**</include>
                     </includes>
 
