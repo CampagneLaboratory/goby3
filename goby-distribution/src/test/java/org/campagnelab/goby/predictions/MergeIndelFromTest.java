@@ -23,7 +23,7 @@ Example 1: longest tail in deletion
 from	to
 A	T
 A	A
-ATTTGC 	A----C
+ATCTTG 	A----C
 A-TTTG 	ATTTTG
 
 populate split indels
@@ -88,8 +88,8 @@ A-TTTGC	ATTTTGC
 
 Example 2: longest tail in insertion
 from	to
-A	T
 A	A
+A	T
 ATT	A-T
 A----TTT	ATTTTTTT
 A-TT	ATTT

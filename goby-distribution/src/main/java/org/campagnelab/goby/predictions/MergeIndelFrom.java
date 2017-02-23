@@ -39,9 +39,18 @@ import java.util.Set;
  */
 public class MergeIndelFrom {
 
+
     Set<String> tos = new ObjectArraySet<>();
     String from;
 
+
+    public Set<String> getTos() {
+        return tos;
+    }
+
+    public String getFrom() {
+        return from;
+    }
 
     static public class SplitIndel {
 
