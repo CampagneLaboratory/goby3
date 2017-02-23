@@ -27,6 +27,7 @@ import org.apache.commons.io.input.ReaderInputStream;
 import org.campagnelab.goby.readers.vcf.VCFParser;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.Variant;
+import org.campagnelab.goby.util.VariantMapCreator;
 import org.campagnelab.goby.util.VariantMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      * The input files.
      */
     private File vcfFile;
-    private VariantMapHelper chMap;
+    private VariantMapCreator chMap;
     /**
      * The output map filename.
      */
@@ -118,7 +119,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             }
         }
         genome = DiscoverSequenceVariantsMode.configureGenome(jsapResult);
-        chMap = new VariantMapHelper(genome);
+        chMap = new VariantMapCreator(genome);
         return this;
     }
 
