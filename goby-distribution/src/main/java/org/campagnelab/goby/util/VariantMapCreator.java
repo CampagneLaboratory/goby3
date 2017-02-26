@@ -24,7 +24,6 @@ public class VariantMapCreator extends VariantMapHelper {
     protected RandomAccessSequenceInterface genome;
     static WarningCounter overLappingIndels = new WarningCounter(10);
 
-
     /**
      * Generate a new empty variant map
      */
@@ -55,10 +54,13 @@ public class VariantMapCreator extends VariantMapHelper {
         Variant var = new Variant(reference, trueAlleles, gobyPos, genome.getReferenceIndex(chrom));
         Map<Integer, Variant> realignedVars = realign(var, equivalentIndelRegionCalculator);
         for (Variant reVar : realignedVars.values()) {
-            if (chMap.get(chrom).containsKey(reVar.position)) {
-
+            Variant previousVariant = chMap.get(chrom).get(reVar.position);
+            if (previousVariant!=null) {
+                // TODO: Remi, please review.
+                //  merge previous variant with new one and update map.
+                previousVariant.merge(reVar);
                 overLappingIndels.warn(LOG,
-                        "\nin map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
+                        "\nmerged variant. in map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
                                 "\nintended adding from,to: " +  reVar.trueAlleles + "\nat " + chrom + ":" + reVar.position);
                 numOverlaps++;
             } else {

@@ -19,12 +19,27 @@ public class Variant implements Serializable {
     public static int numFromMistmaches = 0;
     public static int numIndelsEncountered = 0;
 
-   public static final long serialVersionUID = -8298131465187158713L;
+    public static final long serialVersionUID = -8298131465187158713L;
 
     /**
-     * @param referenceBase refbase corresponding to base in genome at position
-     * @param alleles set of alleles containing a from and to field.
-     * @param position zero-indexed position on genome
+     * Merge another variant with this one.
+     *
+     * @param reVar
+     */
+    public void merge(Variant reVar) {
+        assert referenceBase == reVar.referenceBase : "reference base must match for correct merging.";
+        assert position == reVar.position : "position must match for correct merging.";
+        assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
+        trueAlleles.addAll(reVar.trueAlleles);
+        maxLen = getMaxLen();
+        this.isIndel = (maxLen > 1);
+
+    }
+
+    /**
+     * @param referenceBase  refbase corresponding to base in genome at position
+     * @param alleles        set of alleles containing a from and to field.
+     * @param position       zero-indexed position on genome
      * @param referenceIndex
      */
     public Variant(char referenceBase, Set<FromTo> alleles, int position, int referenceIndex) {
@@ -48,11 +63,10 @@ public class Variant implements Serializable {
     }
 
 
-
-    private int getMaxLen(){
+    private int getMaxLen() {
         int maxLen = 0;
-        for (FromTo allele : trueAlleles){
-            maxLen = Math.max(maxLen,allele.maxLen());
+        for (FromTo allele : trueAlleles) {
+            maxLen = Math.max(maxLen, allele.maxLen());
         }
         return maxLen;
 
@@ -77,31 +91,31 @@ public class Variant implements Serializable {
         String from;
         String to;
 
-        public FromTo(String from, String to){
+        public FromTo(String from, String to) {
             this.from = from;
             this.to = to;
         }
 
 
-        public void makeUpperCase(){
+        public void makeUpperCase() {
             from = from.toUpperCase();
             to = to.toUpperCase();
         }
 
-        public boolean isRef(){
+        public boolean isRef() {
             return from.equals(to);
         }
 
-        public boolean isSnp(){
+        public boolean isSnp() {
             return (from.length() == 1 && to.length() == 1 && !isRef());
         }
 
-        public int maxLen(){
+        public int maxLen() {
             return Math.max(from.length(), to.length());
         }
 
         @Override
-        public boolean equals(Object obj){
+        public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
             }
@@ -113,7 +127,12 @@ public class Variant implements Serializable {
         }
 
         @Override
-        public String toString(){
+        public int hashCode() {
+            return from.hashCode()^to.hashCode();
+        }
+
+        @Override
+        public String toString() {
             return "from:" + from + " to:" + to;
         }
 
