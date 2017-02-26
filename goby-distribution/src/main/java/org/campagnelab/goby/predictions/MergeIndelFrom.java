@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.Set;
 
 /**
+ * Represents genotypes at a given site. Using this class makes the from alleles consistent across all possible tos.
+ * This is necessary when a single from must be generated across several possible genotypes at a site.
  Example:
  A -> T
  A -> A
@@ -119,6 +121,7 @@ public class MergeIndelFrom {
      */
 
     public MergeIndelFrom(Set<Variant.FromTo> fromTos){
+        assert fromTos.size()>0: "a non-empty set is expected.";
         Set<SplitIndel> splits = new ObjectArraySet<>(fromTos.size());
         //split up each indel into component strings
         for (Variant.FromTo fromTo : fromTos){
