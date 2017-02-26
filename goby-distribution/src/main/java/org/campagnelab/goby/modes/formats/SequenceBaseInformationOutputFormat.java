@@ -188,7 +188,17 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 return;
             }
         }
-
+        AddTrueGenotypeHelperI.WillKeepI willKeep = null;
+        if (withGenotypeMap) {
+            String alignmentReferenceId = iterator.getReferenceId(referenceIndex).toString();
+            int genomeTargetIndex = iterator.getGenome().getReferenceIndex(alignmentReferenceId);
+            String referenceBase = Character.toString(genome.get(genomeTargetIndex, position));
+            willKeep = addTrueGenotypeHelper.willKeep(position, alignmentReferenceId, referenceBase);
+            if (!willKeep.isKeep()) {
+                // do not process this record at all.
+                return;
+            }
+        }
 
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
         try {
@@ -201,16 +211,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     readerIdxs,
                     genomicContextLength);
 
-            AddTrueGenotypeHelperI.WillKeepI willKeep = null;
-            if (withGenotypeMap) {
-                String alignmentReferenceId = iterator.getReferenceId(referenceIndex).toString();
-                int genomeTargetIndex = iterator.getGenome().getReferenceIndex(alignmentReferenceId);
-                String referenceBase = Character.toString(genome.get(genomeTargetIndex, position));
-                willKeep = addTrueGenotypeHelper.willKeep(position, alignmentReferenceId, referenceBase);
-                boolean keep = addTrueGenotypeHelper.addTrueGenotype(willKeep, baseInfo);
-                if (!keep) {
-                    return;
-                }
+            if (withGenotypeMap && addTrueGenotypeHelper.addTrueGenotype(willKeep, baseInfo)) {
                 baseInfo = addTrueGenotypeHelper.labeledEntry();
                 assert baseInfo != null : " labeled entry cannot be null";
             }
