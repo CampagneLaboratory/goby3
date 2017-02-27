@@ -215,6 +215,8 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 baseInfo = addTrueGenotypeHelper.labeledEntry();
                 assert baseInfo != null : " labeled entry cannot be null";
                 sbiWriter.appendEntry(baseInfo);
+            } else if (!withGenotypeMap){
+                sbiWriter.appendEntry(baseInfo);
             }
 
         } catch (IOException e) {
