@@ -1,3 +1,7 @@
+3.3.3
+ - Fix SNP bug in realignment around read insertion.
+ - Add queryPosition field to SBI output.
+ - Prevent the writing of sbi entries when AddTrueGenotypeHelper indicated the entry should not be added.
 3.2.2
  - Fix frequency of bases when indels are also present. Now correctly removes bases that
  support the flanking sequence of the indel and do not double count.
