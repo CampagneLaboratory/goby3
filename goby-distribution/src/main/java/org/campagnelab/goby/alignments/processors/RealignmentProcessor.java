@@ -281,7 +281,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         // reference insertions: target aligned length increases by the length of gaps in the reads, targetAlignedLength is incremented with the length of the indel.
         // read insertions: target aligned length already correct.
         int zeroWhenReadInsertion = 1;
-        if (indel.isReadInsertion()) zeroWhenReadInsertion = 1;
+        if (indel.isReadInsertion()) zeroWhenReadInsertion = 0;
 
         builder.setTargetAlignedLength(builder.getTargetAlignedLength() + indelLength * zeroWhenReadInsertion);
         int entryPosition = entry.getPosition();
@@ -447,7 +447,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         }
         int zeroWhenReadInsertion = 1;
         final boolean readInsertion = indel.isReadInsertion();
-        if (readInsertion) zeroWhenReadInsertion = 1;
+        if (readInsertion) zeroWhenReadInsertion = 0;
         final int targetLength = genome.getLength(genomeTargetIndex);
         /*
          *Reference positions for which the alignment does not agree with the reference, 0-based:
@@ -462,7 +462,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
             // check if var becomes compatible with reference when var's position is shifted by the length of the indel in the specified shiftForward
             // newGenomicPosition is zero-based 
             // final int originalGenomicPosition = var.getPosition() + entryPosition - 1;
-            final int newGenomicPosition = var.getPosition() + (direction * indelLength * zeroWhenReadInsertion) + entryPosition - 1;
+            final int newGenomicPosition = var.getPosition() + (direction * indelLength*zeroWhenReadInsertion) + entryPosition - 1;
             for (int j = 0; j < var.getTo().length(); ++j) {
 
                 if (var.getFrom().charAt(j) == '-') {
@@ -496,41 +496,42 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
             // anymore.
             return score;
         }
-        int readInsertionLength = 1;
+
+        if (readInsertion) zeroWhenReadInsertion = 0;
         // Determine which previously unchanged bases become incompatible with the reference when the the indel is introduced
         // Consider the span of reference between the indel insertion point and the end of the reference alignment going in the direction of extension.
         // startAlignment and endAlignment are zero-based
         int startAlignment = shiftForward ? entryPosition + indelOffsetInAlignment : entryPosition;
         int endAlignment = shiftForward ? entry.getTargetAlignedLength() + entryPosition : indelOffsetInAlignment + entryPosition + (direction * indelLength * zeroWhenReadInsertion);
-//        if (entry.getPosition()==11056072) {
-//            String pre = getGenomeSegment(genome, genomeTargetIndex, startAlignment, endAlignment);
-//            String post = getGenomeSegment(genome, genomeTargetIndex, startAlignment + indelLength, endAlignment + indelLength);
-//            System.out.printf(" pre and post alignments: %n%s\n%s%n", pre, post);
-//        }
+/*
+        String pre = getGenomeSegment(genome, genomeTargetIndex, startAlignment, endAlignment);
+        String post = getGenomeSegment(genome, genomeTargetIndex, startAlignment + indelLength, endAlignment + indelLength);
+        System.out.printf(" pre and post alignments: %n%s\n%s%n", pre, post);
+*/
         // pos is zero-based:
         endAlignment = Math.min(endAlignment, genome.getLength(genomeTargetIndex) - 1);
-        if (readInsertion) zeroWhenReadInsertion = 0;
-        for (int pos = startAlignment; pos < endAlignment; pos++) {
-            // both variantPositions and pos are zero-based:
-            if (!variantPositions.contains(pos)) {
+
+        for (int currentPositionOnReference = startAlignment; currentPositionOnReference < endAlignment; currentPositionOnReference++) {
+            // both variantPositions and currentPositionOnReference are zero-based:
+            if (!variantPositions.contains(currentPositionOnReference)) {
                 // this base matched the reference sequence:
-                final int realignedPos = pos + (direction * indelLength * zeroWhenReadInsertion);
+                final int realignedPosOnReference = currentPositionOnReference + (direction * indelLength );
                 // if the realigned position lies outside of the reference penalize heavily with -10, otherwise
                 // count -1 for every new mismatch introduced by the indel:
 
-                if (realignedPos < 0 || realignedPos >= targetLength) {
+                if (realignedPosOnReference < 0 || realignedPosOnReference >= targetLength) {
                     score += -10;
                 } else {
-                    final char refBase = genome.get(genomeTargetIndex, pos);
-                    final char newRefBase = genome.get(genomeTargetIndex, realignedPos);
+                    final char refBase = genome.get(genomeTargetIndex, currentPositionOnReference);
+                    final char newRefBase = genome.get(genomeTargetIndex, realignedPosOnReference);
 
                     score += (refBase == newRefBase) ? 0 : -1;
                 }
             }
-            // System.out.printf("indelOffsetInAlignment: %d shiftForward: %b score: %d%n", indelOffsetInAlignment, shiftForward, score);
+             //System.out.printf("indelOffsetInAlignment: %d shiftForward: %b score: %d%n", indelOffsetInAlignment, shiftForward, score);
         }
 
-        //   System.out.printf("indelOffsetInAlignment: %d shiftForward: %b score: %d%n", indelOffsetInAlignment, shiftForward, score);
+   //     System.out.printf("indelOffsetInAlignment: %d shiftForward: %b score: %d%n", indelOffsetInAlignment, shiftForward, score);
         return score;
     }
 
