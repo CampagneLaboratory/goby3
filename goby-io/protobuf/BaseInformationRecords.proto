@@ -131,6 +131,10 @@ message CountInfo {
     repeated NumberWithFrequency queryAlignedLengths = 26;
 
     /**
+    Query positions for aligned reads that support this genotype. **/
+    repeated NumberWithFrequency queryPositions = 30;
+
+    /**
     Pair flags for aligned reads that support this genotype. **/
     repeated NumberWithFrequency pairFlags = 27;
 

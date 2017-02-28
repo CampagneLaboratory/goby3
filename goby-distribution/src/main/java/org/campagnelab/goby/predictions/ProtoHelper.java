@@ -124,6 +124,7 @@ public class ProtoHelper {
         IntArrayList[][] insertSizes = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] targetAlignedLengths = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] queryAlignedLengths = new IntArrayList[numSamples][maxGenotypeIndex];
+        IntArrayList[][] queryPositions = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] pairFlags = new IntArrayList[numSamples][maxGenotypeIndex];
 
 
@@ -138,6 +139,7 @@ public class ProtoHelper {
                     insertSizes[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     targetAlignedLengths[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     queryAlignedLengths[sampleIndex][genotypeIndex] = new IntArrayList(1024);
+                    queryPositions[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     pairFlags[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                 }
             }
@@ -164,6 +166,7 @@ public class ProtoHelper {
                 }
                 targetAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getTargetAlignedLength());
                 queryAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getQueryAlignedLength());
+                queryPositions[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getQueryPosition());
                 pairFlags[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getPairFlags());
             }
         }
@@ -215,6 +218,7 @@ public class ProtoHelper {
                     }
                     targetAlignedLengths[sampleIndex][baseIndex].add(entry.getTargetAlignedLength());
                     queryAlignedLengths[sampleIndex][baseIndex].add(entry.getQueryAlignedLength());
+                    queryPositions[sampleIndex][baseIndex].add(entry.getQueryPosition());
                     pairFlags[sampleIndex][baseIndex].add(entry.getPairFlags());
                 }
             }
@@ -244,7 +248,7 @@ public class ProtoHelper {
 
             transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], distancesToReadVariations[sampleIndex],
                     numVariationsInReads[sampleIndex], insertSizes[sampleIndex],
-                    targetAlignedLengths[sampleIndex], queryAlignedLengths[sampleIndex],
+                    targetAlignedLengths[sampleIndex], queryAlignedLengths[sampleIndex], queryPositions[sampleIndex],
                     pairFlags[sampleIndex],
                     sampleBuilder, sampleCountInfo,
                     referenceGenotype, maxGenotypeIndex);
@@ -304,6 +308,7 @@ public class ProtoHelper {
                                  IntArrayList[] insertSize,
                                  IntArrayList[] targetAlignedLength,
                                  IntArrayList[] queryAlignedLength,
+                                 IntArrayList[] queryPositions,
                                  IntArrayList[] pairFlags,
                                  BaseInformationRecords.SampleInfo.Builder sampleBuilder,
                                  SampleCountInfo sampleCountInfo,
@@ -347,6 +352,7 @@ public class ProtoHelper {
             infoBuilder.addAllInsertSizes(compressFreq(insertSize[genotypeIndex]));
             infoBuilder.addAllTargetAlignedLengths(compressFreq(targetAlignedLength[genotypeIndex]));
             infoBuilder.addAllQueryAlignedLengths(compressFreq(queryAlignedLength[genotypeIndex]));
+            infoBuilder.addAllQueryPositions(compressFreq(queryPositions[genotypeIndex]));
             infoBuilder.addAllPairFlags(compressFreq(pairFlags[genotypeIndex]));
 
             infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
