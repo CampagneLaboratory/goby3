@@ -57,7 +57,7 @@ public class VariantMapCreator extends VariantMapHelper {
             Variant previousVariant = chMap.get(chrom).get(reVar.position);
             if (previousVariant!=null) {
                 //  TODO merge previous variant with new one and update map.
-            //    previousVariant.merge(reVar);
+                previousVariant.merge(reVar);
                 overLappingIndels.warn(LOG,
                         "\nmerged variant. in map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
                                 "\nintended adding from,to: " +  reVar.trueAlleles + "\nat " + chrom + ":" + reVar.position);
@@ -109,7 +109,7 @@ public class VariantMapCreator extends VariantMapHelper {
             int allelePos = variant.position -1;
 
             //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
-            if (toAffix.length()==1 && fromAffix.length()==1){
+            if (toAffix.substring(1).equals(fromAffix.substring(1))){
                 allelePos++;
             }
 

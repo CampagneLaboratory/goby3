@@ -30,10 +30,20 @@ public class Variant implements Serializable {
         assert referenceBase == reVar.referenceBase : "reference base must match for correct merging.";
         assert position == reVar.position : "position must match for correct merging.";
         assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
-        trueAlleles.addAll(reVar.trueAlleles);
+        //remove a ref allele from map's variant, since we are are replacing it with a variant.
+        for (FromTo trueAllele : trueAlleles){
+            if (trueAllele.getTo().equals(trueAllele.getFrom())){
+                trueAlleles.remove(trueAllele);
+                break;
+            }
+        }
+        for (FromTo addingAllele:reVar.trueAlleles){
+            if (!addingAllele.getTo().equals(addingAllele.getFrom())){
+                trueAlleles.add(addingAllele);
+            }
+        }
         maxLen = getMaxLen();
         this.isIndel = (maxLen > 1);
-
     }
 
     /**
