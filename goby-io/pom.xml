@@ -29,7 +29,7 @@
             <!-- provides os.detected.classifier (i.e. linux-x86_64, osx-x86_64) property -->
             <extension>
                 <groupId>kr.motd.maven</groupId>
-                <artifactId>os-gimaven-plugin</artifactId>
+                <artifactId>os-maven-plugin</artifactId>
                 <version>${os-maven-plugin.version}</version>
             </extension>
         </extensions>
