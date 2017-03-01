@@ -175,8 +175,13 @@ public class VariantMapCreator extends VariantMapHelper {
                 //start out with assumption that reference is a true allele
                 trueAlleles.add(reference);
                 trueAlleles.add(realigned);
-                equivVariants.put(result.startPosition, new Variant(variant.referenceBase.charAt(0), trueAlleles, result.startPosition, variant.referenceIndex));
-            }
+                char referenceBaseResult;
+                if (result.flankLeft!=null && result.flankLeft.length()>0){
+                    referenceBaseResult = result.flankLeft.charAt(0);
+                } else {
+                    referenceBaseResult = variant.referenceBase.charAt(0);
+                }
+                equivVariants.put(result.startPosition, new Variant(referenceBaseResult, trueAlleles, result.startPosition, variant.referenceIndex));            }
             //if we have moved ploidy number of alleles into a position, remove its reference
             if (equivVariants.get(result.startPosition).trueAlleles.size() > variant.trueAlleles.size()) {
                 equivVariants.get(result.startPosition).trueAlleles.remove(reference);
