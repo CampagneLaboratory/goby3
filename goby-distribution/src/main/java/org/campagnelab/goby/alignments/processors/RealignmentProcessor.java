@@ -527,6 +527,11 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
                     score += (refBase == newRefBase) ? 0 : -1;
                 }
+                if (score <= currentBestScore) {
+                    // the score can only get worse from now on and it is already not a worthfull candidate. Do not work on it
+                    // anymore.
+                    return score;
+                }
             }
              //System.out.printf("indelOffsetInAlignment: %d shiftForward: %b score: %d%n", indelOffsetInAlignment, shiftForward, score);
         }
