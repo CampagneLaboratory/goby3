@@ -27,7 +27,10 @@ public class Variant implements Serializable {
      * @param reVar
      */
     public void merge(Variant reVar) {
-        assert referenceBase == reVar.referenceBase : "reference base must match for correct merging.";
+        if (!referenceBase.equals(reVar.referenceBase)){
+            System.out.println("hello");
+        }
+        assert referenceBase.equals(reVar.referenceBase) : "reference base must match for correct merging.";
         assert position == reVar.position : "position must match for correct merging.";
         assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
         trueAlleles.addAll(reVar.trueAlleles);
