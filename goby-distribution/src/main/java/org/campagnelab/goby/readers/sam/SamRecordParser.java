@@ -257,6 +257,7 @@ WarningCounter warnOnce=new WarningCounter(1);
                     }
                 }
             }
+            assert allRefBases != null : "MD tags missing from bam file?";
             int endIndex = Math.min(allRefBases.length(), refStringPosition + cigarLength);
             if (cigarOperator.consumesReferenceBases()) {
                 if (cigarOperator != CigarOperator.N) {

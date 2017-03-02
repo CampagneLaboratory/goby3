@@ -28,9 +28,7 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
-import org.campagnelab.goby.modes.formats.SequenceBaseInformationOutputFormat;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.util.GenomeDebugHelper;
 import org.campagnelab.goby.util.KnownIndelSetCreator;
 import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
@@ -252,9 +250,17 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         int intermediateTargetIndex = targetInfo.size() - 1;
         while (intermediateTargetIndex <= targetIndex) {
             if (knownIndels != null){
-                targetInfo.add(new InfoForTarget(++intermediateTargetIndex,knownIndels.getAllIndelsInChrom(targetMapper.getAlignmentId(targetIndex))));
+                try {
+                    targetInfo.add(new InfoForTarget(++intermediateTargetIndex,knownIndels.getAllIndelsInChrom(targetMapper.getAlignmentId(targetIndex))));
+                }
+                catch (NullPointerException e){
+                    System.out.println("There is something wrong with the indel set. Perhaps it is aligned to a different genome than the reads?");
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            } else {
+                targetInfo.add(new InfoForTarget(++intermediateTargetIndex));
             }
-            targetInfo.add(new InfoForTarget(++intermediateTargetIndex));
             numTargets = targetInfo.size();
         }
         return targetInfo.get(targetIndex);
