@@ -21,10 +21,12 @@ package org.campagnelab.goby.alignments.processors;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
+import org.campagnelab.goby.util.KnownIndelSetCreator;
 import org.campagnelab.goby.util.UnboundedFifoPool;
 import org.campagnelab.goby.alignments.Alignments;
 
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Fabien Campagne
@@ -72,6 +74,12 @@ public class InfoForTarget {
         this.targetIndex = targetIndex;
     }
 
+
+    public InfoForTarget(int targetIndex, Set<ObservedIndel> targetKnownIndels) {
+        this.targetIndex = targetIndex;
+        potentialIndels.addAll(targetKnownIndels);
+
+    }
 
     /**
      * Remove indels that span firstPosition-lastPosition or whose end occur before endPosition (inclusive).
