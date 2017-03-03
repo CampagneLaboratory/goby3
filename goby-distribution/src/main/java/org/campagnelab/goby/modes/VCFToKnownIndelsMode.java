@@ -56,7 +56,7 @@ public class VCFToKnownIndelsMode extends AbstractGobyMode {
     private String outputSetName;
 
 
-    private static final String MODE_NAME = "vcf-to-genotype-map";
+    private static final String MODE_NAME = "vcf-to-indel-set";
 
     /**
      * The mode description help text.
