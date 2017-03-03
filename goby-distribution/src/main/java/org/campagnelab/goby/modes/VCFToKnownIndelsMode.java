@@ -26,6 +26,7 @@ import htsjdk.variant.vcf.VCFFileReader;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
 import org.campagnelab.goby.util.KnownIndelSetCreator;
+import org.campagnelab.goby.util.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
@@ -65,6 +66,7 @@ public class VCFToKnownIndelsMode extends AbstractGobyMode {
     private String chrPrefix;
     private boolean addPrefix;
     private boolean removePrefix;
+    private int addedIndels;
 
 
     @Override
@@ -146,15 +148,18 @@ public class VCFToKnownIndelsMode extends AbstractGobyMode {
             if (!var.isIndel()){
                 continue;
             }
-            int positionGoby = var.getStart() - 1;
             String chromosomeName = var.getContig();
             for (Allele allele : var.getAlternateAlleles()){
-                ObservedIndel indel = new ObservedIndel(positionGoby, var.getReference().getBaseString(), allele.getBaseString());
+                Variant.FromTo vcfFromTo = new Variant.FromTo(var.getReference().getBaseString(),allele.getBaseString());
+                Variant.GobyIndelFromVCF gobyIndel = new Variant.GobyIndelFromVCF(vcfFromTo,var.getStart());
+                ObservedIndel indel = new ObservedIndel(gobyIndel.getAllelePos(),gobyIndel.getGobyFromTo().getFrom(),gobyIndel.getGobyFromTo().getTo());
                 knownIndelSets.addIndel(chromosomeName,indel);
+                addedIndels++;
             }
         }
         pg.stop();
         knownIndelSets.saveSet(outputSetName);
+        System.out.println(addedIndels + " indels added to known set, located in: \n" + outputSetName);
     }
 
     /**

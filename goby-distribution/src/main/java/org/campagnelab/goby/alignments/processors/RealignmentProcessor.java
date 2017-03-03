@@ -251,7 +251,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         while (intermediateTargetIndex <= targetIndex) {
             if (knownIndels != null){
                 try {
-                    targetInfo.add(new InfoForTarget(++intermediateTargetIndex,knownIndels.getAllIndelsInChrom(targetMapper.getAlignmentId(targetIndex))));
+                    targetInfo.add(new InfoForTarget(++intermediateTargetIndex,knownIndels.getAllIndelsInChrom(targetMapper.getAlignmentId(++currentTargetIndex))));
                 }
                 catch (NullPointerException e){
                     System.out.println("There is something wrong with the indel set. Perhaps it is aligned to a different genome than the reads?");

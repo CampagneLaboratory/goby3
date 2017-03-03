@@ -372,7 +372,7 @@ public abstract class IterateSortedAlignments<T> {
                     final String from = var.getFrom();
                     final int fromLength = from.length();
                     final String to = var.getTo();
-                    final int toLength = from.length();
+                    final int toLength = to.length();
                     final int sequenceVariationLength = Math.max(fromLength, toLength);
 
                     for (int i = 0; i < sequenceVariationLength; i++) {

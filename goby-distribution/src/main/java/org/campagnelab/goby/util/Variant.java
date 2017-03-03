@@ -65,7 +65,7 @@ public class Variant implements Serializable {
     }
 
 
-    String pad(int maxLen, String s) {
+    static String pad(int maxLen, String s) {
         StringBuffer pad = new StringBuffer(s);
         for (int i = 1; i <= maxLen; i++) {
             if (pad.length() < maxLen) {
@@ -108,6 +108,8 @@ public class Variant implements Serializable {
             this.from = from;
             this.to = to;
         }
+
+        public static final long serialVersionUID = 8081811446674142814L;
 
 
         public void makeUpperCase() {
@@ -156,5 +158,66 @@ public class Variant implements Serializable {
         public String getTo() {
             return to;
         }
+    }
+
+    /**
+     * VCFToGobyFormatFromTo converts a vcf format indel ("GATC -> GA") to a goby format indel ("TC -> --").
+     * Goby formatted indels are needed when making ObservedIndel objects, such as for the equivalent indel calculator
+     * or for for the realigner.
+     */
+    public static class GobyIndelFromVCF {
+
+        private FromTo gobyFromTo;
+        private int allelePos;
+
+
+        public FromTo getGobyFromTo() {
+            return gobyFromTo;
+        }
+
+
+        public int getAllelePos() {
+            return allelePos;
+        }
+
+        public GobyIndelFromVCF(FromTo vcfFromTo, int vcfPos) {
+            int maxLenRefThisAllele = Math.max(vcfFromTo.from.length(), vcfFromTo.to.length());
+            String fromAffix = pad(maxLenRefThisAllele, vcfFromTo.from);
+            String toAffix = pad(maxLenRefThisAllele, vcfFromTo.to);
+
+            //we are going to clip left flank and incrememt position for each clip, but gobyPos should point to pos before first "-",
+            //we subtract 1 to reflect this.
+            allelePos = vcfPos - 1;
+
+            //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
+            if (toAffix.substring(1).equals(fromAffix.substring(1))){
+                allelePos++;
+            }
+
+            int diffStart;
+            //clip the start further if it is the same.
+            for (diffStart = 0; diffStart < fromAffix.length(); diffStart++){
+                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
+                    fromAffix = fromAffix.substring(diffStart);
+                    toAffix = toAffix.substring(diffStart);
+                    allelePos += diffStart;
+                    break;
+                }
+            }
+
+            for (diffStart = fromAffix.length()-1; diffStart >= 0; diffStart--){
+                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
+                    fromAffix = fromAffix.substring(0,diffStart+1);
+                    toAffix = toAffix.substring(0,diffStart+1);
+                    break;
+                }
+            }
+
+            gobyFromTo = new FromTo(fromAffix,toAffix);
+
+
+        }
+
+
     }
 }
