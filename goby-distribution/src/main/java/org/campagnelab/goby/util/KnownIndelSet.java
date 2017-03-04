@@ -1,31 +1,24 @@
 package org.campagnelab.goby.util;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.io.BinIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.campagnelab.goby.algorithmic.algorithm.EquivalentIndelRegionCalculator;
-import org.campagnelab.goby.algorithmic.indels.EquivalentIndelRegion;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by rct66 on 2/17/17.
  * helper class allows storing of known indels to use by the realigner.
  */
-public class KnownIndelSetCreator {
+public class KnownIndelSet {
 
     protected Object2ObjectOpenHashMap<String, Set<ObservedIndel>> indelSet;
-    protected static final Logger LOG = LoggerFactory.getLogger(KnownIndelSetCreator.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(KnownIndelSet.class);
 
     /**
      * Load map from path
@@ -34,7 +27,7 @@ public class KnownIndelSetCreator {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public KnownIndelSetCreator(String pathToIndelSet) throws IOException, ClassNotFoundException {
+    public KnownIndelSet(String pathToIndelSet) throws IOException, ClassNotFoundException {
         indelSet = (Object2ObjectOpenHashMap<String, Set<ObservedIndel>>) BinIO.loadObject(pathToIndelSet);
     }
 
@@ -42,7 +35,7 @@ public class KnownIndelSetCreator {
     /**
      * Generate a new empty variant map
      */
-    public KnownIndelSetCreator() {
+    public KnownIndelSet() {
         indelSet = new Object2ObjectOpenHashMap<>(40);
 
     }

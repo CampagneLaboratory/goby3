@@ -21,7 +21,6 @@ package org.campagnelab.goby.alignments.processors;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
-import org.campagnelab.goby.util.KnownIndelSetCreator;
 import org.campagnelab.goby.util.UnboundedFifoPool;
 import org.campagnelab.goby.alignments.Alignments;
 
@@ -89,21 +88,21 @@ public class InfoForTarget {
      */
     public void removeIndels(int firstPosition, int lastPosition) {
 
-        for (final int pos : positionsWithSpanningIndel) {
-            //  if (pos >= firstPosition && pos < lastPosition) {
-            if (pos < lastPosition && pos < firstPosition) {
-
-                positionsWithSpanningIndel.remove(pos);
-            }
-        }
-
-        for (final ObservedIndel indel : potentialIndels) {
-
-            if (indel.getEnd() <= lastPosition) {
-                potentialIndels.remove(indel);
-
-            }
-        }
+//        for (final int pos : positionsWithSpanningIndel) {
+//            //  if (pos >= firstPosition && pos < lastPosition) {
+//            if (pos < lastPosition && pos < firstPosition) {
+//
+//                positionsWithSpanningIndel.remove(pos);
+//            }
+//        }
+//
+//        for (final ObservedIndel indel : potentialIndels) {
+//
+//            if (indel.getEnd() <= lastPosition) {
+//                potentialIndels.remove(indel);
+//
+//            }
+//        }
     }
 
     public void clear() {

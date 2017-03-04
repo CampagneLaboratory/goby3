@@ -435,6 +435,18 @@ entry.position=0
         }
     }
 
+    @Test
+    public void testCase9() {
+        ObjectListIterator<Alignments.AlignmentEntry> iterator = new ObjectArrayList().iterator();
+        RealignmentProcessor realigner = new RealignmentProcessor(iterator);
+        RandomAccessSequenceInterface genome = new RandomAccessSequenceTestSupport(list2Refs());
+        realigner.setGenome(genome);
+        Alignments.AlignmentEntry entry = makeEntry(0, "TGCACACACGAGCATATG", "   ACATACGAGC", false).build();
+        ObservedIndel indel = new ObservedIndel(6, 8, "--", "AT");
+        assertTrue(realigner.score(entry, indel, true, 0, genome)>0);
+    }
+
+
     private ObjectListIterator<Alignments.AlignmentEntry> buildList3() {
         ObjectList<Alignments.AlignmentEntry> list = new ObjectArrayList<Alignments.AlignmentEntry>();
         addEntry(list, 0, "ACTGACTGACTGAACTAGTTACTAGCTAAAGTTA", "ACTGACTGACTGAATTACTA", true);  // this read should be realigned to the right
@@ -442,6 +454,10 @@ entry.position=0
 
         return list.iterator();
     }
+
+
+
+
 
     @Test
     public void testRealignmentScore1() {
@@ -469,6 +485,7 @@ entry.position=0
         // expected score is 1 because despite the +3 you get for inserting the indel you have one base mismatch between the ref and the read.
         assertEquals(1, realigner.score(entry, indel, true, 0, genome));
     }
+
 
     private int queryIndex = 0;
 

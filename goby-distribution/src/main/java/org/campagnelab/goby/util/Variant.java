@@ -109,8 +109,6 @@ public class Variant implements Serializable {
             this.to = to;
         }
 
-        public static final long serialVersionUID = 8081811446674142814L;
-
 
         public void makeUpperCase() {
             from = from.toUpperCase();
@@ -180,14 +178,14 @@ public class Variant implements Serializable {
             return allelePos;
         }
 
-        public GobyIndelFromVCF(FromTo vcfFromTo, int vcfPos) {
+        public GobyIndelFromVCF(FromTo vcfFromTo, int gobyPosOfRefBase) {
             int maxLenRefThisAllele = Math.max(vcfFromTo.from.length(), vcfFromTo.to.length());
             String fromAffix = pad(maxLenRefThisAllele, vcfFromTo.from);
             String toAffix = pad(maxLenRefThisAllele, vcfFromTo.to);
 
             //we are going to clip left flank and incrememt position for each clip, but gobyPos should point to pos before first "-",
             //we subtract 1 to reflect this.
-            allelePos = vcfPos - 1;
+            allelePos = gobyPosOfRefBase - 1;
 
             //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
             if (toAffix.substring(1).equals(fromAffix.substring(1))){

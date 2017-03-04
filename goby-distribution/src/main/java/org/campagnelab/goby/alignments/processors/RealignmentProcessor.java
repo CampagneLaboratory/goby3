@@ -29,7 +29,7 @@ import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.util.KnownIndelSetCreator;
+import org.campagnelab.goby.util.KnownIndelSet;
 import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
@@ -65,7 +65,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
 
     int currentTargetIndex = -1;
     private int numTargets;
-    private KnownIndelSetCreator knownIndels;
+    private KnownIndelSet knownIndels;
 
     private int processedCount;
     private int numEntriesRealigned;
@@ -106,7 +106,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         String knownIndelsPath = doc.getString("known-indel-set");
         if (knownIndelsPath != null && knownIndelsPath.length()>0){
             try {
-                knownIndels = new KnownIndelSetCreator(knownIndelsPath);
+                knownIndels = new KnownIndelSet(knownIndelsPath);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Error loading known indel set: " + knownIndelsPath);
@@ -251,7 +251,8 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         while (intermediateTargetIndex <= targetIndex) {
             if (knownIndels != null){
                 try {
-                    targetInfo.add(new InfoForTarget(++intermediateTargetIndex,knownIndels.getAllIndelsInChrom(targetMapper.getAlignmentId(++currentTargetIndex))));
+                    intermediateTargetIndex++;
+                    targetInfo.add(new InfoForTarget(intermediateTargetIndex,knownIndels.getAllIndelsInChrom(targetMapper.getAlignmentId(currentTargetIndex))));
                 }
                 catch (NullPointerException e){
                     System.out.println("There is something wrong with the indel set. Perhaps it is aligned to a different genome than the reads?");
@@ -273,7 +274,6 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
         int currentBestScore = 0;
         ObservedIndel bestScoreIndel = null;
         boolean bestScoreDirection = false;
-
         for (ObservedIndel indel : tinfo.potentialIndels) {
             if (entryOverlapsIndel(indel, entry)) {
 
