@@ -62,11 +62,7 @@ public class InfoForTarget {
             positionsWithSpanningIndel.add(p);
         }
         final ObservedIndel candidate = new ObservedIndel(startPosition, endPosition, from, to);
-        if (!potentialIndels.contains(candidate)) {
-            potentialIndels.add(candidate);
-            //    System.out.printf("Adding indel %s %n", candidate);
-        }
-
+        potentialIndels.add(candidate);
     }
 
     public InfoForTarget(int targetIndex) {
@@ -99,7 +95,6 @@ public class InfoForTarget {
 
             if (indel.getEnd() <= lastPosition) {
                 potentialIndels.remove(indel);
-
             }
         }
     }
