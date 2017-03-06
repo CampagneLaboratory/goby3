@@ -288,7 +288,7 @@ public class RealignmentProcessor implements AlignmentProcessorInterface {
                 }
             }
         }
-        if (currentBestScore == 0) {
+        if (currentBestScore <= 0) {
             return entry;
         } else {
             // actually modify entry to realign through the indel:

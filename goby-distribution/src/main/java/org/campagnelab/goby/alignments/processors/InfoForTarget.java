@@ -77,7 +77,6 @@ public class InfoForTarget {
     public InfoForTarget(int targetIndex, Set<ObservedIndel> targetKnownIndels) {
         this.targetIndex = targetIndex;
         potentialIndels.addAll(targetKnownIndels);
-
     }
 
     /**
@@ -88,21 +87,21 @@ public class InfoForTarget {
      */
     public void removeIndels(int firstPosition, int lastPosition) {
 
-//        for (final int pos : positionsWithSpanningIndel) {
-//            //  if (pos >= firstPosition && pos < lastPosition) {
-//            if (pos < lastPosition && pos < firstPosition) {
-//
-//                positionsWithSpanningIndel.remove(pos);
-//            }
-//        }
-//
-//        for (final ObservedIndel indel : potentialIndels) {
-//
-//            if (indel.getEnd() <= lastPosition) {
-//                potentialIndels.remove(indel);
-//
-//            }
-//        }
+        for (final int pos : positionsWithSpanningIndel) {
+            //  if (pos >= firstPosition && pos < lastPosition) {
+            if (pos < lastPosition && pos < firstPosition) {
+
+                positionsWithSpanningIndel.remove(pos);
+            }
+        }
+
+        for (final ObservedIndel indel : potentialIndels) {
+
+            if (indel.getEnd() <= lastPosition) {
+                potentialIndels.remove(indel);
+
+            }
+        }
     }
 
     public void clear() {
