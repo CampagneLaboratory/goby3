@@ -161,6 +161,12 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
 
+
+        final RandomAccessSequenceInterface genome = iterator.getGenome();
+        if (withGenotypeMap && addTrueGenotypeHelper == null) {
+            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
+        }
+
         if (referenceIndex == -1){
             emptyRefIdxs.warnAgain();
             return;
@@ -185,10 +191,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             indelsAdded++;
         }
 
-        final RandomAccessSequenceInterface genome = iterator.getGenome();
-        if (withGenotypeMap && addTrueGenotypeHelper == null) {
-            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
-        }
         if (!withGenotypeMap && samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
                 // do not process the site.
