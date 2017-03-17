@@ -14,6 +14,7 @@ import org.campagnelab.goby.predictions.AddTrueGenotypeHelperI;
 import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
@@ -155,9 +156,15 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     AddTrueGenotypeHelperI addTrueGenotypeHelper;
 
+    WarningCounter emptyRefIdxs = new WarningCounter();
+
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
 
+        if (referenceIndex == -1){
+            emptyRefIdxs.warnAgain();
+            return;
+        }
 
         if (encounteredSet.contains(position)){
             //don't write duplicate records for the same position
@@ -267,6 +274,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         //    pgReadWrite.stop();
         System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward");
         System.out.println(indelsAdded + " indels added");
+        System.out.println(emptyRefIdxs.getCounter() + " records skipped due to -1 reference index");
         try {
             if (withGenotypeMap) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
