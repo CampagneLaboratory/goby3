@@ -40,6 +40,20 @@
                     <include>**</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/LAST_COMMIT.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/LAST_COMMIT.properties</exclude>
+                </excludes>
+            </resource>
         </resources>
         <plugins>
             <!-- copy protoc binary into build directory -->
@@ -236,6 +250,24 @@
                         <configuration>
                             <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.build.outputDirectory}/LAST_COMMIT.properties"
+                                      toFile="${project.basedir}/../LAST_COMMIT.properties" overwrite="true" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
