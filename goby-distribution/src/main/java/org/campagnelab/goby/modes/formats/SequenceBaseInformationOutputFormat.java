@@ -11,6 +11,7 @@ import org.campagnelab.goby.baseinfo.SequenceBaseInformationWriter;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.predictions.AddTrueGenotypeHelperI;
+import org.campagnelab.goby.predictions.DummyTrueGenotypeHelper;
 import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
@@ -154,7 +155,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         genomicContextLength = doc.getInteger("genomic-context-length");
     }
 
-    AddTrueGenotypeHelperI addTrueGenotypeHelper;
+    AddTrueGenotypeHelperI addTrueGenotypeHelper = new DummyTrueGenotypeHelper();
 
     WarningCounter emptyRefIdxs = new WarningCounter();
 
