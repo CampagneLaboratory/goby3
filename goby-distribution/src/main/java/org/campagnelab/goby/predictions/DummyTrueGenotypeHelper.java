@@ -26,7 +26,7 @@ public class DummyTrueGenotypeHelper implements AddTrueGenotypeHelperI {
 
     @Override
     public WillKeepI willKeep(int position, String referenceId, String referenceBase) {
-        return null;
+        throw new RuntimeException("Can't generate willkeep with dummy helper.");
     }
 
     @Override
