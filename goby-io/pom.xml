@@ -44,14 +44,14 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/LAST_COMMIT.properties</include>
+                    <include>**/GOBY_COMMIT.properties</include>
                 </includes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>**/LAST_COMMIT.properties</exclude>
+                    <exclude>**/GOBY_COMMIT.properties</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -261,8 +261,8 @@
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
-                                <copy file="${project.build.outputDirectory}/LAST_COMMIT.properties"
-                                      toFile="${project.basedir}/../LAST_COMMIT.properties" overwrite="true" />
+                                <copy file="${project.build.outputDirectory}/GOBY_COMMIT.properties"
+                                      toFile="${project.basedir}/../GOBY_COMMIT.properties" overwrite="true" />
                             </tasks>
                         </configuration>
                         <goals>
