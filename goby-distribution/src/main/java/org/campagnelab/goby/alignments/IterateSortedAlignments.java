@@ -443,14 +443,17 @@ public abstract class IterateSortedAlignments<T> {
                         final char toChar = i >= toLength ? '-' : to.charAt(i);
                         final char fromChar = i >= fromLength ? '-' : from.charAt(i);
                         final byte toQual = i >= qualLength ? 0 : qualityScores.byteAt(i);
+                        boolean isIndel = false;
                         if (fromChar == '-') {
-                            // During an insert, do not increment refPosition 
+                            // During an insert, do not increment refPosition
+                            isIndel = true;
                         } else {
                             numObservedBases++;
                             currentRefPosition = advanceReference(currentRefPosition);
                         }
 
                         if (toChar == '-') {
+                            isIndel = true;
                             if (forwardStrand) {
                                 // Do no increment readIndex during a delete on forward strand
                             } else if (i == 0) {
@@ -462,10 +465,11 @@ public abstract class IterateSortedAlignments<T> {
                         } else {
                             currentReadIndex = advanceReadIndex(forwardStrand, currentReadIndex);
                         }
-
-                        observeVariantBase(sortedReaders, alignmentEntry, positionToBases,
-                                var, toChar, fromChar, toQual,
-                                referenceIndex, currentRefPosition, currentReadIndex);
+                        if (!isIndel) {
+                            observeVariantBase(sortedReaders, alignmentEntry, positionToBases,
+                                    var, toChar, fromChar, toQual,
+                                    referenceIndex, currentRefPosition, currentReadIndex);
+                        }
 
                         if (toChar == '-' && !forwardStrand && i == sequenceVariationLength - 1) {
                             // The logic in this algorithm is (increment/decrement) before observe().
