@@ -97,6 +97,21 @@ public class SequenceBaseInformationWriter implements Closeable {
         this.customProperties = customProperties;
     }
 
+
+    /**
+     * Adds a custom property to the properties object. Returns false if the properties object was null.
+     *
+     * @param key
+     * @param value
+     */
+    public boolean addCustomProperties(String key, String value) {
+        if (this.customProperties == null){
+            return false;
+        }
+        this.customProperties.setProperty(key,value);
+        return true;
+    }
+
     private Properties getCustomProperties() {
         if (customProperties != null) {
             return customProperties;
@@ -144,6 +159,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         // TODO implement custom merge of values for matching property keys (e.g., true-genotype keys)
         if (properties.size() >= 1) merged.putAll(properties.get(0));
         merged.setProperty("numRecords", Long.toString(numTotal));
+
         merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
         // give accumulators a chance to update their stats:
         for (StatAccumulator accumulator : accumulators) {

@@ -11,15 +11,20 @@ import org.campagnelab.goby.baseinfo.SequenceBaseInformationWriter;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.predictions.AddTrueGenotypeHelperI;
+import org.campagnelab.goby.predictions.DummyTrueGenotypeHelper;
 import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 /**
@@ -153,11 +158,23 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         genomicContextLength = doc.getInteger("genomic-context-length");
     }
 
-    AddTrueGenotypeHelperI addTrueGenotypeHelper;
+    AddTrueGenotypeHelperI addTrueGenotypeHelper = new DummyTrueGenotypeHelper();
+
+    WarningCounter emptyRefIdxs = new WarningCounter();
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
 
+
+        final RandomAccessSequenceInterface genome = iterator.getGenome();
+        if (withGenotypeMap && (addTrueGenotypeHelper == null || addTrueGenotypeHelper instanceof  DummyTrueGenotypeHelper)) {
+            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
+        }
+
+        if (referenceIndex == -1){
+            emptyRefIdxs.warnAgain();
+            return;
+        }
 
         if (encounteredSet.contains(position)){
             //don't write duplicate records for the same position
@@ -178,10 +195,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             indelsAdded++;
         }
 
-        final RandomAccessSequenceInterface genome = iterator.getGenome();
-        if (withGenotypeMap && addTrueGenotypeHelper == null) {
-            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
-        }
         if (!withGenotypeMap && samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
                 // do not process the site.
@@ -265,13 +278,18 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void close() {
         //    pgReadWrite.stop();
+
         System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward");
         System.out.println(indelsAdded + " indels added");
+        System.out.println(emptyRefIdxs.getCounter() + " records skipped due to -1 reference index");
         try {
             if (withGenotypeMap) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
             }
+            InputStream in = getClass().getResourceAsStream("/file.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            //add version props to sbi file here.
             sbiWriter.close();
 
         } catch (IOException e) {
