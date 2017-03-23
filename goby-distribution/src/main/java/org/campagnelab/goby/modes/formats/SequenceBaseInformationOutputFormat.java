@@ -1,6 +1,7 @@
 package org.campagnelab.goby.modes.formats;
 
 
+import com.thoughtworks.xstream.mapper.Mapper;
 import it.unimi.dsi.fastutil.ints.IntHeapPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
@@ -287,9 +288,19 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
             }
-            InputStream in = getClass().getResourceAsStream("/file.txt");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            //add version props to sbi file here.
+            try {
+                InputStream in = getClass().getResourceAsStream("/GOBY_COMMIT.properties");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String prop;
+                while ((prop = reader.readLine()) != null){
+                    String[] splitProp = prop.split("=");
+                    sbiWriter.addCustomProperties(splitProp[0],splitProp[1]);
+                }
+            } catch (NullPointerException e){
+                System.out.println("Goby commit properties file not found in classpath. Unable to write info to sbip.");
+                sbiWriter.addCustomProperties("goby_properties_file","not_found");
+            }
+
             sbiWriter.close();
 
         } catch (IOException e) {

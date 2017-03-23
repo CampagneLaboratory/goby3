@@ -44,14 +44,14 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/GOBY_COMMIT.properties</include>
+                    <include>**/GOBY_COMMIT.properties.skeleton</include>
                 </includes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>**/GOBY_COMMIT.properties</exclude>
+                    <exclude>**/GOBY_COMMIT.properties.skeleton</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -261,7 +261,7 @@
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
-                                <copy file="${project.build.outputDirectory}/GOBY_COMMIT.properties"
+                                <copy file="${project.build.outputDirectory}/GOBY_COMMIT.properties.skeleton"
                                       toFile="${project.basedir}/../GOBY_COMMIT.properties" overwrite="true" />
                             </tasks>
                         </configuration>
