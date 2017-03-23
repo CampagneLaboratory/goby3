@@ -97,6 +97,21 @@ public class SequenceBaseInformationWriter implements Closeable {
         this.customProperties = customProperties;
     }
 
+
+    /**
+     * Adds a custom property to the properties object. Returns false if the properties object was null.
+     *
+     * @param key
+     * @param value
+     */
+    public boolean addCustomProperties(String key, String value) {
+        if (this.customProperties == null){
+            return false;
+        }
+        this.customProperties.setProperty(key,value);
+        return true;
+    }
+
     private Properties getCustomProperties() {
         if (customProperties != null) {
             return customProperties;

@@ -21,7 +21,10 @@ import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 /**
@@ -164,7 +167,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
 
         final RandomAccessSequenceInterface genome = iterator.getGenome();
-        if (withGenotypeMap && addTrueGenotypeHelper == null) {
+        if (withGenotypeMap && (addTrueGenotypeHelper == null || addTrueGenotypeHelper instanceof  DummyTrueGenotypeHelper)) {
             addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
         }
 
@@ -275,6 +278,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void close() {
         //    pgReadWrite.stop();
+
         System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward");
         System.out.println(indelsAdded + " indels added");
         System.out.println(emptyRefIdxs.getCounter() + " records skipped due to -1 reference index");
@@ -283,6 +287,9 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
             }
+            InputStream in = getClass().getResourceAsStream("/file.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            //add version props to sbi file here.
             sbiWriter.close();
 
         } catch (IOException e) {
