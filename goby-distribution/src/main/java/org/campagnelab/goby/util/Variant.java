@@ -27,13 +27,21 @@ public class Variant implements Serializable {
      * @param reVar
      */
     public void merge(Variant reVar) {
-        if (!referenceBase.equals(reVar.referenceBase)){
-            System.out.println("hello");
-        }
         assert referenceBase.equals(reVar.referenceBase) : "reference base must match for correct merging.";
         assert position == reVar.position : "position must match for correct merging.";
         assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
-        trueAlleles.addAll(reVar.trueAlleles);
+        //remove a ref allele from map's variant, since we are are replacing it with a variant.
+        for (FromTo trueAllele : trueAlleles){
+            if (trueAllele.getTo().equals(trueAllele.getFrom())){
+                trueAlleles.remove(trueAllele);
+                break;
+            }
+        }
+        for (FromTo addingAllele:reVar.trueAlleles){
+            if (!addingAllele.getTo().equals(addingAllele.getFrom())){
+                trueAlleles.add(addingAllele);
+            }
+        }
         maxLen = getMaxLen();
         this.isIndel = (maxLen > 1);
 
@@ -98,6 +106,8 @@ public class Variant implements Serializable {
             this.from = from;
             this.to = to;
         }
+
+        public static final long serialVersionUID = 8081811446674142814L;
 
 
         public void makeUpperCase() {
@@ -168,14 +178,14 @@ public class Variant implements Serializable {
             return allelePos;
         }
 
-        public GobyIndelFromVCF(FromTo vcfFromTo, int gobyPosOfRefBase) {
+        public GobyIndelFromVCF(FromTo vcfFromTo, int vcfPos) {
             int maxLenRefThisAllele = Math.max(vcfFromTo.from.length(), vcfFromTo.to.length());
             String fromAffix = pad(maxLenRefThisAllele, vcfFromTo.from);
             String toAffix = pad(maxLenRefThisAllele, vcfFromTo.to);
 
             //we are going to clip left flank and incrememt position for each clip, but gobyPos should point to pos before first "-",
             //we subtract 1 to reflect this.
-            allelePos = gobyPosOfRefBase - 1;
+            allelePos = vcfPos - 1;
 
             //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
             if (toAffix.substring(1).equals(fromAffix.substring(1))){

@@ -25,7 +25,7 @@ import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.goby.alignments.processors.ObservedIndel;
-import org.campagnelab.goby.util.KnownIndelSet;
+import org.campagnelab.goby.util.KnownIndelSetCreator;
 import org.campagnelab.goby.util.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class VCFToKnownIndelsMode extends AbstractGobyMode {
      * The input files.
      */
     private File vcfFile;
-    private KnownIndelSet knownIndelSets;
+    private KnownIndelSetCreator knownIndelSets;
     /**
      * The output map filename.
      */
@@ -93,7 +93,7 @@ public class VCFToKnownIndelsMode extends AbstractGobyMode {
         final JSAPResult jsapResult = parseJsapArguments(args);
         setInputFilenames(jsapResult.getString("vcfInput"));
         outputSetName = jsapResult.getString("output");
-        knownIndelSets = new KnownIndelSet();
+        knownIndelSets = new KnownIndelSetCreator();
         return this;
     }
 
@@ -151,10 +151,8 @@ public class VCFToKnownIndelsMode extends AbstractGobyMode {
             String chromosomeName = var.getContig();
             for (Allele allele : var.getAlternateAlleles()){
                 Variant.FromTo vcfFromTo = new Variant.FromTo(var.getReference().getBaseString(),allele.getBaseString());
-                //sam vcf parser gives us 1-index of the base so we decriment pos
-                Variant.GobyIndelFromVCF gobyIndel = new Variant.GobyIndelFromVCF(vcfFromTo,var.getStart()-1);
-                //the realigner expects goby pos of first "-", not goby pos preceding it. so here we incriment (we don't do this for the EIR in VCFtoGenotypeMapMode)
-                ObservedIndel indel = new ObservedIndel(gobyIndel.getAllelePos()+1,gobyIndel.getGobyFromTo().getFrom(),gobyIndel.getGobyFromTo().getTo());
+                Variant.GobyIndelFromVCF gobyIndel = new Variant.GobyIndelFromVCF(vcfFromTo,var.getStart());
+                ObservedIndel indel = new ObservedIndel(gobyIndel.getAllelePos(),gobyIndel.getGobyFromTo().getFrom(),gobyIndel.getGobyFromTo().getTo());
                 knownIndelSets.addIndel(chromosomeName,indel);
                 addedIndels++;
             }

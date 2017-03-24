@@ -57,7 +57,7 @@ public class VariantMapCreator extends VariantMapHelper {
             Variant previousVariant = chMap.get(chrom).get(reVar.position);
             if (previousVariant!=null) {
                 //  TODO merge previous variant with new one and update map.
-            //    previousVariant.merge(reVar);
+                previousVariant.merge(reVar);
                 overLappingIndels.warn(LOG,
                         "\nmerged variant. in map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
                                 "\nintended adding from,to: " +  reVar.trueAlleles + "\nat " + chrom + ":" + reVar.position);
@@ -100,37 +100,11 @@ public class VariantMapCreator extends VariantMapHelper {
             if (s.isRef()) {
                 continue;
             }
-            int maxLenRefThisAllele = Math.max(s.from.length(), s.to.length());
-            String fromAffix = variant.pad(maxLenRefThisAllele, s.from);
-            String toAffix = variant.pad(maxLenRefThisAllele, s.to);
 
-            //we are going to clip left flank and incrememt position for each clip, but gobyPos should point to pos before first "-",
-            //we subtract 1 to reflect this.
-            int allelePos = variant.position -1;
-
-            //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
-            if (toAffix.length()==1 && fromAffix.length()==1){
-                allelePos++;
-            }
-
-            int diffStart;
-            //clip the start further if it is the same.
-            for (diffStart = 0; diffStart < fromAffix.length(); diffStart++){
-                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
-                    fromAffix = fromAffix.substring(diffStart);
-                    toAffix = toAffix.substring(diffStart);
-                    allelePos += diffStart;
-                    break;
-                }
-            }
-
-            for (diffStart = fromAffix.length()-1; diffStart >= 0; diffStart--){
-                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
-                    fromAffix = fromAffix.substring(0,diffStart+1);
-                    toAffix = toAffix.substring(0,diffStart+1);
-                    break;
-                }
-            }
+            Variant.GobyIndelFromVCF gobyFormatIndel = new Variant.GobyIndelFromVCF(s, variant.position);
+            String fromAffix = gobyFormatIndel.getGobyFromTo().getFrom();
+            String toAffix = gobyFormatIndel.getGobyFromTo().getTo();
+            int allelePos = gobyFormatIndel.getAllelePos();
 
 
             EquivalentIndelRegion result = new EquivalentIndelRegion();
