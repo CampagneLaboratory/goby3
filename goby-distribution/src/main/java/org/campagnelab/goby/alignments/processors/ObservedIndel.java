@@ -19,12 +19,14 @@
 package org.campagnelab.goby.alignments.processors;
 
 
+import java.io.Serializable;
+
 /**
  * @author Fabien Campagne
  *         Date: May 14, 2011
  *         Time: 10:50:34 AM
  */
-public class ObservedIndel implements Comparable<ObservedIndel> {
+public class ObservedIndel implements Comparable<ObservedIndel>, Serializable {
     /**
      * Start position is zero-based.
      */
@@ -49,7 +51,7 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
 
     public ObservedIndel(final int startPosition, final String from, final String to, final int readIndex) {
         //end position points to pos after last "-"? new: + 1
-        this(startPosition, startPosition + Math.max(from.length(), to.length()) + 1, from, to);
+        this(startPosition, from, to);
         this.readIndex = readIndex;
     }
 
@@ -59,6 +61,16 @@ public class ObservedIndel implements Comparable<ObservedIndel> {
         this.from = from;
         this.to = to;
         this.length = Math.max(from.length(), to.length());
+    }
+
+    /**
+     * For use by VCFToKnownIndelsMode, no need for readIndex or strand match.
+     * @param startPosition
+     * @param from
+     * @param to
+     */
+    public ObservedIndel(final int startPosition, final String from, final String to) {
+        this(startPosition, startPosition + Math.max(from.length(), to.length()) + 1, from, to);
     }
 
     public boolean hasQualityScores() {
