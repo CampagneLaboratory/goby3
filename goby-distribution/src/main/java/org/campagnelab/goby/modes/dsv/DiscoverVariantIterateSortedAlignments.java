@@ -375,7 +375,6 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                         fixer.fix(list, sampleCounts, filteredList);
                     }
 
-                    //indel bases no longer added to list, so disabled
                      mandatoryFilter.filterGenotypes(list, sampleCounts, filteredList);
 
                     format.writeRecord(this, sampleCounts, referenceIndex, position, list, groupIndexA, groupIndexB);
