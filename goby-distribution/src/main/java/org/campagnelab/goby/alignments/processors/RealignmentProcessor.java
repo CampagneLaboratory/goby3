@@ -29,7 +29,6 @@ import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.ConcatSortedAlignmentReader;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
-import org.campagnelab.goby.util.GenomeDebugHelper;
 import org.campagnelab.goby.util.WarningCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
