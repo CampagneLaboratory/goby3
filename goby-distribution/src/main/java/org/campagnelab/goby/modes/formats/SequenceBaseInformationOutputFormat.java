@@ -11,15 +11,20 @@ import org.campagnelab.goby.baseinfo.SequenceBaseInformationWriter;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.predictions.AddTrueGenotypeHelperI;
+import org.campagnelab.goby.predictions.DummyTrueGenotypeHelper;
 import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.WarningCounter;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 /**
@@ -154,12 +159,25 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     }
 
     AddTrueGenotypeHelperI addTrueGenotypeHelper;
+    WarningCounter emptyRefIdxs = new WarningCounter();
+    int emptyRefIdxsCounter = 0;
 
     public void writeRecord(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts,
                             int referenceIndex, int position, DiscoverVariantPositionData list, int groupIndexA, int groupIndexB) {
 
 
-        if (encounteredSet.contains(position)){
+        final RandomAccessSequenceInterface genome = iterator.getGenome();
+        if (withGenotypeMap && (addTrueGenotypeHelper == null || addTrueGenotypeHelper instanceof DummyTrueGenotypeHelper)) {
+            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
+        }
+
+        if (referenceIndex == -1) {
+            emptyRefIdxs.warn(LOG, "referenceIndex was -1");
+            emptyRefIdxsCounter++;
+            return;
+        }
+
+        if (encounteredSet.contains(position)) {
             //don't write duplicate records for the same position
             duplicatePositions++;
             int skippedCounts = sampleCounts[0].getSumCounts();
@@ -168,20 +186,16 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         }
         encounteredSet.add(position);
         encounteredQeuue.enqueue(position);
-        if (encounteredSet.size() > 100){
+        if (encounteredSet.size() > 100) {
             int toRm = encounteredQeuue.dequeueInt();
             encounteredSet.remove(toRm);
         }
 
 
-        if (sampleCounts[0].hasIndels()){
+        if (sampleCounts[0].hasIndels()) {
             indelsAdded++;
         }
 
-        final RandomAccessSequenceInterface genome = iterator.getGenome();
-        if (withGenotypeMap && addTrueGenotypeHelper == null) {
-            addTrueGenotypeHelper = configureTrueGenotypeHelper(genome, iterator.isCallIndels());
-        }
         if (!withGenotypeMap && samplingRate < 1.0) {
             if (randomGenerator.nextFloat() > samplingRate) {
                 // do not process the site.
@@ -215,7 +229,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 baseInfo = addTrueGenotypeHelper.labeledEntry();
                 assert baseInfo != null : " labeled entry cannot be null";
                 sbiWriter.appendEntry(baseInfo);
-            } else if (!withGenotypeMap){
+            } else if (!withGenotypeMap) {
                 sbiWriter.appendEntry(baseInfo);
             }
 
@@ -238,7 +252,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     samplingRate);
             this.addTrueGenotypeHelper = o;
             return o;
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException| NullPointerException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NullPointerException e) {
             throw new RuntimeException("Unable to initialize true label annotator with classname: " + className);
         }
 
@@ -265,13 +279,28 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
 
     public void close() {
         //    pgReadWrite.stop();
+
         System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward");
         System.out.println(indelsAdded + " indels added");
+        System.out.println(emptyRefIdxsCounter + " records skipped due to -1 reference index");
         try {
             if (withGenotypeMap) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
             }
+            try {
+                InputStream in = getClass().getResourceAsStream("/GOBY_COMMIT.properties");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String prop;
+                while ((prop = reader.readLine()) != null) {
+                    String[] splitProp = prop.split("=");
+                    sbiWriter.addCustomProperties(splitProp[0], splitProp[1]);
+                }
+            } catch (NullPointerException e) {
+                System.out.println("Goby commit properties file not found in classpath. Unable to write info to sbip.");
+                sbiWriter.addCustomProperties("goby_properties_file", "not_found");
+            }
+
             sbiWriter.close();
 
         } catch (IOException e) {

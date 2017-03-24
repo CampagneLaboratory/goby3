@@ -28,7 +28,10 @@ import org.slf4j.Logger;
  *         Time: 10:07:28 PM
  */
 public class WarningCounter {
+
     int counter;
+
+
     private int maxWarnings;
 
     /**
