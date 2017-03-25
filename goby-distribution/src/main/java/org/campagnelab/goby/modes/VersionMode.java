@@ -86,7 +86,7 @@ public class VersionMode extends AbstractGobyMode {
             Properties gobyProperties = new Properties();
             gobyProperties.load(in);
             for (String key : gobyProperties.stringPropertyNames()) {
-                System.out.printf("%s=%s", key, gobyProperties.getProperty(key));
+                System.out.printf("%s=%s%n", key, gobyProperties.getProperty(key));
             }
         }
     }
