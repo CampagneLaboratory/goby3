@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 /**
  * Output the goby.jar version number to stdout.
@@ -77,5 +78,16 @@ public class VersionMode extends AbstractGobyMode {
         }
         final String version = VersionUtils.getImplementationVersion(GobyDriver.class);
         System.out.printf("Goby Version: %s %s%n", versionPrefix, version.replace("development ", ""));
+
+        InputStream in = getClass().getResourceAsStream("/META-INF/GOBY_COMMIT.properties");
+        if (in == null) {
+            System.out.println("Goby commit properties file (/META-INF/GOBY_COMMIT.properties) not found in classpath. Unable to write info to sbip.");
+        } else {
+            Properties gobyProperties = new Properties();
+            gobyProperties.load(in);
+            for (String key : gobyProperties.stringPropertyNames()) {
+                System.out.printf("%s=%s", key, gobyProperties.getProperty(key));
+            }
+        }
     }
 }
