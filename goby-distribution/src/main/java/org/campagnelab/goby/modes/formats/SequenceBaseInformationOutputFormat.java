@@ -4,6 +4,7 @@ package org.campagnelab.goby.modes.formats;
 import it.unimi.dsi.fastutil.ints.IntHeapPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
+import org.apache.commons.io.IOUtils;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.algorithmic.dsv.DiscoverVariantPositionData;
 import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
@@ -21,10 +22,9 @@ import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.Properties;
 
 
 /**
@@ -288,23 +288,17 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
             }
-            try {
-                InputStream in = getClass().getResourceAsStream("/GOBY_COMMIT.properties");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                String prop;
-                while ((prop = reader.readLine()) != null) {
-                    String[] splitProp = prop.split("=");
-                    sbiWriter.addCustomProperties(splitProp[0], splitProp[1]);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("Goby commit properties file not found in classpath. Unable to write info to sbip.");
-                sbiWriter.addCustomProperties("goby_properties_file", "not_found");
+
+            InputStream in = getClass().getResourceAsStream("/GOBY_COMMIT.properties");
+            if (in == null) {
+                LOG.error("Goby commit properties file (GOBY_COMMIT.properties) not found in classpath. Unable to write info to sbip.");
+                sbiWriter.addCustomProperties("goby_properties_file", "not_found_in_classpath");
+            } else {
+                Properties gobyProperties = new Properties();
+                sbiWriter.getCustomProperties().putAll(gobyProperties);
             }
-
-            sbiWriter.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(sbiWriter);
         }
     }
 

@@ -85,16 +85,18 @@ public class SequenceBaseInformationWriter implements Closeable {
         writeProperties(basename, recordIndex, p);
     }
 
-    private Properties customProperties;
+    private Properties customProperties=new Properties();
 
     /**
      * Define custom properties to be written with in the .sbip along with all properties handled by the
-     * writer.
+     * writer. The method ignores a null customProperties argument.
      *
      * @param customProperties
      */
     public void setCustomProperties(Properties customProperties) {
-        this.customProperties = customProperties;
+        if (customProperties!=null) {
+            this.customProperties = customProperties;
+        }
     }
 
 
@@ -104,20 +106,14 @@ public class SequenceBaseInformationWriter implements Closeable {
      * @param key
      * @param value
      */
-    public boolean addCustomProperties(String key, String value) {
-        if (this.customProperties == null){
-            return false;
-        }
+    public void addCustomProperties(String key, String value) {
+
         this.customProperties.setProperty(key,value);
-        return true;
+
     }
 
-    private Properties getCustomProperties() {
-        if (customProperties != null) {
-            return customProperties;
-        } else {
-            return new Properties();
-        }
+    public Properties getCustomProperties() {
+        return customProperties;
     }
 
     /**
