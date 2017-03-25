@@ -289,14 +289,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 addTrueGenotypeHelper.printStats();
             }
 
-            InputStream in = getClass().getResourceAsStream("/META-INF/GOBY_COMMIT.properties");
-            if (in == null) {
-                LOG.error("Goby commit properties file (/META-INF/GOBY_COMMIT.properties) not found in classpath. Unable to write info to sbip.");
-                sbiWriter.addCustomProperties("goby_properties_file", "not_found_in_classpath");
-            } else {
-                Properties gobyProperties = new Properties();
-                sbiWriter.getCustomProperties().putAll(gobyProperties);
-            }
         } finally {
             IOUtils.closeQuietly(sbiWriter);
         }

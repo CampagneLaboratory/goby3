@@ -20,6 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import edu.cornell.med.icb.util.VersionUtils;
+import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -78,16 +79,12 @@ public class VersionMode extends AbstractGobyMode {
         }
         final String version = VersionUtils.getImplementationVersion(GobyDriver.class);
         System.out.printf("Goby Version: %s %s%n", versionPrefix, version.replace("development ", ""));
+        Properties commitProperties = new Properties();
+        CommitPropertyHelper.appendCommitInfo(this.getClass(), "/META-INF/GOBY_COMMIT.properties", commitProperties);
 
-        InputStream in = getClass().getResourceAsStream("/META-INF/GOBY_COMMIT.properties");
-        if (in == null) {
-            System.out.println("Goby commit properties file (/META-INF/GOBY_COMMIT.properties) not found in classpath. Unable to write info to sbip.");
-        } else {
-            Properties gobyProperties = new Properties();
-            gobyProperties.load(in);
-            for (String key : gobyProperties.stringPropertyNames()) {
-                System.out.printf("%s=%s%n", key, gobyProperties.getProperty(key));
-            }
+        for (String key : commitProperties.stringPropertyNames()) {
+            System.out.printf("%s=%s%n", key, commitProperties.getProperty(key));
         }
     }
 }
+

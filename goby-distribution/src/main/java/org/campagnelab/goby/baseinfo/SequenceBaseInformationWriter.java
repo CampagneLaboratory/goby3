@@ -25,6 +25,7 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInform
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.compression.SequenceBaseInfoCollectionHandler;
+import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -139,6 +140,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         accumulators.add(new StatAccumulatorQueryAlignedLength());
         accumulators.add(new StatAccumulatorQueryPosition());
         accumulators.add(new StatAccumulatorPairFlags());
+
         // NB: Add new accumulators here as well.
 
         long numTotal = 0;
@@ -160,6 +162,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         for (StatAccumulator accumulator : accumulators) {
             accumulator.setProperties(merged);
         }
+        CommitPropertyHelper.appendCommitInfo(SequenceBaseInformationWriter.class, "/META-INF/GOBY_COMMIT.properties", merged);
+
         merged.save(out, basename);
         IOUtils.closeQuietly(out);
     }
