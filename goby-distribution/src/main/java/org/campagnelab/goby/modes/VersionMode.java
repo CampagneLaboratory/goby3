@@ -80,7 +80,7 @@ public class VersionMode extends AbstractGobyMode {
         final String version = VersionUtils.getImplementationVersion(GobyDriver.class);
         System.out.printf("Goby Version: %s %s%n", versionPrefix, version.replace("development ", ""));
         Properties commitProperties = new Properties();
-        CommitPropertyHelper.appendCommitInfo(this.getClass(), "/META-INF/GOBY_COMMIT.properties", commitProperties);
+        CommitPropertyHelper.appendCommitInfo(this.getClass(), "/GOBY_COMMIT.properties", commitProperties);
 
         for (String key : commitProperties.stringPropertyNames()) {
             System.out.printf("%s=%s%n", key, commitProperties.getProperty(key));

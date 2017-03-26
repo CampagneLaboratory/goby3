@@ -166,7 +166,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         for (StatAccumulator accumulator : accumulators) {
             accumulator.setProperties(merged);
         }
-        CommitPropertyHelper.appendCommitInfo(SequenceBaseInformationWriter.class, "/META-INF/GOBY_COMMIT.properties", merged);
+        CommitPropertyHelper.appendCommitInfo(SequenceBaseInformationWriter.class, "/GOBY_COMMIT.properties", merged);
 
         merged.save(out, basename);
         IOUtils.closeQuietly(out);

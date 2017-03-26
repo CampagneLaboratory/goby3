@@ -290,7 +290,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 addTrueGenotypeHelper.printStats();
 
             }
-            CommitPropertyHelper.appendCommitInfo(this.getClass(), "/META-INF/GOBY_COMMIT.properties", sbiWriter.getCustomProperties());
+            CommitPropertyHelper.appendCommitInfo(this.getClass(), "/GOBY_COMMIT.properties", sbiWriter.getCustomProperties());
 
         } finally {
             IOUtils.closeQuietly(sbiWriter);

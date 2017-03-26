@@ -44,7 +44,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/GOBY_COMMIT.properties</include>
+                    <include>**/GOBY_COMMIT.properties.skeleton</include>
                 </includes>
             </resource>
             <resource>
