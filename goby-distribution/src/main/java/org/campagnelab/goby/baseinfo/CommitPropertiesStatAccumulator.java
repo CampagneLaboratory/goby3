@@ -26,16 +26,25 @@ public class CommitPropertiesStatAccumulator extends StatAccumulator {
 
         commit = properties.getProperty(prefix + ".git.commit");
         branch = properties.getProperty(prefix + ".git.branch");
-        commitTime = properties.getProperty(prefix + ".commit.time");
+        commitTime = properties.getProperty(prefix + ".git.commit.time");
         buildVersion = properties.getProperty(prefix + ".git.build.version");
 
     }
 
     @Override
     void setProperties(Properties properties) {
-        properties.setProperty(prefix + ".git.commit", commit);
-        properties.setProperty(prefix + ".git.branch", branch);
-        properties.setProperty(prefix + ".commit.time", commitTime);
-        properties.setProperty(prefix + ".git.build.version", buildVersion);
+        if (commit != null) {
+            properties.setProperty(prefix + ".git.commit", commit);
+        }
+        if (branch != null) {
+            properties.setProperty(prefix + ".git.branch", branch);
+        }
+        if (commitTime != null) {
+            properties.setProperty(prefix + ".commit.time", commitTime);
+        }
+        if (buildVersion != null) {
+            properties.setProperty(prefix + ".git.build.version", buildVersion);
+        }
     }
+
 }

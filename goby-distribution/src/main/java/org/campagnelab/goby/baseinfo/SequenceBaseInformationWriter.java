@@ -57,8 +57,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorQueryAlignedLength());
         ACCUMULATORS.add(new StatAccumulatorQueryPosition());
         ACCUMULATORS.add(new StatAccumulatorPairFlags());
-        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("goby-framework."));
-        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("variation-analysis."));
+        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("goby-framework"));
+        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("variation-analysis"));
 
         // NB: must modify accumulator in static methods below as well.
     }
@@ -143,8 +143,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         accumulators.add(new StatAccumulatorQueryAlignedLength());
         accumulators.add(new StatAccumulatorQueryPosition());
         accumulators.add(new StatAccumulatorPairFlags());
-        accumulators.add(new CommitPropertiesStatAccumulator("goby-framework."));
-        accumulators.add(new CommitPropertiesStatAccumulator("variation-analysis."));
+        accumulators.add(new CommitPropertiesStatAccumulator("goby-framework"));
+        accumulators.add(new CommitPropertiesStatAccumulator("variation-analysis"));
         // NB: Add new accumulators here as well.
 
         long numTotal = 0;
