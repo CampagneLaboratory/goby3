@@ -17,6 +17,7 @@ import org.campagnelab.goby.predictions.ProtoHelper;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.OutputInfo;
 import org.campagnelab.goby.util.WarningCounter;
+import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
@@ -287,7 +288,9 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
             if (withGenotypeMap) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
+
             }
+            CommitPropertyHelper.appendCommitInfo(this.getClass(), "/META-INF/GOBY_COMMIT.properties", sbiWriter.getCustomProperties());
 
         } finally {
             IOUtils.closeQuietly(sbiWriter);
