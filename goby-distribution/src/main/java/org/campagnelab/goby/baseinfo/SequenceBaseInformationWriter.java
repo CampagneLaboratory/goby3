@@ -57,6 +57,9 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorQueryAlignedLength());
         ACCUMULATORS.add(new StatAccumulatorQueryPosition());
         ACCUMULATORS.add(new StatAccumulatorPairFlags());
+        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("goby-framework."));
+        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("variation-analysis."));
+
         // NB: must modify accumulator in static methods below as well.
     }
 
@@ -86,7 +89,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         writeProperties(basename, recordIndex, p);
     }
 
-    private Properties customProperties=new Properties();
+    private Properties customProperties = new Properties();
 
     /**
      * Define custom properties to be written with in the .sbip along with all properties handled by the
@@ -95,7 +98,7 @@ public class SequenceBaseInformationWriter implements Closeable {
      * @param customProperties
      */
     public void setCustomProperties(Properties customProperties) {
-        if (customProperties!=null) {
+        if (customProperties != null) {
             this.customProperties = customProperties;
         }
     }
@@ -109,7 +112,7 @@ public class SequenceBaseInformationWriter implements Closeable {
      */
     public void addCustomProperties(String key, String value) {
 
-        this.customProperties.setProperty(key,value);
+        this.customProperties.setProperty(key, value);
 
     }
 
@@ -140,7 +143,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         accumulators.add(new StatAccumulatorQueryAlignedLength());
         accumulators.add(new StatAccumulatorQueryPosition());
         accumulators.add(new StatAccumulatorPairFlags());
-
+        accumulators.add(new CommitPropertiesStatAccumulator("goby-framework."));
+        accumulators.add(new CommitPropertiesStatAccumulator("variation-analysis."));
         // NB: Add new accumulators here as well.
 
         long numTotal = 0;
