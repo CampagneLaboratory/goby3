@@ -92,6 +92,7 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
 
     private String outputFilename;
     private int minimalMatchLength;
+    private int trim5Prime;
 
     @Override
     public String getModeName() {
@@ -127,9 +128,8 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args) throws IOException, JSAPException {
@@ -142,7 +142,7 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
         includeDescriptions = jsapResult.getBoolean("include-descriptions");
         includeIdentifiers = jsapResult.getBoolean("include-identifiers");
         qualityEncoding = QualityEncoding.valueOf(jsapResult.getString("quality-encoding").toUpperCase());
-
+        trim5Prime = jsapResult.getInt("trim-5-prime");
         final String extremity = jsapResult.getString("extremity");
         if ("3_PRIME".equalsIgnoreCase(extremity)) {
             is3Prime = true;
@@ -168,7 +168,12 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
         final ReadsWriterImpl[] writers = new ReadsWriterImpl[barcodeIndexToSampleId.size()];
         if (outputFilename == null) {
             for (int i = 0; i < writers.length; i++) {
-                writers[i] = new ReadsWriterImpl(new FileOutputStream(barcodeIndexToSampleId.get(i).trim() + ".compact-reads"));
+                final String s = barcodeIndexToSampleId.get(i);
+                if (s != null) {
+                    writers[i] = new ReadsWriterImpl(new FileOutputStream(s.trim() + ".compact-reads"));
+                } else {
+                    System.out.println("Cannot find information for barcode index " + i);
+                }
             }
         } else {
             singleWriter = new ReadsWriterImpl(new FileOutputStream(outputFilename));
@@ -190,7 +195,9 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
                     progress.start("Progressing .compact-reads file " + inputReadsFilename);
                     for (final Reads.ReadEntry readEntry : new ReadsReader(inputReadsFilename)) {
                         ReadsReader.decodeSequence(readEntry, sequence);
-                        final BarcodeMatcherResult match = matcher.matchSequence(sequence);
+                        MutableString trimmed = trim5Prime > 0 ? sequence.substring(trim5Prime, sequence.length() - trim5Prime) : sequence;
+
+                        final BarcodeMatcherResult match = matcher.matchSequence(trimmed);
                         if (match != null) {
                             // remove the barcode from the sequence:
                             final int barcodeIndex = match.getBarcodeIndex();
@@ -198,7 +205,8 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
                                 ++countAmbiguous;
                             }
                             final ReadsWriter writer = outputFilename == null ? writers[barcodeIndex] : singleWriter;
-                            writer.setSequence(match.sequenceOf(sequence));
+                            assert writer != null : "writer cannot be null. Make sure barcode indices start at zero.";
+                            writer.setSequence(match.sequenceOf(trimmed));
                             writer.setBarcodeIndex(barcodeIndex);
 
                             if (readEntry.hasDescription()) {
@@ -210,9 +218,18 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
                             if (readEntry.hasQualityScores()) {
                                 qualitiesNoBarcode.clear();
                                 qualitiesNoBarcode.addElements(0, readEntry.getQualityScores().toByteArray(),
-                                        match.getSequenceStartPosition(),
-                                        match.getSequenceStartPosition() + match.getSequenceLength());
+                                        match.getSequenceStartPosition() + trim5Prime,
+                                        match.getSequenceStartPosition() + trim5Prime + match.getSequenceLength() - match.getBarcodeMatchLength());
                                 writer.setQualityScores(qualitiesNoBarcode.toByteArray());
+                            }
+                            if (readEntry.hasSequencePair()) {
+                                ReadsReader.decodeSequence(readEntry, sequence, true);
+                                writer.setPairSequence(sequence);
+                                if (readEntry.hasQualityScoresPair()) {
+                                    final byte[] qualityScores = readEntry.getQualityScoresPair().toByteArray();
+                                    writer.setQualityScoresPair(qualityScores);
+                                    assert sequence.length() == qualityScores.length : "pair sequence lenght must match pair quality score length";
+                                }
                             }
                             if (retainReadIndex) {
                                 writer.appendEntry(readEntry.getReadIndex());
@@ -269,8 +286,7 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
             }
             System.out.format("barcode found in %g %% of the reads %n", percent(countMatched, countMatched + countNoMatch));
             System.out.format("Found %g %% ambiguous matches %n", percent(countAmbiguous, countMatched));
-        }
-        finally {
+        } finally {
             for (int i = 0; i < writers.length; i++) {
                 if (writers[i] != null) {
                     writers[i].close();
@@ -288,9 +304,7 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
         return (double) countMatched / (double) total * 100d;
     }
 
-    private void loadBarcodeInfo
-            (final String
-                    barcodeInfoFilename) {
+    private void loadBarcodeInfo(final String barcodeInfoFilename) {
         try {
             final ObjectArrayList<String> barcodes = new ObjectArrayList<String>();
             barcodeIndexToSampleId = new Int2ObjectOpenHashMap<String>();
@@ -343,13 +357,12 @@ public class BarcodeDecoderMode extends AbstractGobyMode {
      * Main method.
      *
      * @param args command line args.
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
-     * @throws java.io.IOException error parsing or executing.
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
+     * @throws java.io.IOException                    error parsing or executing.
      */
     public static void main
-            (
-                    final String[] args) throws JSAPException, IOException {
+    (
+            final String[] args) throws JSAPException, IOException {
         new BarcodeDecoderMode().configure(args).execute();
     }
 }

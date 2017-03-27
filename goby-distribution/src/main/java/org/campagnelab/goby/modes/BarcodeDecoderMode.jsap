@@ -83,6 +83,18 @@
             </defaults>
             <help>ONLY when converting fastq files (not applicable for .compact-reads files). The encoding for quality scores. The default quality encoding is that used by the Illumina pipeline 1.3+. Valid encodings include Illumina, Sanger and Solexa.</help>
          </flaggedOption>
+        <flaggedOption>
+            <id>trim-5-prime</id>
+            <longFlag>trim-5-prime</longFlag>
+            <required>false</required>
+            <defaults>
+                <string>0</string>
+            </defaults>
+            <stringParser>
+                <classname>IntegerStringParser</classname>
+            </stringParser>
+            <help>The number bases to remove from the sequence (in 5') before barcode matching. Useful when some bases are expected before the barcode.</help>
+        </flaggedOption>
         <switch>
             <id>include-descriptions</id>
             <longFlag>include-descriptions</longFlag>
