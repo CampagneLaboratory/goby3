@@ -20,11 +20,13 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import edu.cornell.med.icb.util.VersionUtils;
+import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 /**
  * Output the goby.jar version number to stdout.
@@ -77,5 +79,12 @@ public class VersionMode extends AbstractGobyMode {
         }
         final String version = VersionUtils.getImplementationVersion(GobyDriver.class);
         System.out.printf("Goby Version: %s %s%n", versionPrefix, version.replace("development ", ""));
+        Properties commitProperties = new Properties();
+        CommitPropertyHelper.appendCommitInfo(this.getClass(), "/GOBY_COMMIT.properties", commitProperties);
+
+        for (String key : commitProperties.stringPropertyNames()) {
+            System.out.printf("%s=%s%n", key, commitProperties.getProperty(key));
+        }
     }
 }
+

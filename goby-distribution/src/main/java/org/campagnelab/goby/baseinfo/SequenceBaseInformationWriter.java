@@ -25,6 +25,7 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInform
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.compression.SequenceBaseInfoCollectionHandler;
+import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -56,6 +57,9 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorQueryAlignedLength());
         ACCUMULATORS.add(new StatAccumulatorQueryPosition());
         ACCUMULATORS.add(new StatAccumulatorPairFlags());
+        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("goby-framework"));
+        ACCUMULATORS.add(new CommitPropertiesStatAccumulator("variation-analysis"));
+
         // NB: must modify accumulator in static methods below as well.
     }
 
@@ -85,16 +89,18 @@ public class SequenceBaseInformationWriter implements Closeable {
         writeProperties(basename, recordIndex, p);
     }
 
-    private Properties customProperties;
+    private Properties customProperties = new Properties();
 
     /**
      * Define custom properties to be written with in the .sbip along with all properties handled by the
-     * writer.
+     * writer. The method ignores a null customProperties argument.
      *
      * @param customProperties
      */
     public void setCustomProperties(Properties customProperties) {
-        this.customProperties = customProperties;
+        if (customProperties != null) {
+            this.customProperties = customProperties;
+        }
     }
 
 
@@ -104,20 +110,14 @@ public class SequenceBaseInformationWriter implements Closeable {
      * @param key
      * @param value
      */
-    public boolean addCustomProperties(String key, String value) {
-        if (this.customProperties == null){
-            return false;
-        }
-        this.customProperties.setProperty(key,value);
-        return true;
+    public void addCustomProperties(String key, String value) {
+
+        this.customProperties.setProperty(key, value);
+
     }
 
-    private Properties getCustomProperties() {
-        if (customProperties != null) {
-            return customProperties;
-        } else {
-            return new Properties();
-        }
+    public Properties getCustomProperties() {
+        return customProperties;
     }
 
     /**
@@ -143,6 +143,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         accumulators.add(new StatAccumulatorQueryAlignedLength());
         accumulators.add(new StatAccumulatorQueryPosition());
         accumulators.add(new StatAccumulatorPairFlags());
+        accumulators.add(new CommitPropertiesStatAccumulator("goby-framework"));
+        accumulators.add(new CommitPropertiesStatAccumulator("variation-analysis"));
         // NB: Add new accumulators here as well.
 
         long numTotal = 0;
@@ -159,11 +161,13 @@ public class SequenceBaseInformationWriter implements Closeable {
         // TODO implement custom merge of values for matching property keys (e.g., true-genotype keys)
         if (properties.size() >= 1) merged.putAll(properties.get(0));
         merged.setProperty("numRecords", Long.toString(numTotal));
-
+        merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
         // give accumulators a chance to update their stats:
         for (StatAccumulator accumulator : accumulators) {
             accumulator.setProperties(merged);
         }
+        CommitPropertyHelper.appendCommitInfo(SequenceBaseInformationWriter.class, "/GOBY_COMMIT.properties", merged);
+
         merged.save(out, basename);
         IOUtils.closeQuietly(out);
     }

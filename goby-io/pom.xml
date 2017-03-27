@@ -263,6 +263,9 @@
                             <tasks>
                                 <copy file="${project.build.outputDirectory}/GOBY_COMMIT.properties.skeleton"
                                       toFile="${project.basedir}/../GOBY_COMMIT.properties" overwrite="true" />
+
+                                <copy file="${project.build.outputDirectory}/GOBY_COMMIT.properties.skeleton"
+                                      toFile="${project.basedir}/target/classes/GOBY_COMMIT.properties" overwrite="true" />
                             </tasks>
                         </configuration>
                         <goals>

@@ -27,9 +27,6 @@ public class Variant implements Serializable {
      * @param reVar
      */
     public void merge(Variant reVar) {
-        if (!referenceBase.equals(reVar.referenceBase)){
-            System.out.println("hello");
-        }
         assert referenceBase.equals(reVar.referenceBase) : "reference base must match for correct merging.";
         assert position == reVar.position : "position must match for correct merging.";
         assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
@@ -47,6 +44,7 @@ public class Variant implements Serializable {
         }
         maxLen = getMaxLen();
         this.isIndel = (maxLen > 1);
+
     }
 
     /**

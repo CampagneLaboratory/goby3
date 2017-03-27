@@ -31,9 +31,6 @@ public class WarningCounter {
 
     int counter;
 
-    public int getCounter() {
-        return counter;
-    }
 
     private int maxWarnings;
 

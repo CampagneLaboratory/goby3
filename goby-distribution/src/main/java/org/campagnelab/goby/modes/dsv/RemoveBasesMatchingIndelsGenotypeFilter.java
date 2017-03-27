@@ -53,6 +53,9 @@ public class RemoveBasesMatchingIndelsGenotypeFilter extends GenotypeFilter {
                 removeGenotype(info, filteredSet);
                 removed++;
             }
+            if (removed >= indelSupportingEntries.size()){
+                break;
+            }
         }
         //    System.out.println("122we33 Removed " + removed);
     }
