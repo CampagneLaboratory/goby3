@@ -120,7 +120,7 @@ public class TallyReadsMode extends AbstractGobyMode {
                     occ += 1;
                 }
                 readRedundant.put(hashCode, occ);
-                numReads++;
+                numReads = Math.max(numReads, readEntry.getReadIndex() + 1);
                 progress.lightUpdate();
 
                 if (numReads > MAX_PROCESS_READS) {
@@ -132,7 +132,7 @@ public class TallyReadsMode extends AbstractGobyMode {
         }
         progress.stop("first pass finished.");
         assert sd != null : "at least one read must have been processed.";
-
+        System.out.println("numReads=" + numReads);
         int redundantHash = 0;
         final IntSet inspectHashcodes = new IntOpenHashSet();
         for (final int key : readRedundant.keySet()) {
@@ -158,8 +158,8 @@ public class TallyReadsMode extends AbstractGobyMode {
             // set initial capacity according to first pass:
             final Object2IntMap<CompressedRead> tallies = new Object2IntOpenHashMap<CompressedRead>(redundantHash + 1);
             tallies.defaultReturnValue(0);
-            //   IntSet otherReadIndices = new IntOpenHashSet(numReads+1);
-            final BitVector otherReadIndices = LongArrayBitVector.ofLength(numberOfReads);
+            //   IntSet distinctReadIndices = new IntOpenHashSet(numReads+1);
+            final BitVector distinctReadIndices = LongArrayBitVector.ofLength(numberOfReads);
 
             final ReadsReader readsReader = new ReadsReader(new FileInputStream(inputFilename));
             for (final Reads.ReadEntry readEntry : readsReader) {
@@ -170,9 +170,9 @@ public class TallyReadsMode extends AbstractGobyMode {
 
 
                 read.readIndex = readEntry.getReadIndex();
-                // we keep track of all the read indices. The ones that go into otherReadIndices
+                // we keep track of all the read indices. The ones that go into distinctReadIndices
                 // will be given a multiplicity of 1.
-                otherReadIndices.set(read.readIndex, true);
+                distinctReadIndices.set(read.readIndex, true);
 
                 if (inspectHashcodes.contains(sd.digest(readEntry.getSequence(), 0, readLength))) {
                     final int count = tallies.getInt(read) + 1;
@@ -181,7 +181,7 @@ public class TallyReadsMode extends AbstractGobyMode {
                         // We have seen this sequence already.
                         // Remove the read from the filter. The first read with the sequence will be searched and
                         // results adjusted according to multiplicity (count)
-                        otherReadIndices.set(read.readIndex, false);
+                        distinctReadIndices.set(read.readIndex, false);
                     }
                 }
 
@@ -191,7 +191,7 @@ public class TallyReadsMode extends AbstractGobyMode {
 
 
                 //   if (numReads % reportEveryNReads == 1 && numReads != 1) {
-                //    printStats(tallies, numReads, false, otherReadIndices);
+                //    printStats(tallies, numReads, false, distinctReadIndices);
                 //    }
 
                 if (numReads > MAX_PROCESS_READS) {
@@ -200,7 +200,7 @@ public class TallyReadsMode extends AbstractGobyMode {
             }
             readsReader.close();
             System.gc();
-            printStats(tallies, numReads, true, otherReadIndices);
+            printStats(tallies, numReads, true, distinctReadIndices);
 
         }
 
@@ -273,15 +273,20 @@ public class TallyReadsMode extends AbstractGobyMode {
 
     }
 
-    private void printStats(final Object2IntMap<CompressedRead> tallies, final int numReads, final boolean writeTallies, final BitVector otherReadIndices) {
+    private void printStats(final Object2IntMap<CompressedRead> tallies, final int numReads, final boolean writeTallies,
+                            final BitVector distinctReadIndices) {
         final IntList counts = new IntArrayList();
         int sum = 0;
         int num = 0;
+        int numUniqueReads = 0;
         for (final int count : tallies.values()) {
             if (count > 1) {
                 counts.add(count);
                 sum += count;
                 num++;
+            }
+            if (count == 1) {
+                numUniqueReads++;
             }
         }
 
@@ -290,8 +295,8 @@ public class TallyReadsMode extends AbstractGobyMode {
         if (writeTallies) {
             final ReadSet set = new ReadSet();
             set.smallestStoredMultiplicity(1);
-            for (int readIndex = 0; readIndex < otherReadIndices.size(); ++readIndex) {
-                if (otherReadIndices.getBoolean(readIndex)) {
+            for (int readIndex = 0; readIndex < distinctReadIndices.size(); ++readIndex) {
+                if (distinctReadIndices.getBoolean(readIndex)) {
                     set.add(readIndex, 1);
                 }
 
@@ -299,13 +304,10 @@ public class TallyReadsMode extends AbstractGobyMode {
             for (final CompressedRead read : tallies.keySet()) {
 
                 final int count = tallies.getInt(read);
-                if (count > 1 && otherReadIndices.get(read.readIndex)) {
+                if (count > 1 && distinctReadIndices.get(read.readIndex)) {
                     set.add(read.readIndex, count);
-
                 }
             }
-
-
             try {
                 set.save(outputBasename, "keep");
                 System.out.printf("Saved filter with %d elements %n", set.size());
@@ -315,7 +317,8 @@ public class TallyReadsMode extends AbstractGobyMode {
             }
         }
         System.out.println("Number of reads: " + numReads);
-        System.out.printf("Number of unique reads: %d %n", num);
+        System.out.printf("Number of unique reads: %d %n", distinctReadIndices.count());
+        System.out.printf("Number of reads occuring more than once (count>=2): %d %n", num);
         System.out.printf("Redunduncy sum: %d %n", sum);
         // we still need to map the first redundant read:
         final int avoidableMappings = sum - counts.size();
