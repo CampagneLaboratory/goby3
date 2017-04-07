@@ -56,7 +56,6 @@ public class VariantMapCreator extends VariantMapHelper {
         for (Variant reVar : realignedVars.values()) {
             Variant previousVariant = chMap.get(chrom).get(reVar.position);
             if (previousVariant!=null) {
-                //  TODO merge previous variant with new one and update map.
                 previousVariant.merge(reVar);
                 overLappingIndels.warn(LOG,
                         "\nmerged variant. in map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
