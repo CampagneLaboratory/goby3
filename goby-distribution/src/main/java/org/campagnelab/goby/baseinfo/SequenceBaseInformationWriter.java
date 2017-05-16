@@ -57,6 +57,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorQueryAlignedLength());
         ACCUMULATORS.add(new StatAccumulatorQueryPosition());
         ACCUMULATORS.add(new StatAccumulatorPairFlags());
+        ACCUMULATORS.add(new StatAccumulatorDistanceToStartOfRead());
+        ACCUMULATORS.add(new StatAccumulatorDistanceToEndOfRead());
         ACCUMULATORS.add(new CommitPropertiesStatAccumulator("goby-framework"));
         ACCUMULATORS.add(new CommitPropertiesStatAccumulator("variation-analysis"));
 
@@ -143,6 +145,8 @@ public class SequenceBaseInformationWriter implements Closeable {
         accumulators.add(new StatAccumulatorQueryAlignedLength());
         accumulators.add(new StatAccumulatorQueryPosition());
         accumulators.add(new StatAccumulatorPairFlags());
+        accumulators.add(new StatAccumulatorDistanceToStartOfRead());
+        accumulators.add(new StatAccumulatorDistanceToEndOfRead());
         accumulators.add(new CommitPropertiesStatAccumulator("goby-framework"));
         accumulators.add(new CommitPropertiesStatAccumulator("variation-analysis"));
         // NB: Add new accumulators here as well.
