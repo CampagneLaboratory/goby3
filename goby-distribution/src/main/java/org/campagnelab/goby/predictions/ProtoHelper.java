@@ -120,6 +120,8 @@ public class ProtoHelper {
         IntArrayList[][][] readIdxs = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] distancesToReadVariations = new IntArrayList[numSamples][maxGenotypeIndex][2];
 
+        IntArrayList[][] distancesToStartOfRead = new IntArrayList[numSamples][maxGenotypeIndex];
+        IntArrayList[][] distancesToEndOfRead = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] numVariationsInReads = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] insertSizes = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] targetAlignedLengths = new IntArrayList[numSamples][maxGenotypeIndex];
@@ -134,7 +136,8 @@ public class ProtoHelper {
                     qualityScores[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     readMappingQuality[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     readIdxs[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
-                    distancesToReadVariations[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
+                    distancesToStartOfRead[sampleIndex][genotypeIndex] = new IntArrayList(1024);
+                    distancesToEndOfRead[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     insertSizes[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     targetAlignedLengths[sampleIndex][genotypeIndex] = new IntArrayList(1024);
@@ -153,6 +156,11 @@ public class ProtoHelper {
                 qualityScores[sampleIndex][baseIndex][strandInd].add(baseInfo.qualityScore & 0xFF);
                 readMappingQuality[sampleIndex][baseIndex][strandInd].add(baseInfo.readMappingQuality & 0xFF);
                 numVariationsInReads[sampleIndex][baseIndex].add(baseInfo.numVariationsInRead);
+                final int queryLength = baseInfo.alignmentEntry.getQueryLength();
+                int distanceToStartOfRead = baseInfo.matchesForwardStrand ? baseInfo.readIndex : queryLength - baseInfo.readIndex;
+                int distanceToEndOfRead = baseInfo.matchesForwardStrand ? queryLength - baseInfo.readIndex : baseInfo.readIndex;
+                distancesToStartOfRead[sampleIndex][baseIndex].add(distanceToStartOfRead);
+                distancesToEndOfRead[sampleIndex][baseIndex].add(distanceToEndOfRead);
                 insertSizes[sampleIndex][baseIndex].add(baseInfo.insertSize);
                 targetAlignedLengths[sampleIndex][baseIndex].add(baseInfo.alignmentEntry.getTargetAlignedLength());
                 //System.out.printf("%d%n",baseInfo.qualityScore & 0xFF);
@@ -175,19 +183,19 @@ public class ProtoHelper {
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             //make a map from EIR -> genotypeIndex
             Object2IntArrayMap<EquivalentIndelRegion> indelIndices = new Object2IntArrayMap<>();
-            for (int i = SampleCountInfo.BASE_MAX_INDEX; i < maxGenotypeIndex; i++){
+            for (int i = SampleCountInfo.BASE_MAX_INDEX; i < maxGenotypeIndex; i++) {
                 // indels are aligned across samples, so we take the index/indel association from the first sample:
-                indelIndices.put(sampleCounts[0].getIndelGenotype(i),i);
+                indelIndices.put(sampleCounts[0].getIndelGenotype(i), i);
             }
-            if (sampleCounts[sampleIndex].getEquivalentIndelRegions() == null){
+            if (sampleCounts[sampleIndex].getEquivalentIndelRegions() == null) {
                 continue;
             }
-            for (EquivalentIndelRegion eqr : sampleCounts[sampleIndex].getEquivalentIndelRegions()){
+            for (EquivalentIndelRegion eqr : sampleCounts[sampleIndex].getEquivalentIndelRegions()) {
                 int baseIndex = indelIndices.getInt(eqr);
                 readIdxs[sampleIndex][baseIndex][POSITIVE_STRAND].addAll(eqr.forwardReadIndices);
                 readIdxs[sampleIndex][baseIndex][NEGATIVE_STRAND].addAll(eqr.reverseReadIndices);
-                for (Alignments.AlignmentEntry entry : eqr.supportingEntries){
-                    int strandInd = entry.getMatchingReverseStrand()? NEGATIVE_STRAND : POSITIVE_STRAND;
+                for (Alignments.AlignmentEntry entry : eqr.supportingEntries) {
+                    int strandInd = entry.getMatchingReverseStrand() ? NEGATIVE_STRAND : POSITIVE_STRAND;
 
                     readMappingQuality[sampleIndex][baseIndex][strandInd].add(entry.getMappingQuality() & 0xFF);
                     numVariationsInReads[sampleIndex][baseIndex].add(entry.getSequenceVariationsCount());
@@ -210,8 +218,8 @@ public class ProtoHelper {
                         int varIndex = var.getReadIndex();
                         int delta = indelReadIndex - varIndex;
                         distancesToReadVariations[sampleIndex][baseIndex][strandInd].add(delta);
-                        if (var.hasToQuality()){
-                            for (byte quality : var.getToQuality()){
+                        if (var.hasToQuality()) {
+                            for (byte quality : var.getToQuality()) {
                                 qualityScores[sampleIndex][baseIndex][strandInd].add(quality & 0xFF);
                             }
                         }
@@ -228,7 +236,7 @@ public class ProtoHelper {
         builder.setMutated(false);
         builder.setPosition(position);
         builder.setReferenceId(referenceID);
-        int genomeReferenceIndex=genome.getReferenceIndex(referenceID);
+        int genomeReferenceIndex = genome.getReferenceIndex(referenceID);
         transferGenomicContext(contextLength, genome, genomeReferenceIndex, position, list, builder, sampleCounts);
 
 
@@ -246,7 +254,10 @@ public class ProtoHelper {
             String referenceGenotype = null;
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
-            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex], distancesToReadVariations[sampleIndex],
+            transfer(qualityScores[sampleIndex], readMappingQuality[sampleIndex], readIdxs[sampleIndex],
+                    distancesToReadVariations[sampleIndex],
+                    distancesToStartOfRead[sampleIndex],
+                    distancesToEndOfRead[sampleIndex],
                     numVariationsInReads[sampleIndex], insertSizes[sampleIndex],
                     targetAlignedLengths[sampleIndex], queryAlignedLengths[sampleIndex], queryPositions[sampleIndex],
                     pairFlags[sampleIndex],
@@ -289,7 +300,7 @@ public class ProtoHelper {
             builder.setGenomicSequenceContext(contextLength == genomicContext.length() ? genomicContext.toString() : defaultGenomicContext(contextLength));
         }
         String refBase = baseConversion.convert(list.getReferenceBase());
-        if (refBase==null) {
+        if (refBase == null) {
             String referenceGenotype = sampleCounts[0].getReferenceGenotype();
             if (referenceGenotype.length() >= 1) {
                 refBase = sampleCounts[0].getReferenceGenotype().substring(0, 1);
@@ -304,6 +315,8 @@ public class ProtoHelper {
                                  IntArrayList[][] intArrayLists,
                                  IntArrayList[][] readIdx,
                                  IntArrayList[][] distancesToReadVariations,
+                                 IntArrayList[] distancesToStartOfRead,
+                                 IntArrayList[] distancesToEndOfRead,
                                  IntArrayList[] numVariationsInRead,
                                  IntArrayList[] insertSize,
                                  IntArrayList[] targetAlignedLength,
@@ -321,10 +334,10 @@ public class ProtoHelper {
                 // this method may be expensive, don't call more than needed:
                 referenceGenotype = sampleCountInfo.getReferenceGenotype();
             }
-            if (genotypeIndex < sampleCountInfo.BASE_MAX_INDEX){
+            if (genotypeIndex < sampleCountInfo.BASE_MAX_INDEX) {
                 // if not indel
                 try {
-                    infoBuilder.setFromSequence(referenceGenotype.substring(0,1));
+                    infoBuilder.setFromSequence(referenceGenotype.substring(0, 1));
                 } catch (NullPointerException e) {
                     infoBuilder.setFromSequence("");
                 }
@@ -354,7 +367,8 @@ public class ProtoHelper {
             infoBuilder.addAllQueryAlignedLengths(compressFreq(queryAlignedLength[genotypeIndex]));
             infoBuilder.addAllQueryPositions(compressFreq(queryPositions[genotypeIndex]));
             infoBuilder.addAllPairFlags(compressFreq(pairFlags[genotypeIndex]));
-
+            infoBuilder.addAllDistanceToStartOfRead(compressFreq(distancesToStartOfRead[genotypeIndex]));
+            infoBuilder.addAllDistanceToEndOfRead(compressFreq(distancesToEndOfRead[genotypeIndex]));
             infoBuilder.setIsIndel(sampleCountInfo.isIndel(genotypeIndex));
             sampleBuilder.addCounts(infoBuilder.build());
         }

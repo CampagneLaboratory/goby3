@@ -144,6 +144,11 @@ message CountInfo {
     /** The index in the read of  all bases matching this genotype on the reverse strand */
     repeated NumberWithFrequency distancesToReadVariationsReverseStrand = 29;
 
+    /** Number of bases between the base where the variation is observed and the start of the read. */
+    repeated NumberWithFrequency distanceToStartOfRead=31;
+    /** Number of bases between the base where the variation is observed and the end of the read. */
+    repeated NumberWithFrequency distanceToEndOfRead=32;
+
     /** True iff the genotype is called in this sample. In other words, this field is true when the genotype caller believes
      that this genotype is present in the sample. */
     optional bool isCalled = 20;
