@@ -119,7 +119,6 @@ public class ProtoHelper {
         IntArrayList[][][] readMappingQuality = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] readIdxs = new IntArrayList[numSamples][maxGenotypeIndex][2];
         IntArrayList[][][] distancesToReadVariations = new IntArrayList[numSamples][maxGenotypeIndex][2];
-
         IntArrayList[][] distancesToStartOfRead = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] distancesToEndOfRead = new IntArrayList[numSamples][maxGenotypeIndex];
         IntArrayList[][] numVariationsInReads = new IntArrayList[numSamples][maxGenotypeIndex];
@@ -136,6 +135,7 @@ public class ProtoHelper {
                     qualityScores[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     readMappingQuality[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     readIdxs[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
+                    distancesToReadVariations[sampleIndex][genotypeIndex][strandIndex] = new IntArrayList(1024);
                     distancesToStartOfRead[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     distancesToEndOfRead[sampleIndex][genotypeIndex] = new IntArrayList(1024);
                     numVariationsInReads[sampleIndex][genotypeIndex] = new IntArrayList(1024);
