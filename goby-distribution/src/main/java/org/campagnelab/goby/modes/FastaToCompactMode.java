@@ -410,7 +410,7 @@ public class FastaToCompactMode extends AbstractGobyMode {
             if (concatenate) {
                 concat(inputFilenames, reqOutputFilename);
             } else {
-                if (numThreads <0) {
+                if (numThreads < 0) {
 
                     int defaultThreadCount = PJProperties.getPjNt();
                     if (defaultThreadCount == 0) {
@@ -421,6 +421,7 @@ public class FastaToCompactMode extends AbstractGobyMode {
                 if (numThreads < 0) {
                     numThreads = 1;
                 }
+                System.out.println("num-threads=" + numThreads);
                 final DoInParallel loop = new DoInParallel(numThreads) {
                     @Override
                     public void action(final DoInParallel forDataAccess, final String inputBasename, final int loopIndex) {
@@ -569,7 +570,6 @@ public class FastaToCompactMode extends AbstractGobyMode {
     }
 
     private void convert(ReadsWriter writer, String inputFilename) throws IOException {
-        System.out.println("Goby 3.2.1-SNAPSHOT fix");
         FastXReader pairReader = null;
         if (processPairs) {
             final String pairInputFilename = pairFilename(inputFilename);
@@ -625,7 +625,13 @@ public class FastaToCompactMode extends AbstractGobyMode {
             // skip the numbers used by the other threads, unless numThreads is undefined.
             int increment = numThreads < 0 ? 1 : numThreads;
             entryIndex += increment;
-            assert entryIndex >= 0 : "entryIndex must never be negative.";
+            if (entryIndex < 0) {
+                System.out.printf("Found negative read index. entryIndex must never be negative. " +
+                                "entryIndex was %d increment was %d. Read index is now being reset to zero. To avoid " +
+                                "this problem in the future, process a single sample at a time with the --parallel option.",
+                        entryIndex, increment);
+                entryIndex = 0;
+            }
         }
     }
 
