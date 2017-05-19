@@ -26,10 +26,29 @@ package org.campagnelab.goby.alignments;
  *         Time: 1:53:47 PM
  */
 public class PositionBaseInfo {
+    public PositionBaseInfo() {
+
+    }
+
+    public PositionBaseInfo(PositionBaseInfo other) {
+        this.readIndex = other.readIndex;
+        this.readerIndex = other.readerIndex;
+        this.qualityScore = other.qualityScore;
+        this.readMappingQuality = other.readMappingQuality;
+        this.matchesReference = other.matchesReference;
+        this.from = other.from;
+        this.to = other.to;
+        this.position = other.position;
+        this.matchesForwardStrand = other.matchesForwardStrand;
+        this.numVariationsInRead = other.numVariationsInRead;
+        this.insertSize = other.insertSize;
+        this.alignmentEntry = other.alignmentEntry;
+    }
+
     public int readIndex;
     public int readerIndex;
-    public byte qualityScore=Byte.MIN_VALUE;
-    public byte readMappingQuality=Byte.MIN_VALUE;
+    public byte qualityScore = Byte.MIN_VALUE;
+    public byte readMappingQuality = Byte.MIN_VALUE;
     public boolean matchesReference;
     public char from = ' ';
     public char to = ' ';
@@ -54,8 +73,10 @@ public class PositionBaseInfo {
         return matchesReference ? String.format("%c ref: %c s=%d", strand, from, readerIndex) :
                 String.format("%c %c/%c q=%d s=%d", strand, from, to, qualityScore, readerIndex);
     }
+
     public boolean isInsertionOrDeletion() {
-        return from=='-' || to=='-';
+        return from == '-' || to == '-';
     }
+
 
 }

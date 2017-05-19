@@ -86,14 +86,14 @@ public class ProtoHelper {
      * Used by SequenceBaseInformationOutputFormat to generate datasets, and SomaticVariationOutputFormat (via mutPrediction) when
      * generating predictions on new examples.
      *
-     * @param genome             genome stored in a DiscoverVariantIterateSortedAlignments iterator
-     * @param referenceID        name of chromosome, also acquired from an iterator
-     * @param sampleCounts       Array of count information objects
-     * @param referenceIndex     index corresponding to chromosome
-     * @param position           position value of the record in question to serialize
-     * @param list               Additional data about the reads
-     * @param sampleToReaderIdxs Array which points a required sample (trio:father,mother,somatic pair:germline,somatic) to its reader index
-     *                           this index corresponds to the location of data collected by that reader in the SampleCountInfo array
+     * @param genome                 genome stored in a DiscoverVariantIterateSortedAlignments iterator
+     * @param referenceID            name of chromosome, also acquired from an iterator
+     * @param sampleCounts           Array of count information objects
+     * @param referenceIndex         index corresponding to chromosome
+     * @param position               position value of the record in question to serialize
+     * @param list                   Additional data about the reads
+     * @param sampleIndicesToProcess Array which points a required sample (trio:father,mother,somatic pair:germline,somatic) to its reader index
+     *                               this index corresponds to the location of data collected by that reader in the SampleCountInfo array
      * @return
      */
     public static BaseInformationRecords.BaseInformation toProto(RandomAccessSequenceInterface genome,
@@ -101,16 +101,63 @@ public class ProtoHelper {
                                                                  SampleCountInfo sampleCounts[],
                                                                  int referenceIndex, int position,
                                                                  DiscoverVariantPositionData list,
-                                                                 Integer[] sampleToReaderIdxs, int contextLength) {
+                                                                 Integer[] sampleIndicesToProcess, int contextLength) {
+        //focus on the samples we need to process out of the full sampleCounts array:
+        SampleCountInfo[] reducedSampleCountArray = new SampleCountInfo[sampleIndicesToProcess.length];
+
+        final IntArrayList sampleIndicesToProcessList = new IntArrayList();
+        sampleIndicesToProcessList.addAll(Arrays.asList(sampleIndicesToProcess));
+
+        for (int originalSampleIndex : sampleIndicesToProcess) {
+            int reducedSampleIndex = sampleIndicesToProcessList.indexOf(originalSampleIndex);
+            reducedSampleCountArray[reducedSampleIndex] = sampleCounts[originalSampleIndex];
+        }
+        DiscoverVariantPositionData newList = new DiscoverVariantPositionData();
+        for (PositionBaseInfo baseInfo : list) {
+            PositionBaseInfo copy = new PositionBaseInfo(baseInfo);
+            final int originalSampleIndex = baseInfo.readerIndex;
+            if (sampleIndicesToProcessList.contains(originalSampleIndex)) {
+                int reducedSampleIndex = sampleIndicesToProcessList.indexOf(originalSampleIndex);
+                copy.readerIndex = reducedSampleIndex;
+                newList.add(copy);
+            }
+        }
+        return toProto(genome,
+                referenceID,
+                reducedSampleCountArray,
+                referenceIndex, position,
+                newList,
+                contextLength);
+    }
+
+    /**
+     * Returns a serialized record of a given position in protobuf format. Required step before mapping to features.
+     * Used by SequenceBaseInformationOutputFormat to generate datasets, and SomaticVariationOutputFormat (via mutPrediction) when
+     * generating predictions on new examples.
+     *
+     * @param genome         genome stored in a DiscoverVariantIterateSortedAlignments iterator
+     * @param referenceID    name of chromosome, also acquired from an iterator
+     * @param sampleCounts   Array of count information objects
+     * @param referenceIndex index corresponding to chromosome
+     * @param position       position value of the record in question to serialize
+     * @param list           Additional data about the reads
+     * @return
+     */
+    public static BaseInformationRecords.BaseInformation toProto(RandomAccessSequenceInterface genome,
+                                                                 String referenceID,
+                                                                 SampleCountInfo sampleCounts[],
+                                                                 int referenceIndex, int position,
+                                                                 DiscoverVariantPositionData list,
+                                                                 int contextLength) {
 
 
-        int numSamples = sampleToReaderIdxs.length;
+        int numSamples = sampleCounts.length;
 
         // pgReadWrite.update();
         //if (minCountsFilter(sampleCounts)) return;
         int maxGenotypeIndex = 0;
         for (int sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
-            final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
+            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
             maxGenotypeIndex = Math.max(sampleCountInfo.getGenotypeMaxIndex(), maxGenotypeIndex);
         }
 
@@ -147,9 +194,10 @@ public class ProtoHelper {
                 }
             }
         }
+
         for (PositionBaseInfo baseInfo : list) {
-            int baseIndex = sampleCounts[sampleToReaderIdxs[baseInfo.readerIndex]].baseIndex(baseInfo.to);
-            int sampleIndex = java.util.Arrays.asList((sampleToReaderIdxs)).indexOf(baseInfo.readerIndex);
+            int baseIndex = sampleCounts[baseInfo.readerIndex].baseIndex(baseInfo.to);
+            int sampleIndex = baseInfo.readerIndex;
             // check that we need to focus on the sample from which this base originates (if not, ignore the base)
             if (sampleIndex != -1) {
                 int strandInd = baseInfo.matchesForwardStrand ? POSITIVE_STRAND : NEGATIVE_STRAND;
@@ -250,7 +298,7 @@ public class ProtoHelper {
             if (sampleIndex == numSamples - 1) {
                 sampleBuilder.setIsTumor(true);
             }
-            final SampleCountInfo sampleCountInfo = sampleCounts[sampleToReaderIdxs[sampleIndex]];
+            final SampleCountInfo sampleCountInfo = sampleCounts[sampleIndex];
             String referenceGenotype = null;
             final int genotypeMaxIndex = sampleCountInfo.getGenotypeMaxIndex();
 
@@ -263,7 +311,7 @@ public class ProtoHelper {
                     pairFlags[sampleIndex],
                     sampleBuilder, sampleCountInfo,
                     referenceGenotype, maxGenotypeIndex);
-            sampleBuilder.setFormattedCounts(sampleCounts[sampleToReaderIdxs[sampleIndex]].toString());
+            sampleBuilder.setFormattedCounts(sampleCounts[sampleIndex].toString());
             builder.addSamples(sampleBuilder.build());
         }
         baseProgressLogger.update(list.size());
