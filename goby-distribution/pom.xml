@@ -13,8 +13,8 @@
     <name>Goby Full Distribution</name>
     <url>http://goby.campagnelab.org</url>
     <properties>
-        <nd4j.version>0.7.1</nd4j.version>
-        <dl4j.version>0.7.1</dl4j.version>
+        <nd4j.version>0.8.0</nd4j.version>
+        <dl4j.version>0.8.0</dl4j.version>
     </properties>
     <build>
         <resources>
