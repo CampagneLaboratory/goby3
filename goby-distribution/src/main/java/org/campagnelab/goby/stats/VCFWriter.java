@@ -410,6 +410,7 @@ public class VCFWriter {
             if (sampleIndex != max) outWriter.append('\t');
         }
         outWriter.println();
+        outWriter.flush();
         clear();
     }
 

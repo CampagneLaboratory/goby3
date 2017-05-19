@@ -132,6 +132,7 @@ WarningCounter warnOnce=new WarningCounter(1);
         } else {
             allRefBases = null;
             warnOnce.info(LOG, "MD tags not found. Reference bases of variations will be imported as 'N' for this alignment.");
+            return null;
         }
 
         final String allReadBases = samRecord.getReadString();
@@ -187,6 +188,13 @@ WarningCounter warnOnce=new WarningCounter(1);
         gobySamRecord.readNum = numRecordsProcessed + numRecordsSkipped;
         gobySamRecord.reverseStrand = reverseStrand;
         GobySamSegment segment = null;
+        if (md == null && samRecord.getReadUnmappedFlag()) {
+            // there is no MD tag on an unmapped read.
+            return null;
+        }
+        else {
+     //       System.out.printf("Found MD");
+        }
         for (int cigarElementNum = 0; cigarElementNum < numCigarElements; cigarElementNum++) {
             final CigarElement cigarElement = cigarElementList.get(cigarElementNum);
             final CigarOperator cigarOperator = cigarElement.getOperator();
@@ -257,7 +265,10 @@ WarningCounter warnOnce=new WarningCounter(1);
                     }
                 }
             }
-            assert allRefBases != null : "MD tags missing from bam file?";
+            if (md == null) {
+              return null;
+            }
+            assert md != null : "MD tags missing from bam file for a mapped read?";
             int endIndex = Math.min(allRefBases.length(), refStringPosition + cigarLength);
             if (cigarOperator.consumesReferenceBases()) {
                 if (cigarOperator != CigarOperator.N) {
