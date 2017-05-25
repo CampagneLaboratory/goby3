@@ -121,6 +121,10 @@ public class VariantMapCreator extends VariantMapHelper {
                 result = equivalentIndelRegionCalculator.determine(variant.referenceIndex, indel);
                 Variant.numIndelsEncountered++;
             }
+            if (result==null) {
+                // ignore variants outside of genome coordinates.
+                continue;
+            }
             String refBase;
             String trueAlleleWithRef;
             String trueFromWithRef;
