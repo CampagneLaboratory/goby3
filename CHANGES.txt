@@ -1,3 +1,12 @@
+3.3.4
+ - Fix issue with toProto that prevented using more than one sample for genotyping with goby.
+ - alignment conversion to goby: ignore missing MD tags (it is possible only some reads are missing them and we
+ still need to convert the other aligned reads).
+ - Upgrade goby to DL4J 0.8.0.
+ - fasta-to-compact: Do not use an assertion, but instead reset read index to zero and explain how to avoid the
+ problem.
+ - SBI format: add distance from start of read and end of read. Will be mapped to a density in next genotype mapper.
+ Should help variationanalysis models detect cases where end of alignment is fully contained within homopolymer region.
 3.3.3
  - Fix SNP bug in realignment around read insertion.
  - Add queryPosition field to SBI output.

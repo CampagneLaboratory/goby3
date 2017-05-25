@@ -276,7 +276,8 @@ public class EquivalentIndelRegionCalculator {
         } else if (to.indexOf('-') >= 0) {
             return false;
         }
-        throw new InternalError("indel must either be an insertionInRead or a deletion");
+        LOG.error("indel must either be an insertionInRead or a deletion: "+indel);
+        return false;
     }
 
 }
