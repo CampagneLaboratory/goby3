@@ -559,11 +559,12 @@ public class AlignmentWriterImpl implements AlignmentWriter {
             // prefer to use the array when available, for speed:
 
             for (int index = 0; index < targetIdentifiersArray.length; index++) {
-                mappings.add(Alignments.IdentifierInfo.newBuilder()
-                        .setName(targetIdentifiersArray[index])
-                        .setIndex(index)
-                        .build());
-
+                if (targetIdentifiersArray[index] != null) {
+                    mappings.add(Alignments.IdentifierInfo.newBuilder()
+                            .setName(targetIdentifiersArray[index])
+                            .setIndex(index)
+                            .build());
+                }
             }
 
         }
