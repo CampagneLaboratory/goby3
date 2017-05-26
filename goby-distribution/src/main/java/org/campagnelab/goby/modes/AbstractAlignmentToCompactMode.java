@@ -21,6 +21,7 @@ package org.campagnelab.goby.modes;
 import com.google.protobuf.ByteString;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import org.campagnelab.goby.alignments.*;
 import org.campagnelab.goby.alignments.filters.AlignmentQualityFilter;
 import org.campagnelab.goby.reads.ReadSet;
@@ -372,6 +373,7 @@ public abstract class AbstractAlignmentToCompactMode extends AbstractGobyMode {
 
         final MutableString from = new MutableString();
         final MutableString to = new MutableString();
+        ByteArrayList mutatedQualityScores=new ByteArrayList();
         int variationPosition = Integer.MAX_VALUE;
         int minLength = Math.min(referenceSequence.length(), readSequence.length());
         minLength = Math.min(alignmentLength, minLength);
@@ -392,10 +394,10 @@ public abstract class AbstractAlignmentToCompactMode extends AbstractGobyMode {
 
                     ++newAdjustment;
                 }
-
+                mutatedQualityScores.add(baseQualities[position]);
             } else {
                 appendNewSequenceVariation(currentEntry, from, to, variationPosition, readStartPosition, queryLength,
-                        reverseStrand, readIndexAdjustment, baseQualities);
+                        reverseStrand, readIndexAdjustment, mutatedQualityScores.toByteArray());
                 variationPosition = Integer.MAX_VALUE;
                 from.setLength(0);
                 to.setLength(0);
@@ -403,7 +405,7 @@ public abstract class AbstractAlignmentToCompactMode extends AbstractGobyMode {
             }
 
         }
-        appendNewSequenceVariation(currentEntry, from, to, variationPosition, readStartPosition, queryLength, reverseStrand, readIndexAdjustment, baseQualities);
+        appendNewSequenceVariation(currentEntry, from, to, variationPosition, readStartPosition, queryLength, reverseStrand, readIndexAdjustment, mutatedQualityScores.toByteArray());
     }
     static WarningCounter noQualScoresWarning=new WarningCounter(10);
     static WarningCounter sequenceVariationWarning=new WarningCounter(10);
@@ -447,22 +449,12 @@ public abstract class AbstractAlignmentToCompactMode extends AbstractGobyMode {
                 //System.exit(1);
                 return;
             }
-            final int correctedReadIndex = readIndex + (reverseStrand ? 0 : 1);     // positions start at 1
+            int correctedReadIndex = readIndex + (reverseStrand ? 0 : 1);     // positions start at 1
             sequenceVariation.setReadIndex(correctedReadIndex);
+
             if (baseQualities != null) { // transfer read qualities for this sequence variation:
-                byte[] toQualities = new byte[to.length()];
-                int j = 0;
 
-                for (int i = correctedReadIndex - 1; i < correctedReadIndex - 1 + to.length(); i++) {
-                    if (i < baseQualities.length) {
-                        toQualities[j++] = (byte) ((int) baseQualities[i] - 33);
-                    } else {
-                        noQualScoresWarning.warn(LOG,"index i=%d too large max=%d", i, baseQualities.length);
-                    }
-                }
-
-
-                sequenceVariation.setToQuality(ByteString.copyFrom(toQualities));
+                sequenceVariation.setToQuality(ByteString.copyFrom(baseQualities));
             }
             // do not offset if the match is in the reverse strand, since subtracting from the length takes care of offseting already.
             //        System.out.printf("Appending variation: %d %s/%s ", variationPosition, from, to);

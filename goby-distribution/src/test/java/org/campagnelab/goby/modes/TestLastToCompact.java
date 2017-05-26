@@ -20,12 +20,14 @@ package org.campagnelab.goby.modes;
 
 import org.campagnelab.goby.alignments.Alignments;
 import org.campagnelab.goby.alignments.AlignmentReaderImpl;
+import org.campagnelab.goby.reads.QualityEncoding;
 import org.campagnelab.goby.reads.ReadsWriter;
 import org.campagnelab.goby.reads.ReadsWriterImpl;
 import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import org.apache.commons.io.FileUtils;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -129,7 +131,6 @@ public class TestLastToCompact {
         assertEquals(queryIndex2TargetAlignedLength.get(qii), 35);
         assertEquals(2, queryIndex2QueryIndexOcc.get(qii));
         assertEquals(2, queryIndex2Ambiguity.get(qii));
-
 
 
         // there are 5 entries with the score = 35 (the maximum score for this ID)
@@ -460,6 +461,10 @@ public class TestLastToCompact {
         writer3.write(getMafInput3Variations());
         writer3.close();
 
+        final FileWriter writer4 = new FileWriter("test-results/alignments/last-to-compact/last-104-variations.maf");
+        writer4.write(getMafInput4Variations());
+        writer4.close();
+
         final ReadsWriter referenceWriter = new ReadsWriterImpl(FileUtils.openOutputStream(
                 new File("test-results/alignments/last-to-compact/last-reference.compact-reads")));
         referenceWriter.setIdentifier("0");
@@ -780,5 +785,82 @@ public class TestLastToCompact {
                 "s 0      1998 35 + 247249719 TTTCCACTGATGATTTTGCTGCATGGCCGGTGTTG\n" +
                 "s 577287    0 35 +        35 TTTCCACTGATGATTTTGCTGCATGGCCGGTGTTG\n" +
                 "";
+    }
+
+
+    @Test
+    public void testLastToCompact4QualityScores() throws IOException {
+
+        // test LastToCompact convert+filtering
+
+        // read fake data and convert+filter
+        final LastToCompactMode processor = new LastToCompactMode();
+        final int LAST_TO_COMPACT_M_PARAM = 2;
+        processor.setAmbiguityThreshold(LAST_TO_COMPACT_M_PARAM);
+        processor.setInputFile("test-results/alignments/last-to-compact/last-104-variations.maf");
+        processor.setOutputFile("test-results/alignments/last-to-compact/last-104-variations.compact");
+        processor.setTargetReferenceIdsFilename("test-results/alignments/last-to-compact/last-reference.compact-reads");
+        processor.setOnlyMafFile(true);
+        processor.setNumberOfReads(3);
+        processor.setLargestQueryIndex(46646716);
+        processor.setSmallestQueryIndex(0);
+        processor.setPropagateQueryIds(false);
+        processor.setPropagateTargetIds(true);
+        processor.execute();
+
+
+        // read compact alignment results
+        final AlignmentReaderImpl reader = new AlignmentReaderImpl(processor.getOutputFile());
+        reader.readHeader();
+        assertEquals(46646716, reader.getNumberOfQueries());
+        assertEquals(3, reader.getNumberOfTargets());
+        assertTrue(reader.hasQueryIndexOccurrences());
+
+        Alignments.AlignmentEntry firstEntry = reader.next();
+        System.out.println(firstEntry);
+        QualityEncoding encoder = QualityEncoding.SANGER;
+
+        assertEquals(encoder.asciiEncodingToPhredQualityScore('P')
+                , firstEntry.getSequenceVariations(0).getToQuality().byteAt(0));
+
+
+    }
+
+    public String getMafInput4Variations() {
+        return "# LAST version 759\n" +
+                "#\n" +
+                "# a=21 b=9 A=21 B=9 e=120 d=108 x=119 y=44 z=119 D=1e+06 E=174.533\n" +
+                "# R=10 u=0 s=2 S=0 M=0 T=0 m=10 l=1 n=10 k=1 w=1000 t=4.36661 j=3 Q=1\n" +
+                "# /scratchLocal/gobyweb/ARTIFACT_REPOSITORY-dev/artifacts/LAST_INDEX/INDEX/759.2/HOMO_SAPIENS/1000GENOMES/37//index\n" +
+                "# Reference sequences=84 normal letters=2864785220\n" +
+                "# lambda=0.228526 K=0.433378\n" +
+                "#\n" +
+                "#    A  C  G  T\n" +
+                "# A  6 -18 -18 -18\n" +
+                "# C -18  6 -18 -18\n" +
+                "# G -18 -18  6 -18\n" +
+                "# T -18 -18 -18  6\n" +
+                "#\n" +
+                "# Coordinates are 0-based.  For - strand matches, coordinates\n" +
+                "# in the reverse complement of the 2nd sequence are used.\n" +
+                "#\n" +
+                "# name start alnSize strand seqSize alignment\n" +
+                "#\n" +
+                "# batch 0\n" +
+                "a score=780 EG2=1.7e-60 E=4.6e-68\n" +
+                "s 21 14977972 134 + 48129895 TGGTTATTGCCATTTGGTCTGTTTTGCTATTTATAACCAGTCTTAGGAGTTTTCTTTAAAACTCATGAAGAAATGAGAGTCTACACTAGCACACAATAATAATATAGATCGGTTGAAAGTAAAAGGAGGAAAAA\n" +
+                "s 0         8 134 +      142 TGGTTTTTGCCATTTGGTCTGTTTTGCTATTTATAACCAGTCTTAGGAGTTTTCTTTAAAACTCATGAAGAAATGAGAGTCTACACTAGCACACAATAATAATATAGATCGGTTGAAAGTAAAAGGAGGAAAAA\n" +
+                "q 0                          ]PP]`P``OPPPaacRP`aeOeffg`cfaffgafacdda`fdffQPPPOaefffegggacceffafPQPPPeOcPPPPPaaaQ_P]cOPOPaO]NNaPPaQQaQaQQQaPNN^dNOQPPaQQQQPNONNNOOOO\n" +
+                "\n" +
+                "a score=132 EG2=3.4e+04 E=0.023\n" +
+                "s 18 46646716 36 + 78077248 TAATATAGTTAGGTTGAAAGTAAAAGGATGGAAAAA\n" +
+                "s 0       107 35 +      142 TAATATAGATCGGTTGAAAGTAAAAGGA-GGAAAAA\n" +
+                "q 0                         aQQaQaQQQaPNN^dNOQPPaQQQQPNO-NNNOOOO\n" +
+                "\n" +
+                "a score=780 EG2=1.7e-60 E=4.6e-68\n" +
+                "s GL000213.1 143701 134 + 164239 TTTTTCCTCCTTTTACTTTCAACCGATCTATATTATTATTGTGTGCTAGTGTAGACTCTCATTTCTTCATGAGTTTTAAAGAAAACTCCTAAGACTGGTTATAAATAGCAAAACAGACCAAATGGCAATAACCA\n" +
+                "s 0               0 134 -    142 TTTTTCCTCCTTTTACTTTCAACCGATCTATATTATTATTGTGTGCTAGTGTAGACTCTCATTTCTTCATGAGTTTTAAAGAAAACTCCTAAGACTGGTTATAAATAGCAAAACAGACCAAATGGCAAAAACCA\n" +
+                "q 0                              OOOONNNONPQQQQaPPQONd^NNPaQQQaQaQQaPPaNN]OaPOPOc]P_QaaaPPPPPcOePPPQPfaffeccagggefffeaOPPPQffdf`addcafagffafc`gffeOea`PRcaaPPPO``P`]PP]\n" +
+                "\n";
     }
 }
