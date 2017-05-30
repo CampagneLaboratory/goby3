@@ -177,18 +177,18 @@ public abstract class IterateAlignments {
         for (int referenceIndex = minTargetIndex; referenceIndex < numberOfReferences; referenceIndex++) {
 
             final MutableString referenceId = referenceIds.getId(referenceIndex);
-            assert referenceId != null : "reference id cannot be null for reference index=" + referenceIndex;
-            final String referenceName = referenceId.toString();
-            if (filterByReferenceNames) {
-                if (includeReferenceNames.contains(referenceName)) {
-                    // subset of reference names selected by the command line:
+            if (referenceId != null) {
+                final String referenceName = referenceId.toString();
+                if (filterByReferenceNames) {
+                    if (includeReferenceNames.contains(referenceName)) {
+                        // subset of reference names selected by the command line:
+                        referencesToProcess.add(referenceIndex);
+                    }
+                } else {
+                    // process each sequence:
                     referencesToProcess.add(referenceIndex);
                 }
-            } else {
-                // process each sequence:
-                referencesToProcess.add(referenceIndex);
             }
-
         }
 
         final AlignmentReader alignmentReader = alignmentReaderFactory.createReader(basename, slice.startOffset, slice.endOffset);
