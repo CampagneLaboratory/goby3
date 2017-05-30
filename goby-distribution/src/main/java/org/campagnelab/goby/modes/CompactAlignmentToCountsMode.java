@@ -20,6 +20,7 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import it.unimi.dsi.lang.MutableString;
 import org.campagnelab.goby.algorithmic.data.WeightsInfo;
 import org.campagnelab.goby.algorithmic.algorithm.*;
 import org.campagnelab.goby.counts.CountWriterHelper2;
@@ -107,9 +108,8 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
      *
      * @param args command line arguments
      * @return this object for chaining
-     * @throws java.io.IOException error parsing
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
+     * @throws java.io.IOException                    error parsing
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
      */
     @Override
     public AbstractCommandLineMode configure(final String[] args) throws IOException, JSAPException {
@@ -233,25 +233,28 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
 
         // create count writers, one for each reference sequence in the alignment:
         for (int referenceIndex = 0; referenceIndex < numberOfReferences; referenceIndex++) {
-            final String referenceName = referenceIds.getId(referenceIndex).toString();
-            if (filterByReferenceNames) {
-                if (includeReferenceNames.contains(referenceName)) {
-                    // subset of reference names selected by the command line:
+            final MutableString id = referenceIds.getId(referenceIndex);
+            if (id != null) {
+                final String referenceName = id.toString();
+                if (filterByReferenceNames) {
+                    if (includeReferenceNames.contains(referenceName)) {
+                        // subset of reference names selected by the command line:
+                        referencesToProcess.add(referenceIndex);
+                    }
+                } else {
+                    // process each sequence:
                     referencesToProcess.add(referenceIndex);
                 }
-            } else {
-                // process each sequence:
-                referencesToProcess.add(referenceIndex);
-            }
 
-            if (referencesToProcess.contains(referenceIndex)) {
-                if (accumulatePeakHistogram) {
-                    final ComputeCountInterface algo = new ComputeCount();
-                    algs[referenceIndex] = chooseAlgorithm(weightParams, weights, algo);
-                } else {
-                    algs[referenceIndex] = new ComputeStartCount(focusOnStrand);
+                if (referencesToProcess.contains(referenceIndex)) {
+                    if (accumulatePeakHistogram) {
+                        final ComputeCountInterface algo = new ComputeCount();
+                        algs[referenceIndex] = chooseAlgorithm(weightParams, weights, algo);
+                    } else {
+                        algs[referenceIndex] = new ComputeStartCount(focusOnStrand);
+                    }
+                    algs[referenceIndex].startPopulating();
                 }
-                algs[referenceIndex].startPopulating();
             }
         }
 
@@ -319,23 +322,24 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
         }
 
         int lastReferenceIndex = -1;
-        int lastPosition=-1;
+        int lastPosition = -1;
+
         @Override
         public void processPositions(int referenceIndex, int position, DiscoverVariantPositionData positionBaseInfos) {
             try {
                 if (referenceIndex != lastReferenceIndex) {
-                   // System.out.println("Switching reference, last position was "+lastPosition);
+                    // System.out.println("Switching reference, last position was "+lastPosition);
                     if (writerI != null) {
                         finishWriter();
                     }
                     writerI = archiveWriter.newCountWriter(referenceIndex, getReferenceId(referenceIndex).toString());
                     helperI = new CountWriterHelper2(writerI);
                     lastReferenceIndex = referenceIndex;
-                    lastPosition=-1;
+                    lastPosition = -1;
                 }
-                if (position>lastPosition) {
+                if (position > lastPosition) {
                     helperI.appendCountAtPosition(positionBaseInfos.size(), position);
-                    lastPosition=position;
+                    lastPosition = position;
                 }
             } catch (IOException e) {
                 LOG.error("cannot return counts writer to archive", e);
@@ -376,9 +380,8 @@ public class CompactAlignmentToCountsMode extends AbstractGobyMode {
      * Main method.
      *
      * @param args command line args.
-     * @throws com.martiansoftware.jsap.JSAPException
-     *                             error parsing
-     * @throws java.io.IOException error parsing or executing.
+     * @throws com.martiansoftware.jsap.JSAPException error parsing
+     * @throws java.io.IOException                    error parsing or executing.
      */
     public static void main(final String[] args) throws JSAPException, IOException {
         new CompactAlignmentToCountsMode().configure(args).execute();
