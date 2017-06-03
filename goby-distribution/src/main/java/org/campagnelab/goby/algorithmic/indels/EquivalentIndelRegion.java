@@ -237,7 +237,7 @@ public class EquivalentIndelRegion {
      * @return frequency of the indel.
      */
     public int getFrequency() {
-        return filtered ? 0 : reverseFrequency + forwardFrequency;
+        return getForwardFrequency()+getReverseFrequency();
     }
 
 

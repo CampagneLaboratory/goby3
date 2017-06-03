@@ -29,7 +29,7 @@ public class RemoveBasesMatchingIndelsGenotypeFilter extends GenotypeFilter {
 
     @Override
     public void filterGenotypes(DiscoverVariantPositionData list, SampleCountInfo[] sampleCounts, ObjectSet<PositionBaseInfo> filteredSet) {
-// determine the set of all entries supporting indels:
+        // determine the set of all entries supporting indels:
         indelSupportingEntries.clear();
         for (SampleCountInfo sampleCount : sampleCounts) {
             if (sampleCount.getEquivalentIndelRegions() != null)
@@ -53,7 +53,7 @@ public class RemoveBasesMatchingIndelsGenotypeFilter extends GenotypeFilter {
                 removeGenotype(info, filteredSet);
                 removed++;
             }
-            if (removed >= indelSupportingEntries.size()){
+            if (removed >= indelSupportingEntries.size()) {
                 break;
             }
         }

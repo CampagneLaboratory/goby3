@@ -132,19 +132,25 @@ public class EquivalentIndelRegionCalculator {
      * @return the span of equivalent indel regions , or null, if the indel positions are outside the boundaries of the genome sequence.
      */
     public EquivalentIndelRegion determine(final int referenceIndex, final ObservedIndel indel) {
-        assert referenceIndex>=0 : "reference index canot be negative";
+        assert referenceIndex >= 0 : "reference index canot be negative";
         final EquivalentIndelRegion result = new EquivalentIndelRegion();
         result.startPosition = indel.getStart();
         result.endPosition = indel.getEnd();
         result.referenceIndex = referenceIndex;
-        if (indel.getMatchesForwardStrand()){
+        // increment count for the initial entry that creates the indel:
+        if (indel.getMatchesForwardStrand()) {
+            result.incrementForwardFrequency();
+        } else {
+            result.incrementReverseFrequency();
+        }
+        if (indel.getMatchesForwardStrand()) {
             result.forwardReadIndices.add(indel.readIndex);
-            if (indel.hasQualityScores()){
+            if (indel.hasQualityScores()) {
                 result.forwardQualityScores.add(indel.getQualityScores());
             }
         } else {
             result.reverseReadIndices.add(indel.readIndex);
-            if (indel.hasQualityScores()){
+            if (indel.hasQualityScores()) {
                 result.reverseQualityScores.add(indel.getQualityScores());
             }
         }
@@ -276,7 +282,7 @@ public class EquivalentIndelRegionCalculator {
         } else if (to.indexOf('-') >= 0) {
             return false;
         }
-        LOG.error("indel must either be an insertionInRead or a deletion: "+indel);
+        LOG.error("indel must either be an insertionInRead or a deletion: " + indel);
         return false;
     }
 
