@@ -84,7 +84,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
 
     Object statWriter;
     String[] samples;
-    RemoveBasesMatchingIndelsGenotypeFilter mandatoryFilter=new RemoveBasesMatchingIndelsGenotypeFilter();
+    RemoveBasesMatchingIndelsGenotypeFilter mandatoryFilter = new RemoveBasesMatchingIndelsGenotypeFilter();
 
     public void initialize(DiscoverSequenceVariantsMode mode,
                            OutputInfo outWriter,
@@ -188,7 +188,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                 //set deletion pos to position of base before first deleted base
                 startPosition--;
             }
-            final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex,!alignmentEntry.getMatchingReverseStrand());
+            final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex, !alignmentEntry.getMatchingReverseStrand());
             int flankLeftSize = 1;
             equivalentIndelRegionCalculator.setFlankLeftSize(flankLeftSize); // VCF output requires one base before the indel
             equivalentIndelRegionCalculator.setFlankRightSize(0);
@@ -196,7 +196,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             if (indelCandidateRegion == null) {
                 return;
             }
-
+            indelCandidateRegion.supportingEntries.add(alignmentEntry);
             // subtracts flankLeftSize to yield keyPos: the position of the first base in the indel (includes the 1 base left flank, as
             // per VCF spec.) keyPos is zero-based
             final int keyPos = indelCandidateRegion.startPosition; //- flankLeftSize;
@@ -375,8 +375,13 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                         fixer.fix(list, sampleCounts, filteredList);
                     }
 
-                     mandatoryFilter.filterGenotypes(list, sampleCounts, filteredList);
-
+                    {
+                        //apply mandatory filter to remove reference bases also matching indels:
+                        mandatoryFilter.filterGenotypes(list, sampleCounts, filteredList);
+                        // now also remove filtered genotypes from lit:
+                        final CountFixer fixer = new CountFixer();
+                        fixer.fix(list, sampleCounts, filteredList);
+                    }
                     format.writeRecord(this, sampleCounts, referenceIndex, position, list, groupIndexA, groupIndexB);
 
                 }
