@@ -855,4 +855,7 @@ public class VCFWriter {
         return altAlleles;
     }
 
+    public int getNumAltAlleles() {
+        return altAlleles.size();
+    }
 }

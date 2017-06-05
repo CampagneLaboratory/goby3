@@ -118,4 +118,19 @@ public class FormatIndelVCFTest {
         assertTrue(format.toVCF.contains("C"));
 
     }
+
+    // Real data test case where current approach is failing:
+    @Test
+    public void formatIndelVCF8() throws Exception {
+        String from = "C----CATCC";
+        Set<String> to = new ObjectArraySet<>();
+        to.add("CCCATCATCC");
+        to.add("CCCATCCATCATCCATCC");
+        FormatIndelVCF format = new FormatIndelVCF(from,to, 'C');
+        assertEquals("C",format.fromVCF);
+        assertEquals(2,format.toVCF.size());
+        assertTrue(format.toVCF.contains("CCCAT"));
+        assertTrue(format.toVCF.contains("CCCATCCATCATC"));
+
+    }
 }
