@@ -177,10 +177,7 @@ public class SuggestPositionSlicesMode extends AbstractGobyMode {
                             endPosition,
                             ids.getId(endTargetIndex),
                             endPosition));
-
-
                 }
-
             }
 
         } finally {

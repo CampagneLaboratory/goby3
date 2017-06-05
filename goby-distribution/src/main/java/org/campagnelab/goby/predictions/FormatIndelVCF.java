@@ -26,8 +26,7 @@ public class FormatIndelVCF {
     public Object2ObjectMap<String, String> map = new Object2ObjectArrayMap<>();
 
     public FormatIndelVCF(String from, Set<String> to, char refBase) {
-        fromVCF = from;
-        toVCF = to;
+
         //step 1. extend ref or snp to include remainder ref string
         for (String alt : to) {
             if (alt.length() == 1) {
@@ -37,8 +36,6 @@ public class FormatIndelVCF {
                 map.put(alt, refOrSnp);
             }
         }
-
-
         //find newlen for step 2
         int newLen = 1;
         int maxLen = -1;
@@ -58,7 +55,8 @@ public class FormatIndelVCF {
                 }
             }
         }
-        String postfix = from.substring(newLen, from.length());
+        String postfix = from.substring(Math.min(newLen, from.length()),
+                                        Math.max(newLen, from.length()));
 
         //apply step 2 and 3
         String newRef = trimPostfix(from, postfix);
