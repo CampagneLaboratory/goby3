@@ -55,8 +55,7 @@ public class FormatIndelVCF {
                 }
             }
         }
-        String postfix = from.substring(Math.min(newLen, from.length()),
-                                        Math.max(newLen, from.length()));
+        String postfix = newLen < from.length()?from.substring(newLen, from.length()):"";
 
         //apply step 2 and 3
         String newRef = trimPostfix(from, postfix);
