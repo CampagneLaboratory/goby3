@@ -356,9 +356,9 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
                 if (inRegionToWrite(referenceIndex, position)) {
                     // make genotypes comparable across all samples:
                     SampleCountInfo.alignIndels(sampleCounts);
-
+                    filteredList.clear();
                     if (genotypeFilters.length != 0) {
-                        filteredList.clear();
+
                         final CountFixer fixer = new CountFixerNoThresholdingEffect();
                         fixer.preserveCounts(sampleCounts);
                         for (final GenotypeFilter filter : genotypeFilters) {
