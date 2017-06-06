@@ -2,6 +2,7 @@ package org.campagnelab.goby.predictions;
 
 import it.unimi.dsi.fastutil.objects.*;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
+import org.campagnelab.goby.util.Variant;
 
 import java.util.Collections;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class FormatIndelVCF {
                 }
             }
         }
-        String postfix = newLen < from.length()?from.substring(newLen, from.length()):"";
+        String postfix = newLen < from.length() ? from.substring(newLen, from.length()) : "";
 
         //apply step 2 and 3
         String newRef = trimPostfix(from, postfix);

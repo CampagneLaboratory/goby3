@@ -28,20 +28,19 @@ import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.predictions.FormatIndelVCF;
 import org.campagnelab.goby.predictions.GenotypePredictor;
+import org.campagnelab.goby.predictions.MergeIndelFrom;
 import org.campagnelab.goby.readers.vcf.ColumnType;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.stats.VCFWriter;
 import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.Variant;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import java.util.*;
 
 /**
  * @author Fabien Campagne
@@ -480,8 +479,16 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
         }
         if (statsWriter.refAlleles().size() > 0) {
+            // find the longest reference sequence needed to represent the variations at this site:
+            Set<Variant.FromTo> fromTos = new ObjectArraySet<>();
+            for (String to : statsWriter.altAlleles()) {
+                fromTos.add(new Variant.FromTo(statsWriter.refAlleles().get(0), to));
+            }
+            MergeIndelFrom merger = new MergeIndelFrom(fromTos);
+            String from = merger.getFrom();
+            Set<String> to = merger.getTos();
             // normalize indel sequences:
-            FormatIndelVCF formatIndelVCF = new FormatIndelVCF(statsWriter.refAlleles().get(0), new ObjectArraySet<>(statsWriter.altAlleles()), statsWriter.refAlleles().get(0).charAt(0));
+            FormatIndelVCF formatIndelVCF = new FormatIndelVCF(from, to, from.charAt(0));
             statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
             statsWriter.clearAlternateAlleles();
             for (String alternateAllele : formatIndelVCF.toVCF) {

@@ -20,6 +20,11 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import htsjdk.samtools.util.CloseableIterator;
+import htsjdk.variant.variantcontext.Allele;
+import htsjdk.variant.variantcontext.VariantContext;
+import htsjdk.variant.vcf.VCFFileReader;
+import htsjdk.variant.vcf.VCFHeader;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.apache.commons.io.IOUtils;
@@ -36,6 +41,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.List;
 
 
 /**
@@ -79,6 +85,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
     private String chrPrefix;
     private boolean addPrefix;
     private boolean removePrefix;
+    // Name of the sample for which the genotype is sought:
+    private String sample;
 
 
     @Override
@@ -108,21 +116,20 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         chrPrefix = jsapResult.getString("chromosome-prefix");
         if (chrPrefix == null) {
             chrPrefix = "";
-        }else {
+        } else {
             if (chrPrefix.startsWith("+")) {
-                addPrefix=true;
-                chrPrefix=chrPrefix.substring(1);
+                addPrefix = true;
+                chrPrefix = chrPrefix.substring(1);
             }
             if (chrPrefix.startsWith("-")) {
-                removePrefix=true;
-                chrPrefix=chrPrefix.substring(1);
+                removePrefix = true;
+                chrPrefix = chrPrefix.substring(1);
             }
         }
         genome = DiscoverSequenceVariantsMode.configureGenome(jsapResult);
         chMap = new VariantMapCreator(genome);
         return this;
     }
-
 
 
     /**
@@ -166,65 +173,45 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         int numVcfItems = 0;
 
-        VCFParser parser = new VCFParser(vcfFile.getAbsolutePath());
+        VCFFileReader reader = new VCFFileReader(new File(vcfFile.getAbsolutePath()),false);
+        VCFHeader header = reader.getFileHeader();
 
-        try {
-            parser.readHeader();
-        } catch (VCFParser.SyntaxException e) {
-            throw new RuntimeException("Unable to parse VCF header",e);
-        }
 
-        final int chromosomeColumnIndex = parser.getGlobalFieldIndex("CHROM", "VALUE");
-        final int positionColumnIndex = parser.getGlobalFieldIndex("POS", "VALUE");
-        final int refColumnIndex = parser.getGlobalFieldIndex("REF", "VALUE");
-        final int altColumnIndex = parser.getGlobalFieldIndex("ALT", "VALUE");
-        //final int indelFlagColumnIndex = parser.getGlobalFieldIndex("INFO", "INDEL");
-        final String sampleName = parser.getColumnNamesUsingFormat()[0];
-        final int globalFieldIndexSample = parser.getGlobalFieldIndex(sampleName, "GT");
-
+        final String sampleName =sample==null? header.getSampleNamesInOrder().get(0):sample;
 
         ProgressLogger pg = new ProgressLogger(LOG);
         pg.itemsName = "variants";
-        // we can't easily estimate the number of lines when the file is compressed (typically is).
-        String positionStr = null;
-        CharSequence ref = null;
+
+        String ref = null;
 
         pg.start();
-        while (parser.hasNextDataLine()) {
-            String chromosomeName = adjustPrefix(parser.getColumnValue(chromosomeColumnIndex).toString());
+        for (VariantContext item : reader) {
 
-
-            positionStr = parser.getColumnValue(positionColumnIndex).toString();
-            ref = parser.getColumnValue(refColumnIndex);
-            //check that position is actually iterating
-//            if (ref == refOld && positionStr == posOld){
-//                break;
-//            }
-            final CharSequence alt = parser.getColumnValue(altColumnIndex);
-
-            String value = parser.getColumnValue(parser.getColumns().find(sampleName).columnIndex).toString();
-            int endIndex = value.indexOf(':');
-            String gt=value.substring(0, endIndex==-1?value.length():endIndex);
-
-            assert (!"GT".equals(gt) && gt.length() != 0) : "GT is not a valid genotype, vcf misread.";
-            final String paddedAlt = alt + ",N";
-            final String[] alts = paddedAlt.split(",");
-            String expandedGT = convertGT(gt, ref.toString(), alts[0], alts[1]);
+            String chromosomeName = adjustPrefix(item.getContig());
+            final int positionVCF = item.getStart();
+            ref = item.getReference().getBaseString();
+            final List<Allele> alternateAlleles = item.getAlternateAlleles();
+            String gt = item.getGenotype(sampleName).getGenotypeString();
+            int i = 0;
+            final String[] alts = new String[alternateAlleles.size()];
+            for (Allele alt : alternateAlleles) {
+                alts[i++] = alt.getBaseString();
+            }
+            String expandedGT = convertGT(gt, ref, alts[0], alts.length==2?alts[1]:"");
             String[] expandedAlleles = expandedGT.split("\\||\\\\|/");
 
-            final int positionVCF = Integer.parseInt(positionStr);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
             ObjectArraySet<Variant.FromTo> alleleSet = new ObjectArraySet<>(expandedAlleles.length);
-            for (int i = 0; i < expandedAlleles.length; i++){
-                alleleSet.add(new Variant.FromTo(ref.toString(), expandedAlleles[i]));
+            for (i = 0; i < expandedAlleles.length; i++) {
+                alleleSet.add(new Variant.FromTo(ref, expandedAlleles[i]));
             }
-            if (genome.getReferenceIndex(chromosomeName)<0) {
-                System.out.printf("Unable to find chromosome %s in genome",chromosomeName);
+            if (genome.getReferenceIndex(chromosomeName) < 0) {
+                System.out.printf("Unable to find chromosome %s in genome", chromosomeName);
                 System.exit(1);
             }
-            chMap.addVariant(positionGoby,chromosomeName,genome.get(genome.getReferenceIndex(chromosomeName),positionGoby),alleleSet);
-            parser.next();
+            chMap.addVariant(positionGoby, chromosomeName, genome.get(genome.getReferenceIndex(chromosomeName), positionGoby), alleleSet);
+
             pg.update();
         }
         pg.stop();
@@ -235,7 +222,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
                 "\nNumber of ignored, mis-matching 'from's of indels: " + Variant.numFromMistmaches);
     }
 
-    private String adjustPrefix(String chrName  ) {
+    private String adjustPrefix(String chrName) {
         if (addPrefix) {
             return chrPrefix + chrName;
         }
@@ -257,17 +244,17 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         String padRef = ref;
         String padAlt1 = alt1;
         String padAlt2 = alt2;
-        if (PAD_ALLELES){
-            padRef = pad(ref,maxLength);
-            padAlt1 = pad(alt1,maxLength);
-            padAlt2 = pad(alt2,maxLength);
+        if (PAD_ALLELES) {
+            padRef = pad(ref, maxLength);
+            padAlt1 = pad(alt1, maxLength);
+            padAlt2 = pad(alt2, maxLength);
         }
         //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
         return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
     }
 
 
-    private String pad(String allele, int len){
+    private String pad(String allele, int len) {
         StringBuilder padAllele = new StringBuilder(allele);
         for (int i = 1; i <= len; i++) {
             if (allele.length() < len) {
