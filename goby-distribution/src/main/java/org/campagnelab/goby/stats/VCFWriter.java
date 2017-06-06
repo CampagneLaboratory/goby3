@@ -189,7 +189,7 @@ public class VCFWriter {
      * Write the VCF header.
      */
     public void writeHeader() {
-        writeHeader();
+        writeHeader(new String[0]);
     }
 
     /**
