@@ -60,6 +60,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
     private int modelCallIndex;
     private int modelProbabilityIndex;
     private int altGenotypeCount;
+    private float minimumP;
+    private float stringentP;
 
     public static final DynamicOptionClient doc() {
         return doc;
@@ -67,7 +69,9 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(GenotypesOutputFormat.class,
-            "model-path:string, path to a variationanalysis deep learning model to call genotypes:${GOBY_HOME}/models/genotypes/rna-seq-1472848302343/bestscoreModel.bin"
+            "model-path:string, path to a variationanalysis deep learning model to call genotypes:${GOBY_HOME}/models/genotypes/rna-seq-1472848302343/bestscoreModel.bin",
+            "minimum-p:float, minimum probability in any sample to report a genotype.:0.0",
+            "stringent-p:float, minimum probability in all samples to report a genotype.:0.0"
     );
     private int positionColumnIndex;
     private int numberOfGroups;
@@ -145,7 +149,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             }
             customPath = customPath.replace("${GOBY_HOME}", GOBY_HOME);
         }
-
+        minimumP = doc.getFloat("minimum-p");
+        stringentP = doc.getFloat("stringent-p");
         //extract prefix and model directory from model path input.
         modelPrefix = predictor.getModelPrefix(customPath);
         modelPath = predictor.getModelPath(customPath);
@@ -243,7 +248,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         // Do not write record if alleleSet is empty, IGV VCF track cannot handle that.
         if (!alleleSet.isEmpty()) {
             // do not write sites that only match the reference. Save storage since we know the answer.
-            if (altGenotypeCount > 0) {
+            if (altGenotypeCount > 0 && maxProbability() >= minimumP && minProbability() > stringentP) {
 
                 statsWriter.writeRecord();
             }
@@ -253,6 +258,24 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             writeAltCounts(sampleCounts);
             writeCountsArray(sampleCounts);
         }
+    }
+
+    private double minProbability() {
+        // calculate the minimum probability observed over all samples:
+        double min = Double.POSITIVE_INFINITY;
+        for (double p : modelProbabilities) {
+            min = Math.min(p, min);
+        }
+        return min;
+    }
+
+    private double maxProbability() {
+        // calculate the maximum probability observed over all samples:
+        double max = Double.NEGATIVE_INFINITY;
+        for (double p : modelProbabilities) {
+            max = Math.max(p, max);
+        }
+        return max;
     }
 
     String modelGenotypes[];
