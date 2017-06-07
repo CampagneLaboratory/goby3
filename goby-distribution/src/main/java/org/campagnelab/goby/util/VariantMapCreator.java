@@ -20,9 +20,11 @@ import java.util.Set;
  */
 public class VariantMapCreator extends VariantMapHelper {
 
+    public int numIndelsEncountered;
     private EquivalentIndelRegionCalculator equivalentIndelRegionCalculator;
     protected RandomAccessSequenceInterface genome;
     static WarningCounter overLappingIndels = new WarningCounter(10);
+    public int numFromMistmaches;
 
     /**
      * Generate a new empty variant map
@@ -85,7 +87,7 @@ public class VariantMapCreator extends VariantMapHelper {
      * @param equivalentIndelRegionCalculator
      * @return a map of positions to variants.
      */
-    static Map<Integer,Variant> realign(Variant variant, EquivalentIndelRegionCalculator equivalentIndelRegionCalculator) {
+    Map<Integer,Variant> realign(Variant variant, EquivalentIndelRegionCalculator equivalentIndelRegionCalculator) {
 
         Map<Integer,Variant> equivVariants = new Int2ObjectArrayMap<Variant>(variant.trueAlleles.size());
 
@@ -115,11 +117,11 @@ public class VariantMapCreator extends VariantMapHelper {
                 result.from = variant.referenceBase;
                 result.to = toAffix.substring(0,1);
                 result.startPosition = allelePos;
-            } else {
+              } else {
                 //get new indel with goby
                 indel = new ObservedIndel(allelePos, fromAffix, toAffix, variant.referenceIndex);
                 result = equivalentIndelRegionCalculator.determine(variant.referenceIndex, indel);
-                Variant.numIndelsEncountered++;
+                numIndelsEncountered++;
             }
             if (result==null) {
                 // ignore variants outside of genome coordinates.

@@ -80,6 +80,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
     private boolean removePrefix;
     // Name of the sample for which the genotype is sought:
     private String sample;
+    private int numIndelsEncountered;
+    private int numOtherVariations;
 
 
     @Override
@@ -166,11 +168,11 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         int numVcfItems = 0;
 
-        VCFFileReader reader = new VCFFileReader(new File(vcfFile.getAbsolutePath()),false);
+        VCFFileReader reader = new VCFFileReader(new File(vcfFile.getAbsolutePath()), false);
         VCFHeader header = reader.getFileHeader();
 
 
-        final String sampleName =sample==null? header.getSampleNamesInOrder().get(0):sample;
+        final String sampleName = sample == null ? header.getSampleNamesInOrder().get(0) : sample;
 
         ProgressLogger pg = new ProgressLogger(LOG);
         pg.itemsName = "variants";
@@ -179,7 +181,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         pg.start();
         for (VariantContext item : reader) {
-
             String chromosomeName = adjustPrefix(item.getContig());
             final int positionVCF = item.getStart();
             ref = item.getReference().getBaseString();
@@ -190,7 +191,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             for (Allele alt : alternateAlleles) {
                 alts[i++] = alt.getBaseString();
             }
-            String expandedGT = convertGT(gt, ref, alts[0], alts.length==2?alts[1]:"");
+            String expandedGT = convertGT(gt, ref, alts[0], alts.length == 2 ? alts[1] : "");
             String[] expandedAlleles = expandedGT.split("\\||\\\\|/");
 
             // VCF is one-based, Goby zero-based. We convert here:
@@ -204,15 +205,20 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
                 System.exit(1);
             }
             chMap.addVariant(positionGoby, chromosomeName, genome.get(genome.getReferenceIndex(chromosomeName), positionGoby), alleleSet);
-
+            if (item.isIndel()) {
+                numIndelsEncountered++;
+            } else {
+                numOtherVariations++;
+            }
             pg.update();
+
         }
         pg.stop();
 
         chMap.saveMap(outputMapname);
-        System.out.println("NumIndels Encountered: " + Variant.numIndelsEncountered +
-                "\nNumber of indels ignored due to variant overlap: " + chMap.numOverlaps +
-                "\nNumber of ignored, mis-matching 'from's of indels: " + Variant.numFromMistmaches);
+        System.out.printf("NumIndels Encountered: %d \n" +
+                "Num other variations Encountered: %d %n", numIndelsEncountered, numOtherVariations);
+
     }
 
     private String adjustPrefix(String chrName) {
