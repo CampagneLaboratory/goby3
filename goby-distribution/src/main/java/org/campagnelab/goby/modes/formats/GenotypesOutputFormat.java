@@ -472,16 +472,16 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
             } else {
 
-
                 statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, "./.");
             }
-
-
         }
-        if (statsWriter.refAlleles().size() > 0) {
+        if (statsWriter.refAlleles().size() > 0 &&statsWriter.altAlleles().size()>0) {
             // find the longest reference sequence needed to represent the variations at this site:
             Set<Variant.FromTo> fromTos = new ObjectArraySet<>();
             for (String to : statsWriter.altAlleles()) {
+           /*     if (position==3767677|| to.startsWith("G-TTTTTTTTTTTTTAA")) {
+                    System.out.println("STOP");
+                }*/
                 fromTos.add(new Variant.FromTo(statsWriter.refAlleles().get(0), to));
             }
             MergeIndelFrom merger = new MergeIndelFrom(fromTos);
