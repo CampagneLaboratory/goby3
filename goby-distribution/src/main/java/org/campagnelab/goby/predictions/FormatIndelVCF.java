@@ -82,4 +82,7 @@ public class FormatIndelVCF {
     }
 
 
+    public String mapped(String value) {
+        return map.get(value);
+    }
 }

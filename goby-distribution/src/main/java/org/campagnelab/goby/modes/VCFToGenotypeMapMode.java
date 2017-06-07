@@ -20,27 +20,20 @@ package org.campagnelab.goby.modes;
 
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import htsjdk.samtools.util.CloseableIterator;
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import htsjdk.variant.vcf.VCFHeader;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.logging.ProgressLogger;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.ReaderInputStream;
-import org.campagnelab.goby.readers.vcf.VCFParser;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.Variant;
 import org.campagnelab.goby.util.VariantMapCreator;
-import org.campagnelab.goby.util.VariantMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.util.List;
 
 

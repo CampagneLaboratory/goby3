@@ -101,19 +101,24 @@ public class Variant implements Serializable {
      */
     static public class FromTo implements Serializable {
 
+        public int sampleIndex;
         String from;
         String to;
-
+        public FromTo(String from, String to) {
+            this(from,to,-1);
+        }
         /**
          * The constructor normalizes variations such that
          * a mix of SNP and indel which may look like this: G--CCCC to C because another indel is G--CCCC to GCCCCCC
          * will become G--CCCC to C--CCCC.
          * @param from
          * @param to
+         * @param sampleIndex
          */
-        public FromTo(String from, String to) {
+        public FromTo(String from, String to, int sampleIndex) {
             this.from = from;
             this.to = to;
+            this.sampleIndex=sampleIndex;
             if (to.length()<from.length()) {
                 // extend to up to the length of from:
                 this.to+=from.substring(to.length(),from.length());
@@ -151,7 +156,7 @@ public class Variant implements Serializable {
                 return false;
             }
             final FromTo other = (FromTo) obj;
-            return from.equals(other.from) && to.equals(other.to);
+            return from.equals(other.from) && to.equals(other.to)&&sampleIndex!=other.sampleIndex;
         }
 
         @Override
@@ -171,6 +176,12 @@ public class Variant implements Serializable {
         public String getTo() {
             return to;
         }
+
+        public void append(String substring) {
+            from+=substring;
+            to+=substring;
+        }
+
     }
 
     /**

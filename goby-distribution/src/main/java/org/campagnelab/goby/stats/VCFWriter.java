@@ -480,6 +480,11 @@ public class VCFWriter {
      * @see #codeGenotype(String[] alleles)
      */
     public MutableString codeGenotype(String alleles) {
+        if ("./.".equals(alleles)) {
+            codedGenotypeBuffer.setLength(0);
+            codedGenotypeBuffer.append(alleles);
+            return codedGenotypeBuffer;
+        }
         return codeGenotype(alleles.split("/"));
     }
 

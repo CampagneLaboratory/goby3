@@ -15,6 +15,8 @@ import java.util.Set;
  * A -> A
  * ATTTGC -> A-TTGC
  * A--TTTG -> ATTTTG
+ * If they are no indels, find the longest reference and extend all from/to pairs using the right bases from the
+ * longest ref. Otherwise, do this:
  * <p>
  * Step 1: get longest tail after indel: TTGC
  * Step 2: replace all tails with longest tail
@@ -55,6 +57,7 @@ public class MergeIndelFrom {
 
     static public class SplitIndel {
 
+        private final Variant.FromTo fromTo;
         char baseFrom;
         char baseTo;
         String insFrom; //empty or contains only dashes
@@ -78,17 +81,18 @@ public class MergeIndelFrom {
          */
         public SplitIndel(Variant.FromTo fromTo) {
             final String from = fromTo.getFrom();
+            final String to = fromTo.getTo();
             insFrom = "";
             delFrom = "";
             insTo = "";
             delTo = "";
             baseFrom = from.charAt(0);
-            final String to = fromTo.getTo();
             baseTo = to.charAt(0);
             delLen = StringUtils.countMatches(to, "-");
             insLen = StringUtils.countMatches(from, "-");
-            tail="";
-            if (to.length()>1) {
+            tail = "";
+            this.fromTo = fromTo;
+            if (to.length() > 1) {
                 this.tail = to.substring(1);
             }
             if (delLen == 0 && insLen == 0) {
@@ -125,6 +129,11 @@ public class MergeIndelFrom {
         String getTo() {
             return baseTo + insTo + delTo + tail;
         }
+
+        @Override
+        public String toString() {
+            return getFrom()+"/"+getTo();
+        }
     }
 
     /**
@@ -138,10 +147,16 @@ public class MergeIndelFrom {
 
     public MergeIndelFrom(Set<Variant.FromTo> fromTos) {
         assert fromTos.size() > 0 : "a non-empty set is expected.";
+        String longestFrom = fromTos.parallelStream().reduce(fromTos.iterator().next(),
+                (s, fromTo) -> s = fromTo.getFrom().length() < s.getFrom().length() ? s : fromTo).getFrom();
+
+
         Set<SplitIndel> splits = new ObjectArraySet<>(fromTos.size());
         //split up each indel into component strings
         for (Variant.FromTo fromTo : fromTos) {
-
+            if (!fromTo.getFrom().equals(longestFrom)) {
+                fromTo.append(longestFrom.substring(fromTo.getFrom().length(),longestFrom.length()));
+            }
             splits.add(new SplitIndel(fromTo));
         }
 
@@ -180,7 +195,7 @@ public class MergeIndelFrom {
         for (SplitIndel split : splits) {
             tos.add(split.getTo());
             if (from == null) {
-                from = split.getFrom();
+                from = split.fromTo.getFrom();
             }
         }
 

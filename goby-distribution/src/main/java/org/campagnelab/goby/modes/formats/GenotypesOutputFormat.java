@@ -361,6 +361,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         return modelGenotypes[sampleIndex] != null;
     }
 
+    private IntArrayList samplesMatchingRef = new IntArrayList();
     ObjectArraySet<String> referenceSet = new ObjectArraySet<String>();
 
     public void writeGenotypes(VCFWriter statsWriter, SampleCountInfo[] sampleCounts, int position) {
@@ -371,6 +372,14 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         statsWriter.clearAlternateAlleles();
         // clear the cross-sample allele set, which is used to determine if the VCF position should be written.
         alleleSet.clear();
+        samplesMatchingRef.clear();
+
+        for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
+            statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, "./.");
+            samplesMatchingRef.add(sampleIndex);
+        }
+        String commonReference = null;
+        Set<Variant.FromTo> fromTos = new ObjectArraySet<>();
         for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
 
             sampleAlleleSet.clear();
@@ -392,7 +401,8 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             boolean modelAvailable = hasModelGenotype(sampleIndex);
             final ObjectSet<String> calledAlleles = new ObjectArraySet<>();
             Collections.addAll(calledAlleles, modelGenotypes[sampleIndex].split("[/|]"));
-
+            String sampleFrom = null;
+            String sampleTo = null;
             for (int genotypeIndex = 0; genotypeIndex < sci.getGenotypeMaxIndex(); ++genotypeIndex) {
                 final int sampleCount = sci.getGenotypeCount(genotypeIndex);
                 String genotype = sci.getGenotypeString(genotypeIndex);
@@ -408,15 +418,15 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                     if (!sci.isReferenceGenotype(genotypeIndex)) {
                         statsWriter.addAlternateAllele(genotype);
                         altGenotypeCount = statsWriter.getNumAltAlleles();
-                        updateReferenceSet(sci.getReferenceGenotype());
+                        sampleFrom = sci.getReferenceGenotype();
+                        sampleTo = genotype;
                     } else {
                         //updateReferenceSet(genotype);
                         if (sci.isIndel(genotypeIndex)) {
                             siteHasIndel = true;
-                            genotype = sci.getReferenceGenotype();
+                            sampleFrom = sci.getReferenceGenotype();
                         }
-                        updateReferenceSet(genotype);
-
+                        commonReference=genotype;
                     }
                     alleleSet.add(genotype);
                     sampleAlleleSet.add(genotype);
@@ -430,60 +440,20 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                     baseCountString.append(Integer.toString(sampleCount));
                     baseCountString.append(',');
                 }
-
             }
-
-            if (sampleAlleleSet.size() == 1) {
-                // when homozygous genotype 0/ write 0/0/ (last / will be removed when length is adjusted)
-                genotypeBuffer.append(genotypeBuffer.copy());
+            if (sampleFrom != null && sampleTo != null) {
+                fromTos.add(new Variant.FromTo(sampleFrom, sampleTo, sampleIndex));
             }
             if (baseCountString.length() >= 1) {
                 baseCountString.setLength(baseCountString.length() - 1);
             }
             statsWriter.setSampleValue(baseCountFieldIndex, sampleIndex, baseCountString);
-
-            if (siteObserved) {
-
-                if (genotypeBuffer.length() > 1) {
-                    // trim the trailing coma:
-                    genotypeBuffer.setLength(genotypeBuffer.length() - 1);
-                }
-                if (referenceSet.size() <= 1) {
-                    if (referenceSet.isEmpty()) {
-                        statsWriter.setReferenceAllele(sci.getReferenceGenotype());
-                    } else {
-                        statsWriter.setReferenceAllele(referenceSet.toArray(singleton)[0]);
-                    }
-
-                } else {
-                    LOG.error(String.format("Observed multiple indel references at position %d: \n %s %n",
-                            position,
-                            referenceSet));
-                    // we use the longest reference sequence
-                    int maxLength = 0;
-                    for (final String ref : referenceSet) {
-                        if (ref.length() > maxLength) {
-                            statsWriter.setReferenceAllele(ref);
-                            maxLength = ref.length();
-                        }
-                    }
-                }
-                statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, statsWriter.codeGenotype(genotypeBuffer.toString()));
-
-            } else {
-
-                statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, "./.");
-            }
         }
-        if (statsWriter.refAlleles().size() > 0 &&statsWriter.altAlleles().size()>0) {
-            // find the longest reference sequence needed to represent the variations at this site:
-            Set<Variant.FromTo> fromTos = new ObjectArraySet<>();
-            for (String to : statsWriter.altAlleles()) {
-           /*     if (position==3767677|| to.startsWith("G-TTTTTTTTTTTTTAA")) {
-                    System.out.println("STOP");
-                }*/
-                fromTos.add(new Variant.FromTo(statsWriter.refAlleles().get(0), to));
-            }
+
+
+        if (siteObserved && fromTos.size() > 0) {
+
+            // combine reference sequences across samples:
             MergeIndelFrom merger = new MergeIndelFrom(fromTos);
             String from = merger.getFrom();
             Set<String> to = merger.getTos();
@@ -492,11 +462,30 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
             statsWriter.clearAlternateAlleles();
             for (String alternateAllele : formatIndelVCF.toVCF) {
-                statsWriter.setAlternateAllele(alternateAllele);
+                statsWriter.addAlternateAllele(alternateAllele);
+            }
+            for (Variant.FromTo ft : fromTos) {
+                // set genotype for each sample, using the normalized ref and alts:
+                final String mappedFrom = formatIndelVCF.mapped(ft.getFrom());
+                final String mappedTo = formatIndelVCF.mapped(ft.getTo());
+                commonReference = mappedFrom;
+                if (mappedFrom != null && mappedTo != null) {
+                    samplesMatchingRef.rem(ft.sampleIndex);
+                    statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(mappedFrom + "/" + mappedTo));
+                } else {
+                    LOG.error(String.format("Unable to find mapped genotype for from=%s to=%s%n", ft.getFrom(), ft.getTo()));
+                }
             }
         }
-
-        if (indelFlagFieldIndex != -1) {    // set indel flag only when the field is defined (i.e., client has called setInfoFields)
+        if (siteObserved) {
+            statsWriter.setReferenceAllele(commonReference);
+            for (int sampleMatchingRefIndex : samplesMatchingRef) {
+                // site is matching ref in all these other samples:
+                statsWriter.setSampleValue(genotypeFieldIndex, sampleMatchingRefIndex, statsWriter.codeGenotype(commonReference + "/" + commonReference));
+            }
+        }
+        if (indelFlagFieldIndex != -1) {
+            // set indel flag only when the field is defined (i.e., client has called setInfoFields)
             statsWriter.setFlag(indelFlagFieldIndex, siteHasIndel);
         }
     }

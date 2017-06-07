@@ -1,9 +1,6 @@
 package org.campagnelab.goby.predictions;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import org.campagnelab.goby.algorithmic.data.Read;
 import org.campagnelab.goby.util.Variant;
 import org.junit.Test;
 
@@ -84,6 +81,7 @@ A-TTTGC	ATTTTGC
 
 
 
+
 /*
 
 Example 2: longest tail in insertion
@@ -150,4 +148,18 @@ A----TTT	A---TTTT
 
     }
 
+
+    @Test
+    public void longerRefNoIndels() {
+        final Set<Variant.FromTo> fromTos = new ObjectArraySet<>(4);
+        fromTos.add(new Variant.FromTo("GTTTTTTTTTTTTTTAAA","GTTTTTTTTTTTTTTTAA"));
+        fromTos.add(new Variant.FromTo("GTTTTTTTTTTTTTTAA","TTTTTTTTTTTTTTTAA"));
+
+        MergeIndelFrom merge = new MergeIndelFrom(fromTos);
+        assertEquals("GTTTTTTTTTTTTTTAAA",merge.from);
+        assertEquals(2,merge.tos.size());
+        assertTrue(merge.tos.contains("GTTTTTTTTTTTTTTTAA"));
+        assertTrue(merge.tos.contains("TTTTTTTTTTTTTTTAAA"));
+
+    }
 }
