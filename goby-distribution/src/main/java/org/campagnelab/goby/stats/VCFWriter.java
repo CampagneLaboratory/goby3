@@ -150,7 +150,7 @@ public class VCFWriter {
      */
     private boolean includedIn(final String allele, final ObjectArrayList<String> refAlleles) {
         for (final String testAllele : refAlleles) {
-            if (testAllele.startsWith(allele)) {
+            if (testAllele!=null && testAllele.startsWith(allele)) {
                 return true;
             }
         }
@@ -547,7 +547,7 @@ public class VCFWriter {
 
             if (!alleleFound) {
                 System.out.printf("allele: %s ref: %s alt: %s", allele, refAlleles.toString(), altAlleles.toString());
-                throw new IllegalArgumentException(String.format("Allele %s was not found in REF or ALT", allele));
+                throw new IllegalArgumentException(String.format("Allele %s was not found in REF %s or ALT %s ", allele, ref,altAlleles.toString()));
             }
         }
         //    Collections.sort(genotypeIndexList);

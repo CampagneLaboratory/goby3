@@ -27,6 +27,7 @@ import org.campagnelab.goby.algorithmic.dsv.SampleCountInfo;
 import org.campagnelab.goby.modes.DiscoverSequenceVariantsMode;
 import org.campagnelab.goby.modes.dsv.DiscoverVariantIterateSortedAlignments;
 import org.campagnelab.goby.predictions.FormatIndelVCF;
+import org.campagnelab.goby.predictions.FormatIndelVCF2;
 import org.campagnelab.goby.predictions.GenotypePredictor;
 import org.campagnelab.goby.predictions.MergeIndelFrom;
 import org.campagnelab.goby.readers.vcf.ColumnType;
@@ -426,7 +427,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                             siteHasIndel = true;
                             sampleFrom = sci.getReferenceGenotype();
                         }
-                        commonReference=genotype;
+                        commonReference = genotype;
                     }
                     alleleSet.add(genotype);
                     sampleAlleleSet.add(genotype);
@@ -460,24 +461,31 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
             // normalize indel sequences:
             FormatIndelVCF formatIndelVCF = new FormatIndelVCF(from, to, from.charAt(0));
             statsWriter.setReferenceAllele(formatIndelVCF.fromVCF);
+            commonReference = formatIndelVCF.fromVCF;
             statsWriter.clearAlternateAlleles();
             for (String alternateAllele : formatIndelVCF.toVCF) {
-                statsWriter.addAlternateAllele(alternateAllele);
+                if (!formatIndelVCF.fromVCF.equals(alternateAllele)) {
+                    statsWriter.addAlternateAllele(alternateAllele);
+                }
             }
+
             for (Variant.FromTo ft : fromTos) {
                 // set genotype for each sample, using the normalized ref and alts:
-                final String mappedFrom = formatIndelVCF.mapped(ft.getFrom());
-                final String mappedTo = formatIndelVCF.mapped(ft.getTo());
-                commonReference = mappedFrom;
-                if (mappedFrom != null && mappedTo != null) {
+                final String mappedFrom = formatIndelVCF.mappedFrom(ft.getFrom());
+                final String mappedTo = formatIndelVCF.mappedTo(ft.getTo());
+
+                if (commonReference!=null && mappedTo != null) {
                     samplesMatchingRef.rem(ft.sampleIndex);
-                    statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(mappedFrom + "/" + mappedTo));
+                    statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(commonReference + "/" + mappedTo));
                 } else {
-                    LOG.error(String.format("Unable to find mapped genotype for from=%s to=%s%n", ft.getFrom(), ft.getTo()));
+                       LOG.error(String.format("Unable to find mapped genotype for from=%s to=%s%n", ft.getFrom(), ft.getTo()));
                 }
             }
         }
         if (siteObserved) {
+            if (commonReference==null) {
+                commonReference=".";
+            }
             statsWriter.setReferenceAllele(commonReference);
             for (int sampleMatchingRefIndex : samplesMatchingRef) {
                 // site is matching ref in all these other samples:
@@ -496,6 +504,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
      *
      * @param genotype
      */
+
     private void updateReferenceSet(String genotype) {
         if (!isIncludedIn(genotype, referenceSet)) {
             referenceSet.add(genotype);

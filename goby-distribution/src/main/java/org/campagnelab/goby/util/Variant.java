@@ -27,18 +27,19 @@ public class Variant implements Serializable {
      * @param reVar
      */
     public void merge(Variant reVar) {
-        assert referenceBase.equals(reVar.referenceBase) : "reference base must match for correct merging.";
-        assert position == reVar.position : "position must match for correct merging.";
+        assert referenceBase.equals(reVar.referenceBase) : String.format("reference base must match for correct merging. %s !=%s Position=%d",
+                referenceBase, reVar.referenceBase, position);
+        assert position == reVar.position :  String.format("position must match for correct merging. %d != %d",position);
         assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
         //remove a ref allele from map's variant, since we are are replacing it with a variant.
-        for (FromTo trueAllele : trueAlleles){
-            if (trueAllele.getTo().equals(trueAllele.getFrom())){
+        for (FromTo trueAllele : trueAlleles) {
+            if (trueAllele.getTo().equals(trueAllele.getFrom())) {
                 trueAlleles.remove(trueAllele);
                 break;
             }
         }
-        for (FromTo addingAllele:reVar.trueAlleles){
-            if (!addingAllele.getTo().equals(addingAllele.getFrom())){
+        for (FromTo addingAllele : reVar.trueAlleles) {
+            if (!addingAllele.getTo().equals(addingAllele.getFrom())) {
                 trueAlleles.add(addingAllele);
             }
         }
@@ -104,13 +105,16 @@ public class Variant implements Serializable {
         public int sampleIndex;
         String from;
         String to;
+
         public FromTo(String from, String to) {
-            this(from,to,-1);
+            this(from, to, -1);
         }
+
         /**
          * The constructor normalizes variations such that
          * a mix of SNP and indel which may look like this: G--CCCC to C because another indel is G--CCCC to GCCCCCC
          * will become G--CCCC to C--CCCC.
+         *
          * @param from
          * @param to
          * @param sampleIndex
@@ -118,14 +122,14 @@ public class Variant implements Serializable {
         public FromTo(String from, String to, int sampleIndex) {
             this.from = from;
             this.to = to;
-            this.sampleIndex=sampleIndex;
-            if (to.length()<from.length()) {
+            this.sampleIndex = sampleIndex;
+            if (to.length() < from.length()) {
                 // extend to up to the length of from:
-                this.to+=from.substring(to.length(),from.length());
+                this.to += from.substring(to.length(), from.length());
             }
-             if (from.length()<to.length()) {
+            if (from.length() < to.length()) {
                 // extend from up to the length of to:
-                this.from+=to.substring(from.length(),to.length());
+                this.from += to.substring(from.length(), to.length());
             }
         }
 
@@ -156,12 +160,12 @@ public class Variant implements Serializable {
                 return false;
             }
             final FromTo other = (FromTo) obj;
-            return from.equals(other.from) && to.equals(other.to)&&sampleIndex!=other.sampleIndex;
+            return from.equals(other.from) && to.equals(other.to) && sampleIndex != other.sampleIndex;
         }
 
         @Override
         public int hashCode() {
-            return from.hashCode()^to.hashCode();
+            return from.hashCode() ^ to.hashCode();
         }
 
         @Override
@@ -178,8 +182,8 @@ public class Variant implements Serializable {
         }
 
         public void append(String substring) {
-            from+=substring;
-            to+=substring;
+            from += substring;
+            to += substring;
         }
 
     }
@@ -214,14 +218,14 @@ public class Variant implements Serializable {
             allelePos = gobyPosOfRefBase - 1;
 
             //2/10/2017: we also need to increment snp position here, because the above wrongly deincriments them.
-            if (toAffix.substring(1).equals(fromAffix.substring(1))){
+            if (toAffix.substring(1).equals(fromAffix.substring(1))) {
                 allelePos++;
             }
 
             int diffStart;
             //clip the start further if it is the same.
-            for (diffStart = 0; diffStart < fromAffix.length(); diffStart++){
-                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
+            for (diffStart = 0; diffStart < fromAffix.length(); diffStart++) {
+                if (fromAffix.charAt(diffStart) != toAffix.charAt(diffStart)) {
                     fromAffix = fromAffix.substring(diffStart);
                     toAffix = toAffix.substring(diffStart);
                     allelePos += diffStart;
@@ -229,15 +233,15 @@ public class Variant implements Serializable {
                 }
             }
 
-            for (diffStart = fromAffix.length()-1; diffStart >= 0; diffStart--){
-                if (fromAffix.charAt(diffStart)!=toAffix.charAt(diffStart)){
-                    fromAffix = fromAffix.substring(0,diffStart+1);
-                    toAffix = toAffix.substring(0,diffStart+1);
+            for (diffStart = fromAffix.length() - 1; diffStart >= 0; diffStart--) {
+                if (fromAffix.charAt(diffStart) != toAffix.charAt(diffStart)) {
+                    fromAffix = fromAffix.substring(0, diffStart + 1);
+                    toAffix = toAffix.substring(0, diffStart + 1);
                     break;
                 }
             }
 
-            gobyFromTo = new FromTo(fromAffix,toAffix);
+            gobyFromTo = new FromTo(fromAffix, toAffix);
 
 
         }

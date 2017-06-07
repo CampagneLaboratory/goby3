@@ -24,7 +24,8 @@ public class FormatIndelVCF {
     public String fromVCF;
     public Set<String> toVCF;
 
-    public Object2ObjectMap<String, String> map = new Object2ObjectArrayMap<>();
+    public Object2ObjectMap<String, String> mapFrom = new Object2ObjectArrayMap<>();
+    public Object2ObjectMap<String, String> mapTo = new Object2ObjectArrayMap<>();
 
     public FormatIndelVCF(String from, Set<String> to, char refBase) {
 
@@ -34,7 +35,7 @@ public class FormatIndelVCF {
                 to.remove(alt);
                 String refOrSnp = alt + (from.length() > 1 ? from.substring(1, from.length()) : "");
                 to.add(refOrSnp);
-                map.put(alt, refOrSnp);
+                mapTo.put(alt, refOrSnp);
             }
         }
         //find newlen for step 2
@@ -62,13 +63,13 @@ public class FormatIndelVCF {
         String newRef = trimPostfix(from, postfix);
         newRef = newRef.replace("-", "");
         fromVCF = newRef;
-        map.put(from, newRef);
+        mapFrom.put(from, newRef);
         toVCF = new ObjectArraySet<>();
         for (String alt : to) {
             String newAlt = trimPostfix(alt, postfix);
             newAlt = newAlt.replace("-", "");
             toVCF.add(newAlt);
-            map.put(alt, newAlt);
+            mapTo.put(alt, newAlt);
         }
 
 
@@ -82,7 +83,12 @@ public class FormatIndelVCF {
     }
 
 
-    public String mapped(String value) {
-        return map.get(value);
+    public String mappedFrom(String value) {
+        return mapFrom.get(value);
     }
+
+    public String mappedTo(String value) {
+        return mapTo.get(value);
+    }
+
 }
