@@ -191,7 +191,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
             final ObservedIndel indel = new ObservedIndel(startPosition, from.toUpperCase(), to.toUpperCase(), readIndex, !alignmentEntry.getMatchingReverseStrand());
             int flankLeftSize = 1;
             equivalentIndelRegionCalculator.setFlankLeftSize(flankLeftSize); // VCF output requires one base before the indel
-            equivalentIndelRegionCalculator.setFlankRightSize(0);
+            equivalentIndelRegionCalculator.setFlankRightSize(indel.gapLength()+1); // right flank must be longer than longest gap.
             final EquivalentIndelRegion indelCandidateRegion = equivalentIndelRegionCalculator.determine(referenceIndex, indel);
             if (indelCandidateRegion == null) {
                 return;

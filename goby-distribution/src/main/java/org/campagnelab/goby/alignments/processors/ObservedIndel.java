@@ -65,6 +65,7 @@ public class ObservedIndel implements Comparable<ObservedIndel>, Serializable {
 
     /**
      * For use by VCFToKnownIndelsMode, no need for readIndex or strand match.
+     *
      * @param startPosition
      * @param from
      * @param to
@@ -157,9 +158,11 @@ public class ObservedIndel implements Comparable<ObservedIndel>, Serializable {
     public final boolean isReferenceInsertion() {
         return to.contains("-");
     }
+
     public final boolean isReadInsertion() {
         return from.contains("-");
     }
+
     @Override
     public int hashCode() {
         return startPosition ^ endPosition ^ from.hashCode() ^ to.hashCode();
@@ -208,5 +211,21 @@ public class ObservedIndel implements Comparable<ObservedIndel>, Serializable {
 
     public boolean getMatchesForwardStrand() {
         return matchesForwardStrand;
+    }
+
+    public int gapLength() {
+        int gapLength = 0;
+        for (int i = 0; i < from.length(); i++) {
+            if (from.charAt(i) == '-') {
+                gapLength++;
+            }
+        }
+
+        for (int i = 0; i < to.length(); i++) {
+            if (to.charAt(i) == '-') {
+                gapLength++;
+            }
+        }
+        return gapLength;
     }
 }

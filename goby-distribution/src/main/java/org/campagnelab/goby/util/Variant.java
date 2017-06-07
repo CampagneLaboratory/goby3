@@ -96,15 +96,32 @@ public class Variant implements Serializable {
                 '}';
     }
 
-
+    /**
+     * Helper class to keep from/to together for a variation.
+     */
     static public class FromTo implements Serializable {
 
         String from;
         String to;
 
+        /**
+         * The constructor normalizes variations such that
+         * a mix of SNP and indel which may look like this: G--CCCC to C because another indel is G--CCCC to GCCCCCC
+         * will become G--CCCC to C--CCCC.
+         * @param from
+         * @param to
+         */
         public FromTo(String from, String to) {
             this.from = from;
             this.to = to;
+            if (to.length()<from.length()) {
+                // extend to up to the length of from:
+                this.to+=from.substring(to.length(),from.length());
+            }
+             if (from.length()<to.length()) {
+                // extend from up to the length of to:
+                this.from+=to.substring(from.length(),to.length());
+            }
         }
 
 
