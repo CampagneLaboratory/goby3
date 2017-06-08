@@ -38,6 +38,7 @@ cp ${BASEDIR}/CHANGES.txt ${RELEASE_FOLDER}
 echo "${VERSION}" >> ${RELEASE_FOLDER}/VERSION.txt
 mv ${BASEDIR}/target/goby_${VERSION}-*.zip  ${RELEASE_FOLDER}
 cp ${BASEDIR}/goby.jar ${BASEDIR}/somatic.jar ${BASEDIR}/genotype.jar ${BASEDIR}/framework.jar ${RELEASE_FOLDER}
+cp -r ${BASEDIR}/config ${RELEASE_FOLDER}
 
 #create goby-bin.zip
 cd ${BASEDIR}
