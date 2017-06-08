@@ -201,6 +201,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
         igvFieldIndex = statsWriter.defineField("INFO", "BIOMART_COORDS", 1, ColumnType.String, "Coordinates formatted for use with IGV.");
         strictSomaticCandidateFieldIndex = statsWriter.defineField("FILTER", "STRICT_SOMATIC", 1, ColumnType.Flag, "Indicates that the site is not a strict somatic candidate. Strict somatic candidates are not detected in the parents and only poorly in the matched germline. False otherwise.");
+        genotypeFormatter.defineColumns(outputInfo, mode);
         genotypeFormatter.defineInfoFields(statsWriter);
         genotypeFormatter.defineGenotypeField(statsWriter);
 
@@ -226,13 +227,13 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //extract prefix and model directory from model path input.
         modelPrefix = predictor.getModelPrefix(customPath);
         modelPath = predictor.getModelPath(customPath);
-       if (modelPath==null || modelPath==null) {
-           throw new RuntimeException("Unable to determine modelPath or prefix/label  with "+customPath);
-       }
+        if (modelPath == null || modelPath == null) {
+            throw new RuntimeException("Unable to determine modelPath or prefix/label  with " + customPath);
+        }
         try {
             predictor.loadModel(modelPath, modelPrefix);
             System.out.println("model at " + modelPath + " loaded");
-            if (!predictor.modelIsLoaded()){
+            if (!predictor.modelIsLoaded()) {
                 throw new IOException("Model not loaded");
             }
         } catch (IOException e) {
@@ -453,6 +454,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
         statsWriter.setPosition(position);
 
+        genotypeFormatter.predictGenotypes(sampleCounts, currentReferenceId.toString(), position, referenceIndex, list);
         genotypeFormatter.writeGenotypes(statsWriter, sampleCounts, position);
         if (!statsWriter.hasAlternateAllele()) {
             // do not write a record if the position does not have an alternate allele.

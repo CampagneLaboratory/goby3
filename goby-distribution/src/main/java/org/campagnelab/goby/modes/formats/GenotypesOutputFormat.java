@@ -197,7 +197,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         baseCountFieldIndex = statsWriter.defineField("FORMAT", "BC", 5, ColumnType.String, "Base counts in format A=?;T=?;C=?;G=?;N=?.", "base-calls");
         goodBaseCountFieldIndex = statsWriter.defineField("FORMAT", "GB", 1, ColumnType.String, "Number of bases that pass base filters in this sample, or ignore string.", "good-bases");
         failBaseCountFieldIndex = statsWriter.defineField("FORMAT", "FB", 1, ColumnType.String, "Number of bases that failed base filters in this sample, or ignore string.", "failed-bases");
-        if (predictor.modelIsLoaded()) {
+        if (predictor!=null&& predictor.modelIsLoaded()) {
             modelCallIndex = statsWriter.defineField("FORMAT", "MC", 1, ColumnType.String, "Model Calls.", "genotype");
             modelProbabilityIndex = statsWriter.defineField("FORMAT", "P", 1, ColumnType.Float, "Model proability.", "genotype");
         }
@@ -280,7 +280,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
     String modelGenotypes[];
 
-    private void predictGenotypes(SampleCountInfo[] sampleCounts, String referenceId, int position, int referenceIndex, DiscoverVariantPositionData list) {
+    protected void predictGenotypes(SampleCountInfo[] sampleCounts, String referenceId, int position, int referenceIndex, DiscoverVariantPositionData list) {
         if (!predictor.modelIsLoaded()) {
             Arrays.fill(modelGenotypes, null);
             Arrays.fill(modelProbabilities, 0);
