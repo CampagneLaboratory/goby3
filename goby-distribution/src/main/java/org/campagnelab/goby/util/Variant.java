@@ -160,7 +160,7 @@ public class Variant implements Serializable {
                 return false;
             }
             final FromTo other = (FromTo) obj;
-            return from.equals(other.from) && to.equals(other.to) && sampleIndex != other.sampleIndex;
+            return from.equals(other.from) && to.equals(other.to) && sampleIndex == other.sampleIndex;
         }
 
         @Override
