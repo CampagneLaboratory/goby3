@@ -1,4 +1,6 @@
-3.3.4
+3.2.6
+
+3.2.5
  - Fix issue with toProto that prevented using more than one sample for genotyping with goby.
  - alignment conversion to goby: ignore missing MD tags (it is possible only some reads are missing them and we
  still need to convert the other aligned reads).
@@ -7,7 +9,9 @@
  problem.
  - SBI format: add distance from start of read and end of read. Will be mapped to a density in next genotype mapper.
  Should help variationanalysis models detect cases where end of alignment is fully contained within homopolymer region.
-3.3.3
+3.2.4
+
+3.2.3
  - Fix SNP bug in realignment around read insertion.
  - Add queryPosition field to SBI output.
  - Prevent the writing of sbi entries when AddTrueGenotypeHelper indicated the entry should not be added.
