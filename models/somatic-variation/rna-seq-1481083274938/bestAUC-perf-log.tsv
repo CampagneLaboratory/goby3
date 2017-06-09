@@ -1,4 +1,0 @@
-numExamplesUsed	epoch	AUC	score	condition
-29999865	0	0.958776	1.214123	not_specified
-59999730	1	0.960152	0.352008	not_specified
-119999460	3	0.961236	0.000000	not_specified

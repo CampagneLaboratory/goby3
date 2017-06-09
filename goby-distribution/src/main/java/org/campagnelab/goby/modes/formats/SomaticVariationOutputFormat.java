@@ -64,7 +64,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
-            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/rna-seq-1472848302343/bestAUCModel.bin",
+            "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/somatic-1497017665774/bestAUC-ComputationGraph.bin",
             "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
     );
     /**
