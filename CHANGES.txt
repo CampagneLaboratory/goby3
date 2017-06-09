@@ -1,5 +1,20 @@
 3.2.6
-
+ - Updated models for compatibility with latest code: genotyping model and somatic models are updated.
+ - Tested that models produced with variationanalysis (genotype and somatic) load in Goby and can be used
+   with the modes to generate VCF.
+ - Various bug fixes to last-to-compact mode. Bugs were triggered by output from more recent versions of Last than
+   tested previously.
+ - Discover-sequence-variations mode: fix VCF output for indels. Genotypes format mostly rewritten.
+   Was previously writing incorrect indels. Latest code produces VCF files tested for compatibility with RTG vcfeval.
+ - Discover-sequence-variations mode: Add minimum-P and stringent-P options to Genotypes output format.
+ - Rewrote VCFToGenotypeMapMode to use HTSJDK VCF parser. This should enable using BCF files as input as well.
+ - Fix for count of indels. The first equivalent indel region did not increment the count.
+   Counts on forward and reverse now match the number of supporting entries on each strand.
+ - Add supporting entry the first time an indel is created in a SampleCountInfo. The supporting entry was not set
+   on the first one.
+ - Apply count fixer to remove bases matching ref from list, when the mandatory filter has determined the base should
+   be removed. Previously was only removed from counts, but not from list of bases. One possible candidate for indel
+   performance problems we have tried to fix for a while.
 3.2.5
  - Fix issue with toProto that prevented using more than one sample for genotyping with goby.
  - alignment conversion to goby: ignore missing MD tags (it is possible only some reads are missing them and we
@@ -10,7 +25,12 @@
  - SBI format: add distance from start of read and end of read. Will be mapped to a density in next genotype mapper.
  Should help variationanalysis models detect cases where end of alignment is fully contained within homopolymer region.
 3.2.4
-
+ - Fix tally-reads mode.
+ - Some fixes to realignment of SNPs around indels.
+ - improvements to barcode remover (to trim bases from 5' end before removing barcode).
+ - Goby version now reports the commit that produced the distribution.
+ - Goby version, including commit now written to generated .sbi files.
+ - Introduce CommitPropertyHelper to record the specific commit that produced the version of Goby being used.
 3.2.3
  - Fix SNP bug in realignment around read insertion.
  - Add queryPosition field to SBI output.
