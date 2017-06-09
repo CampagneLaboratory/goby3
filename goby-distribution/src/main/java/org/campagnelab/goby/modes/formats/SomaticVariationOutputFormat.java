@@ -451,15 +451,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                         position)
         );
         statsWriter.setChromosome(currentReferenceId);
-
         statsWriter.setPosition(position);
 
-        genotypeFormatter.predictGenotypes(sampleCounts, currentReferenceId.toString(), position, referenceIndex, list);
-        genotypeFormatter.writeGenotypes(statsWriter, sampleCounts, position);
-        if (!statsWriter.hasAlternateAllele()) {
-            // do not write a record if the position does not have an alternate allele.
-            return;
-        }
         allocateIsSomaticCandidate(sampleCounts);
 
         // Do not write record if alleleSet is empty, IGV VCF track cannot handle that.
@@ -469,6 +462,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             estimateProbability(iterator, sampleCounts, list);
 
             if (isSomaticCandidate()) {
+                genotypeFormatter.predictGenotypes(sampleCounts, currentReferenceId.toString(), position, referenceIndex, list);
+                genotypeFormatter.writeGenotypes(statsWriter, sampleCounts, position);
+
                 statsWriter.writeRecord();
             }
 
@@ -476,6 +472,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
         updateSampleCumulativeCounts(sampleCounts);
     }
+
+
 
 
     void allocateIsSomaticCandidate(SampleCountInfo[] sampleCounts) {
