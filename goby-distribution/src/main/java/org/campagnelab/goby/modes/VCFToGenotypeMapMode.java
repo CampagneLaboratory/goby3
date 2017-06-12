@@ -63,7 +63,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
      */
     private RandomAccessSequenceInterface genome;
 
-    private final boolean PAD_ALLELES = false;
+    private final boolean PAD_ALLELES = true;
     /**
      * The mode name.
      */
@@ -186,16 +186,24 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             ref = item.getReference().getBaseString();
             final List<Allele> alternateAlleles = item.getAlternateAlleles();
             String gt = item.getGenotype(sampleName).getGenotypeString();
+            // VCF is one-based, Goby zero-based. We convert here:
+            int positionGoby = positionVCF - 1;
+            int maxLength = ref.length();
+
             int i = 0;
             final String[] alts = new String[alternateAlleles.size()];
             for (Allele alt : alternateAlleles) {
-                alts[i++] = alt.getBaseString();
+                alts[i] = alt.getBaseString();
+                maxLength = Math.max(alts[i].length(), maxLength);
+                i++;
             }
-            String expandedGT = convertGT(gt, ref, alts[0], alts.length == 2 ? alts[1] : "");
-            String[] expandedAlleles = expandedGT.split("\\||\\\\|/");
+            // We need to pad by adding - characters since the VCF parser removes them when reading.
+            ref = pad(ref, maxLength);
+            for (i = 0; i < alts.length; i++) {
+                alts[i] = pad(alts[i], maxLength);
+            }
+            String[] expandedAlleles = alts;
 
-            // VCF is one-based, Goby zero-based. We convert here:
-            int positionGoby = positionVCF - 1;
             ObjectArraySet<Variant.FromTo> alleleSet = new ObjectArraySet<>(expandedAlleles.length);
             for (i = 0; i < expandedAlleles.length; i++) {
                 alleleSet.add(new Variant.FromTo(ref, expandedAlleles[i]));
@@ -204,6 +212,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
                 System.out.printf("Unable to find chromosome %s in genome", chromosomeName);
                 System.exit(1);
             }
+
             chMap.addVariant(positionGoby, chromosomeName, genome.get(genome.getReferenceIndex(chromosomeName), positionGoby), alleleSet);
             if (item.isIndel()) {
                 numIndelsEncountered++;
@@ -214,7 +223,6 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
         }
         pg.stop();
-
         chMap.saveMap(outputMapname);
         System.out.printf("NumIndels Encountered: %d \n" +
                 "Num other variations Encountered: %d %n", numIndelsEncountered, numOtherVariations);
@@ -248,17 +256,19 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             padAlt1 = pad(alt1, maxLength);
             padAlt2 = pad(alt2, maxLength);
         }
-        //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
-        return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
+        if (origGT.contains("0") || origGT.contains("1") || origGT.contains("2")) {
+            //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
+            return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
+        } else {
+            return origGT.replace(ref, padRef).replace(alt1, padAlt1).replace(alt2, padAlt2);
+        }
     }
 
 
     private String pad(String allele, int len) {
         StringBuilder padAllele = new StringBuilder(allele);
-        for (int i = 1; i <= len; i++) {
-            if (allele.length() < len) {
-                padAllele.append("-");
-            }
+        for (int i = 0; i < len - allele.length(); i++) {
+            padAllele.append("-");
         }
         return padAllele.toString();
     }

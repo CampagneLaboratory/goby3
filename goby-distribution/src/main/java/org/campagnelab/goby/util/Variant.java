@@ -101,7 +101,7 @@ public class Variant implements Serializable {
      * Helper class to keep from/to together for a variation.
      */
     static public class FromTo implements Serializable {
-
+        public static final long serialVersionUID = -894836569024658713L;
         public int sampleIndex;
         String from;
         String to;
