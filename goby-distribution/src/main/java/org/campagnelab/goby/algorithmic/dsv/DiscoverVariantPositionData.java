@@ -202,4 +202,8 @@ public class DiscoverVariantPositionData extends ObjectArrayList<PositionBaseInf
     public int numObservations() {
         return numObservations;
     }
+
+    public void setReferenceBase(char referenceBase) {
+        this.referenceBase = referenceBase;
+    }
 }

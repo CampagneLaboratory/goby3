@@ -112,7 +112,9 @@ public class ProtoHelper {
             int reducedSampleIndex = sampleIndicesToProcessList.indexOf(originalSampleIndex);
             reducedSampleCountArray[reducedSampleIndex] = sampleCounts[originalSampleIndex];
         }
-        DiscoverVariantPositionData newList = new DiscoverVariantPositionData();
+        DiscoverVariantPositionData newList = new DiscoverVariantPositionData(list.getZeroBasedPosition(),
+                list.getReferenceBase());
+
         for (PositionBaseInfo baseInfo : list) {
             PositionBaseInfo copy = new PositionBaseInfo(baseInfo);
             final int originalSampleIndex = baseInfo.readerIndex;
