@@ -184,15 +184,15 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             String chromosomeName = adjustPrefix(item.getContig());
             final int positionVCF = item.getStart();
             ref = item.getReference().getBaseString();
-            final List<Allele> alternateAlleles = item.getAlternateAlleles();
+            final List<Allele> allAlleles = item.getAlleles();
             String gt = item.getGenotype(sampleName).getGenotypeString();
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
             int maxLength = ref.length();
 
             int i = 0;
-            final String[] alts = new String[alternateAlleles.size()];
-            for (Allele alt : alternateAlleles) {
+            final String[] alts = new String[allAlleles.size()];
+            for (Allele alt : allAlleles) {
                 alts[i] = alt.getBaseString();
                 maxLength = Math.max(alts[i].length(), maxLength);
                 i++;
@@ -213,7 +213,8 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
                 System.exit(1);
             }
 
-            chMap.addVariant(positionGoby, chromosomeName, genome.get(genome.getReferenceIndex(chromosomeName), positionGoby), alleleSet);
+            final char reference = genome.get(genome.getReferenceIndex(chromosomeName), positionGoby);
+            chMap.addVariant(positionGoby, chromosomeName, reference, alleleSet);
             if (item.isIndel()) {
                 numIndelsEncountered++;
             } else {
