@@ -12,7 +12,6 @@ import java.util.Set;
 public class Variant implements Serializable {
     public String referenceBase;
     public Set<FromTo> trueAlleles;
-    public boolean isIndel;
     public int position;
     public int referenceIndex;
     int maxLen;
@@ -29,7 +28,7 @@ public class Variant implements Serializable {
     public void merge(Variant reVar) {
         assert referenceBase.equals(reVar.referenceBase) : String.format("reference base must match for correct merging. %s !=%s Position=%d",
                 referenceBase, reVar.referenceBase, position);
-        assert position == reVar.position :  String.format("position must match for correct merging. %d != %d",position);
+        assert position == reVar.position : String.format("position must match for correct merging. %d != %d", position);
         assert referenceIndex == reVar.referenceIndex : "referenceIndex must match for correct merging.";
         //remove a ref allele from map's variant, since we are are replacing it with a variant.
         for (FromTo trueAllele : trueAlleles) {
@@ -44,7 +43,6 @@ public class Variant implements Serializable {
             }
         }
         maxLen = getMaxLen();
-        this.isIndel = (maxLen > 1);
 
     }
 
@@ -58,11 +56,60 @@ public class Variant implements Serializable {
         this.referenceBase = Character.toString(referenceBase);
         this.trueAlleles = alleles;
         maxLen = getMaxLen();
-        this.isIndel = (maxLen > 1);
         this.position = position;
         this.referenceIndex = referenceIndex;
     }
 
+    /**
+     * Returns true iff the set of alleles contains an indel.
+     *
+     * @return True or False.
+     */
+    public boolean isIndel() {
+        for (FromTo allele : trueAlleles) {
+            if (allele.isIndel()) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true iff the set of alleles contains a single nucleotide polymophism.
+     *
+     * @return True or False.
+     */
+    public boolean isSNP() {
+        for (FromTo allele : trueAlleles) {
+            if (allele.isSnp()) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Return True if the genomic site represented is a no call.
+     *
+     * @return True or False
+     */
+    public boolean isNoCall() {
+        return trueAlleles.size() == 0;
+    }
+
+    /**
+     * Return True if the genomic site represented by this variant has homozygous alleles.
+     *
+     * @return True or False
+     */
+    public boolean isHomozygous() {
+        return trueAlleles.size() == 1;
+    }
+
+    /**
+     * Return True if the genomic site represented by this variant has heterozygous alleles.
+     *
+     * @return True or False
+     */
+    public boolean isHeterozygous() {
+        return !isNoCall() && !isHomozygous();
+    }
 
     static String pad(int maxLen, String s) {
         StringBuffer pad = new StringBuffer(s);
@@ -90,7 +137,8 @@ public class Variant implements Serializable {
         return "Variant{" +
                 "reference='" + referenceBase + '\'' +
                 ", trueAlleles=" + trueAlleles +
-                ", isIndel=" + isIndel +
+                ", isIndel=" + isIndel() +
+                ", isSNP=" + isSNP() +
                 ", position=" + position +
                 ", referenceIndex=" + referenceIndex +
                 ", maxLen=" + maxLen +
@@ -146,6 +194,11 @@ public class Variant implements Serializable {
         public boolean isSnp() {
             return (from.length() == 1 && to.length() == 1 && !isRef());
         }
+
+        public boolean isIndel() {
+            return (from.length() != to.length());
+        }
+
 
         public int maxLen() {
             return Math.max(from.length(), to.length());
