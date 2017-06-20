@@ -196,7 +196,7 @@ public class Variant implements Serializable {
         }
 
         public boolean isIndel() {
-            return (from.length() != to.length());
+            return (from.length() != to.length()) || from.contains("-")||to.contains("-");
         }
 
 

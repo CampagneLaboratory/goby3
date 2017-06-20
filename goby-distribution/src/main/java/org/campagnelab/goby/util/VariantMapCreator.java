@@ -46,8 +46,9 @@ public class VariantMapCreator extends VariantMapHelper {
      * @param gobyPos
      * @param reference
      * @param trueAlleles
+     * @return the variant that was added
      */
-    public void addVariant(int gobyPos, String chrom, char reference, Set<Variant.FromTo> trueAlleles){
+    public Variant addVariant(int gobyPos, String chrom, char reference, Set<Variant.FromTo> trueAlleles) {
         //make sure there is a map for this chromosome
         if (!chMap.containsKey(chrom)) {
             chMap.put(chrom, new Int2ObjectArrayMap<Variant>(50000));
@@ -55,18 +56,22 @@ public class VariantMapCreator extends VariantMapHelper {
         //zero-based positions
         Variant var = new Variant(reference, trueAlleles, gobyPos, genome.getReferenceIndex(chrom));
         Map<Integer, Variant> realignedVars = realign(var, equivalentIndelRegionCalculator);
+        Variant result=null;
         for (Variant reVar : realignedVars.values()) {
             Variant previousVariant = chMap.get(chrom).get(reVar.position);
-            if (previousVariant!=null) {
+            if (previousVariant != null) {
                 previousVariant.merge(reVar);
                 overLappingIndels.warn(LOG,
-                        "\nmerged variant. in map froms,tos: " +  chMap.get(chrom).get(reVar.position).trueAlleles +
-                                "\nintended adding from,to: " +  reVar.trueAlleles + "\nat " + chrom + ":" + reVar.position);
+                        "\nmerged variant. in map froms,tos: " + chMap.get(chrom).get(reVar.position).trueAlleles +
+                                "\nintended adding from,to: " + reVar.trueAlleles + "\nat " + chrom + ":" + reVar.position);
                 numOverlaps++;
+                result=previousVariant;
             } else {
                 chMap.get(chrom).put(reVar.position, reVar);
+                result=reVar;
             }
         }
+        return result;
     }
 
 
@@ -80,16 +85,43 @@ public class VariantMapCreator extends VariantMapHelper {
         BinIO.storeObject(chMap, new File(pathToMap));
     }
 
+    public void showStats() {
+        int isSNP = 0;
+        int isIndel = 0;
+        int isHet = 0;
+        int isHom = 0;
+        int isNoCall = 0;
+
+        for (Int2ObjectMap<Variant> chrList : chMap.values()) {
+            for (Variant variant : chrList.values()) {
+
+                isIndel += variant.isIndel() ? 1 : 0;
+                isSNP += variant.isSNP() ? 1 : 0;
+                isHom += variant.isHomozygous() ? 1 : 0;
+                isHet += variant.isHeterozygous() ? 1 : 0;
+                isNoCall = variant.isNoCall() ? 1 : 0;
+            }
+        }
+        System.out.printf(
+                "         isSNP=%d;\n" +
+                "         isIndel=%d;\n" +
+                "         isHet=%d;\n" +
+                "         isHom=%d;\n" +
+                "         isNoCall=%d;\n" +
+                "         het/hom ratio=%f%n",
+                isSNP, isIndel, isHet, isHom,isNoCall ,((double)isHet/(double)(isHom)));
+    }
 
     /**
      * This method takes a single variant (generated from vcf), realigns its component alleles, and new set of variants mapped to by position.
+     *
      * @param variant
      * @param equivalentIndelRegionCalculator
      * @return a map of positions to variants.
      */
-    Map<Integer,Variant> realign(Variant variant, EquivalentIndelRegionCalculator equivalentIndelRegionCalculator) {
+    Map<Integer, Variant> realign(Variant variant, EquivalentIndelRegionCalculator equivalentIndelRegionCalculator) {
 
-        Map<Integer,Variant> equivVariants = new Int2ObjectArrayMap<Variant>(variant.trueAlleles.size());
+        Map<Integer, Variant> equivVariants = new Int2ObjectArrayMap<Variant>(variant.trueAlleles.size());
 
         //handle varas with only snps or ref
         if (variant.maxLen == 1) {
@@ -113,29 +145,29 @@ public class VariantMapCreator extends VariantMapHelper {
             ObservedIndel indel = null;
 
             //very rare case where indel and snp are at same position: ie CA -> C/AA or G -> A,GTC
-            if (fromAffix.length() <= 1 && !(fromAffix.contains("-") || toAffix.contains("-"))){
+            if (fromAffix.length() <= 1 && !(fromAffix.contains("-") || toAffix.contains("-"))) {
                 result.from = variant.referenceBase;
-                result.to = toAffix.substring(0,1);
+                result.to = toAffix.substring(0, 1);
                 result.startPosition = allelePos;
-              } else {
+            } else {
                 //get new indel with goby
                 indel = new ObservedIndel(allelePos, fromAffix, toAffix, variant.referenceIndex);
                 result = equivalentIndelRegionCalculator.determine(variant.referenceIndex, indel);
                 numIndelsEncountered++;
             }
-            if (result==null) {
+            if (result == null) {
                 // ignore variants outside of genome coordinates.
                 continue;
             }
             String refBase;
             String trueAlleleWithRef;
             String trueFromWithRef;
-            if (result.flankLeft!=null){
+            if (result.flankLeft != null) {
 //                //realigne indel case:
 //                refBase = result.flankLeft.substring(result.flankLeft.length()-1);
 //                trueAlleleWithRef = refBase + result.to + result.flankRight.substring(0,1);
 //                trueFromWithRef = refBase + result.from;
-                refBase = result.flankLeft.substring(result.flankLeft.length()-1);
+                refBase = result.flankLeft.substring(result.flankLeft.length() - 1);
                 trueAlleleWithRef = result.toInContext();
                 trueFromWithRef = result.fromInContext();
             } else {
@@ -144,8 +176,8 @@ public class VariantMapCreator extends VariantMapHelper {
                 trueAlleleWithRef = result.to;
                 trueFromWithRef = result.from;
             }
-            Variant.FromTo realigned = new Variant.FromTo(trueFromWithRef,trueAlleleWithRef);
-            Variant.FromTo reference = new Variant.FromTo(refBase,refBase);
+            Variant.FromTo realigned = new Variant.FromTo(trueFromWithRef, trueAlleleWithRef);
+            Variant.FromTo reference = new Variant.FromTo(refBase, refBase);
 
             if (equivVariants.containsKey(result.startPosition)) {
                 equivVariants.get(result.startPosition).trueAlleles.add(realigned);
@@ -155,12 +187,13 @@ public class VariantMapCreator extends VariantMapHelper {
                 trueAlleles.add(reference);
                 trueAlleles.add(realigned);
                 char referenceBaseResult;
-                if (result.flankLeft!=null && result.flankLeft.length()>0){
+                if (result.flankLeft != null && result.flankLeft.length() > 0) {
                     referenceBaseResult = result.flankLeft.charAt(0);
                 } else {
                     referenceBaseResult = variant.referenceBase.charAt(0);
                 }
-                equivVariants.put(result.startPosition, new Variant(referenceBaseResult, trueAlleles, result.startPosition, variant.referenceIndex));            }
+                equivVariants.put(result.startPosition, new Variant(referenceBaseResult, trueAlleles, result.startPosition, variant.referenceIndex));
+            }
             //if we have moved ploidy number of alleles into a position, remove its reference
             if (equivVariants.get(result.startPosition).trueAlleles.size() > variant.trueAlleles.size()) {
                 equivVariants.get(result.startPosition).trueAlleles.remove(reference);

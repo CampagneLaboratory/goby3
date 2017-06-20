@@ -25,6 +25,7 @@ import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import htsjdk.variant.vcf.VCFHeader;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.logging.ProgressLogger;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.util.Variant;
@@ -34,7 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -186,6 +189,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
             ref = item.getReference().getBaseString();
             final List<Allele> allAlleles = item.getAlleles();
             String gt = item.getGenotype(sampleName).getGenotypeString();
+            Set<String> genotype = getAlleles(gt);
             // VCF is one-based, Goby zero-based. We convert here:
             int positionGoby = positionVCF - 1;
             int maxLength = ref.length();
@@ -198,15 +202,17 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
                 i++;
             }
             // We need to pad by adding - characters since the VCF parser removes them when reading.
-            ref = pad(ref, maxLength);
+            String paddedRef = pad(ref, maxLength);
+            String[] paddedAlts = new String[alts.length];
             for (i = 0; i < alts.length; i++) {
-                alts[i] = pad(alts[i], maxLength);
+                paddedAlts[i] = pad(alts[i], maxLength);
             }
-            String[] expandedAlleles = alts;
 
-            ObjectArraySet<Variant.FromTo> alleleSet = new ObjectArraySet<>(expandedAlleles.length);
-            for (i = 0; i < expandedAlleles.length; i++) {
-                alleleSet.add(new Variant.FromTo(ref, expandedAlleles[i]));
+            ObjectArraySet<Variant.FromTo> alleleSet = new ObjectArraySet<>(paddedAlts.length);
+            for (i = 0; i < paddedAlts.length; i++) {
+                if (genotype.contains(alts[i])) {
+                    alleleSet.add(new Variant.FromTo(paddedRef, paddedAlts[i]));
+                }
             }
             if (genome.getReferenceIndex(chromosomeName) < 0) {
                 System.out.printf("Unable to find chromosome %s in genome", chromosomeName);
@@ -215,6 +221,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
 
             final char reference = genome.get(genome.getReferenceIndex(chromosomeName), positionGoby);
             chMap.addVariant(positionGoby, chromosomeName, reference, alleleSet);
+
             if (item.isIndel()) {
                 numIndelsEncountered++;
             } else {
@@ -225,8 +232,7 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
         }
         pg.stop();
         chMap.saveMap(outputMapname);
-        System.out.printf("NumIndels Encountered: %d \n" +
-                "Num other variations Encountered: %d %n", numIndelsEncountered, numOtherVariations);
+        chMap.showStats();
 
     }
 
@@ -243,28 +249,17 @@ public class VCFToGenotypeMapMode extends AbstractGobyMode {
     }
 
 
-    /*
-    * Convert vcf gt format, ie 1|0 , to expanded format, ie ACCCCT|G
-    * This is only compatible with VCF's with ONE SAMPLE, as in the platinum genome vcf's.
-     */
-    private String convertGT(String origGT, String ref, String alt1, String alt2) {
-        int maxLength = Math.max(ref.length(), Math.max(alt1.length(), alt2.length()));
-        String padRef = ref;
-        String padAlt1 = alt1;
-        String padAlt2 = alt2;
-        if (PAD_ALLELES) {
-            padRef = pad(ref, maxLength);
-            padAlt1 = pad(alt1, maxLength);
-            padAlt2 = pad(alt2, maxLength);
-        }
-        if (origGT.contains("0") || origGT.contains("1") || origGT.contains("2")) {
-            //operation below assumes that genotypes and delimiters never contain characters 0,1,or 2.
-            return origGT.replace("0", padRef).replace("1", padAlt1).replace("2", padAlt2);
-        } else {
-            return origGT.replace(ref, padRef).replace(alt1, padAlt1).replace(alt2, padAlt2);
-        }
+    public static Set<String> getAlleles(String genotype) {
+        String trueGenotype = genotype.toUpperCase();
+        ObjectSet<String> result = new ObjectArraySet<>();
+        Collections.addAll(result, trueGenotype.split("[|/]"));
+        result.remove("|");
+        result.remove("/");
+        result.remove("?");
+        result.remove(".");
+        result.remove("");
+        return result;
     }
-
 
     private String pad(String allele, int len) {
         StringBuilder padAllele = new StringBuilder(allele);
