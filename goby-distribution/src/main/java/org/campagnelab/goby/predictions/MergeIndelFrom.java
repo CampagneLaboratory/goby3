@@ -146,6 +146,12 @@ public class MergeIndelFrom {
      */
 
     public MergeIndelFrom(Set<Variant.FromTo> fromTos) {
+        if (fromTos.size()==0) {
+            // no calls
+            this.from=".";
+            this.tos.add(".");
+            return;
+        }
         assert fromTos.size() > 0 : "a non-empty set is expected.";
         String longestFrom = fromTos.parallelStream().reduce(fromTos.iterator().next(),
                 (s, fromTo) -> s = fromTo.getFrom().length() < s.getFrom().length() ? s : fromTo).getFrom();
