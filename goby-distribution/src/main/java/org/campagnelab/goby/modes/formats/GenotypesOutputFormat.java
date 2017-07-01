@@ -197,7 +197,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
         baseCountFieldIndex = statsWriter.defineField("FORMAT", "BC", 5, ColumnType.String, "Base counts in format A=?;T=?;C=?;G=?;N=?.", "base-calls");
         goodBaseCountFieldIndex = statsWriter.defineField("FORMAT", "GB", 1, ColumnType.String, "Number of bases that pass base filters in this sample, or ignore string.", "good-bases");
         failBaseCountFieldIndex = statsWriter.defineField("FORMAT", "FB", 1, ColumnType.String, "Number of bases that failed base filters in this sample, or ignore string.", "failed-bases");
-        if (predictor!=null&& predictor.modelIsLoaded()) {
+        if (predictor != null && predictor.modelIsLoaded()) {
             modelCallIndex = statsWriter.defineField("FORMAT", "MC", 1, ColumnType.String, "Model Calls.", "genotype");
             modelProbabilityIndex = statsWriter.defineField("FORMAT", "P", 1, ColumnType.Float, "Model proability.", "genotype");
         }
@@ -377,7 +377,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
         for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
             statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, "./.");
-            samplesMatchingRef.add(sampleIndex);
+
         }
         String commonReference = null;
         Set<Variant.FromTo> fromTos = new ObjectArraySet<>();
@@ -422,7 +422,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                         sampleFrom = sci.getReferenceGenotype();
                         sampleTo = genotype;
                     } else {
-                        //updateReferenceSet(genotype);
+                        samplesMatchingRef.add(sampleIndex);
                         if (sci.isIndel(genotypeIndex)) {
                             siteHasIndel = true;
                             sampleFrom = sci.getReferenceGenotype();
@@ -474,17 +474,21 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                 final String mappedFrom = formatIndelVCF.mappedFrom(ft.getFrom());
                 final String mappedTo = formatIndelVCF.mappedTo(ft.getTo());
 
-                if (commonReference!=null && mappedTo != null) {
-                    samplesMatchingRef.rem(ft.sampleIndex);
-                    statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(commonReference + "/" + mappedTo));
+                if (commonReference != null && mappedTo != null) {
+                    if (samplesMatchingRef.contains(ft.sampleIndex)) {
+                        samplesMatchingRef.rem(ft.sampleIndex);
+                        statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(commonReference + "/" + mappedTo));
+                    }else{
+                        statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(mappedTo));
+                    }
                 } else {
-                       LOG.error(String.format("Unable to find mapped genotype for from=%s to=%s%n", ft.getFrom(), ft.getTo()));
+                    LOG.error(String.format("Unable to find mapped genotype for from=%s to=%s%n", ft.getFrom(), ft.getTo()));
                 }
             }
         }
         if (siteObserved) {
-            if (commonReference==null) {
-                commonReference=".";
+            if (commonReference == null) {
+                commonReference = ".";
             }
             statsWriter.setReferenceAllele(commonReference);
             for (int sampleMatchingRefIndex : samplesMatchingRef) {
