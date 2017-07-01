@@ -409,7 +409,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                 String genotype = sci.getGenotypeString(genotypeIndex);
                 // when a model is available, we used the called alleles to determine if a given genotype is present in
                 // the sample. Otherwise, we default to Goby1-2's sampleCount>0 behavior.
-                if ((modelAvailable ? calledAlleles.contains(genotype) : sampleCount > 0) &&
+                if ((modelAvailable ? calledAlleles.contains(genotype) && sampleCount > 0 : sampleCount > 0) &&
                         genotypeIndex != SampleCountInfo.BASE_OTHER_INDEX) {
                     siteObserved = true;
 
@@ -417,17 +417,20 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                         siteHasIndel = true;
                     }
                     if (!sci.isReferenceGenotype(genotypeIndex)) {
+                        // alt
                         statsWriter.addAlternateAllele(genotype);
                         altGenotypeCount = statsWriter.getNumAltAlleles();
                         sampleFrom = sci.getReferenceGenotype();
                         sampleTo = genotype;
                     } else {
+                        //ref
                         samplesMatchingRef.add(sampleIndex);
                         if (sci.isIndel(genotypeIndex)) {
                             siteHasIndel = true;
                             sampleFrom = sci.getReferenceGenotype();
                         }
-                        commonReference = genotype;
+                        commonReference = sci.getReferenceGenotype();
+                        sampleTo = null;
                     }
                     alleleSet.add(genotype);
                     sampleAlleleSet.add(genotype);
@@ -478,7 +481,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
                     if (samplesMatchingRef.contains(ft.sampleIndex)) {
                         samplesMatchingRef.rem(ft.sampleIndex);
                         statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(commonReference + "/" + mappedTo));
-                    }else{
+                    } else {
                         statsWriter.setSampleValue(genotypeFieldIndex, ft.sampleIndex, statsWriter.codeGenotype(mappedTo));
                     }
                 } else {
