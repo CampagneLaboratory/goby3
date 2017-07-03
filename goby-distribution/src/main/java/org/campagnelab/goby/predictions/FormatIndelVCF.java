@@ -24,8 +24,7 @@ public class FormatIndelVCF {
     public String fromVCF;
     public Set<String> toVCF;
 
-    public Object2ObjectMap<String, String> mapFrom = new Object2ObjectArrayMap<>();
-    public Object2ObjectMap<String, String> mapTo = new Object2ObjectArrayMap<>();
+    public Object2ObjectMap<String, String> mapBeforeAfter = new Object2ObjectArrayMap<>();
 
     public FormatIndelVCF(String from, Set<String> to, char refBase) {
 
@@ -35,7 +34,6 @@ public class FormatIndelVCF {
                 to.remove(alt);
                 String refOrSnp = alt + (from.length() > 1 ? from.substring(1, from.length()) : "");
                 to.add(refOrSnp);
-                mapTo.put(alt, refOrSnp);
             }
         }
         //find newlen for step 2
@@ -63,13 +61,13 @@ public class FormatIndelVCF {
         String newRef = trimPostfix(from, postfix);
         newRef = newRef.replace("-", "");
         fromVCF = newRef;
-        mapFrom.put(from, newRef);
+        mapBeforeAfter.put(from, newRef);
         toVCF = new ObjectArraySet<>();
         for (String alt : to) {
             String newAlt = trimPostfix(alt, postfix);
             newAlt = newAlt.replace("-", "");
             toVCF.add(newAlt);
-            mapTo.put(alt, newAlt);
+            mapBeforeAfter.put(alt, newAlt);
         }
 
 
@@ -83,12 +81,21 @@ public class FormatIndelVCF {
     }
 
 
-    public String mappedFrom(String value) {
-        return mapFrom.get(value);
-    }
+    /**
+     * Maps an allele before uniformization to the allele after it has been made uniform.
+     *
+     * @param allele
+     * @return
+     */
+    public String mapped(String allele) {
+       String result=mapBeforeAfter.get(allele);
+       if (result!=null) {
+           return result;
+       }
+       else {
+           return allele;
+       }
 
-    public String mappedTo(String value) {
-        return mapTo.get(value);
     }
 
 }
