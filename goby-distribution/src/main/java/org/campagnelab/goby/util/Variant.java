@@ -153,6 +153,8 @@ public class Variant implements Serializable {
         public int sampleIndex;
         String from;
         String to;
+        String originalFrom;
+        String originalTo;
 
         public FromTo(String from, String to) {
             this(from, to, -1);
@@ -168,6 +170,8 @@ public class Variant implements Serializable {
          * @param sampleIndex
          */
         public FromTo(String from, String to, int sampleIndex) {
+            this.originalFrom = from;
+            this.originalTo = to;
             this.from = from;
             this.to = to;
             this.sampleIndex = sampleIndex;
@@ -196,7 +200,7 @@ public class Variant implements Serializable {
         }
 
         public boolean isIndel() {
-            return (from.length() != to.length()) || from.contains("-")||to.contains("-");
+            return (from.length() != to.length()) || from.contains("-") || to.contains("-");
         }
 
 
@@ -239,6 +243,13 @@ public class Variant implements Serializable {
             to += substring;
         }
 
+        public String getOriginalFrom() {
+            return originalFrom;
+        }
+
+        public String getOriginalTo() {
+            return originalTo;
+        }
     }
 
     /**

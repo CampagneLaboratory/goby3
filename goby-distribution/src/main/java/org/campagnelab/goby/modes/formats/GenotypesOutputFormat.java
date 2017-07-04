@@ -426,8 +426,13 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
             for (int sampleIndex = 0; sampleIndex < numberOfSamples; sampleIndex++) {
                 final ObjectSet<String> alleles = allelesPerSample[sampleIndex];
-                Optional<String> vcfGenotype = alleles.stream().map(formatIndelVCF::mapped).reduce((s, s2) -> s2 != null ? s + "/" + s2 : s);
+                Optional<String> vcfGenotype = alleles.stream().map(
+
+                    originalAllele ->     formatIndelVCF.mapped(merger.mapped(originalAllele))
+                ).filter(s->s!=null).reduce((s, s2) -> s + "/" + s2);
+
                 if (vcfGenotype.isPresent()) {
+
                     statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, statsWriter.codeGenotype(vcfGenotype.get()));
                 } else {
                     statsWriter.setSampleValue(genotypeFieldIndex, sampleIndex, "./.");

@@ -1,5 +1,7 @@
 package org.campagnelab.goby.predictions;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import org.apache.commons.lang.StringUtils;
 import org.campagnelab.goby.util.Variant;
@@ -46,6 +48,7 @@ public class MergeIndelFrom {
     Set<String> tos = new ObjectArraySet<>();
     String from;
 
+    private Object2ObjectMap<String, String> mapBeforeAfter = new Object2ObjectArrayMap<>();
 
     public Set<String> getTos() {
         return tos;
@@ -55,9 +58,15 @@ public class MergeIndelFrom {
         return from;
     }
 
+    public String mapped(String originalAllele) {
+       return mapBeforeAfter.get(originalAllele);
+    }
+
     static public class SplitIndel {
 
-        private final Variant.FromTo fromTo;
+        final Variant.FromTo fromTo;
+        final String originalFrom;
+        final String originalTo;
         char baseFrom;
         char baseTo;
         String insFrom; //empty or contains only dashes
@@ -80,8 +89,12 @@ public class MergeIndelFrom {
          *               Assumes that the the first base of both are the position before the first "-".
          */
         public SplitIndel(Variant.FromTo fromTo) {
+
             final String from = fromTo.getFrom();
             final String to = fromTo.getTo();
+
+            originalFrom = fromTo.getOriginalFrom();
+            originalTo = fromTo.getOriginalTo();
             insFrom = "";
             delFrom = "";
             insTo = "";
@@ -132,7 +145,7 @@ public class MergeIndelFrom {
 
         @Override
         public String toString() {
-            return getFrom()+"/"+getTo();
+            return getFrom() + "/" + getTo();
         }
     }
 
@@ -146,9 +159,10 @@ public class MergeIndelFrom {
      */
 
     public MergeIndelFrom(Set<Variant.FromTo> fromTos) {
-        if (fromTos.size()==0) {
+
+        if (fromTos.size() == 0) {
             // no calls
-            this.from=".";
+            this.from = ".";
             this.tos.add(".");
             return;
         }
@@ -161,7 +175,7 @@ public class MergeIndelFrom {
         //split up each indel into component strings
         for (Variant.FromTo fromTo : fromTos) {
             if (!fromTo.getFrom().equals(longestFrom)) {
-                fromTo.append(longestFrom.substring(fromTo.getFrom().length(),longestFrom.length()));
+                fromTo.append(longestFrom.substring(fromTo.getFrom().length(), longestFrom.length()));
             }
             splits.add(new SplitIndel(fromTo));
         }
@@ -199,11 +213,15 @@ public class MergeIndelFrom {
 
         //populate fields for output from split indels
         for (SplitIndel split : splits) {
-            tos.add(split.getTo());
+            String to = split.getTo();
+            tos.add(to);
+            mapBeforeAfter.put(split.originalTo, to);
             if (from == null) {
                 from = split.fromTo.getFrom();
+                mapBeforeAfter.put(split.originalFrom, from);
             }
         }
 
     }
+
 }

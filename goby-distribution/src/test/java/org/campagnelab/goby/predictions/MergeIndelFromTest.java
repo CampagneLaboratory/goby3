@@ -62,14 +62,14 @@ A-TTTGC	ATTTTGC
     @Test
     public void longestTailInDeletion() {
         final Set<Variant.FromTo> fromTos = new ObjectArraySet<>(4);
-        fromTos.add(new Variant.FromTo("A","T"));
-        fromTos.add(new Variant.FromTo("A","A"));
-        fromTos.add(new Variant.FromTo("ATTTGC","A----C"));
-        fromTos.add(new Variant.FromTo("A-TTTG","ATTTTG"));
+        fromTos.add(new Variant.FromTo("A", "T"));
+        fromTos.add(new Variant.FromTo("A", "A"));
+        fromTos.add(new Variant.FromTo("ATTTGC", "A----C"));
+        fromTos.add(new Variant.FromTo("A-TTTG", "ATTTTG"));
 
         MergeIndelFrom merge = new MergeIndelFrom(fromTos);
-        assertEquals("A-TTTGC",merge.from);
-        assertEquals(4,merge.tos.size());
+        assertEquals("A-TTTGC", merge.from);
+        assertEquals(4, merge.tos.size());
         assertTrue(merge.tos.contains("A-TTTGC"));
         assertTrue(merge.tos.contains("T-TTTGC"));
         assertTrue(merge.tos.contains("A-----C"));
@@ -131,15 +131,15 @@ A----TTT	A---TTTT
     @Test
     public void longestTailInInsertion() {
         final Set<Variant.FromTo> fromTos = new ObjectArraySet<>(4);
-        fromTos.add(new Variant.FromTo("A","T"));
-        fromTos.add(new Variant.FromTo("A","A"));
-        fromTos.add(new Variant.FromTo("ATT","A-T"));
-        fromTos.add(new Variant.FromTo("A----TTT","ATTTTTTT"));
-        fromTos.add(new Variant.FromTo("A-TT","ATTT"));
+        fromTos.add(new Variant.FromTo("A", "T"));
+        fromTos.add(new Variant.FromTo("A", "A"));
+        fromTos.add(new Variant.FromTo("ATT", "A-T"));
+        fromTos.add(new Variant.FromTo("A----TTT", "ATTTTTTT"));
+        fromTos.add(new Variant.FromTo("A-TT", "ATTT"));
 
         MergeIndelFrom merge = new MergeIndelFrom(fromTos);
-        assertEquals("A----TTT",merge.from);
-        assertEquals(5,merge.tos.size());
+        assertEquals("A----TTT", merge.from);
+        assertEquals(5, merge.tos.size());
         assertTrue(merge.tos.contains("A----TTT"));
         assertTrue(merge.tos.contains("T----TTT"));
         assertTrue(merge.tos.contains("A-----TT"));
@@ -152,14 +152,35 @@ A----TTT	A---TTTT
     @Test
     public void longerRefNoIndels() {
         final Set<Variant.FromTo> fromTos = new ObjectArraySet<>(4);
-        fromTos.add(new Variant.FromTo("GTTTTTTTTTTTTTTAAA","GTTTTTTTTTTTTTTTAA"));
-        fromTos.add(new Variant.FromTo("GTTTTTTTTTTTTTTAA","TTTTTTTTTTTTTTTAA"));
+        fromTos.add(new Variant.FromTo("GTTTTTTTTTTTTTTAAA", "GTTTTTTTTTTTTTTTAA"));
+        fromTos.add(new Variant.FromTo("GTTTTTTTTTTTTTTAA", "TTTTTTTTTTTTTTTAA"));
 
         MergeIndelFrom merge = new MergeIndelFrom(fromTos);
-        assertEquals("GTTTTTTTTTTTTTTAAA",merge.from);
-        assertEquals(2,merge.tos.size());
+        assertEquals("GTTTTTTTTTTTTTTAAA", merge.from);
+        assertEquals(2, merge.tos.size());
         assertTrue(merge.tos.contains("GTTTTTTTTTTTTTTTAA"));
         assertTrue(merge.tos.contains("TTTTTTTTTTTTTTTAAA"));
 
+    }
+
+    @Test
+    public void indelInsertionAndDeletion() {
+        final Set<Variant.FromTo> fromTos = new ObjectArraySet<>(4);
+        String from = "GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGTTG";
+        Set<String> to = new ObjectArraySet<>();
+        to.add("G----GTGTGTGTGTGTGTGTGTGTGTGTGCGTTG");
+        to.add("GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGT");
+        to.add("G----GTGTGTGTGTGTGTGTGTGTGTGTGCGTTG");
+        to.add("G--GTGTGTGTGTGTGTGTGTGTGTGTGTGCGTTG");
+        for (String toAllele : to) {
+            fromTos.add(new Variant.FromTo(from, toAllele));
+        }
+        MergeIndelFrom merge = new MergeIndelFrom(fromTos);
+    //    assertEquals("GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGT", merge.from);
+        assertEquals(3, merge.tos.size());
+        assertNotNull(merge.mapped("GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGT"));
+        for (String originalAllele: to) {
+            assertNotNull(merge.mapped(originalAllele));
+        }
     }
 }

@@ -106,7 +106,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                     samplePermutation[readerIndex] = Integer.valueOf(group);
                 } catch (NumberFormatException e) {
                     assert readerIndexToGroupIndex.length == 2 : "tumor/normal groups only supported for two samples. Use integer group ids to indicate order for trios.";
-                    assert group.equals("tumor")|group.equals("normal"): "group must be either normal or tumor. Otherwise, use integer to indicate order for sbi generation.";
+                    assert group.equals("tumor") | group.equals("normal") : "group must be either normal or tumor. Otherwise, use integer to indicate order for sbi generation.";
                     if ("tumor".equals(group)) {
                         samplePermutation[readerIndex] = 1;
                     }
@@ -215,7 +215,6 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
                 return;
             }
         }
-
         //trio (inputs father mother somatic), vs pair (inputs germline somatic)
         try {
 

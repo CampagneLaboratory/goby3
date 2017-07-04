@@ -12,6 +12,33 @@ import static org.junit.Assert.*;
  */
 public class FormatIndelVCFTest {
 
+
+    //IE: from: GTAC to: G--C/G-AC -> from: GTA to: G/GA
+    @Test
+    public void formatIndel_Insertion_Deletion() throws Exception {
+
+        // G----GTGTGTGTGTGTGTGTGTGTGTGTGCGTTG/GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGT
+        // G----GTGTGTGTGTGTGTGTGTGTGTGTGCGTTG/G--GTGTGTGTGTGTGTGTGTGTGTGTGTGCGT
+        String from = "GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGTTG";
+        Set<String> to = new ObjectArraySet<>();
+        to.add("G----GTGTGTGTGTGTGTGTGTGTGTGTGCGTTG");
+        to.add("GGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGCGT");
+        to.add("G----GTGTGTGTGTGTGTGTGTGTGTGTGCGTTG");
+        to.add("G--GTGTGTGTGTGTGTGTGTGTGTGTGTGCGTTG");
+        Set<String> allOriginalAlleles=new ObjectArraySet<>();
+        allOriginalAlleles.add(from);
+        allOriginalAlleles.addAll(to);
+        FormatIndelVCF format = new FormatIndelVCF(from,to,'G');
+      //  assertEquals("",format.fromVCF);
+     //   assertEquals(2,format.toVCF.size());
+     //   assertTrue(format.toVCF.contains(""));
+     //   assertTrue(format.toVCF.contains(""));
+        for (String original: allOriginalAlleles) {
+            System.out.printf("original %s mapped: %s %n",original, format.mapped(original));
+           assertNotNull( format.mapped(original));
+        }
+    }
+
     //IE: from: GTAC to: G--C/G-AC -> from: GTA to: G/GA
     @Test
     public void formatIndelVCF() throws Exception {

@@ -26,10 +26,10 @@ public class FormatIndelVCF {
 
     public Object2ObjectMap<String, String> mapBeforeAfter = new Object2ObjectArrayMap<>();
 
-    public FormatIndelVCF(String from, Set<String> to, char refBase) {
+    public FormatIndelVCF(final String from, final Set<String> to, char refBase) {
 
         //step 1. extend ref or snp to include remainder ref string
-        for (String alt : to) {
+        for (final String alt : to) {
             if (alt.length() == 1) {
                 to.remove(alt);
                 String refOrSnp = alt + (from.length() > 1 ? from.substring(1, from.length()) : "");
@@ -39,7 +39,7 @@ public class FormatIndelVCF {
         //find newlen for step 2
         int newLen = 1;
         int maxLen = -1;
-        for (String alt : to) {
+        for (final String alt : to) {
             if (alt.length() > maxLen) {
                 maxLen = alt.length();
             }
@@ -49,7 +49,7 @@ public class FormatIndelVCF {
             if (from.length() > i && from.charAt(i) == '-') {
                 newLen = i + 1;
             }
-            for (String alt : to) {
+            for (final String alt : to) {
                 if (alt.length() > i && alt.charAt(i) == '-') {
                     newLen = i + 1;
                 }
@@ -93,7 +93,7 @@ public class FormatIndelVCF {
            return result;
        }
        else {
-           return allele;
+           return null;
        }
 
     }
