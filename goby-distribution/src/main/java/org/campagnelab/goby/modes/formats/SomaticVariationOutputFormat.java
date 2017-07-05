@@ -277,6 +277,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         // add column(s) for p-values of somatic variation:
         somaticPValueIndex = new int[numSamples];
         candidateFrequencyIndex = new int[numSamples];
+        candidateSomaticAlleleIndex = new int[numSamples];
         maxGenotypeSomaticPriority = new int[numSamples];
         genotypeSomaticProbability = new int[numSamples];
         genotypeSomaticProbabilityUnMut = new int[numSamples];
