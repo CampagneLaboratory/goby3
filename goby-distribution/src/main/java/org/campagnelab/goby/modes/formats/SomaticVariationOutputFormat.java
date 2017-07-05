@@ -71,6 +71,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
      * We will store the largest candidate somatic frequency here.
      */
     private int[] candidateFrequencyIndex;
+    /**
+     * We will store the somatic allele called by the model.
+     */
+    private int[] candidateSomaticAlleleIndex;
 
     /**
      * A priority score for the somatic site. Larger integer values indicate more support for the site being a
@@ -287,6 +291,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                     String.format("somatic-frequency[%s]", sample),
                     1, ColumnType.Float,
                     "Frequency of a somatic variation (%), valid only when the p-value is significant.", "statistic", "indexed");
+            candidateSomaticAlleleIndex[sampleIndex] = statsWriter.defineField("INFO",
+                    String.format("somatic-allele[%s]", sample),
+                    1, ColumnType.String,
+                    "Somatic allele called by the model.");
             maxGenotypeSomaticPriority[sampleIndex] = statsWriter.defineField("INFO",
                     String.format("probability[%s]", sample),
                     1, ColumnType.Float,
@@ -474,8 +482,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
 
 
-
-
     void allocateIsSomaticCandidate(SampleCountInfo[] sampleCounts) {
         int maxGenotypeIndex = 0;
         for (SampleCountInfo sci : sampleCounts) {
@@ -573,6 +579,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
                 double probabilityIsMutated = predictor.probabilityIsMutated();
                 statsWriter.setInfo(genotypeSomaticProbability[somaticSampleIndex], probabilityIsMutated);
+                String somaticAllele = ".";
+                if (predictor.hasSomaticAllele()) {
+                    somaticAllele = predictor.getSomaticAllele();
+                }
+                statsWriter.setInfo(candidateSomaticAlleleIndex[somaticSampleIndex], somaticAllele);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], predictor.probabilityIsNotMutated());
                 if (predictor.hasSomaticFrequency()) {
                     statsWriter.setInfo(candidateFrequencyIndex[somaticSampleIndex], predictor.getSomaticFrequency() * 100);

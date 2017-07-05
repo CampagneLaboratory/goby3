@@ -17,4 +17,8 @@ public interface SomaticPredictor extends Predictor {
     float getSomaticFrequency();
 
     boolean hasSomaticFrequency();
+
+    boolean hasSomaticAllele();
+
+    String getSomaticAllele();
 }
