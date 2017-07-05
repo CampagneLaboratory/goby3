@@ -18,6 +18,7 @@ import org.campagnelab.goby.readers.vcf.ColumnType;
 import org.campagnelab.goby.reads.RandomAccessSequenceInterface;
 import org.campagnelab.goby.stats.VCFWriter;
 import org.campagnelab.goby.util.OutputInfo;
+import org.campagnelab.goby.util.VariantMapHelper;
 import org.campagnelab.goby.util.dynoptions.DynamicOptionClient;
 import org.campagnelab.goby.util.dynoptions.RegisterThis;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
     private static String GOBY_HOME;
     private float modelPThreshold;
+    private VariantMapHelper varmapHelper;
 
     public static final DynamicOptionClient doc() {
         return doc;
@@ -65,7 +67,8 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(SomaticVariationOutputFormat.class,
             "model-path:string, path to a neural net model that estimates the probability of somatic variations:${GOBY_HOME}/models/somatic-variation/somatic-1497017665774/bestAUC-ComputationGraph.bin",
-            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99"
+            "model-p-mutated-threshold:float, minimum threshold on the model probability mutated to output a site:0.99",
+            "focus-on-varmap:string, path to a varmap file, created with vcf-to-genotype-map, will report only positions in the map:"
     );
     /**
      * We will store the largest candidate somatic frequency here.
@@ -228,6 +231,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
         //set optional column vars from doc
         this.modelPThreshold = doc.getFloat("model-p-mutated-threshold");
 
+
         //extract prefix and model directory from model path input.
         modelPrefix = predictor.getModelPrefix(customPath);
         modelPath = predictor.getModelPath(customPath);
@@ -244,7 +248,17 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             throw new RuntimeException(String.format("Unable to load somatic model %s with path %s ", modelPrefix,
                     modelPath), e);
         }
-
+        String varmapPath = doc.getString("focus-on-varmap");
+        if (varmapPath != null) {
+            try {
+                System.out.printf("Loading varmap from %s%n", varmapPath);
+                varmapHelper = new VariantMapHelper(varmapPath);
+            } catch (Exception e) {
+                System.err.printf("Unable to load varmap from path %s", varmapPath);
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
         numSamples = samples.length;
         ObjectSet<String> allCovariates = covInfo.getCovariateKeys();
         if (!allCovariates.contains("patient-id") ||
@@ -446,6 +460,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     public void writeRecord(final DiscoverVariantIterateSortedAlignments iterator, final SampleCountInfo[] sampleCounts,
                             final int referenceIndex, int position, final DiscoverVariantPositionData list,
                             final int groupIndexA, final int groupIndexB) {
+
         updateSampleProportions();
         this.pos = position;
         this.referenceIndex = referenceIndex;
@@ -454,6 +469,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
 
         currentReferenceId = iterator.getReferenceId(referenceIndex);
 
+        if (varmapHelper != null && varmapHelper.getVariant(currentReferenceId.toString(), position) == null) {
+            // skip positions not in the varmap when a focus varmap is provided.
+            return;
+        }
         statsWriter.setId(".");
         statsWriter.setInfo(igvFieldIndex,
                 String.format("%s:%d-%d", currentReferenceId, position,
