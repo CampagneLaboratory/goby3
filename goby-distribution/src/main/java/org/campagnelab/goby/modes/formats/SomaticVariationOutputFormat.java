@@ -373,6 +373,11 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             int sampleIndex = locateSampleIndex(somaticSampleId);
             String patientId = covInfo.getCovariateValue(somaticSampleId, "patient-id");
             ObjectArraySet<String> allSamplesForPatient = covInfo.samplesWithExactCovariate("patient-id", patientId);
+            if (allSamplesForPatient.size()<2) {
+                System.out.println("At least two samples per patient are required for somatic calls.");
+                System.out.println("Check the covariate file to make sure a single patient identifier is listed on several lines.");
+                System.exit(1);
+            }
             int count = 0;
             for (String sampleId : allSamplesForPatient) {
                 if (covInfo.hasCovariateValue(sampleId, "kind-of-sample", "Germline")) {
@@ -583,7 +588,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     private void estimateProbability(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
 
         for (int somaticSampleIndex : somaticSampleIndices) {
-            statsWriter.setInfo(candidateSomaticAlleleIndex[somaticSampleIndex], ".");
 
             int fatherSampleIndex = sample2FatherSampleIndex[somaticSampleIndex];
             int motherSampleIndex = sample2MotherSampleIndex[somaticSampleIndex];
@@ -591,19 +595,9 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
             for (int germlineSampleIndex : germlineSampleIndices) {
                 assert predictor.modelIsLoaded() : "model must be found with path: " + modelPath + " prefix: " + modelPrefix;
 
-                //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
-                int[] readerIdxs;
-
-                if (fatherSampleIndex == -1 || motherSampleIndex == -1) {
-                    readerIdxs =new int[]{somaticSampleIndex, germlineSampleIndex}; // pairwise design
-                } else {
-                    if (germlineSampleIndex == -1) {
-                        readerIdxs = new int[]{fatherSampleIndex, motherSampleIndex, somaticSampleIndex}; // trio
-                    } else {
-                        readerIdxs = new int[]{fatherSampleIndex, motherSampleIndex, somaticSampleIndex, germlineSampleIndex}; // quator
-                    }
-                }
-
+                //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1
+                // when the model only uses some of the samples
+                int[] readerIdxs= new int[]{fatherSampleIndex, motherSampleIndex, somaticSampleIndex, germlineSampleIndex};
 
                 predictor.predict(iterator.getGenome(),
                         iterator.getReferenceId(referenceIndex).toString(),
@@ -617,7 +611,6 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 String somaticAllele = ".";
                 if (predictor.hasSomaticAllele()) {
                     somaticAllele = predictor.getSomaticAllele();
-                    if (somaticAllele == null) somaticAllele = ".";
                 }
                 statsWriter.setInfo(candidateSomaticAlleleIndex[somaticSampleIndex], somaticAllele);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], predictor.probabilityIsNotMutated());
