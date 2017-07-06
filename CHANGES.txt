@@ -1,3 +1,7 @@
+>3.2.7
+ - Add usage to goby wrapper. Do not attempt to configure R unless the variable GOBY_USE_RJAVA is configured.
+ - Somatic output format: report predicted somatic allele in VCF.
+
 3.2.6
  - Updated models for compatibility with latest code: genotyping model and somatic models are updated.
  - Tested that models produced with variationanalysis (genotype and somatic) load in Goby and can be used

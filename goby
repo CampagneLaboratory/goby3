@@ -9,7 +9,11 @@
 # For instance, the following command will display the Goby version number:
 
 #     goby 40m version
- 
+if [ $# -lt 1 ]; then
+  echo "The first argument must be memory (i.e., goby 4g)"
+  exit 1
+fi
+
 memory_requirement=$1
 shift
 other_parameters=$*
@@ -22,18 +26,19 @@ fi
 export GOBY_HOME=${WORKING_DIR}
 GOBY_JAR=${GOBY_HOME}/goby.jar
 SLF4J_CONFIG=${GOBY_HOME}/config/goby-logback.xml
-
-if [ "${RJAVA_HOME:-notset}" == "notset" ]; then
-  #echo "Trying to set RJAVA_HOME environment variable"
-  cat >/tmp/r-cmd.txt <<EOT
-system.file("jri",package="rJava")
+if [ ! -z ${GOBY_USE_RJAVA} ]; then
+    if [ "${RJAVA_HOME:-notset}" == "notset" ]; then
+      #echo "Trying to set RJAVA_HOME environment variable"
+    cat >/tmp/r-cmd.txt <<EOT
+    system.file("jri",package="rJava")
 EOT
-  tmpWithQuotes=`R --no-save </tmp/r-cmd.txt|grep [1]|tail -1 |awk '{print $2}'`
-  temp="${tmpWithQuotes%\"}"
-  temp="${temp#\"}"
- # echo "$temp"
-  export RJAVA_HOME=${temp}
-  rm -f /tmp/r-cmd.txt
+      tmpWithQuotes=`R --no-save </tmp/r-cmd.txt|grep [1]|tail -1 |awk '{print $2}'`
+      temp="${tmpWithQuotes%\"}"
+      temp="${temp#\"}"
+     # echo "$temp"
+      export RJAVA_HOME=${temp}
+      rm -f /tmp/r-cmd.txt
+    fi
 fi
 DL_SOMATIC_CLASSPATH=${GOBY_HOME}/somatic.jar
 if [ ! -e "${DL_SOMATIC_CLASSPATH}" ]; then
@@ -49,3 +54,6 @@ if [ ! -e "${DL_FRAMEWORK_CLASSPATH}" ]; then
 fi
 #echo java -ea -Xmx${memory_requirement} -Dlog4j.configuration=${LOG4J_PROPS} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
 java -ea -Djava.ext.dirs=${GOBY_HOME}/  -Xmx${memory_requirement} -Dlogback.configurationFile=${SLF4J_CONFIG} -Djava.library.path=${RJAVA_HOME} -jar ${GOBY_JAR} --mode ${other_parameters}
+if [ $# -lt 2 ]; then
+  echo "The second argument must be the goby mode you want to run (i.e., goby 1g version). See list of modes in help above."
+fi
