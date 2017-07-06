@@ -1,7 +1,14 @@
->3.2.7
- - Add usage to goby wrapper. Do not attempt to configure R unless the variable GOBY_USE_RJAVA is configured.
+3.2.7
  - Somatic output format: report predicted somatic allele in VCF.
-
+ - Variant.FromTo: defined SerializeID. This requires regenerating varmaps.
+ - sbi output: Set position and reference base on list copy. Fix for reference base begin '\0' in sbi files.
+ - vcf-to-genotype-map: Fix VCF to varmap. Incorrect genotypes added prior to this commit (since refactoring
+   to use VCF reader from HTSJDK in version 3.2.6).  Show better statistics when creating the map. Fix for
+   indels not imported in varmap.
+ - GenotypesOutputFormat: Complete rewrite Fix VCF coding of het sites. Also, when using a model, now we check sampleCount,
+   in case the model does not use the matchesRef feature, because such models may return a default non-reference
+   base for sites with no coverage.
+ - Add usage to goby wrapper. Do not attempt to configure R unless the variable GOBY_USE_RJAVA is configured.
 3.2.6
  - Updated models for compatibility with latest code: genotyping model and somatic models are updated.
  - Tested that models produced with variationanalysis (genotype and somatic) load in Goby and can be used
