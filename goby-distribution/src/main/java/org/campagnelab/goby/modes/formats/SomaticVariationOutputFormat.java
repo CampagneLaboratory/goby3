@@ -581,7 +581,10 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
     }
 
     private void estimateProbability(DiscoverVariantIterateSortedAlignments iterator, SampleCountInfo[] sampleCounts, DiscoverVariantPositionData list) {
+
         for (int somaticSampleIndex : somaticSampleIndices) {
+            statsWriter.setInfo(candidateSomaticAlleleIndex[somaticSampleIndex], ".");
+
             int fatherSampleIndex = sample2FatherSampleIndex[somaticSampleIndex];
             int motherSampleIndex = sample2MotherSampleIndex[somaticSampleIndex];
             int germlineSampleIndices[] = sample2GermlineSampleIndices[somaticSampleIndex];
@@ -589,7 +592,19 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 assert predictor.modelIsLoaded() : "model must be found with path: " + modelPath + " prefix: " + modelPrefix;
 
                 //sampleIdxs convention: [father, mother, somatic, germline]. some of these fields will be -1 when the model only uses some of the samples
-                int[] readerIdxs = {fatherSampleIndex, motherSampleIndex, somaticSampleIndex, germlineSampleIndex};
+                int[] readerIdxs;
+
+                if (fatherSampleIndex == -1 || motherSampleIndex == -1) {
+                    readerIdxs =new int[]{somaticSampleIndex, germlineSampleIndex}; // pairwise design
+                } else {
+                    if (germlineSampleIndex == -1) {
+                        readerIdxs = new int[]{fatherSampleIndex, motherSampleIndex, somaticSampleIndex}; // trio
+                    } else {
+                        readerIdxs = new int[]{fatherSampleIndex, motherSampleIndex, somaticSampleIndex, germlineSampleIndex}; // quator
+                    }
+                }
+
+
                 predictor.predict(iterator.getGenome(),
                         iterator.getReferenceId(referenceIndex).toString(),
                         sampleCounts,
@@ -602,7 +617,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 String somaticAllele = ".";
                 if (predictor.hasSomaticAllele()) {
                     somaticAllele = predictor.getSomaticAllele();
-                    if (somaticAllele==null) somaticAllele=".";
+                    if (somaticAllele == null) somaticAllele = ".";
                 }
                 statsWriter.setInfo(candidateSomaticAlleleIndex[somaticSampleIndex], somaticAllele);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], predictor.probabilityIsNotMutated());
