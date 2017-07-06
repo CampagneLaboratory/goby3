@@ -602,6 +602,7 @@ public class SomaticVariationOutputFormat implements SequenceVariationOutputForm
                 String somaticAllele = ".";
                 if (predictor.hasSomaticAllele()) {
                     somaticAllele = predictor.getSomaticAllele();
+                    if (somaticAllele==null) somaticAllele=".";
                 }
                 statsWriter.setInfo(candidateSomaticAlleleIndex[somaticSampleIndex], somaticAllele);
                 statsWriter.setInfo(genotypeSomaticProbabilityUnMut[somaticSampleIndex], predictor.probabilityIsNotMutated());
