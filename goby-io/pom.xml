@@ -82,6 +82,26 @@
                             </artifactItems>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-protoc-python</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.google.protobuf</groupId>
+                                    <artifactId>protoc</artifactId>
+                                    <version>${protobuf.python.version}</version>
+                                    <classifier>${os.detected.classifier}</classifier>
+                                    <type>exe</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- compile proto buffer files using copied protoc binary -->
@@ -127,9 +147,9 @@
                         <configuration>
 
                             <target>
-                                <!--chmod file="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe"
+                                <chmod file="${project.build.directory}/protoc-${protobuf.python.version}-${os.detected.classifier}.exe"
                                        perm="ugo+rx"/>
-                                <mkdir dir="${protobuf.output.directory}"/-->
+                                <mkdir dir="${protobuf.output.directory}"/>
                                 <path id="protobuf.input.filepaths.path">
                                     <fileset dir="${protobuf.input.directory}">
                                         <include name="*.proto"/>
@@ -137,7 +157,7 @@
                                 </path>
                                 <pathconvert pathsep=" " property="protobuf.input.filepaths"
                                              refid="protobuf.input.filepaths.path"/>
-                                <exec executable="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe"
+                                <exec executable="${project.build.directory}/protoc-${protobuf.python.version}-${os.detected.classifier}.exe"
                                       failonerror="true">
                                     <arg value="-I"/>
                                     <arg value="${protobuf.input.directory}"/>

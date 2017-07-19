@@ -48,6 +48,7 @@
         <java.version>1.8</java.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <protobuf.version>3.0.0-beta-4</protobuf.version>
+        <protobuf.python.version>3.3.0</protobuf.python.version>
         <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
     </properties>
 
