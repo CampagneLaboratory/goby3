@@ -91,7 +91,7 @@
                 <version>${maven-antrun-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>exec-protoc</id>
+                        <id>exec-java-protoc</id>
                         <phase>generate-sources</phase>
                         <configuration>
 
@@ -120,8 +120,41 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+                    <!-- compile proto buffer files to python  -->
+                    <execution>
+                        <id>exec-python-protoc</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+
+                            <target>
+                                <!--chmod file="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe"
+                                       perm="ugo+rx"/>
+                                <mkdir dir="${protobuf.output.directory}"/-->
+                                <path id="protobuf.input.filepaths.path">
+                                    <fileset dir="${protobuf.input.directory}">
+                                        <include name="*.proto"/>
+                                    </fileset>
+                                </path>
+                                <pathconvert pathsep=" " property="protobuf.input.filepaths"
+                                             refid="protobuf.input.filepaths.path"/>
+                                <exec executable="${project.build.directory}/protoc-${protobuf.version}-${os.detected.classifier}.exe"
+                                      failonerror="true">
+                                    <arg value="-I"/>
+                                    <arg value="${protobuf.input.directory}"/>
+                                    <arg value="--python_out"/>
+                                    <arg value="../python/goby"/>
+                                    <arg line="${protobuf.input.filepaths}"/>
+                                </exec>
+                            </target>
+
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
+
 
             <!-- add generated proto buffer classes into the package -->
             <plugin>

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2010 Institute for Computational Biomedicine,
@@ -23,10 +23,13 @@ import struct
 import sys
 import textwrap
 
-from goby.Reads import ReadsReader
+from goby.Reads import CompactReads, decodeSequence
+
 
 def usage():
-    print "usage:", sys.argv[0], "[-h|--help] [-v|--verbose] [-f|--format <fasta|fastq>] [-o|--output <output-filename>] <filename>" 
+    print("usage:", sys.argv[0],
+          "[-h|--help] [-v|--verbose] [-f|--format <fasta|fastq>] [-o|--output <output-filename>] <filename>")
+
 
 def main():
     verbose = False
@@ -37,8 +40,8 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "f:o:hv", ["format=", "output=", "help", "verbose"])
-    except getopt.GetoptError, err:
-        print >> sys.stderr, str(err)
+    except getopt.GetoptError as err:
+        print( str(err), file=sys.stderr)
         usage()
         sys.exit(1)
 
@@ -55,7 +58,7 @@ def main():
             output = open(arg, "w")
 
     if format != "fasta" and format != "fastq":
-        print >> sys.stderr, "Format", format, "is not supported"
+        print( "Format", format, "is not supported", file=sys.stderr)
         usage()
         sys.exit(3)
 
@@ -65,37 +68,37 @@ def main():
 
     filename = args[0]
     if verbose:
-        print "Processing file =", filename
+        print("Processing file =", filename)
 
     if format == "fasta":
         new_entry_character = ">"
     else:
         new_entry_character = "@"
 
-    reads_reader = ReadsReader(filename, verbose)
-    for entry in reads_reader:
+    for entry in CompactReads(filename):
         # if the entry has a description, use it otherwise use the index
         if (entry.HasField("description")):
             description = entry.description
         else:
             description = entry.read_index
-        print >> output, "%c%s" % (new_entry_character, description)
-        for line in textwrap.wrap(entry.sequence, 60):
-            print >> output, line
+        print ("%c%s" % (new_entry_character, description), file=output)
+
+        for line in textwrap.wrap(text=decodeSequence(entry.sequence), width=60):
+            print(  line, file=output)
 
         if format == "fastq":
-            print >> output, "+"
+            print("+", file=output)
             quality_string = ""
             if entry.HasField("qualityScores"):
                 for quality_score in entry.quality_scores:
                     quality_string += chr(struct.unpack("B", quality_score)[0] + 64)  # Assume Illumina encoding
-                
+
             else:
                 # fill the string with a constant quality code
                 quality_string = quality_string.ljust(len(entry.sequence), chr(fake_quality_score + 64))
 
             for line in textwrap.wrap(quality_string, 60):
-                print >> output, line
-                
+                print( line, file=output)
+
 if __name__ == "__main__":
     main()

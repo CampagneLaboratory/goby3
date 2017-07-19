@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2010 Institute for Computational Biomedicine,
+# Copyright (C) 2010-2017 Institute for Computational Biomedicine,
 #                    Weill Medical College of Cornell University
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,17 +17,31 @@
 #
 
 """ Contains classes that can parse binary alignment data
-stored in the Goby "compact" format.
+stored in the Goby alignment format.
 """
+from __future__ import print_function
 
 import gzip
 import sys
+from io import BytesIO
+from os import path
 
-import Alignments_pb2
-from MessageChunks import MessageChunksReader
+from google.protobuf.message import DecodeError
 
-# Java properties - http://pypi.python.org/pypi/pyjavaproperties/
-from pyjavaproperties import Properties
+import MessageChunks
+import goby.Alignments_pb2
+from goby.pyjavaproperties import Properties
+
+
+def GobyAlignment(basename):
+    if not basename.endswith(".entries"):
+        basename += ".entries"
+
+    collection = goby.Alignments_pb2.AlignmentCollection()
+    for entries in MessageChunks.MessageChunksGenerator(
+            basename, collectionContainer=collection):
+        for entry in entries.alignment_entries:
+            yield entry
 
 def get_basename(filename):
     """ Return the basename corresponding to the input alignment filename.
@@ -39,7 +53,7 @@ def get_basename(filename):
             return filename[:-len(ext)]
     return filename
 
-class AlignmentReader(object):
+class AlignmentReader():
     """ Reads alignments written in the Goby "compact" format.
     The AlignmentReader is actually an iterator over indiviual
     alignment entries stored in the file.
@@ -48,14 +62,14 @@ class AlignmentReader(object):
     basename = None
     """ basename for this alignment """
 
-    statistics = Properties()
+    statistics =Properties()
     """ statistics from this alignment """
 
-    header = Alignments_pb2.AlignmentHeader()
+    header=None
     """ alignment header """
 
     entries_reader = None
-    """ reader for the alignment entries (interally stored in chunks) """
+    """ reader for the alignment entries (internally stored in chunks) """
 
     entries = []
     """ Current chunk of alignment entries """
@@ -82,44 +96,36 @@ class AlignmentReader(object):
         # read the "stats" file
         stats_filename = self.basename + ".stats"
         if verbose:
-            print "Reading properties from", stats_filename
+            print("Reading properties from", stats_filename)
         try:
-            self.statistics.load(open(stats_filename))
-        except IOError, err:
+            self.statistics=self.statistics.load(open(stats_filename))
+        except IOError as err:
             # the "stats" file is optional
-            print >>sys.stderr, "Could not read alignment statistics from", stats_filename
-            print >>sys.stderr, str(err)
+            print( "Could not read alignment statistics from", stats_filename,file=sys.stderr)
+            print(file=sys.stderr)
             pass
 
         # read the header
-        header_filename = self.basename + ".header"
+        try:
+            header_filename = self.basename + ".header"
+        except DecodeError as error:
+            print("Unable to load header", file=sys.stderr)
+            print(error)
+            pass
+
         if verbose:
-            print "Reading header from", header_filename
-        f = gzip.open(header_filename, "rb")
-        self.header.ParseFromString(f.read())
-        f.close()
+            print("Reading header from", header_filename)
+        self.header=goby.Alignments_pb2.AlignmentHeader()
+        file_io = open(file=header_filename, mode="rb")
 
-        # open the entries
-        self.entries_reader = AlignmentCollectionReader(self.basename, verbose)
+        buffer= file_io.read(path.getsize(header_filename))
+        decompressed = gzip.GzipFile("", "rb", 0, fileobj=BytesIO(buffer)).read()
 
-    def next(self):
-        """ Return next alignment entry from the entries file
-        """
-        # is it time to get the next chunk from the entries file?
-        if not self.entries or self.current_entry_index >= len(self.entries):
-            self.entries = self.entries_reader.next().alignment_entries
-            self.current_entry_index = 0
-
-            # If the entries came back empty, we're done
-            if not self.entries:
-                raise StopIteration
-
-        entry = self.entries[self.current_entry_index]
-        self.current_entry_index += 1
-        return entry
+        self.header.ParseFromString(decompressed)
 
     def __iter__(self):
-        return self
+        for entry in GobyAlignment(self.basename+".entries"):
+            yield entry
 
     def __str__(self):
         return self.basename
@@ -132,7 +138,7 @@ class TooManyHitsReader(object):
     basename = None
     """ basename for this alignment """
 
-    tmh = Alignments_pb2.AlignmentTooManyHits()
+    tmh = goby.Alignments_pb2.AlignmentTooManyHits()
     """ too many hits """
 
     queryindex_to_numhits = dict()
@@ -152,7 +158,7 @@ class TooManyHitsReader(object):
         # read the "too many hits" info
         tmh_filename = self.basename + ".tmh"
         if verbose:
-            print "Reading too many hits info from", tmh_filename
+            print("Reading too many hits info from", tmh_filename)
 
         try:
             f = gzip.open(tmh_filename, "rb")
@@ -162,31 +168,12 @@ class TooManyHitsReader(object):
                 self.queryindex_to_numhits[hit.query_index] = hit.at_least_number_of_hits
                 if hit.HasField("length_of_match"):
                     self.queryindex_to_depth[hit.query_index] = hit.length_of_match
-        except IOError, err:
+        except IOError as err:
             # the "Too Many Hits" file is optional
-            print >>sys.stderr, "Could not read \"Too Many Hits\" information from", tmh_filename
-            print >>sys.stderr, "Assuming no queries have too many hits."
-            print >>sys.stderr, str(err)
+            print( "Could not read \"Too Many Hits\" information from", tmh_filename, file=sys.stderr)
+            print("Assuming no queries have too many hits.", file=sys.stderr)
+            print(str(err), file=sys.stderr)
             pass
-
-    def __str__(self):
-        return self.basename
-
-class AlignmentCollectionReader(MessageChunksReader):
-    """ Iterator for alignment collections within the alignment entries."""
-
-    def __init__(self, basename, verbose = False):
-        MessageChunksReader.__init__(self, get_basename(basename) + ".entries", verbose)
-
-    def next(self):
-        """ Return next alignment collection from the entries file."""
-        buf = MessageChunksReader.next(self)
-        collection = Alignments_pb2.AlignmentCollection()
-        collection.ParseFromString(buf)
-        return collection
-
-    def __iter__(self):
-        return self
 
     def __str__(self):
         return self.basename

@@ -10,29 +10,29 @@ from distutils.core import setup
 
 setup(
     name='goby',
-    version='2.3.4.1',
+    version='3.3.0',
     packages=['goby'],
     author='Campagne Lab',
-    author_email='icb@med.cornell.edu',
+    author_email='fac2003@campagnelab.org',
     scripts=[
         'GobyAlignmentStats.py',
         'GobyAlignmentToText.py',
         'GobyCompactToFasta.py',
         'GobyReadsStats.py'
+        ''
         ],
     url='http://goby.campagnelab.org/',
-    description='Python API for reading binary data files created with the Goby next-gen data management framework.',
-    license='GNU General Public License (GPL)',
+    description='Python API for reading read and alignment data files created with the Goby framework.',
+    license='GNU LESSER GENERAL PUBLIC LICENSE',
     long_description=open('README.txt').read(),
     requires=[
-        'google.protobuf (>=2.3)',
-        'pyjavaproperties (>=0.3)',
+        'google.protobuf (>=3.0)',
         ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: GNU LESSER GENERAL PUBLIC LICENSE',
         'Operating System :: OS Independent',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
         ],

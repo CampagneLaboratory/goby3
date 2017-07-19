@@ -18,10 +18,52 @@
 
 """ Support for reading Goby chunked "compact" files. """
 
+import io as io
 import os
 import struct
-import StringIO
 from gzip import GzipFile
+from io import BytesIO
+import sys
+
+import progressbar
+
+def MessageChunksGenerator(filename, collectionContainer=None, fileobject=None, currentIndex=0, file_size=0):
+    """
+    Return a generator for bytes decompressed from chunks in a gzipped Goby protobuf.
+    If you supply a collectionContaine, the bytes are parsed with the protobuf collection
+    and the collection is returned instead.
+    :param filename: name/path of the file
+    :return: bytes or parsed collection, when collectionContainer is provided.
+    """
+    if fileobject is None:
+        fileobject = open(filename, "rb")
+        file_size = os.path.getsize(filename)
+        progress_bar = progressbar.ProgressBar(max_value=file_size)
+    while True:
+            fileobject.seek(currentIndex, io.SEEK_SET)
+
+            DELIMITER_LENGTH = 8
+            #  position to point just after the next delimiter
+            fileobject.seek(DELIMITER_LENGTH, io.SEEK_CUR)
+            # get the number of bytes expected in the next chunk
+            num_bytes = read_int(fileobject)
+            if num_bytes != 0:
+                print('.', end='', flush=True)
+                # each chunk is compressed
+                buf = fileobject.read(num_bytes)
+                currentIndex = fileobject.tell()
+                progress_bar.update(currentIndex)
+                #  print("file position: ", currentIndex)
+                buf = GzipFile("", "rb", 0, fileobj=BytesIO(buf)).read()
+                if collectionContainer is not None:
+                    collectionContainer.ParseFromString(buf)
+                    yield collectionContainer
+                else:
+                    yield buf
+            else:
+                fileobject.close()
+                break
+
 
 def read_int(fd):
     """ Python implementation of Java's DataInputStream.readInt method.
@@ -32,83 +74,3 @@ def read_int(fd):
     else:
         length = 0
     return length
-
-class MessageChunksReader(object):
-    """ Class to parse a file that contains goby "chunked" data.
-    The MessageChunksReader is actually an iterator over indiviual
-    entries stored in the compressed file.
-    """
- 
-    verbose = False
-    """ print verbose messages """
-
-    filename = None
-    """ the name of the chunked file """
-
-    fileobject = None
-    """ handle to the actual chunked file """
-
-    fileindex = None
-    """ the current index into the chunked file """
-
-    DELIMITER_LENGTH = 8
-    """ length of the delimiter tag (in bytes) """
-
-    def __init__(self, filename, verbose = False):
-        """ Initialize the MessageChunksReader using the name
-        of the of the compact file (reads, alignment entries, etc.)
-        """
-
-        self.verbose = verbose
-
-        if self.verbose:
-            print "Reading data from", filename
-
-        # store the file information
-        self.filename = filename
-
-        # open the file
-        self.fileobject = open(self.filename, "rb")
-
-        # and set the current file pointer to the beginning of the file
-        self.fileindex = 0
-
-    def __del__(self):
-        """ Close the underlying file when the object is destroyed """
-        if self.verbose:
-            print "closing file:", self.filename
-        self.fileobject.close()
-
-    def next(self):
-        """ Return next chunk of bytes from the file. """
-        try:
-            #  position to point just after the next delimiter
-            self.fileindex += self.DELIMITER_LENGTH
-            if self.verbose:
-                print "seeking to position", self.fileindex
-            self.fileobject.seek(self.DELIMITER_LENGTH, os.SEEK_CUR)
-
-            # get the number of bytes expected in the next chunk
-            num_bytes = read_int(self.fileobject)
-            if self.verbose:
-                print "expecting", num_bytes, "in next chunk"
-
-            # if there are no more bytes, we're done
-            if (num_bytes == 0):
-                raise StopIteration
-            else:
-                # each chunk is compressed
-                buf = self.fileobject.read(num_bytes)
-                buf = GzipFile("", "rb", 0, StringIO.StringIO(buf)).read()
-                return buf
-        finally:
-            self.fileindex = self.fileobject.tell()
-
-    def __iter__(self):
-        """ The message chunks reader is actually an iterator over chunks
-        in the compact file.  Each iteration will return a chunk of bytes raw
-        bytes which can then be processed """
-        return self
-
-    def __str__(self):
-        return self.filename

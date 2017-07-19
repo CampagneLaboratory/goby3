@@ -26,7 +26,8 @@ import sys
 from goby.Alignments import AlignmentReader, TooManyHitsReader
 
 def usage():
-    print "usage:", sys.argv[0], "[-h|--help] [-v|--verbose] [-f|--format <plain|sam>] [-o|--output <file>] <basename>" 
+    print("usage:", sys.argv[0], "[-h|--help] [-v|--verbose] [-f|--format <plain|sam>] [-o|--output <file>] <basename>")
+
 
 def main():
     format = "plain"
@@ -35,8 +36,8 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "f:ho:v", ["format=", "help", "output=", "verbose"])
-    except getopt.GetoptError, err:
-        print >> sys.stderr, str(err)
+    except getopt.GetoptError as err:
+        print( str(err), file=sys.stderr)
         usage()
         sys.exit(1)
 
@@ -53,7 +54,7 @@ def main():
             output = open(arg, "w")
 
     if format != "plain" and format != "sam":
-        print >> sys.stderr, "Format", format, "is not supported"
+        print ("Format", format, "is not supported", file=sys.stderr)
         usage()
         sys.exit(3)
 
@@ -63,7 +64,7 @@ def main():
 
     basename = goby.Alignments.get_basename(args[0])
     if verbose:
-        print "Compact Alignment basename =", basename
+        print("Compact Alignment basename =", basename)
 
     reader = AlignmentReader(basename, verbose)
     header = reader.header

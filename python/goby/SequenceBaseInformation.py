@@ -16,23 +16,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-""" General purpose utiliies used by Goby. """
+""" Contains classes that can parse sequence base information data
+stored in the .sbi format. See the Goby3 and variation analysis projects
+for details about this file format.
+"""
 
-import re
+import gzip
 
-commify_regex = re.compile(r'^(-?\d+)(\d{3})')
+from collections import Iterator, Iterable
 
-def commify(num, separator=','):
+import BaseInformationRecords_pb2
+import MessageChunks
+import goby.BaseInformationRecords_pb2
+
+
+
+def SequenceBaseInformationGenerator(basename, verbose=False):
+    """ Generator to parse .sbi files.
     """
-    commify(num, separator) ->  string
-    
-    Return a string representing the number num with separator inserted
-    for every power of 1000.   Separator defaults to a comma.
-    E.g., commify(1234567) ->  '1,234,567'
-    """
 
-    num = str(num)  # just in case we were passed a numeric value
-    more_to_do = 1
-    while more_to_do:
-        (num, more_to_do) = commify_regex.subn(r'\1%s\2' % separator,num)
-    return num
+    if not basename.endswith(".sbi"):
+        basename+=".sbi"
+
+    collection = BaseInformationRecords_pb2.BaseInformationCollection()
+    for sbi_records in MessageChunks.MessageChunksGenerator(
+            basename, collectionContainer=collection):
+        for sbi_record in sbi_records.records:
+            yield sbi_record

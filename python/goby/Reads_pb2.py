@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='Reads.proto',
   package='goby',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bReads.proto\x12\x04goby\"0\n\x0eReadCollection\x12\x1e\n\x05reads\x18\x01 \x03(\x0b\x32\x0f.goby.ReadEntry\"\xad\x02\n\tReadEntry\x12\x12\n\nread_index\x18\x01 \x02(\r\x12\x15\n\rbarcode_index\x18\n \x01(\r\x12\x17\n\x0fread_identifier\x18\x17 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x16 \x01(\t\x12\x13\n\x0bread_length\x18\x02 \x02(\r\x12\x10\n\x08sequence\x18\x03 \x01(\x0c\x12\x15\n\rsequence_pair\x18\x05 \x01(\x0c\x12\x18\n\x10read_length_pair\x18\x06 \x01(\r\x12\x16\n\x0equality_scores\x18\x04 \x01(\x0c\x12\x1b\n\x13quality_scores_pair\x18\x07 \x01(\x0c\x12\x17\n\x0f\x63ompressed_data\x18\x08 \x01(\x0c\x12!\n\tmeta_data\x18\x19 \x03(\x0b\x32\x0e.goby.MetaData\"&\n\x08MetaData\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\tB\"\n\x1e\x65\x64u.cornell.med.icb.goby.readsH\x01')
+  serialized_pb=_b('\n\x0bReads.proto\x12\x04goby\"0\n\x0eReadCollection\x12\x1e\n\x05reads\x18\x01 \x03(\x0b\x32\x0f.goby.ReadEntry\"\xad\x02\n\tReadEntry\x12\x12\n\nread_index\x18\x01 \x02(\r\x12\x15\n\rbarcode_index\x18\n \x01(\r\x12\x17\n\x0fread_identifier\x18\x17 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x16 \x01(\t\x12\x13\n\x0bread_length\x18\x02 \x02(\r\x12\x10\n\x08sequence\x18\x03 \x01(\x0c\x12\x15\n\rsequence_pair\x18\x05 \x01(\x0c\x12\x18\n\x10read_length_pair\x18\x06 \x01(\r\x12\x16\n\x0equality_scores\x18\x04 \x01(\x0c\x12\x1b\n\x13quality_scores_pair\x18\x07 \x01(\x0c\x12\x17\n\x0f\x63ompressed_data\x18\x08 \x01(\x0c\x12!\n\tmeta_data\x18\x19 \x03(\x0b\x32\x0e.goby.MetaData\"&\n\x08MetaData\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\tB\x1e\n\x1aorg.campagnelab.goby.readsH\x01')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -231,5 +231,5 @@ _sym_db.RegisterMessage(MetaData)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\036edu.cornell.med.icb.goby.readsH\001'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\032org.campagnelab.goby.readsH\001'))
 # @@protoc_insertion_point(module_scope)

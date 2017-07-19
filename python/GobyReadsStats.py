@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2010 Institute for Computational Biomedicine,
@@ -23,19 +23,20 @@ import os
 import stat
 import sys
 
-from goby.Reads import ReadsReader
+from goby.Reads import CompactReads
 from goby.utils import commify
 
 def usage():
-    print "usage:", sys.argv[0], "[-h|--help] [-v|--verbose] <fileame>" 
+    print("usage:", sys.argv[0], "[-h|--help] [-v|--verbose] <filename>")
+
 
 def main():
     verbose = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hv", ["help", "verbose"])
-    except getopt.GetoptError, err:
-        print >> sys.stderr, str(err)
+    except getopt.GetoptError as err:
+        print(str(err),file=sys.stderr)
         usage()
         sys.exit(1)
 
@@ -52,23 +53,23 @@ def main():
         sys.exit(2)
 
     filename = args[0]
-    print "Compact reads filename = %s" % filename
-    print
-
+    print("Compact reads filename = %s" % filename)
+    print()
     filesize = os.stat(filename)[stat.ST_SIZE]
     number_of_entries = 0
     number_of_identifiers = 0
     number_of_descriptions = 0
     number_of_sequences = 0
     number_of_sequence_pairs = 0
+
     number_of_quality_scores = 0
     number_of_quality_score_pairs = 0
-    min_read_length = sys.maxint
-    max_read_length = -sys.maxint - 1
+    min_read_length = sys.maxsize
+    max_read_length = -sys.maxsize - 1
     total_read_length = 0
     total_read_length_pair = 0
 
-    reads_reader = ReadsReader(filename, verbose)
+    reads_reader = CompactReads(filename)
     for entry in reads_reader:
         number_of_entries += 1
         read_length = entry.read_length
@@ -82,7 +83,7 @@ def main():
         if entry.HasField("sequence"):
             number_of_sequences += 1
         if entry.HasField("sequence_pair"):
-            number_of_sequences_pairs += 1
+            number_of_sequence_pairs += 1
         if entry.HasField("quality_scores"):
             number_of_quality_scores += 1
         if entry.HasField("quality_scores_pair"):
@@ -91,19 +92,21 @@ def main():
         min_read_length = min(min_read_length, read_length)
         max_read_length = max(max_read_length, read_length)
 
-    print "Average bytes per entry: %s" % commify(filesize / float(number_of_entries))
-    print "Average bytes per base:  %s" % commify(filesize / float(total_read_length))
-    print "Has identifiers = %s (%s)" % (number_of_identifiers > 0, commify(number_of_identifiers))
-    print "Has descriptions = %s (%s)" % (number_of_descriptions > 0, commify(number_of_descriptions))
-    print "Has sequences = %s (%s)" % (number_of_sequences > 0, commify(number_of_sequences))
-    print "Has sequence pairs = %s (%s)" % (number_of_sequence_pairs > 0, commify(number_of_sequence_pairs))
-    print "Has quality scores = %s (%s)" % (number_of_quality_scores > 0, commify(number_of_quality_scores))
-    print "Has quality score pairs = %s (%s)" % (number_of_quality_score_pairs > 0, commify(number_of_quality_score_pairs))
-    print "Number of entries = %s" % commify(number_of_entries)
-    print "Min read length = %s" % commify(min_read_length)
-    print "Max read length = %s" % commify(max_read_length)
-    print "Avg read length = %s" % commify(total_read_length / float(number_of_entries))
-    print "Avg read pair length = %s" % commify(total_read_length_pair / float(number_of_entries))
+    print("Average bytes per entry: %s" % commify(filesize / float(number_of_entries)))
+    print("Average bytes per base:  %s" % commify(filesize / float(total_read_length)))
+    print("Has identifiers = %s (%s)" % (number_of_identifiers > 0, commify(number_of_identifiers)))
+    print("Has descriptions = %s (%s)" % (number_of_descriptions > 0, commify(number_of_descriptions)))
+    print("Has sequences = %s (%s)" % (number_of_sequences > 0, commify(number_of_sequences)))
+    print("Has sequence pairs = %s (%s)" % (number_of_sequence_pairs > 0, commify(number_of_sequence_pairs)))
+    print("Has quality scores = %s (%s)" % (number_of_quality_scores > 0, commify(number_of_quality_scores)))
+    print("Has quality score pairs = %s (%s)" % (
+    number_of_quality_score_pairs > 0, commify(number_of_quality_score_pairs)))
+    print("Number of entries = %s" % commify(number_of_entries))
+    print("Min read length = %s" % commify(min_read_length))
+    print("Max read length = %s" % commify(max_read_length))
+    print("Avg read length = %s" % commify(total_read_length / float(number_of_entries)))
+    print("Avg read pair length = %s" % commify(total_read_length_pair / float(number_of_entries)))
+
 
 if __name__ == "__main__":
     main()
