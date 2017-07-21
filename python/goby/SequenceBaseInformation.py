@@ -23,11 +23,8 @@ for details about this file format.
 
 import gzip
 
-from collections import Iterator, Iterable
-
-import BaseInformationRecords_pb2
-import MessageChunks
 import goby.BaseInformationRecords_pb2
+import goby.MessageChunks
 
 
 
@@ -38,8 +35,8 @@ def SequenceBaseInformationGenerator(basename, verbose=False):
     if not basename.endswith(".sbi"):
         basename+=".sbi"
 
-    collection = BaseInformationRecords_pb2.BaseInformationCollection()
-    for sbi_records in MessageChunks.MessageChunksGenerator(
+    collection = goby.BaseInformationRecords_pb2.BaseInformationCollection()
+    for sbi_records in goby.MessageChunks.MessageChunksGenerator(
             basename, collectionContainer=collection):
         for sbi_record in sbi_records.records:
             yield sbi_record

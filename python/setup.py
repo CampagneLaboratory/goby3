@@ -18,7 +18,8 @@ setup(
         'GobyAlignmentStats.py',
         'GobyAlignmentToText.py',
         'GobyCompactToFasta.py',
-        'GobyReadsStats.py'
+        'GobyReadsStats.py',
+        'SbiPrint.py'
         ''
         ],
     url='http://goby.campagnelab.org/',

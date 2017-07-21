@@ -163,3 +163,28 @@ message NumberWithFrequency {
     required int32 number = 1;
     required uint32 frequency = 2;
 }
+
+message SomaticOutput {
+
+    required bool isSomatic=200;
+    /** Index of the reference sequence where this base is observed in the genome. */
+    required uint32 reference_index = 1;
+    /** Identifier for the reference sequence (typically chromosome name). */
+    optional string reference_id = 10;
+    /**  The position in the reference sequence of the genome. */
+    required uint32 position = 2;
+
+    /** The base we have introduced in the simulation. Always length 1. */
+    optional string mutatedBase = 4;
+
+    /** The index of the counts array where the mutated element was introduced. */
+    optional uint32 indexOfMutatedBase = 7;
+
+    /** The frequency with which this base was mutated by the mutator. */
+    optional float frequencyOfMutation = 6;
+    /**
+    The base present at the position in the genome/reference sequence.
+    */
+    optional string referenceBase = 5;
+
+}
