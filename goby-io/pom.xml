@@ -172,6 +172,40 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+
+                    <!-- compile proto buffer files to cpp for python  -->
+                    <execution>
+                        <id>exec-python-cpp-protoc</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+
+                            <target>
+                                <chmod file="${project.build.directory}/protoc-${protobuf.python.version}-${os.detected.classifier}.exe"
+                                       perm="ugo+rx"/>
+                                <mkdir dir="${protobuf.output.directory}"/>
+                                <path id="protobuf.input.filepaths.path">
+                                    <fileset dir="${protobuf.input.directory}">
+                                        <include name="*.proto"/>
+                                    </fileset>
+                                </path>
+                                <pathconvert pathsep=" " property="protobuf.input.filepaths"
+                                             refid="protobuf.input.filepaths.path"/>
+                                <exec executable="${project.build.directory}/protoc-${protobuf.python.version}-${os.detected.classifier}.exe"
+                                      failonerror="true">
+                                    <arg value="-I"/>
+                                    <arg value="${protobuf.input.directory}"/>
+                                    <arg value="--cpp_out"/>
+                                    <arg value="../python/cpp"/>
+                                    <arg line="${protobuf.input.filepaths}"/>
+                                </exec>
+                            </target>
+
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
                 </executions>
             </plugin>
 

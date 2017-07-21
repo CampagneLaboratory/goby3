@@ -1,12 +1,13 @@
 import os
 import sys
+
 try:
-    import ez_setup
+    import ez_setup, Extension
     ez_setup.use_setuptools()
 except ImportError:
     pass
-
-from distutils.core import setup
+from distutils.core import setup, Extension
+import subprocess
 
 setup(
     name='goby',
@@ -26,8 +27,14 @@ setup(
     description='Python API for reading read and alignment data files created with the Goby framework.',
     license='GNU LESSER GENERAL PUBLIC LICENSE',
     long_description=open('README.txt').read(),
+    ext_modules=[Extension('gobypodpb',
+            sources=['cpp/gobypodpb.c','cpp/Alignments.pb.cc',
+            'cpp/Reads.pb.cc',
+            'cpp/BaseInformationRecords.pb.cc' ],
+             # swig_opts=[subprocess.check_output("pkg-config --cflags")],
+             libraries=['protobuf'])],
     requires=[
-        'google.protobuf (>=3.0)',
+        'google.protobuf (>=3.3)',
         ],
     classifiers=[
         'Development Status :: 4 - Beta',
