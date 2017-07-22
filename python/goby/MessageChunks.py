@@ -40,11 +40,10 @@ def MessageChunksGenerator(filename, collectionContainer=None, fileobject=None, 
         file_size = os.path.getsize(filename)
         progress_bar = progressbar.ProgressBar(max_value=file_size)
     while True:
-            fileobject.seek(currentIndex, io.SEEK_SET)
 
             DELIMITER_LENGTH = 8
             #  position to point just after the next delimiter
-            fileobject.seek(DELIMITER_LENGTH, io.SEEK_CUR)
+            fileobject.read(DELIMITER_LENGTH)
             # get the number of bytes expected in the next chunk
             num_bytes = read_int(fileobject)
             if num_bytes != 0:
