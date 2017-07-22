@@ -32,5 +32,13 @@ class CheckChunks(unittest.TestCase):
             self.assertTrue(len(collection.alignment_entries) > 0)
 
 
+    def testIterateAlignmentWithCollection(self):
+        collection = Alignments_pb2.AlignmentCollection()
+
+        for chunk in MessageChunks.MessageChunksGenerator("../../test-data/bam/Example.entries",collection):
+            print("chunk has {} entries", len(collection.alignment_entries),flush=True)
+            self.assertTrue(len(collection.alignment_entries) > 0)
+
+
 if __name__ == '__main__':
     unittest.main()

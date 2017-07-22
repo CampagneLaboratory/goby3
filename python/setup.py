@@ -27,12 +27,15 @@ setup(
     description='Python API for reading read and alignment data files created with the Goby framework.',
     license='GNU LESSER GENERAL PUBLIC LICENSE',
     long_description=open('README.txt').read(),
-    ext_modules=[Extension('gobypodpb',
-            sources=['cpp/gobypodpb.c','cpp/Alignments.pb.cc',
-            'cpp/Reads.pb.cc',
-            'cpp/BaseInformationRecords.pb.cc' ],
-             # swig_opts=[subprocess.check_output("pkg-config --cflags")],
-             libraries=['protobuf'])],
+    # Remove below comments and adjust include path to enable (much) faster protobuf with cpp implementation:
+    # when installed this way, do: export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp to enable
+    #ext_modules=[Extension('gobypodpb',
+    #        sources=['cpp/gobypodpb.c','cpp/Alignments.pb.cc',
+    #        'cpp/Reads.pb.cc',
+    #        'cpp/BaseInformationRecords.pb.cc' ],
+    #        include_dirs=['/usr/local/include'], # adjust if protobuf installed elsewhere
+    #        library_dirs=['/usr/local/lib'],      # adjust if protobuf installed elsewhere
+    #        libraries=['protobuf'])],
     requires=[
         'google.protobuf (>=3.3)',
         ],

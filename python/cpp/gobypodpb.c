@@ -10,6 +10,7 @@ initpodpb(void)
   PyObject *m;
 
   m = Py_InitModule("gobypodpb", PodMethods);
-  if (m == NULL)
-    return;
+  if (m == NULL) {
+    return NULL;
+   }
 }
