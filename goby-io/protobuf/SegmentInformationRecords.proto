@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+package org.campagnelab.dl.varanalysis.protobuf;
+
+option java_package = "org.campagnelab.dl.varanalysis.protobuf";
+
+option optimize_for = SPEED;
+
+/**
+  Collection of segments.
+*/
+message SegmentInformationCollection {
+    repeated SegmentInformation records = 1;
+}
+
+/**
+One such message per segment in the genome that we observe.
+*/
+message SegmentInformation {
+
+    /**  The position in the reference sequence of the genome. */
+    optional ReferencePosition start_position = 1;
+
+    optional ReferencePosition end_position = 2;
+
+    //TODO: do we need to explicitely keep an order?
+    repeated Base base = 3;
+}
+
+message Base {
+    //TODO: not sure about what is in the base. Data is too generic... 
+    repeated float data = 1;
+}
+
+/**
+A position in the genome.
+*/
+message ReferencePosition {
+
+    optional uint32 location = 1;
+
+    optional string chromosome = 2;
+
+}
