@@ -23,13 +23,25 @@ message SegmentInformation {
 
     optional ReferencePosition end_position = 2;
 
-    //TODO: do we need to explicitely keep an order?
-    repeated Base base = 3;
+    repeated Sample sample=4;
+
+}
+/**
+Keep segment information about a sample. More than one sample may be stored in an .ssi file, in which case the segment
+positions are garanteed to be aligned across samples.
+*/
+message Sample {
+
+    repeated Base base = 1;
+
 }
 
+
 message Base {
-    //TODO: not sure about what is in the base. Data is too generic... 
-    repeated float data = 1;
+
+    repeated float features = 1;
+
+    repeated float labels = 2;
 }
 
 /**
@@ -37,8 +49,10 @@ A position in the genome.
 */
 message ReferencePosition {
 
+
+    optional uint32 reference_index = 2;
+
+    optional string reference_id = 3;
+
     optional uint32 location = 1;
-
-    optional string chromosome = 2;
-
 }
