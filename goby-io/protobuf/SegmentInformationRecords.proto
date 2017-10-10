@@ -23,7 +23,12 @@ message SegmentInformation {
 
     optional ReferencePosition end_position = 2;
 
-    repeated Sample sample=4;
+    /** Number of bases contained in this block/segment.
+        Equals to end_position.location - start_position.location.  */
+    optional uint32 length = 5;
+
+    /** Aligned samples in this block/segment. */
+    repeated Sample sample = 4;
 
 }
 /**
@@ -46,7 +51,7 @@ message Base {
     /** True genotype, in the format of a list of alleles, where A,B,C are single base alleles {A,C,T,G,-}
         found at the genomic site in this genome.
     */
-    repeated string trueLabel =3;
+    repeated string trueLabel = 3;
 }
 
 /**
