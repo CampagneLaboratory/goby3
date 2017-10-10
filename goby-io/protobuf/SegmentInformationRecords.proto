@@ -42,6 +42,11 @@ message Base {
     repeated float features = 1;
 
     repeated float labels = 2;
+
+    /** True genotype, in the format of a list of alleles, where A,B,C are single base alleles {A,C,T,G,-}
+        found at the genomic site in this genome.
+    */
+    repeated string trueLabel =3;
 }
 
 /**
