@@ -27,8 +27,8 @@ public class SequenceSegmentInformationWriter implements Closeable {
 
 
     public SequenceSegmentInformationWriter(final String outputFile) throws FileNotFoundException {
-        this(new FileOutputStream(BasenameUtils.getBasename(outputFile, FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION)+ ".ssi"));
-        this.basename = BasenameUtils.getBasename(outputFile,FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION);
+        this(new FileOutputStream(BasenameUtils.getBasename(outputFile, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION)+ ".ssi"));
+        this.basename = BasenameUtils.getBasename(outputFile,FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION);
     }
 
 
