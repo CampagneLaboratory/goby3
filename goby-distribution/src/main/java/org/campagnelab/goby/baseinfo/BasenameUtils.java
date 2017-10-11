@@ -37,7 +37,7 @@ public class BasenameUtils {
      * @param filename The name of the file to get the basename for
      * @return basename for the alignment file
      */
-    public static String getBasename(final String filename, String[] exts) {
+    public static String getBasename(final String filename, String... exts) {
         for (final String ext : exts) {
             if (StringUtils.endsWith(filename, ext)) {
                 return StringUtils.removeEnd(filename, ext);
