@@ -257,4 +257,28 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
         reader.close();
     }
 
+    /**
+     * Return the basename corresponding to the input reads filename.  Note
+     * that if the filename does have the extension known to be a compact read
+     * the returned value is the original filename
+     *
+     * @param filename The name of the file to get the basename for
+     * @return basename for the alignment file
+     */
+    public static String getBasename(final String filename) {
+        return BasenameUtils.getBasename(filename,".sbi",".sbip");
+    }
+
+    /**
+     * Return the basenames corresponding to the input filenames. Less basename than filenames
+     * may be returned (if several filenames reduce to the same baseline after removing
+     * the extension).
+     *
+     * @param filenames The names of the files to get the basnames for
+     * @return An array of basenames
+     */
+    public static String[] getBasenames(final String... filenames) {
+        return BasenameUtils.getBasenames(new String[]{".sbi",".sbip"}, filenames);
+    }
+
 }
