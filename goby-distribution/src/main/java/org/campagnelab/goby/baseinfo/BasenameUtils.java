@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author manuele
  */
-class BasenameUtils {
+public class BasenameUtils {
 
     /**
      * Return the basenames corresponding to the input filenames. Less basename than filenames
@@ -19,7 +19,7 @@ class BasenameUtils {
      * @param filenames The names of the files to get the basnames for
      * @return An array of basenames
      */
-    protected static String[] getBasenames(final String[] exts, final String... filenames) {
+    public static String[] getBasenames(final String[] exts, final String... filenames) {
         final ObjectSet<String> result = new ObjectArraySet<String>();
         if (filenames != null) {
             for (final String filename : filenames) {
@@ -37,7 +37,7 @@ class BasenameUtils {
      * @param filename The name of the file to get the basename for
      * @return basename for the alignment file
      */
-    protected static String getBasename(final String filename, String[] exts) {
+    public static String getBasename(final String filename, String[] exts) {
         for (final String ext : exts) {
             if (StringUtils.endsWith(filename, ext)) {
                 return StringUtils.removeEnd(filename, ext);
