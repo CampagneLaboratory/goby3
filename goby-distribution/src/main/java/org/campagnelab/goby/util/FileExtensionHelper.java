@@ -56,14 +56,14 @@ public final class FileExtensionHelper {
      * File extension for sequence base information data.
      */
     public static final String[] COMPACT_SEQUENCE_BASE_INFORMATION = {
-            ".sbi"
+            ".sbi", ".sbip"
     };
 
     /**
      * File extension for sequence segment information data.
      */
     public static final String[] COMPACT_SEQUENCE_SEGMENT_INFORMATION = {
-            ".ssi"
+            ".ssi", ".ssip"
     };
     /**
      * Possible types for compact files.
