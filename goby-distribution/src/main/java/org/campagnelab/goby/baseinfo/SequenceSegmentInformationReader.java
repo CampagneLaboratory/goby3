@@ -226,8 +226,9 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
         recordLoadedSoFar += 1;
         return record;
     }
+
     /** Remove the .ssi or .ssip extension if the filename has it. */
     public String getBasename(String filename) {
-        return BasenameUtils.getBasename(filename,".ssi",".ssip");
+        return BasenameUtils.getBasename(filename, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION);
     }
 }
