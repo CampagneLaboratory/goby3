@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='SegmentInformationRecords.proto',
   package='org.campagnelab.dl.varanalysis.protobuf',
   syntax='proto2',
-  serialized_pb=_b('\n\x1fSegmentInformationRecords.proto\x12\'org.campagnelab.dl.varanalysis.protobuf\"l\n\x1cSegmentInformationCollection\x12L\n\x07records\x18\x01 \x03(\x0b\x32;.org.campagnelab.dl.varanalysis.protobuf.SegmentInformation\"\xfb\x01\n\x12SegmentInformation\x12R\n\x0estart_position\x18\x01 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12P\n\x0c\x65nd_position\x18\x02 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12?\n\x06sample\x18\x04 \x03(\x0b\x32/.org.campagnelab.dl.varanalysis.protobuf.Sample\"E\n\x06Sample\x12;\n\x04\x62\x61se\x18\x01 \x03(\x0b\x32-.org.campagnelab.dl.varanalysis.protobuf.Base\"(\n\x04\x42\x61se\x12\x10\n\x08\x66\x65\x61tures\x18\x01 \x03(\x02\x12\x0e\n\x06labels\x18\x02 \x03(\x02\"T\n\x11ReferencePosition\x12\x17\n\x0freference_index\x18\x02 \x01(\r\x12\x14\n\x0creference_id\x18\x03 \x01(\t\x12\x10\n\x08location\x18\x01 \x01(\rB+\n\'org.campagnelab.dl.varanalysis.protobufH\x01')
+  serialized_pb=_b('\n\x1fSegmentInformationRecords.proto\x12\'org.campagnelab.dl.varanalysis.protobuf\"l\n\x1cSegmentInformationCollection\x12L\n\x07records\x18\x01 \x03(\x0b\x32;.org.campagnelab.dl.varanalysis.protobuf.SegmentInformation\"\x8b\x02\n\x12SegmentInformation\x12R\n\x0estart_position\x18\x01 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12P\n\x0c\x65nd_position\x18\x02 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12\x0e\n\x06length\x18\x05 \x01(\r\x12?\n\x06sample\x18\x04 \x03(\x0b\x32/.org.campagnelab.dl.varanalysis.protobuf.Sample\"E\n\x06Sample\x12;\n\x04\x62\x61se\x18\x01 \x03(\x0b\x32-.org.campagnelab.dl.varanalysis.protobuf.Base\";\n\x04\x42\x61se\x12\x10\n\x08\x66\x65\x61tures\x18\x01 \x03(\x02\x12\x0e\n\x06labels\x18\x02 \x03(\x02\x12\x11\n\ttrueLabel\x18\x03 \x03(\t\"T\n\x11ReferencePosition\x12\x17\n\x0freference_index\x18\x02 \x01(\r\x12\x14\n\x0creference_id\x18\x03 \x01(\t\x12\x10\n\x08location\x18\x01 \x01(\rB+\n\'org.campagnelab.dl.varanalysis.protobufH\x01')
 )
 
 
@@ -78,7 +78,14 @@ _SEGMENTINFORMATION = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='sample', full_name='org.campagnelab.dl.varanalysis.protobuf.SegmentInformation.sample', index=2,
+      name='length', full_name='org.campagnelab.dl.varanalysis.protobuf.SegmentInformation.length', index=2,
+      number=5, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='sample', full_name='org.campagnelab.dl.varanalysis.protobuf.SegmentInformation.sample', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -97,7 +104,7 @@ _SEGMENTINFORMATION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=187,
-  serialized_end=438,
+  serialized_end=454,
 )
 
 
@@ -127,8 +134,8 @@ _SAMPLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=440,
-  serialized_end=509,
+  serialized_start=456,
+  serialized_end=525,
 )
 
 
@@ -153,6 +160,13 @@ _BASE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='trueLabel', full_name='org.campagnelab.dl.varanalysis.protobuf.Base.trueLabel', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -165,8 +179,8 @@ _BASE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=511,
-  serialized_end=551,
+  serialized_start=527,
+  serialized_end=586,
 )
 
 
@@ -210,8 +224,8 @@ _REFERENCEPOSITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=553,
-  serialized_end=637,
+  serialized_start=588,
+  serialized_end=672,
 )
 
 _SEGMENTINFORMATIONCOLLECTION.fields_by_name['records'].message_type = _SEGMENTINFORMATION
