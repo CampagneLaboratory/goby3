@@ -29,10 +29,7 @@ import org.campagnelab.goby.exception.GobyRuntimeException;
 import org.campagnelab.goby.reads.ReadCodec;
 import org.campagnelab.goby.util.FileExtensionHelper;
 import it.unimi.dsi.fastutil.io.FastBufferedInputStream;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 
 import java.io.*;
@@ -77,7 +74,8 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @throws IOException If an error occurs reading the input
      */
     public SequenceBaseInformationReader(final String path) throws IOException {
-        this(getBasename(path), FileUtils.openInputStream(new File(getBasename(path) + ".sbi")));
+        this(BasenameUtils.getBasename(path, FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION),
+                FileUtils.openInputStream(new File(BasenameUtils.getBasename(path,FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION) + ".sbi")));
     }
 
     /**
@@ -87,7 +85,8 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @throws IOException If an error occurs reading the input
      */
     public SequenceBaseInformationReader(final File file) throws IOException {
-        this(getBasename(file.getCanonicalPath()), FileUtils.openInputStream(file));
+        this(BasenameUtils.getBasename(file.getCanonicalPath(),FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION),
+                FileUtils.openInputStream(file));
     }
 
     @Override
@@ -257,43 +256,5 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
     public void close() throws IOException {
         reader.close();
     }
-
-    /**
-     * Return the basename corresponding to the input reads filename.  Note
-     * that if the filename does have the extension known to be a compact read
-     * the returned value is the original filename
-     *
-     * @param filename The name of the file to get the basename for
-     * @return basename for the alignment file
-     */
-    public static String getBasename(final String filename) {
-        for (final String ext : FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION) {
-            if (StringUtils.endsWith(filename, ext)) {
-                return StringUtils.removeEnd(filename, ext);
-            }
-        }
-
-        // perhaps the input was a basename already.
-        return filename;
-    }
-
-    /**
-     * Return the basenames corresponding to the input filenames. Less basename than filenames
-     * may be returned (if several filenames reduce to the same baseline after removing
-     * the extension).
-     *
-     * @param filenames The names of the files to get the basnames for
-     * @return An array of basenames
-     */
-    public static String[] getBasenames(final String... filenames) {
-        final ObjectSet<String> result = new ObjectArraySet<String>();
-        if (filenames != null) {
-            for (final String filename : filenames) {
-                result.add(getBasename(filename));
-            }
-        }
-        return result.toArray(new String[result.size()]);
-    }
-
 
 }

@@ -25,6 +25,7 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInform
 import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords.BaseInformationCollection;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.compression.SequenceBaseInfoCollectionHandler;
+import org.campagnelab.goby.util.FileExtensionHelper;
 import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 
 import java.io.*;
@@ -67,8 +68,8 @@ public class SequenceBaseInformationWriter implements Closeable {
 
 
     public SequenceBaseInformationWriter(final String basename) throws FileNotFoundException {
-        this(new FileOutputStream(SequenceBaseInformationReader.getBasename(basename) + ".sbi"));
-        this.basename = SequenceBaseInformationReader.getBasename(basename);
+        this(new FileOutputStream(BasenameUtils.getBasename(basename, FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION) + ".sbi"));
+        this.basename = BasenameUtils.getBasename(basename,FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION);
     }
 
     public SequenceBaseInformationWriter(final OutputStream output) {
