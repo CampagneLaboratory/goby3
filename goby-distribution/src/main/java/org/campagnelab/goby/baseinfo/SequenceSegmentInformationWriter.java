@@ -2,7 +2,6 @@ package org.campagnelab.goby.baseinfo;
 
 import edu.cornell.med.icb.util.VersionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.campagnelab.dl.varanalysis.protobuf.SegmentInformationRecords;
 import org.campagnelab.goby.compression.MessageChunksWriter;
 import org.campagnelab.goby.compression.SequenceSegmentInfoCollectionHandler;
@@ -28,8 +27,8 @@ public class SequenceSegmentInformationWriter implements Closeable {
 
 
     public SequenceSegmentInformationWriter(final String outputFile) throws FileNotFoundException {
-        this(new FileOutputStream(getBasename(outputFile) + ".ssi"));
-        this.basename = getBasename(outputFile);
+        this(new FileOutputStream(BasenameUtils.getBasename(outputFile, FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION)+ ".ssi"));
+        this.basename = BasenameUtils.getBasename(outputFile,FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION);
     }
 
 
@@ -142,22 +141,5 @@ public class SequenceSegmentInformationWriter implements Closeable {
         writeProperties(basename, recordIndex, p);
     }
 
-    /**
-     * Return the basename corresponding to the input reads filename.  Note
-     * that if the filename does have the extension known to be a compact read
-     * the returned value is the original filename
-     *
-     * @param filename The name of the file to get the basename for
-     * @return basename for the alignment file
-     */
-    public static String getBasename(final String filename) {
-        for (final String ext : FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION) {
-            if (StringUtils.endsWith(filename, ext)) {
-                return StringUtils.removeEnd(filename, ext);
-            }
-        }
 
-        // perhaps the input was a basename already.
-        return filename;
-    }
 }
