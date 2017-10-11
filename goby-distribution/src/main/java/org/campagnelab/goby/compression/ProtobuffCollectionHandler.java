@@ -34,9 +34,11 @@ import java.io.InputStream;
  *         Time: 11:37 AM
  */
 public interface ProtobuffCollectionHandler {
-    public final int TYPE_READS = 0;
-    public final int TYPE_ALIGNMENTS = 1;
-    public final int TYPE_SEQUENCE_BASE_INFO = 2;
+    int TYPE_READS = 0;
+    int TYPE_ALIGNMENTS = 1;
+    int TYPE_SEQUENCE_BASE_INFO = 2;
+    int TYPE_SEQUENCE_SEGMENT_INFO = 3;
+
 
     /**
      * Returns the type of the collection elements.
