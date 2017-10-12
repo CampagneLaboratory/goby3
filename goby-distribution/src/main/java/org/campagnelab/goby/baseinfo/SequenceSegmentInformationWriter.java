@@ -15,6 +15,7 @@ import java.util.Properties;
 
 /**
  * Writer for sequence segment information.
+ *
  * @author manuele
  */
 public class SequenceSegmentInformationWriter implements Closeable {
@@ -27,8 +28,8 @@ public class SequenceSegmentInformationWriter implements Closeable {
 
 
     public SequenceSegmentInformationWriter(final String outputFile) throws FileNotFoundException {
-        this(new FileOutputStream(BasenameUtils.getBasename(outputFile, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION)+ ".ssi"));
-        this.basename = BasenameUtils.getBasename(outputFile,FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION);
+        this(new FileOutputStream(BasenameUtils.getBasename(outputFile, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION) + ".ssi"));
+        this.basename = BasenameUtils.getBasename(outputFile, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION);
     }
 
 
@@ -36,6 +37,7 @@ public class SequenceSegmentInformationWriter implements Closeable {
         this.collectionBuilder = SegmentInformationRecords.SegmentInformationCollection.newBuilder();
         messageChunkWriter = new MessageChunksWriter(output);
         messageChunkWriter.setParser(new SequenceSegmentInfoCollectionHandler());
+        setNumEntriesPerChunk(1000);
         recordIndex = 0;
 
     }
@@ -121,6 +123,7 @@ public class SequenceSegmentInformationWriter implements Closeable {
         out.println("Number of bytes/baseInformation record " +
                 (messageChunkWriter.getTotalBytesWritten()) / (double) recordIndex);
     }
+
     /**
      * Closes this stream and releases any system resources associated
      * with it. If the stream is already closed then invoking this
