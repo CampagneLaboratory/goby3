@@ -25,6 +25,9 @@ public class SequenceSegmentInformationWriter implements Closeable {
     private final MessageChunksWriter messageChunkWriter;
     private long recordIndex;
     private Properties customProperties = new Properties();
+    private long maxNumOfBases = 0L;
+    private long maxNumOfLabels = 0L;
+    private long maxNumOfFeatures = 0L;
 
 
     public SequenceSegmentInformationWriter(final String outputFile) throws FileNotFoundException {
@@ -86,16 +89,37 @@ public class SequenceSegmentInformationWriter implements Closeable {
         IOUtils.closeQuietly(out);
     }
 
-    public static void writeProperties(String basename, long numberOfRecords) throws FileNotFoundException {
+    public static void writeProperties(String basename, long numberOfRecords, long maxNumOfLabels, long maxNumOfBases,
+                                       long maxNumOfFeatures) throws FileNotFoundException {
         Properties p = new Properties();
-        writeProperties(basename, numberOfRecords, p);
+        writeProperties(basename, numberOfRecords, maxNumOfLabels, maxNumOfBases, maxNumOfFeatures, p);
     }
 
-    private static void writeProperties(String basename, long numberOfSegments, Properties p) throws FileNotFoundException {
+    private static void writeProperties(String basename, long numberOfSegments,
+                                        long maxNumOfLabels, long maxNumOfBases,
+                                        long maxNumOfFeatures, Properties p) throws FileNotFoundException {
         p.setProperty("numSegments", Long.toString(numberOfSegments));
+        p.setProperty("maxNumOfLabels", Long.toString(maxNumOfLabels));
+        p.setProperty("maxNumOfBases", Long.toString(maxNumOfBases));
+        p.setProperty("maxNumOfFeatures", Long.toString(maxNumOfFeatures));
         List<Properties> lp = new ArrayList<>();
         lp.add(p);
         writeProperties(basename, lp);
+    }
+
+    public void setEntryBases(long numOfBases) {
+       if (this.maxNumOfBases < numOfBases)
+           this.maxNumOfBases = numOfBases;
+    }
+
+    public void setEntryLabels(long numOfLabels) {
+        if (this.maxNumOfLabels < numOfLabels)
+            this.maxNumOfLabels = numOfLabels;
+    }
+
+    public void setEntryFeatures(long numOfFeatures) {
+        if (this.maxNumOfFeatures < numOfFeatures)
+            this.maxNumOfFeatures = numOfFeatures;
     }
 
     /**
@@ -139,7 +163,7 @@ public class SequenceSegmentInformationWriter implements Closeable {
     public void close() throws IOException {
         messageChunkWriter.close(collectionBuilder);
         Properties p = getCustomProperties();
-        writeProperties(basename, recordIndex, p);
+        writeProperties(basename, recordIndex, maxNumOfLabels, maxNumOfBases, maxNumOfFeatures, p);
     }
 
 
