@@ -78,10 +78,8 @@ public class SequenceSegmentInformationWriter implements Closeable {
      */
     public static void writeProperties(String basename, List<Properties> properties) throws FileNotFoundException {
         FileOutputStream out = new FileOutputStream(basename + ".ssip");
-        long numTotal = 0;
         Properties merged = new Properties();
         if (properties.size() >= 1) merged.putAll(properties.get(0));
-        merged.setProperty("numRecords", Long.toString(numTotal));
         merged.setProperty("goby.version", VersionUtils.getImplementationVersion(SequenceBaseInformationWriter.class));
         CommitPropertyHelper.appendCommitInfo(SequenceBaseInformationWriter.class, "/GOBY_COMMIT.properties", merged);
         merged.save(out, basename);
@@ -93,8 +91,8 @@ public class SequenceSegmentInformationWriter implements Closeable {
         writeProperties(basename, numberOfRecords, p);
     }
 
-    private static void writeProperties(String basename, long numberOfRecords, Properties p) throws FileNotFoundException {
-        p.setProperty("numRecords", Long.toString(numberOfRecords));
+    private static void writeProperties(String basename, long numberOfSegments, Properties p) throws FileNotFoundException {
+        p.setProperty("numSegments", Long.toString(numberOfSegments));
         List<Properties> lp = new ArrayList<>();
         lp.add(p);
         writeProperties(basename, lp);
