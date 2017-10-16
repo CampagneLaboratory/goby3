@@ -23,7 +23,7 @@ for details about this file format.
 
 import gzip
 
-import goby.BaseInformationRecords_pb2
+import goby.SegmentInformationRecords_pb2
 import goby.MessageChunks
 
 

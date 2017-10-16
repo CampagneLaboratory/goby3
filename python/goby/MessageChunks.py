@@ -35,10 +35,12 @@ def MessageChunksGenerator(filename, collectionContainer=None, fileobject=None, 
     :param filename: name/path of the file
     :return: bytes or parsed collection, when collectionContainer is provided.
     """
+    progress_bar = progressbar.ProgressBar()
     if fileobject is None:
         fileobject = open(filename, "rb")
         file_size = os.path.getsize(filename)
-        progress_bar = progressbar.ProgressBar(max_value=file_size)
+        progress_bar = progressbar.ProgressBar(maxval=file_size)
+    progress_bar.start()
     while True:
 
             DELIMITER_LENGTH = 8
