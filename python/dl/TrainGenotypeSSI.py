@@ -1,5 +1,5 @@
 import argparse
-import json
+import warnings
 
 from keras import backend
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
@@ -9,6 +9,7 @@ from keras.optimizers import RMSprop
 from keras.regularizers import l1_l2, l1, l2
 
 from goby.SequenceSegmentInformation import SequenceSegmentInformationGenerator
+from goby.pyjavaproperties import Properties
 import numpy as np
 import tensorflow as tf
 
@@ -17,13 +18,13 @@ def vectorize(segment_info_generator, max_base_count, max_feature_count, max_lab
     feature_arrays = []
     label_arrays = []
     for segment_info in segment_info_generator:
-        for sample_idx, sample in segment_info.sample:
+        for sample_idx, sample in enumerate(segment_info.sample):
             feature_array = np.zeros((max_base_count, max_feature_count))
             label_array = np.zeros((max_base_count, max_label_count))
-            for base_idx, base in sample.base:
-                for feature_idx, feature in base.features:
+            for base_idx, base in enumerate(sample.base):
+                for feature_idx, feature in enumerate(base.features):
                     feature_array[base_idx, feature_idx] = feature
-                for label_idx, label in base.labels:
+                for label_idx, label in enumerate(base.labels):
                     label_array[base_idx, label_idx] = label
             feature_arrays.append(feature_array)
             label_arrays.append(label_array)
@@ -118,9 +119,9 @@ def main(args):
     init = tf.global_variables_initializer()
 
     # Show device placement:
-    session = (tf.InteractiveSession(config=tf.ConfigProto(log_device_placement=args.show_mapping))
+    session = (tf.InteractiveSession(config=tf.ConfigProto(log_device_placement=args.show_mappings))
                if args.tensorboard
-               else tf.Session(config=tf.ConfigProto(log_device_placement=args.show_mapping)))
+               else tf.Session(config=tf.ConfigProto(log_device_placement=args.show_mappings)))
 
     session.run(init)
 
@@ -135,28 +136,48 @@ def main(args):
         raise ValueError("Platform {} not recognized".format(args.platform))
 
     reg = None
-    if args.l1 and args.l2:
+    if args.l1 is not None and args.l2 is not None:
         reg = regularizers.get(l1_l2(args.l1, args.l2))
-    elif args.l1:
+    elif args.l1 is not None:
         reg = regularizers.get(l1(args.l1))
-    elif args.l2:
+    elif args.l2 is not None:
         reg = regularizers.get(l2(args.l2))
+    with open("{}p".format(args.input), "r") as input_ssip:
+        input_properties = Properties()
+        input_properties.load(input_ssip)
+    with open("{}p".format(args.validation_file), "r") as val_ssip:
+        val_properties = Properties()
+        val_properties.load(val_ssip)
+    max_base_count = max(int(input_properties.getProperty("maxNumOfBases")),
+                         int(val_properties.getProperty("maxNumOfBases")))
+    input_feature_count = int(input_properties.getProperty("maxNumOfFeatures"))
+    input_label_count = int(input_properties.getProperty("maxNumOfLabels"))
+    val_feature_count = int(val_properties.getProperty("maxNumOfFeatures"))
+    val_label_count = int(val_properties.getProperty("maxNumOfLabels"))
+    if input_feature_count != val_feature_count:
+        warnings.warn("Mismatch between input feature count {} and val feature count {}".format(input_feature_count,
+                                                                                                val_feature_count))
+    if input_label_count != val_label_count:
+        warnings.warn("Mismatch between input label count {} and val label count {}".format(input_label_count,
+                                                                                            val_label_count))
+    max_feature_count = max(input_feature_count, val_feature_count)
+    max_label_count = max(input_label_count, val_label_count)
 
-    with open(args.i_json, "r") as input_json_file:
-        inputs_json = json.load(input_json_file)
-
+    print("Vectorizing training data...")
     training_input, training_label = vectorize(SequenceSegmentInformationGenerator(args.input),
-                                               max_base_count=inputs_json["max_base_count"],
-                                               max_feature_count=inputs_json["max_feature_count"],
-                                               max_label_count=inputs_json["max_label_count"])
+                                               max_base_count=max_base_count,
+                                               max_feature_count=max_feature_count,
+                                               max_label_count=max_label_count)
+    print("Vectorizing validation data...")
     val_input, val_label = vectorize(SequenceSegmentInformationGenerator(args.validation_file),
-                                     max_base_count=inputs_json["max_base_count"],
-                                     max_feature_count=inputs_json["max_feature_count"],
-                                     max_label_count=inputs_json["max_label_count"])
+                                     max_base_count=max_base_count,
+                                     max_feature_count=max_feature_count,
+                                     max_label_count=max_label_count)
+    print("Creating model and callbacks...")
     model = create_model(num_layers=args.num_layers,
-                         max_base_count=inputs_json["max_base_count"],
-                         max_feature_count=inputs_json["max_feature_count"],
-                         max_label_count=inputs_json["max_label_count"],
+                         max_base_count=max_base_count,
+                         max_feature_count=max_feature_count,
+                         max_label_count=max_label_count,
                          use_bidirectional=args.bidirectional,
                          lstm_units=args.lstm_units,
                          implementation=implementation,
@@ -171,7 +192,7 @@ def main(args):
                 batch_size=args.mini_batch_size,
                 callbacks=callbacks,
                 cpu_or_gpu=cpu_or_gpu,
-                max_epochs=1,
+                max_epochs=args.max_epochs,
                 model=model,
                 verbosity=args.verbosity)
 
@@ -179,11 +200,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", type=str, required=True, help="SSI file with input segments.")
-    parser.add_argument("--i-json", type=str, required=True, help="JSON file from preprocessing output."
-                                                                  " Preprocessing should be valid for both training and"
-                                                                  " validation files if separate validation file used. "
-                                                                  "If training a cohort of samples, use preprocessing "
-                                                                  "output valid on all samples.")
     parser.add_argument("--bidirectional", dest="bidirectional", action="store_true",
                         help="When set, train a bidirectional LSTM.")
     parser.add_argument("--lstm-units", type=int, default=64, help="Number of LSTM units.")
@@ -209,7 +225,7 @@ if __name__ == "__main__":
                         help="Number of sequences to train on at a time. Larger values increase speed, "
                              "but require more memory.")
     parser.add_argument("--max-epochs", type=int, default=60, help="Maximum number of epochs to train for.")
-
-    parser.add_argument()
+    parser.add_argument("--l1", type=float, help="L1 regularization rate.")
+    parser.add_argument("--l2", type=float, help="L2 regularization rate.")
     parser_args = parser.parse_args()
     main(parser_args)
