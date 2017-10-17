@@ -18,16 +18,17 @@ def vectorize(segment_info_generator, max_base_count, max_feature_count, max_lab
     feature_arrays = []
     label_arrays = []
     for segment_info in segment_info_generator:
-        for sample_idx, sample in enumerate(segment_info.sample):
-            feature_array = np.zeros((max_base_count, max_feature_count))
-            label_array = np.zeros((max_base_count, max_label_count))
-            for base_idx, base in enumerate(sample.base):
-                for feature_idx, feature in enumerate(base.features):
-                    feature_array[base_idx, feature_idx] = feature
-                for label_idx, label in enumerate(base.labels):
-                    label_array[base_idx, label_idx] = label
-            feature_arrays.append(feature_array)
-            label_arrays.append(label_array)
+        # Only look at first segment in sample for now
+        sample = segment_info.sample[0]
+        feature_array = np.zeros((max_base_count, max_feature_count))
+        label_array = np.zeros((max_base_count, max_label_count))
+        for base_idx, base in enumerate(sample.base):
+            for feature_idx, feature in enumerate(base.features):
+                feature_array[base_idx, feature_idx] = feature
+            for label_idx, label in enumerate(base.labels):
+                label_array[base_idx, label_idx] = label
+        feature_arrays.append(feature_array)
+        label_arrays.append(label_array)
     return np.array(feature_arrays), np.array(label_arrays)
 
 
