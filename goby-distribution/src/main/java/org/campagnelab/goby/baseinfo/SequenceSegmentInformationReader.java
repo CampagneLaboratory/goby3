@@ -52,8 +52,8 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
      * @throws IOException If an error occurs reading the input
      */
     public SequenceSegmentInformationReader(final String path) throws IOException {
-        this(BasenameUtils.getBasename(path, FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION),
-                FileUtils.openInputStream(new File(BasenameUtils.getBasename(path, FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION) + ".ssi")));
+        this(BasenameUtils.getBasename(path, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION),
+                FileUtils.openInputStream(new File(BasenameUtils.getBasename(path, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION) + ".ssi")));
     }
 
     /**
@@ -63,7 +63,7 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
      * @throws IOException If an error occurs reading the input
      */
     public SequenceSegmentInformationReader(final File file) throws IOException {
-        this(BasenameUtils.getBasename(file.getCanonicalPath(), FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION),
+        this(BasenameUtils.getBasename(file.getCanonicalPath(), FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION),
                 FileUtils.openInputStream(file));
     }
 
