@@ -10,6 +10,7 @@ import org.campagnelab.goby.util.commits.CommitPropertyHelper;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
@@ -66,6 +67,18 @@ public class SequenceSegmentInformationWriter implements Closeable {
      */
     public void addCustomProperties(String key, String value) {
         this.customProperties.setProperty(key, value);
+    }
+
+    /**
+     * Append the properties of this reader to the writer properties.
+     * @param p
+     */
+    public void appendProperties(Properties p) {
+        for (Enumeration<Object> keys = p.keys(); keys.hasMoreElements();) {
+            final String key = (String) keys.nextElement();
+            this.customProperties.setProperty(key, (String) p.get(key));
+        }
+
     }
 
     public Properties getCustomProperties() {
