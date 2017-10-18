@@ -117,10 +117,16 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
         codec = null;
         this.collection = null;
         try {
-            FileInputStream propertiesStream = new FileInputStream(basename+".ssip");
+            FileInputStream propertiesStream = new FileInputStream(basename + ".ssip");
             try {
                 properties.load(propertiesStream);
                 totalRecords = Integer.parseInt(properties.getProperty("numRecords"));
+                if (properties.getProperty("maxNumOfFeatures") != null && properties.getProperty("genotypes.segments.numFeaturesPerBase") == null) {
+                    properties.setProperty("genotypes.segments.numFeaturesPerBase", properties.getProperty("maxNumOfFeatures"));
+                }
+                if (properties.getProperty("maxNumOfBases") != null && properties.getProperty("genotypes.segments.maxSequenceLength") == null) {
+                    properties.setProperty("genotypes.segments.maxSequenceLength", properties.getProperty("maxNumOfBases"));
+                }
             } finally {
                 IOUtils.closeQuietly(propertiesStream);
             }
@@ -147,7 +153,7 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
         return this.totalRecords;
     }
 
-    
+
     /**
      * Closes this stream and releases any system resources associated
      * with it. If the stream is already closed then invoking this
@@ -209,7 +215,8 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
         } catch (IOException e) {
             throw new GobyRuntimeException(e);
         }
-        return hasNext;    }
+        return hasNext;
+    }
 
     /**
      * Returns the next segment in the iteration.
@@ -227,7 +234,9 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
         return record;
     }
 
-    /** Remove the .ssi or .ssip extension if the filename has it. */
+    /**
+     * Remove the .ssi or .ssip extension if the filename has it.
+     */
     public String getBasename(String filename) {
         return BasenameUtils.getBasename(filename, FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION);
     }
