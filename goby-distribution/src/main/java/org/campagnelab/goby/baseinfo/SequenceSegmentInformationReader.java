@@ -120,7 +120,7 @@ public class SequenceSegmentInformationReader implements Iterator<SegmentInforma
             FileInputStream propertiesStream = new FileInputStream(basename + ".ssip");
             try {
                 properties.load(propertiesStream);
-                totalRecords = Integer.parseInt(properties.getProperty("numRecords"));
+                totalRecords = Integer.parseInt(properties.getProperty("numSegments"));
                 if (properties.getProperty("maxNumOfFeatures") != null && properties.getProperty("genotypes.segments.numFeaturesPerBase") == null) {
                     properties.setProperty("genotypes.segments.numFeaturesPerBase", properties.getProperty("maxNumOfFeatures"));
                 }
