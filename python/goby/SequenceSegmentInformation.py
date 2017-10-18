@@ -40,3 +40,18 @@ def SequenceSegmentInformationGenerator(basename, verbose=False):
             basename, collectionContainer=collection):
         for ssi_record in ssi_records.records:
             yield ssi_record
+
+def SequenceSegmentInformationStreamGenerator(basename, verbose=False):
+    """ Generator to parse .ssi files and endlessly generate SegmentInformation records from them, starting again
+        from the beginning of the file when the end is reached.
+    """
+
+    if not basename.endswith(".ssi"):
+        basename+=".ssi"
+
+    while True:
+        collection = goby.SegmentInformationRecords_pb2.SegmentInformationCollection()
+        for ssi_records in goby.MessageChunks.MessageChunksGenerator(
+                basename, collectionContainer=collection):
+            for ssi_record in ssi_records.records:
+                yield ssi_record
