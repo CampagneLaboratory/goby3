@@ -116,8 +116,12 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
         reader.setHandler(new SequenceBaseInfoCollectionHandler());
         codec = null;
         this.collection = null;
+        this.refreshProperties();
+    }
+
+    private void refreshProperties() {
         try {
-            FileInputStream propertiesStream = new FileInputStream(basename+".sbip");
+            FileInputStream propertiesStream = new FileInputStream(this.basename + ".sbip");
             try {
                 properties.load(propertiesStream);
                 totalRecords = Integer.parseInt(properties.getProperty("numRecords"));
@@ -125,7 +129,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
                 IOUtils.closeQuietly(propertiesStream);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load properties for " + basename, e);
+            throw new RuntimeException("Unable to load properties for " + this.sbiPath, e);
         }
     }
 
@@ -158,7 +162,9 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @throws IOException If an error occurs reading the input
      */
     public SequenceBaseInformationReader(final long start, final long end, final String path) throws IOException {
-        this(start, end, new FastBufferedInputStream(FileUtils.openInputStream(new File(path))));
+        this(start, end, new FastBufferedInputStream(FileUtils.openInputStream(new File(path))), path);
+        this.sbiPath = path;
+        this.basename = getBasename(path);
     }
 
     /**
@@ -171,11 +177,14 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @param stream Stream over the input file
      * @throws IOException If an error occurs reading the input.
      */
-    public SequenceBaseInformationReader(final long start, final long end, final FastBufferedInputStream stream)
+    protected SequenceBaseInformationReader(final long start, final long end, final FastBufferedInputStream stream, String path)
             throws IOException {
         super();
+        this.basename=getBasename(path);
+        this.sbiPath = path;
         reader = new FastBufferedMessageChunksReader(start, end, stream);
         reader.setHandler(new SequenceBaseInfoCollectionHandler());
+        this.refreshProperties();
     }
 
     /**
@@ -203,6 +212,10 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
             throw new GobyRuntimeException(e);
         }
         return hasNext;
+    }
+
+    public String getSourceSbiPath() {
+        return this.sbiPath;
     }
 
     /**
@@ -255,6 +268,14 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      */
     public void close() throws IOException {
         reader.close();
+    }
+
+    /**
+     * Resets the end offset for this reader.
+     * @param endOffset
+     */
+    public void resetEndOffset(long endOffset) {
+        this.reader.resetEndOffset(endOffset);
     }
 
     /**
