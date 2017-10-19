@@ -1,5 +1,7 @@
 import argparse
+import json
 import math
+import os
 import warnings
 
 from keras import backend
@@ -43,6 +45,21 @@ def vectorize_generator(segment_info_generator, max_base_count, max_feature_coun
             feature_arrays = []
             label_arrays = []
             segments_processed = 0
+
+
+def batch_numpy_file_generator(np_batch_directory):
+    curr_batch_num = 0
+    properties_json_path = os.path.join(np_batch_directory, "properties.json")
+    with open(properties_json_path, "r") as properties_json_file:
+        properties_json = json.load(properties_json_file)
+    batch_path_and_prefix = os.path.join(np_batch_directory, properties_json["batch_prefix"])
+    while True:
+        with np.load("{}_{}.npz".format(batch_path_and_prefix,
+                                        curr_batch_num % properties_json["total_batches_written"])) as batch_data_set:
+            batch_input = batch_data_set["input"]
+            batch_label = batch_data_set["label"]
+            yield batch_input, batch_label
+            curr_batch_num += 1
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
@@ -177,6 +194,7 @@ def main(args):
                          learning_rate=args.learning_rate,
                          regularizer=reg)
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
+    generator_training_modes = frozenset(["batch", "sequence", "batch_np", "sequence_np"])
 
     if args.training_mode == "whole":
         print("Vectorizing training data...")
@@ -200,7 +218,7 @@ def main(args):
                         max_epochs=args.max_epochs,
                         model=model,
                         verbosity=args.verbosity)
-    elif args.training_mode == "batch" or args.training_mode == "sequence":
+    elif args.training_mode in generator_training_modes:
         if args.training_mode == "batch":
             input_generator = vectorize_generator(SequenceSegmentInformationStreamGenerator(args.input),
                                                   max_base_count=max_base_count,
@@ -214,8 +232,15 @@ def main(args):
                                                 max_label_count=max_label_count,
                                                 mini_batch_size=args.mini_batch_size,
                                                 num_segments=val_num_segments)
-        else:
+        elif args.training_mode == "sequence":
             raise Exception("sequence mode not supported yet")
+        elif args.training_mode == "batch_np":
+            input_generator = batch_numpy_file_generator(args.batch_training_directory)
+            val_generator = batch_numpy_file_generator(args.batch_validation_directory)
+        elif args.training_mode == "sequence_np":
+            raise Exception("sequence_np mode not supported yet")
+        else:
+            raise Exception("Unrecognized training mode")
         input_updates = math.ceil(input_num_segments / args.mini_batch_size)
         val_updates = math.ceil(val_num_segments / args.mini_batch_size)
         use_multiprocessing = args.parallel is not None
@@ -266,11 +291,22 @@ if __name__ == "__main__":
     parser.add_argument("--max-epochs", type=int, default=60, help="Maximum number of epochs to train for.")
     parser.add_argument("--l1", type=float, help="L1 regularization rate.")
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
-    parser.add_argument("--training-mode", type=str, choices=["whole", "batch", "sequence"], required=True,
+    parser.add_argument("--training-mode", type=str,
+                        choices=["whole", "batch", "sequence", "batch_np", "sequence_np"], required=True,
                         help="Training mode- whole loads training and validation tensors into memory at once; "
                              "batch creates training and validation tensors of size mini-batch-size using a generator; "
                              "sequence behaves similarly to batch, but uses a keras.utils.Sequence object for "
-                             "multiprocessing.")
+                             "multiprocessing; batch_np loads in numpy npz datasets generated using "
+                             "GenerateDatasetsFromSSI, with the directories specified by the "
+                             "--batch-training-directory and --batch-validation-directory parameters and creates "
+                             "generators for each; sequence_np is similar to batch_np, but uses a "
+                             "keras.utils.Sequence object.")
+    parser.add_argument("--batch-training-directory", type=str, help="Directory to look for npz files for training "
+                                                                     "input when batch_np or sequence_np used as "
+                                                                     "--training-mode")
+    parser.add_argument("--batch-validation-directory", type=str, help="Directory to look for npz files for validation "
+                                                                       "when batch_np or sequence_np used as "
+                                                                       "--training-mode")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
     parser_args = parser.parse_args()
     main(parser_args)

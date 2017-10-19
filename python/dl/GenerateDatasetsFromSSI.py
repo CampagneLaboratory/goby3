@@ -124,6 +124,7 @@ def main(args):
             "mini_batch_size": args.mini_batch_size,
             "num_segments": num_segments,
             "total_batches_written": batches_written,
+            "batch_prefix": args.prefix,
         }, output_json_file, indent=2)
     if feature_mismatch:
         warnings.warn("Mismatched number of features in each base; training behavior will be undefined")
