@@ -50,7 +50,7 @@ public class FastBufferedMessageChunksReader extends MessageChunksReader {
     /**
      * End offset of the slice in the file, in bytes.
      */
-    private final long endOffset;
+    private long endOffset;
 
 
     private ByteSet supportedCodecRegistrationCodes;
@@ -93,6 +93,12 @@ public class FastBufferedMessageChunksReader extends MessageChunksReader {
         this.in = new DataInputStream(input);
         supportedCodecRegistrationCodes = ChunkCodecHelper.registrationCodes();
         reposition(start, end);
+    }
+
+    @Override
+    public void resetEndOffset(long endOffset){
+        assert endOffset <= this.endOffset;
+        this.endOffset = endOffset;
     }
 
     byte lastCodecCodeSeen = 0;

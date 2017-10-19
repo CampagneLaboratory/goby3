@@ -69,6 +69,16 @@ public class MessageChunksReader implements Closeable {
     }
 
     /**
+     * Initialize the reader starting from the given position.
+     * @param input
+     * @param startFrom
+     */
+    public MessageChunksReader(final InputStream input, long startFrom) {
+        this(input);
+        bytesRead = startFrom;
+    }
+
+    /**
      * Returns true if the input has more entries.
      *
      * @param collection     The current collection, or null if no collection has been read yet.
@@ -221,4 +231,10 @@ public class MessageChunksReader implements Closeable {
         }
         return chunkCodec;
     }
+
+    /**
+     * To override for those Chuck readers that support offsets.
+     * @param endOffset
+     */
+    public void resetEndOffset(long endOffset) {}
 }
