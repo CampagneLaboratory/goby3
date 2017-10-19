@@ -9,23 +9,11 @@ from keras.models import Sequential
 from keras.optimizers import RMSprop
 from keras.regularizers import l1_l2, l1, l2
 
+from dl.GenerateDatasetsFromSSI import vectorize_segment_info
 from goby.SequenceSegmentInformation import SequenceSegmentInformationGenerator, SequenceSegmentInformationStreamGenerator
 from goby.pyjavaproperties import Properties
 import numpy as np
 import tensorflow as tf
-
-
-def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_label_count):
-    # Only look at first segment in sample for now
-    sample = segment_info.sample[0]
-    feature_array = np.zeros((max_base_count, max_feature_count))
-    label_array = np.zeros((max_base_count, max_label_count))
-    for base_idx, base in enumerate(sample.base):
-        for feature_idx, feature in enumerate(base.features):
-            feature_array[base_idx, feature_idx] = feature
-        for label_idx, label in enumerate(base.labels):
-            label_array[base_idx, label_idx] = label
-    return feature_array, label_array
 
 
 def vectorize(segment_info_generator, max_base_count, max_feature_count, max_label_count):
@@ -61,40 +49,25 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
                  implementation, regularizer, learning_rate, layer_type):
     model = Sequential()
     model.add(Masking(mask_value=0., input_shape=(max_base_count, max_feature_count)))
-    layer_args = {
-        "units": lstm_units,
-        "unroll": True,
-        "implementation": implementation,
-        "activity_regularizer": regularizer,
-        "return_sequences": True,
-    }
-    first_layer_args = dict(layer_args)
-    first_layer_args["input_shape"] = (max_base_count, max_feature_count)
     if layer_type == "LSTM":
-        first_lstm_layer = LSTM(**first_layer_args)
+        lstm_fn = LSTM
     elif layer_type == "GRU":
-        first_lstm_layer = GRU(**first_layer_args)
+        lstm_fn = GRU
     elif layer_type == "RNN":
-        first_lstm_layer = SimpleRNN(**first_layer_args)
+        lstm_fn = SimpleRNN
     elif layer_type == "SRU":
         raise Exception("SRU not added yet")
     else:
         raise Exception("Layer type not valid")
+    first_lstm_layer = lstm_fn(units=lstm_units, unroll=True, implementation=implementation,
+                               activity_regularizer=regularizer, return_sequences=True,
+                               input_shape=(max_base_count, max_feature_count))
     model.add(Bidirectional(first_lstm_layer, merge_mode="concat") if use_bidirectional else first_lstm_layer)
     for _ in range(num_layers):
-        hidden_layer_args = dict(layer_args)
-        hidden_layer_args["input_shape"] = (lstm_units, max_feature_count)
-        if layer_type == "LSTM":
-            lstm = LSTM(**hidden_layer_args)
-        elif layer_type == "GRU":
-            lstm = GRU(**hidden_layer_args)
-        elif layer_type == "RNN":
-            lstm = SimpleRNN(**hidden_layer_args)
-        elif layer_type == "SRU":
-            raise Exception("SRU not added yet")
-        else:
-            raise Exception("Layer type not valid")
-        model.add(Bidirectional(lstm, merge_mode="concat") if use_bidirectional else lstm)
+        hidden_lstm_layer = lstm_fn(units=lstm_units, unroll=True, implementation=implementation,
+                                    activity_regularizer=regularizer, return_sequences=True,
+                                    input_shape=(max_base_count, lstm_units))
+        model.add(Bidirectional(hidden_lstm_layer, merge_mode="concat") if use_bidirectional else hidden_lstm_layer)
     model.add(Dropout(0.5))
     model.add(TimeDistributed(Dense(max_label_count, activation="softmax"), input_shape=(max_base_count, lstm_units)))
     optimizer = RMSprop(lr=learning_rate)
