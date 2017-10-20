@@ -10,20 +10,24 @@ from goby.pyjavaproperties import Properties
 import numpy as np
 
 
-def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_label_count):
+def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_label_count, padding="pre"):
     # Only look at first segment in sample for now
     sample = segment_info.sample[0]
-    feature_array = np.zeros((max_base_count, max_feature_count))
-    label_array = np.zeros((max_base_count, max_label_count))
-    for base_idx, base in enumerate(sample.base):
-        for feature_idx, feature in enumerate(base.features):
-            feature_array[base_idx, feature_idx] = feature
-        for label_idx, label in enumerate(base.labels):
-            label_array[base_idx, label_idx] = label
+    feature_array = []
+    label_array = []
+    for base in sample.base:
+        feature_array.append(np.pad(np.array(list(base.features)), (0, max_feature_count - len(base.features)),
+                                    mode='constant'))
+        label_array.append(np.pad(np.array(list(base.labels)), (0, max_label_count - len(base.labels)),
+                                  mode='constant'))
+    amount_to_pad = max_base_count - len(feature_array)
+    padding_shape = ((amount_to_pad, 0), (0, 0)) if padding == "pre" else ((0, amount_to_pad), (0, 0))
+    feature_array = np.pad(np.array(feature_array), padding_shape, mode='constant')
+    label_array = np.pad(np.array(label_array), padding_shape, mode='constant')
     return feature_array, label_array
 
 
-def minimal_vectorize_segment(segment_info):
+def minimal_vectorize_segment(segment_info, padding="pre"):
     num_bases = len(segment_info.sample[0].base)
     num_features_set, num_labels_set = map(frozenset,
                                            zip(*[(len(base.features), len(base.labels))
@@ -32,10 +36,11 @@ def minimal_vectorize_segment(segment_info):
     label_mismatch = len(num_labels_set) > 1
     num_features = max(num_features_set)
     num_labels = max(num_labels_set)
-    return vectorize_segment_info(segment_info, num_bases, num_features, num_labels), feature_mismatch, label_mismatch
+    return vectorize_segment_info(segment_info, num_bases, num_features, num_labels,
+                                  padding), feature_mismatch, label_mismatch
 
 
-def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments):
+def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments, padding="pre"):
     segments_processed_in_batch = 0
     segments_processed_total = 0
     feature_mismatch = False
@@ -48,7 +53,7 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
         segments_processed_in_batch += 1
         segments_processed_total += 1
         (segment_input, segment_label), segment_feature_mismatch, segment_label_mismatch = minimal_vectorize_segment(
-            segment_info
+            segment_info, padding
         )
         feature_mismatch |= segment_feature_mismatch
         label_mismatch |= segment_label_mismatch
@@ -65,16 +70,16 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
                 segment_num_bases_batch, segment_num_features_batch = segment_input_batch.shape
                 _, segment_num_labels_batch = segment_label_batch.shape
                 # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
+                num_base_diff = max_bases_mini_batch - segment_num_bases_batch
+                timestep_padding = (num_base_diff, 0) if padding == "pre" else (0, num_base_diff)
                 mini_batch_input_ndarray.append(np.pad(
                     segment_input_batch,
-                    pad_width=((max_bases_mini_batch - segment_num_bases_batch, 0),
-                               (0, max_features_mini_batch - segment_num_features_batch)),
+                    pad_width=(timestep_padding, (0, max_features_mini_batch - segment_num_features_batch)),
                     mode='constant'
                 ))
                 mini_batch_label_ndarray.append(np.pad(
                     segment_input_batch,
-                    pad_width=((max_bases_mini_batch - segment_num_bases_batch, 0),
-                               (0, max_labels_mini_batch - segment_num_labels_batch)),
+                    pad_width=(timestep_padding, (0, max_labels_mini_batch - segment_num_labels_batch)),
                     mode='constant'
                 ))
             yield (np.array(mini_batch_input_ndarray),
@@ -106,7 +111,7 @@ def main(args):
     num_segments_in_last_data_set = 0
     batches_written = 0
     for batch_idx, (batch_data_set, batch_feature_mismatch, batch_label_mismatch) in enumerate(vectorize_by_mini_batch(
-            SequenceSegmentInformationGenerator(args.input), args.mini_batch_size, num_segments)):
+            SequenceSegmentInformationGenerator(args.input), args.mini_batch_size, num_segments, args.padding)):
         batch_input, batch_label = batch_data_set
         num_segments_in_last_data_set = batch_input.shape[0]
         feature_mismatch |= batch_feature_mismatch
@@ -125,6 +130,7 @@ def main(args):
             "num_segments": num_segments,
             "total_batches_written": batches_written,
             "batch_prefix": args.prefix,
+            "padding": args.padding,
         }, output_json_file, indent=2)
     if feature_mismatch:
         warnings.warn("Mismatched number of features in each base; training behavior will be undefined")
@@ -143,5 +149,7 @@ if __name__ == "__main__":
                         help="Number of segments to put in each numpy array.")
     parser.add_argument("--compress", dest="compress", action="store_true",
                         help="When set, compress npz files that are generated.")
+    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="pre",
+                        help="Whether to pad timesteps before or after sequences.")
     parser_args = parser.parse_args()
     main(parser_args)

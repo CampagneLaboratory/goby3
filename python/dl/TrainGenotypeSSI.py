@@ -19,26 +19,26 @@ import numpy as np
 import tensorflow as tf
 
 
-def vectorize(segment_info_generator, max_base_count, max_feature_count, max_label_count):
+def vectorize(segment_info_generator, max_base_count, max_feature_count, max_label_count, padding="pre"):
     feature_arrays = []
     label_arrays = []
     for segment_info in segment_info_generator:
         feature_array, label_array = vectorize_segment_info(segment_info, max_base_count, max_feature_count,
-                                                            max_label_count)
+                                                            max_label_count, padding)
         feature_arrays.append(feature_array)
         label_arrays.append(label_array)
     return np.array(feature_arrays), np.array(label_arrays)
 
 
 def vectorize_generator(segment_info_generator, max_base_count, max_feature_count, max_label_count, mini_batch_size,
-                        num_segments):
+                        num_segments, padding="pre"):
     feature_arrays = []
     label_arrays = []
     segments_processed = 0
     for segment_info in segment_info_generator:
         segments_processed += 1
         feature_array, label_array = vectorize_segment_info(segment_info, max_base_count, max_feature_count,
-                                                            max_label_count)
+                                                            max_label_count, padding)
         feature_arrays.append(feature_array)
         label_arrays.append(label_array)
         if len(feature_arrays) == mini_batch_size or segments_processed == num_segments:
@@ -68,6 +68,9 @@ class BatchNumpyFileSequence(Sequence):
             properties_json = get_properties_json(np_batch_directory)
         self.properties_json = properties_json
         self.batch_path_and_prefix = os.path.join(np_batch_directory, self.properties_json["batch_prefix"])
+
+    def __init__(self) -> None:
+        super().__init__()
 
     def __len__(self):
         return self.properties_json["total_batches_written"]
@@ -184,7 +187,7 @@ def main(args):
         reg = regularizers.get(l2(args.l2))
     input_properties_json = None
     val_properties_json = None
-    if args.training_mode not in frozenset(["batch_np", "sequence_np"]):
+    if args.training_mode not in frozenset(["batch-np", "sequence-np"]):
         with open("{}p".format(args.input), "r") as input_ssip:
             input_properties = Properties()
             input_properties.load(input_ssip)
@@ -199,17 +202,21 @@ def main(args):
         val_label_count = int(val_properties.getProperty("maxNumOfLabels"))
         input_num_segments = int(input_properties.getProperty("numSegments"))
         val_num_segments = int(val_properties.getProperty("numSegments"))
+        input_mini_batch_size = args.input_mini_batch_size
+        val_mini_batch_size = args.val_mini_batch_size
     else:
         input_properties_json = get_properties_json(args.input)
         val_properties_json = get_properties_json(args.validation)
-        input_base_count = input_properties_json["max_num_bases"]
-        val_base_count = val_properties_json["max_num_bases"]
+        input_base_count = input_properties_json["max_base_count"]
+        val_base_count = val_properties_json["max_base_count"]
         input_feature_count = input_properties_json["max_feature_count"]
         input_label_count = input_properties_json["max_label_count"]
         val_feature_count = val_properties_json["max_feature_count"]
         val_label_count = val_properties_json["max_label_count"]
         input_num_segments = input_properties_json["num_segments"]
         val_num_segments = val_properties_json["num_segments"]
+        input_mini_batch_size = input_properties_json["mini_batch_size"]
+        val_mini_batch_size = val_properties_json["mini_batch_size"]
 
     max_base_count = max(input_base_count, val_base_count)
     if input_feature_count != val_feature_count:
@@ -233,19 +240,21 @@ def main(args):
                          learning_rate=args.learning_rate,
                          regularizer=reg)
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
-    generator_training_modes = frozenset(["batch", "sequence", "batch_np", "sequence_np"])
+    generator_training_modes = frozenset(["batch", "sequence", "batch-np", "sequence-np"])
 
     if args.training_mode == "whole":
         print("Vectorizing training data...")
         training_input, training_label = vectorize(SequenceSegmentInformationGenerator(args.input),
                                                    max_base_count=max_base_count,
                                                    max_feature_count=max_feature_count,
-                                                   max_label_count=max_label_count)
+                                                   max_label_count=max_label_count,
+                                                   padding=args.padding)
         print("Vectorizing validation data...")
         val_input, val_label = vectorize(SequenceSegmentInformationGenerator(args.validation),
                                          max_base_count=max_base_count,
                                          max_feature_count=max_feature_count,
-                                         max_label_count=max_label_count)
+                                         max_label_count=max_label_count,
+                                         padding=args.padding)
         with tf.device(cpu_or_gpu):
             train_model(training_input=training_input,
                         training_label=training_label,
@@ -263,26 +272,28 @@ def main(args):
                                                   max_base_count=max_base_count,
                                                   max_feature_count=max_feature_count,
                                                   max_label_count=max_label_count,
-                                                  mini_batch_size=args.mini_batch_size,
-                                                  num_segments=input_num_segments)
+                                                  mini_batch_size=input_mini_batch_size,
+                                                  num_segments=input_num_segments,
+                                                  padding=args.padding)
             val_generator = vectorize_generator(SequenceSegmentInformationStreamGenerator(args.validation),
                                                 max_base_count=max_base_count,
                                                 max_feature_count=max_feature_count,
                                                 max_label_count=max_label_count,
-                                                mini_batch_size=args.mini_batch_size,
-                                                num_segments=val_num_segments)
+                                                mini_batch_size=val_mini_batch_size,
+                                                num_segments=val_num_segments,
+                                                padding=args.padding)
         elif args.training_mode == "sequence":
             raise Exception("sequence mode not supported yet")
-        elif args.training_mode == "batch_np":
+        elif args.training_mode == "batch-np":
             input_generator = batch_numpy_file_generator(args.input, input_properties_json)
             val_generator = batch_numpy_file_generator(args.validation, val_properties_json)
-        elif args.training_mode == "sequence_np":
+        elif args.training_mode == "sequence-np":
             input_generator = BatchNumpyFileSequence(args.input, input_properties_json)
             val_generator = BatchNumpyFileSequence(args.validation, val_properties_json)
         else:
             raise Exception("Unrecognized training mode")
-        input_updates = math.ceil(input_num_segments / args.mini_batch_size)
-        val_updates = math.ceil(val_num_segments / args.mini_batch_size)
+        input_updates = math.ceil(input_num_segments / input_mini_batch_size)
+        val_updates = math.ceil(val_num_segments / val_mini_batch_size)
         use_multiprocessing = args.parallel is not None
         num_workers = args.parallel if args.parallel is not None else 1
         with tf.device(cpu_or_gpu):
@@ -341,12 +352,18 @@ if __name__ == "__main__":
                         help="When set, show operation placements on cpu/gpu devices.")
     parser.add_argument("--verbosity", type=int, default=1, choices=[0, 1, 2],
                         help="Level of verbosity, 0, not verbose, 1, progress bar, 2, one line per epoch.")
-    parser.add_argument("--mini-batch-size", type=int, default=128,
+    parser.add_argument("--input-mini-batch-size", type=int, default=128,
                         help="Number of sequences to train on at a time. Larger values increase speed, "
+                             "but require more memory.")
+    parser.add_argument("--validation-mini-batch-size", type=int, default=128,
+                        help="Number of sequences to validate on at a time. Larger values increase speed, "
                              "but require more memory.")
     parser.add_argument("--max-epochs", type=int, default=60, help="Maximum number of epochs to train for.")
     parser.add_argument("--l1", type=float, help="L1 regularization rate.")
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
+    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="pre",
+                        help="Whether to pad timesteps before or after sequences. Only used for whole, batch, and "
+                             "sequence training modes.")
     parser_args = parser.parse_args()
     main(parser_args)
