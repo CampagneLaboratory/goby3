@@ -22,7 +22,7 @@ stored in the Goby "compact" format.
 import struct
 from collections import ByteString
 
-import MessageChunks
+import goby.MessageChunks
 import goby.Reads_pb2
 
 

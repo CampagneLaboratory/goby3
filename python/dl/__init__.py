@@ -1,2 +1,2 @@
-from . import TrainGenotypeSSI, GenerateDatasetsFromSSI
-__all__ = [TrainGenotypeSSI, GenerateDatasetsFromSSI]
+import dl.GenerateDatasetsFromSSI
+import dl.TrainGenotypeSSI

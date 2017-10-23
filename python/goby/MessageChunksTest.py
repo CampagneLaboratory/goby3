@@ -1,9 +1,6 @@
 import unittest
 
-import Reads_pb2
-import Alignments_pb2
-
-import MessageChunks
+from goby import Reads_pb2, MessageChunks, Alignments_pb2
 
 
 class CheckChunks(unittest.TestCase):

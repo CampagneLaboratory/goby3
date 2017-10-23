@@ -28,8 +28,8 @@ from os import path
 
 from google.protobuf.message import DecodeError
 
-import MessageChunks
 import goby.Alignments_pb2
+from goby import MessageChunks
 from goby.pyjavaproperties import Properties
 
 
