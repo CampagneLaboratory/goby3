@@ -48,10 +48,25 @@ message Base {
 
     repeated float labels = 2;
 
+    /** Color of the chromosome that contains the genotype. Used to reconstitute hapolotype continuity for indels.
+        Color is used to assemble called bases at successive positions into alleles, such as A--C from called alleles
+        at four positions. There are exactly ploidy number of colors in this list. Each integer encodes the color of the
+        chromosome that carries the allele. */
+    repeated uint32 color=6;
+
     /** True genotype, in the format of a list of alleles, where A,B,C are single base alleles {A,C,T,G,-}
         found at the genomic site in this genome.
     */
     repeated string trueLabel = 3;
+
+    /** True when the base contains some counts for indels. This does not mean that the base contains a true
+        indel, but simply that it contains a potential indel.
+    */
+    optional bool hasCandidateIndel=4;
+
+    /** True when the base actually overlaps an indel in one of its alleles. This is the set of bases used
+        to evaluate F1 over indels (at the base level). Other bases are used to evaluate performance of SNPs. */
+    optional bool hasTrueIndel=5;
 }
 
 /**
