@@ -69,9 +69,6 @@ class BatchNumpyFileSequence(Sequence):
         self.properties_json = properties_json
         self.batch_path_and_prefix = os.path.join(np_batch_directory, self.properties_json["batch_prefix"])
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def __len__(self):
         return self.properties_json["total_batches_written"]
 

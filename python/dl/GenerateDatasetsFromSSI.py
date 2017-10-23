@@ -78,7 +78,7 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
                     mode='constant'
                 ))
                 mini_batch_label_ndarray.append(np.pad(
-                    segment_input_batch,
+                    segment_label_batch,
                     pad_width=(timestep_padding, (0, max_labels_mini_batch - segment_num_labels_batch)),
                     mode='constant'
                 ))
