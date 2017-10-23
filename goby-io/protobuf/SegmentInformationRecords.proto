@@ -67,6 +67,12 @@ message Base {
     /** True when the base actually overlaps an indel in one of its alleles. This is the set of bases used
         to evaluate F1 over indels (at the base level). Other bases are used to evaluate performance of SNPs. */
     optional bool hasTrueIndel=5;
+
+    /** True when this base has at least one allele that does not match the reference. Those bases where
+    isVariant==true are used to estimate precision/recall and F1 for SNPs and indels.
+    */
+    optional bool isVariant=7;
+
 }
 
 /**
