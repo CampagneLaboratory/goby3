@@ -192,7 +192,6 @@ def main(args):
             val_properties = Properties()
             val_properties.load(val_ssip)
         input_base_count = int(input_properties.getProperty("maxNumOfBases"))
-        val_base_count = int(val_properties.getProperty("maxNumOfBases"))
         input_feature_count = int(input_properties.getProperty("maxNumOfFeatures"))
         input_label_count = int(input_properties.getProperty("maxNumOfLabels"))
         val_feature_count = int(val_properties.getProperty("maxNumOfFeatures"))
@@ -205,7 +204,6 @@ def main(args):
         input_properties_json = get_properties_json(args.input)
         val_properties_json = get_properties_json(args.validation)
         input_base_count = input_properties_json["max_base_count"]
-        val_base_count = val_properties_json["max_base_count"]
         input_feature_count = input_properties_json["max_feature_count"]
         input_label_count = input_properties_json["max_label_count"]
         val_feature_count = val_properties_json["max_feature_count"]
@@ -215,7 +213,7 @@ def main(args):
         input_mini_batch_size = input_properties_json["mini_batch_size"]
         val_mini_batch_size = val_properties_json["mini_batch_size"]
 
-    max_base_count = max(input_base_count, val_base_count)
+    max_base_count = input_base_count
     if input_feature_count != val_feature_count:
         warnings.warn("Mismatch between input feature count {} and val feature count {}".format(input_feature_count,
                                                                                                 val_feature_count))

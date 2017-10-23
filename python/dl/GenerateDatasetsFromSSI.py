@@ -20,10 +20,17 @@ def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_
                                     mode='constant'))
         label_array.append(np.pad(np.array(list(base.labels)), (0, max_label_count - len(base.labels)),
                                   mode='constant'))
-    amount_to_pad = max_base_count - len(feature_array)
+    amount_to_pad = max(0, max_base_count - len(sample.base))
     padding_shape = ((amount_to_pad, 0), (0, 0)) if padding == "pre" else ((0, amount_to_pad), (0, 0))
     feature_array = np.pad(np.array(feature_array), padding_shape, mode='constant')
     label_array = np.pad(np.array(label_array), padding_shape, mode='constant')
+    if padding == "pre":
+        feature_array = feature_array[:max_base_count, :]
+        label_array = label_array[:max_base_count, :]
+    else:
+        start_base = feature_array.shape[1] - max_base_count
+        feature_array = feature_array[start_base:, :]
+        label_array = label_array[start_base:, :]
     return feature_array, label_array
 
 
@@ -40,7 +47,7 @@ def minimal_vectorize_segment(segment_info, padding="pre"):
                                   padding), feature_mismatch, label_mismatch
 
 
-def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments, padding="pre"):
+def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments, max_base_count, padding="pre"):
     segments_processed_in_batch = 0
     segments_processed_total = 0
     feature_mismatch = False
@@ -82,6 +89,16 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
                     pad_width=(timestep_padding, (0, max_labels_mini_batch - segment_num_labels_batch)),
                     mode='constant'
                 ))
+            mini_batch_input_ndarray = np.array(mini_batch_input_ndarray)
+            mini_batch_label_ndarray = np.array(mini_batch_label_ndarray)
+            if max_base_count < mini_batch_input_ndarray.shape[1]:
+                if padding == "pre":
+                    mini_batch_input_ndarray = mini_batch_input_ndarray[:, :max_base_count, :]
+                    mini_batch_label_ndarray = mini_batch_label_ndarray[:, :max_base_count, :]
+                else:
+                    start_base = mini_batch_input_ndarray.shape[1] - max_base_count
+                    mini_batch_input_ndarray = mini_batch_input_ndarray[:, start_base:, :]
+                    mini_batch_label_ndarray = mini_batch_label_ndarray[:, start_base:, :]
             yield (np.array(mini_batch_input_ndarray),
                    np.array(mini_batch_label_ndarray)), feature_mismatch, label_mismatch
             segments_processed_in_batch = 0
@@ -111,7 +128,8 @@ def main(args):
     num_segments_in_last_data_set = 0
     batches_written = 0
     for batch_idx, (batch_data_set, batch_feature_mismatch, batch_label_mismatch) in enumerate(vectorize_by_mini_batch(
-            SequenceSegmentInformationGenerator(args.input), args.mini_batch_size, num_segments, args.padding)):
+            SequenceSegmentInformationGenerator(args.input), args.mini_batch_size, num_segments, max_base_count,
+            args.padding)):
         batch_input, batch_label = batch_data_set
         num_segments_in_last_data_set = batch_input.shape[0]
         feature_mismatch |= batch_feature_mismatch
