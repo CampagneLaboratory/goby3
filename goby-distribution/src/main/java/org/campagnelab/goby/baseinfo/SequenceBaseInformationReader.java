@@ -287,7 +287,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @return basename for the alignment file
      */
     public static String getBasename(final String filename) {
-        return BasenameUtils.getBasename(filename,FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION);
+        return BasenameUtils.getBasename(filename,FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION);
     }
 
     /**
@@ -299,7 +299,7 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
      * @return An array of basenames
      */
     public static String[] getBasenames(final String... filenames) {
-        return BasenameUtils.getBasenames(FileExtensionHelper.COMPACT_SEQUENCE_SEGMENT_INFORMATION, filenames);
+        return BasenameUtils.getBasenames(FileExtensionHelper.COMPACT_SEQUENCE_BASE_INFORMATION, filenames);
     }
 
 }
