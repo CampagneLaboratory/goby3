@@ -219,6 +219,20 @@ public class SequenceBaseInformationReader implements Iterator<BaseInformationRe
     }
 
     /**
+     * Gets the current position of the reader.
+     * @return the offset of the position, in bytes.
+     */
+    public long getCurrentReadPosition() {
+        try {
+            return this.reader.position();
+        } catch (IOException e) {
+            //FIXME: not sure why the position method throws the exception.
+           return 0L;
+        }
+    }
+
+
+    /**
      * Returns the next read entry from the input stream.
      *
      * @return the next read entry from the input stream.
