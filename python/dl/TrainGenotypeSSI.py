@@ -108,7 +108,7 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     model.add(Dropout(0.5))
     model.add(TimeDistributed(Dense(max_label_count, activation="softmax"), input_shape=(max_base_count, lstm_units)))
     optimizer = RMSprop(lr=learning_rate)
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['acc'])
     print("Model summary:", model.summary())
     return model
 

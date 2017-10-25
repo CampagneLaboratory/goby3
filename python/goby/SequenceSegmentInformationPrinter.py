@@ -26,6 +26,7 @@ def print_segment_info(ssi, bases_to_print, print_all_bases, samples_to_print, p
                     print("TrueLabel: {}".format(", ".join(map(str, base.trueLabel))))
                     print("HasCandidateIndel: {}".format(base.hasCandidateIndel))
                     print("HasTrueIndel: {}".format(base.hasTrueIndel))
+                    print("IsVariant: {}".format(base.isVariant))
                     print("\n")
                     bases_printed += 1
                 else:
