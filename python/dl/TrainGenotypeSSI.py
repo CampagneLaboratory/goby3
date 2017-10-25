@@ -78,6 +78,9 @@ class BatchNumpyFileSequence(Sequence):
             batch_label = batch_data_set["label"]
             return batch_input, batch_label
 
+    def on_epoch_end(self):
+        pass
+
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
                  implementation, regularizer, learning_rate, layer_type):
