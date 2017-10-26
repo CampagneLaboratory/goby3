@@ -246,8 +246,8 @@ def main(args):
         input_label_count = input_properties_json["max_label_count"]
         val_feature_count = val_properties_json["max_feature_count"]
         val_label_count = val_properties_json["max_label_count"]
-        input_num_segments = input_properties_json["num_segments"]
-        val_num_segments = val_properties_json["num_segments"]
+        input_num_segments = input_properties_json["num_segments_written"]
+        val_num_segments = val_properties_json["num_segments_written"]
         input_mini_batch_size = input_properties_json["mini_batch_size"]
         val_mini_batch_size = val_properties_json["mini_batch_size"]
 
