@@ -73,6 +73,12 @@ message Base {
     */
     optional bool isVariant=7;
 
+    optional string referenceAllele=8;
+    /**
+        The formatted counts from the sbi record at this base.
+    */
+    optional string formattedCounts=9;
+
 }
 
 /**

@@ -37,8 +37,8 @@ import java.io.*;
  * it possible to split the file efficiently (e.g., see Hadoop FileSplit mechanism).
  *
  * @author Fabien Campagne
- *         Date: Apr 24, 2009
- *         Time: 4:32:35 PM
+ * Date: Apr 24, 2009
+ * Time: 4:32:35 PM
  */
 public class MessageChunksWriter {
     private static final Log LOG = LogFactory.getLog(MessageChunksWriter.class);
@@ -103,11 +103,11 @@ public class MessageChunksWriter {
         compressingCodec = doc.getBoolean("compressing-codec");
         final String codecName = doc.getString("codec");
         chunkCodec = ChunkCodecHelper.load(codecName);
-        assert chunkCodec!=null:"ChunkCodec could not be loaded. Check your configuration.";
+        assert chunkCodec != null : "ChunkCodec could not be loaded. Check your configuration.";
 
         useTemplateCompression = doc.getBoolean("template-compression");
         numEntriesPerChunk = doc.getInteger("chunk-size");
-        if (chunkCodec!=null && numEntriesPerChunk == -1) {
+        if (chunkCodec != null && numEntriesPerChunk == -1) {
             // if the option was not set, use the chunk codec suggested chunk size:
             numEntriesPerChunk = chunkCodec.getSuggestedChunkSize();
         }
@@ -124,8 +124,7 @@ public class MessageChunksWriter {
      * @param collectionBuilder The builder prepared with the growing collection of entries.
      * @throws IOException if there was an error writing the entries
      */
-    public void writeAsNeeded(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder)
-            throws IOException {
+    public void writeAsNeeded(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder) {
 
         writeAsNeeded(collectionBuilder, 1);
     }
@@ -141,7 +140,7 @@ public class MessageChunksWriter {
      * @throws IOException if there was an error writing the entries
      */
     public long writeAsNeeded(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder,
-                              final int multiplicity) throws IOException {
+                              final int multiplicity) {
         totalEntriesWritten += Math.max(1, multiplicity);
         if (++numAppended >= numEntriesPerChunk) {
             flush(collectionBuilder);
@@ -162,10 +161,8 @@ public class MessageChunksWriter {
      * Force the writing of the collection to the output stream.
      *
      * @param collectionBuilder The builder prepared with the growing collection of entries.
-     * @throws IOException if there was an error writing the entries
      */
-    public void flush(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder)
-            throws IOException {
+    public synchronized void flush(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder) {
         // Write the separation between two chunks: eight bytes with value 0xFF.
 
         // If we are flushing a completely empty file, that's OK, the flush() should occur.
@@ -173,45 +170,48 @@ public class MessageChunksWriter {
         if (totalEntriesWritten == 0 || numAppended > 0) {
             // the position just before this chunk is written is recorded:
             currentChunkStartOffset = writtenBytes;
+            try {
+                assert out.size() == Integer.MAX_VALUE || out.size() == writtenBytes;
 
-            assert out.size() == Integer.MAX_VALUE || out.size() == writtenBytes;
+                //     System.out.println("Writting new chunk at position "+currentChunkStartOffset);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("writing zero bytes length=" + DELIMITER_LENGTH);
+                }
 
-            //     System.out.println("Writting new chunk at position "+currentChunkStartOffset);
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("writing zero bytes length=" + DELIMITER_LENGTH);
-            }
-
-            out.writeByte(chunkCodec.registrationCode());
-            writtenBytes += 1;
-            for (int i = 0; i < DELIMITER_LENGTH; i++) {
-                out.writeByte(DELIMITER_CONTENT);
+                out.writeByte(chunkCodec.registrationCode());
                 writtenBytes += 1;
+                for (int i = 0; i < DELIMITER_LENGTH; i++) {
+                    out.writeByte(DELIMITER_CONTENT);
+                    writtenBytes += 1;
+                }
+                final com.google.protobuf.Message protobuffCollection = collectionBuilder.clone().build();
+                // compress the read collection:
+
+                final ByteArrayOutputStream compressedBytes = chunkCodec.encode(protobuffCollection);
+                final int serializedSize = compressedBytes.size();
+
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("serialized compressed size: " + serializedSize);
+                }
+
+                // write the compressed size followed by the compressed stream:
+                out.writeInt(serializedSize);
+                writtenBytes += 4;
+                final byte[] bytes = compressedBytes.toByteArray();
+                out.write(bytes);
+                writtenBytes += bytes.length;
+                compressedBytes.close();
+                totalBytesWritten += serializedSize + 4 + DELIMITER_LENGTH;
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("current offset: " + totalBytesWritten);
+
+                }
+                out.flush();
+                numAppended = 0;
+                collectionBuilder.clear();
+            } catch (IOException e) {
+                throw new RuntimeException("Error encountered when writting a chunk.", e);
             }
-            final com.google.protobuf.Message protobuffCollection = collectionBuilder.clone().build();
-            // compress the read collection:
-
-            final ByteArrayOutputStream compressedBytes = chunkCodec.encode(protobuffCollection);
-            final int serializedSize = compressedBytes.size();
-
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("serialized compressed size: " + serializedSize);
-            }
-
-            // write the compressed size followed by the compressed stream:
-            out.writeInt(serializedSize);
-            writtenBytes += 4;
-            final byte[] bytes = compressedBytes.toByteArray();
-            out.write(bytes);
-            writtenBytes += bytes.length;
-            compressedBytes.close();
-            totalBytesWritten += serializedSize + 4 + DELIMITER_LENGTH;
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("current offset: " + totalBytesWritten);
-
-            }
-            out.flush();
-            numAppended = 0;
-            collectionBuilder.clear();
         }
     }
 

@@ -121,8 +121,8 @@ public class SequenceSegmentInformationWriter implements Closeable {
     }
 
     public void setEntryBases(long numOfBases) {
-       if (this.maxNumOfBases < numOfBases)
-           this.maxNumOfBases = numOfBases;
+        if (this.maxNumOfBases < numOfBases)
+            this.maxNumOfBases = numOfBases;
     }
 
     public void setEntryLabels(long numOfLabels) {
@@ -141,8 +141,14 @@ public class SequenceSegmentInformationWriter implements Closeable {
      * @throws IOException If an error occurs while writing the file.
      */
 
-    public synchronized void appendEntry(SegmentInformationRecords.SegmentInformation segmentInformation) throws IOException {
+    public void appendEntry(SegmentInformationRecords.SegmentInformation segmentInformation) {
         collectionBuilder.addRecords(segmentInformation);
+        setEntryBases(segmentInformation.getLength());
+        if (segmentInformation.getSampleCount() > 0 && segmentInformation.getSample(0).getBaseCount() > 0) {
+            setEntryLabels(segmentInformation.getSample(0).getBase(0).getLabelsCount());
+            setEntryFeatures(segmentInformation.getSample(0).getBase(0).getFeaturesCount());
+        }
+
         messageChunkWriter.writeAsNeeded(collectionBuilder);
         recordIndex += 1;
     }
