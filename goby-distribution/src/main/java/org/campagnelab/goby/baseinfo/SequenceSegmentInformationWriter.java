@@ -141,7 +141,7 @@ public class SequenceSegmentInformationWriter implements Closeable {
      * @throws IOException If an error occurs while writing the file.
      */
 
-    public synchronized void appendEntry(SegmentInformationRecords.SegmentInformation segmentInformation) throws IOException {
+    public void appendEntry(SegmentInformationRecords.SegmentInformation segmentInformation) throws IOException {
         collectionBuilder.addRecords(segmentInformation);
         messageChunkWriter.writeAsNeeded(collectionBuilder);
         recordIndex += 1;

@@ -164,7 +164,7 @@ public class MessageChunksWriter {
      * @param collectionBuilder The builder prepared with the growing collection of entries.
      * @throws IOException if there was an error writing the entries
      */
-    public void flush(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder)
+    public synchronized void flush(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder)
             throws IOException {
         // Write the separation between two chunks: eight bytes with value 0xFF.
 
