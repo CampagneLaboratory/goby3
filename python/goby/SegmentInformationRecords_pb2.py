@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='SegmentInformationRecords.proto',
   package='org.campagnelab.dl.varanalysis.protobuf',
   syntax='proto2',
-  serialized_pb=_b('\n\x1fSegmentInformationRecords.proto\x12\'org.campagnelab.dl.varanalysis.protobuf\"l\n\x1cSegmentInformationCollection\x12L\n\x07records\x18\x01 \x03(\x0b\x32;.org.campagnelab.dl.varanalysis.protobuf.SegmentInformation\"\x8b\x02\n\x12SegmentInformation\x12R\n\x0estart_position\x18\x01 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12P\n\x0c\x65nd_position\x18\x02 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12\x0e\n\x06length\x18\x05 \x01(\r\x12?\n\x06sample\x18\x04 \x03(\x0b\x32/.org.campagnelab.dl.varanalysis.protobuf.Sample\"E\n\x06Sample\x12;\n\x04\x62\x61se\x18\x01 \x03(\x0b\x32-.org.campagnelab.dl.varanalysis.protobuf.Base\"\x8e\x01\n\x04\x42\x61se\x12\x10\n\x08\x66\x65\x61tures\x18\x01 \x03(\x02\x12\x0e\n\x06labels\x18\x02 \x03(\x02\x12\r\n\x05\x63olor\x18\x06 \x03(\r\x12\x11\n\ttrueLabel\x18\x03 \x03(\t\x12\x19\n\x11hasCandidateIndel\x18\x04 \x01(\x08\x12\x14\n\x0chasTrueIndel\x18\x05 \x01(\x08\x12\x11\n\tisVariant\x18\x07 \x01(\x08\"T\n\x11ReferencePosition\x12\x17\n\x0freference_index\x18\x02 \x01(\r\x12\x14\n\x0creference_id\x18\x03 \x01(\t\x12\x10\n\x08location\x18\x01 \x01(\rB+\n\'org.campagnelab.dl.varanalysis.protobufH\x01')
+  serialized_pb=_b('\n\x1fSegmentInformationRecords.proto\x12\'org.campagnelab.dl.varanalysis.protobuf\"l\n\x1cSegmentInformationCollection\x12L\n\x07records\x18\x01 \x03(\x0b\x32;.org.campagnelab.dl.varanalysis.protobuf.SegmentInformation\"\x8b\x02\n\x12SegmentInformation\x12R\n\x0estart_position\x18\x01 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12P\n\x0c\x65nd_position\x18\x02 \x01(\x0b\x32:.org.campagnelab.dl.varanalysis.protobuf.ReferencePosition\x12\x0e\n\x06length\x18\x05 \x01(\r\x12?\n\x06sample\x18\x04 \x03(\x0b\x32/.org.campagnelab.dl.varanalysis.protobuf.Sample\"E\n\x06Sample\x12;\n\x04\x62\x61se\x18\x01 \x03(\x0b\x32-.org.campagnelab.dl.varanalysis.protobuf.Base\"\xc0\x01\n\x04\x42\x61se\x12\x10\n\x08\x66\x65\x61tures\x18\x01 \x03(\x02\x12\x0e\n\x06labels\x18\x02 \x03(\x02\x12\r\n\x05\x63olor\x18\x06 \x03(\r\x12\x11\n\ttrueLabel\x18\x03 \x03(\t\x12\x19\n\x11hasCandidateIndel\x18\x04 \x01(\x08\x12\x14\n\x0chasTrueIndel\x18\x05 \x01(\x08\x12\x11\n\tisVariant\x18\x07 \x01(\x08\x12\x17\n\x0freferenceAllele\x18\x08 \x01(\t\x12\x17\n\x0f\x66ormattedCounts\x18\t \x01(\t\"T\n\x11ReferencePosition\x12\x17\n\x0freference_index\x18\x02 \x01(\r\x12\x14\n\x0creference_id\x18\x03 \x01(\t\x12\x10\n\x08location\x18\x01 \x01(\rB+\n\'org.campagnelab.dl.varanalysis.protobufH\x01')
 )
 
 
@@ -195,6 +195,20 @@ _BASE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='referenceAllele', full_name='org.campagnelab.dl.varanalysis.protobuf.Base.referenceAllele', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='formattedCounts', full_name='org.campagnelab.dl.varanalysis.protobuf.Base.formattedCounts', index=8,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -208,7 +222,7 @@ _BASE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=528,
-  serialized_end=670,
+  serialized_end=720,
 )
 
 
@@ -252,8 +266,8 @@ _REFERENCEPOSITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=672,
-  serialized_end=756,
+  serialized_start=722,
+  serialized_end=806,
 )
 
 _SEGMENTINFORMATIONCOLLECTION.fields_by_name['records'].message_type = _SEGMENTINFORMATION
