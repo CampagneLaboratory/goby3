@@ -16,30 +16,33 @@ def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_
     feature_array = []
     label_array = []
     for base in sample.base:
-        feature_array.append(np.pad(np.array(base.features), (0, max_feature_count - len(base.features)),
+        feature_array.append(np.pad(np.array(list(base.features)), (0, max_feature_count - len(base.features)),
                                     mode='constant'))
         # Reserve label index 0 for padding/masking timesteps
-        label_array.append(np.pad(np.array([label + 1 for label in base.labels]),
-                                  (0, max_label_count - len(base.labels)),
+        labels_to_append = [0] + list(base.labels)
+        label_array.append(np.pad(np.array(labels_to_append),
+                                  (0, max_label_count - len(labels_to_append)),
                                   mode='constant'))
     amount_to_pad = max(0, max_base_count - len(sample.base))
     padding_shape = ((amount_to_pad, 0), (0, 0)) if padding == "pre" else ((0, amount_to_pad), (0, 0))
     feature_array = np.pad(np.array(feature_array), padding_shape, mode='constant')
     label_array = np.pad(np.array(label_array), padding_shape, mode='constant')
-    if padding == "post":
-        feature_array = feature_array[:max_base_count, :]
-        label_array = label_array[:max_base_count, :]
-    else:
-        start_base = feature_array.shape[1] - max_base_count
-        feature_array = feature_array[start_base:, :]
-        label_array = label_array[start_base:, :]
+    if max_base_count < len(sample.base):
+        if padding == "post":
+            feature_array = feature_array[:max_base_count, :]
+            label_array = label_array[:max_base_count, :]
+        else:
+            start_base = feature_array.shape[1] - max_base_count
+            feature_array = feature_array[start_base:, :]
+            label_array = label_array[start_base:, :]
     return feature_array, label_array
 
 
 def minimal_vectorize_segment(segment_info, padding="pre"):
     num_bases = len(segment_info.sample[0].base)
+    # Add 1 to labels because 0 reserved for padding/masking
     num_features_set, num_labels_set = map(frozenset,
-                                           zip(*[(len(base.features), len(base.labels))
+                                           zip(*[(len(base.features), len(base.labels) + 1)
                                                  for base in segment_info.sample[0].base]))
     feature_mismatch = len(num_features_set) > 1
     label_mismatch = len(num_labels_set) > 1
@@ -90,11 +93,16 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
                     pad_width=(timestep_padding, (0, max_features_mini_batch - segment_num_features_batch)),
                     mode='constant'
                 ))
-                mini_batch_label_ndarray.append(np.pad(
+                segment_label_ndarray = np.pad(
                     segment_label_batch,
                     pad_width=(timestep_padding, (0, max_labels_mini_batch - segment_num_labels_batch)),
                     mode='constant'
-                ))
+                )
+                if padding == "post":
+                    segment_label_ndarray[segment_num_bases_batch:, 0] = 1.
+                else:
+                    segment_label_ndarray[:segment_num_bases_batch, 0] = 1.
+                mini_batch_label_ndarray.append(segment_label_ndarray)
             mini_batch_input_ndarray = np.array(mini_batch_input_ndarray)
             mini_batch_label_ndarray = np.array(mini_batch_label_ndarray)
             if max_base_count < mini_batch_input_ndarray.shape[1]:
