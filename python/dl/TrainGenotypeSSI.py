@@ -318,11 +318,11 @@ def main(args):
         elif args.training_mode == "sequence":
             raise Exception("sequence mode not supported yet")
         elif args.training_mode == "batch-np":
-            input_generator = batch_numpy_file_generator(args.input, input_properties_json)
-            val_generator = batch_numpy_file_generator(args.validation, val_properties_json)
+            input_generator = batch_numpy_file_generator(args.input, max_base_count, input_properties_json)
+            val_generator = batch_numpy_file_generator(args.validation, max_base_count, val_properties_json)
         elif args.training_mode == "sequence-np":
-            input_generator = BatchNumpyFileSequence(args.input, input_properties_json)
-            val_generator = BatchNumpyFileSequence(args.validation, val_properties_json)
+            input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
+            val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
         else:
             raise Exception("Unrecognized training mode")
         input_updates = math.ceil(input_num_segments / input_mini_batch_size)
