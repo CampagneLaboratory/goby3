@@ -16,15 +16,17 @@ def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_
     feature_array = []
     label_array = []
     for base in sample.base:
-        feature_array.append(np.pad(np.array(list(base.features)), (0, max_feature_count - len(base.features)),
+        feature_array.append(np.pad(np.array(base.features), (0, max_feature_count - len(base.features)),
                                     mode='constant'))
-        label_array.append(np.pad(np.array(list(base.labels)), (0, max_label_count - len(base.labels)),
+        # Reserve label index 0 for padding/masking timesteps
+        label_array.append(np.pad(np.array([label + 1 for label in base.labels]),
+                                  (0, max_label_count - len(base.labels)),
                                   mode='constant'))
     amount_to_pad = max(0, max_base_count - len(sample.base))
     padding_shape = ((amount_to_pad, 0), (0, 0)) if padding == "pre" else ((0, amount_to_pad), (0, 0))
     feature_array = np.pad(np.array(feature_array), padding_shape, mode='constant')
     label_array = np.pad(np.array(label_array), padding_shape, mode='constant')
-    if padding == "pre":
+    if padding == "post":
         feature_array = feature_array[:max_base_count, :]
         label_array = label_array[:max_base_count, :]
     else:
@@ -47,7 +49,8 @@ def minimal_vectorize_segment(segment_info, padding="pre"):
                                   padding), feature_mismatch, label_mismatch
 
 
-def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments, max_base_count, padding="pre"):
+def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments, max_base_count, padding="pre",
+                            limit=None):
     segments_processed_in_batch = 0
     segments_processed_total = 0
     feature_mismatch = False
@@ -57,20 +60,23 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
     max_labels_mini_batch = -sys.maxsize
     mini_batch_segment_data = []
     for segment_info in segment_info_generator:
-        segments_processed_in_batch += 1
-        segments_processed_total += 1
-        (segment_input, segment_label), segment_feature_mismatch, segment_label_mismatch = minimal_vectorize_segment(
-            segment_info, padding
-        )
-        feature_mismatch |= segment_feature_mismatch
-        label_mismatch |= segment_label_mismatch
-        segment_num_bases, segment_num_features = segment_input.shape
-        _, segment_num_labels = segment_label.shape
-        max_bases_mini_batch = max(max_bases_mini_batch, segment_num_bases)
-        max_features_mini_batch = max(max_features_mini_batch, segment_num_features)
-        max_labels_mini_batch = max(max_labels_mini_batch, segment_num_labels)
-        mini_batch_segment_data.append((segment_input, segment_label))
-        if segments_processed_in_batch == mini_batch_size or segments_processed_total == num_segments:
+        if limit is None or segments_processed_total < limit:
+            segments_processed_in_batch += 1
+            segments_processed_total += 1
+            (segment_input, segment_label), segment_feature_mismatch, segment_label_mismatch = minimal_vectorize_segment(
+                segment_info, padding
+            )
+            feature_mismatch |= segment_feature_mismatch
+            label_mismatch |= segment_label_mismatch
+            segment_num_bases, segment_num_features = segment_input.shape
+            _, segment_num_labels = segment_label.shape
+            max_bases_mini_batch = max(max_bases_mini_batch, segment_num_bases)
+            max_features_mini_batch = max(max_features_mini_batch, segment_num_features)
+            max_labels_mini_batch = max(max_labels_mini_batch, segment_num_labels)
+            mini_batch_segment_data.append((segment_input, segment_label))
+        if ((segments_processed_in_batch == mini_batch_size)
+                or (segments_processed_total == num_segments)
+                or (limit is not None and segments_processed_total == limit)):
             mini_batch_input_ndarray = []
             mini_batch_label_ndarray = []
             for segment_input_batch, segment_label_batch in mini_batch_segment_data:
@@ -92,7 +98,7 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
             mini_batch_input_ndarray = np.array(mini_batch_input_ndarray)
             mini_batch_label_ndarray = np.array(mini_batch_label_ndarray)
             if max_base_count < mini_batch_input_ndarray.shape[1]:
-                if padding == "pre":
+                if padding == "post":
                     mini_batch_input_ndarray = mini_batch_input_ndarray[:, :max_base_count, :]
                     mini_batch_label_ndarray = mini_batch_label_ndarray[:, :max_base_count, :]
                 else:
@@ -106,6 +112,8 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
             max_bases_mini_batch = -sys.maxsize
             max_features_mini_batch = -sys.maxsize
             max_labels_mini_batch = -sys.maxsize
+        if segments_processed_total == limit:
+            break
 
 
 def write_mini_batch_data(batch_input_to_write, batch_label_to_write, output_path, compress):
@@ -120,18 +128,21 @@ def main(args):
         input_properties.load(input_ssip)
     max_base_count = int(input_properties.getProperty("maxNumOfBases"))
     max_feature_count = int(input_properties.getProperty("maxNumOfFeatures"))
-    max_label_count = int(input_properties.getProperty("maxNumOfLabels"))
+    max_label_count = int(input_properties.getProperty("maxNumOfLabels")) + 1
     num_segments = int(input_properties.getProperty("numSegments"))
     output_path_and_prefix = os.path.join(args.output_dir, args.prefix)
     feature_mismatch = False
     label_mismatch = False
     num_segments_in_last_data_set = 0
     batches_written = 0
+    num_segments_written = 0
     for batch_idx, (batch_data_set, batch_feature_mismatch, batch_label_mismatch) in enumerate(vectorize_by_mini_batch(
             SequenceSegmentInformationGenerator(args.input), args.mini_batch_size, num_segments, max_base_count,
-            args.padding)):
+            args.padding, args.limit)):
         batch_input, batch_label = batch_data_set
-        num_segments_in_last_data_set = batch_input.shape[0]
+        num_segments_written_in_batch = batch_input.shape[0]
+        num_segments_written += num_segments_written_in_batch
+        num_segments_in_last_data_set = num_segments_written_in_batch
         feature_mismatch |= batch_feature_mismatch
         label_mismatch |= batch_label_mismatch
         output_full_path = "{}_{}.npz".format(output_path_and_prefix, batch_idx)
@@ -145,7 +156,7 @@ def main(args):
             "max_label_count": max_label_count,
             "num_segments_in_last_data_set": num_segments_in_last_data_set,
             "mini_batch_size": args.mini_batch_size,
-            "num_segments": num_segments,
+            "num_segments_written": num_segments_written,
             "total_batches_written": batches_written,
             "batch_prefix": args.prefix,
             "padding": args.padding,
@@ -167,7 +178,8 @@ if __name__ == "__main__":
                         help="Number of segments to put in each numpy array.")
     parser.add_argument("--compress", dest="compress", action="store_true",
                         help="When set, compress npz files that are generated.")
-    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="pre",
+    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="post",
                         help="Whether to pad timesteps before or after sequences.")
+    parser.add_argument("--limit", type=int, help="If present, only generate --limit segments.")
     parser_args = parser.parse_args()
     main(parser_args)

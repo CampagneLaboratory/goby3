@@ -48,7 +48,7 @@ def vectorize_generator(segment_info_generator, max_base_count, max_feature_coun
             segments_processed = 0
 
 
-def batch_numpy_file_generator(np_batch_directory, properties_json=None):
+def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None):
     curr_batch_num = 0
     if properties_json is None:
         properties_json = get_properties_json(np_batch_directory)
@@ -58,16 +58,34 @@ def batch_numpy_file_generator(np_batch_directory, properties_json=None):
                                         curr_batch_num % properties_json["total_batches_written"])) as batch_data_set:
             batch_input = batch_data_set["input"]
             batch_label = batch_data_set["label"]
+            # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
+            num_base_diff = max(0, max_base_count - batch_input.shape[1])
+            timestep_padding = (num_base_diff, 0) if properties_json["padding"] == "pre" else (0, num_base_diff)
+            batch_input = np.pad(batch_input,
+                                 pad_width=((0, 0), timestep_padding, (0, 0)),
+                                 mode="constant")
+            batch_label = np.pad(batch_label,
+                                 pad_width=((0, 0), timestep_padding, (0, 0)),
+                                 mode="constant")
+            if max_base_count < batch_input.shape[1]:
+                if properties_json["padding"] == "post":
+                    batch_input = batch_input[:, :max_base_count, :]
+                    batch_label = batch_label[:, :max_base_count, :]
+                else:
+                    start_base = batch_input.shape[1] - max_base_count
+                    batch_input = batch_input[:, start_base:, :]
+                    batch_label = batch_label[:, start_base:, :]
             yield batch_input, batch_label
             curr_batch_num += 1
 
 
 class BatchNumpyFileSequence(Sequence):
-    def __init__(self, np_batch_directory, properties_json=None):
+    def __init__(self, np_batch_directory, max_base_count, properties_json=None):
         if properties_json is None:
             properties_json = get_properties_json(np_batch_directory)
         self.properties_json = properties_json
         self.batch_path_and_prefix = os.path.join(np_batch_directory, self.properties_json["batch_prefix"])
+        self.max_base_count = max_base_count
 
     def __len__(self):
         return self.properties_json["total_batches_written"]
@@ -76,6 +94,23 @@ class BatchNumpyFileSequence(Sequence):
         with np.load("{}_{}.npz".format(self.batch_path_and_prefix, index)) as batch_data_set:
             batch_input = batch_data_set["input"]
             batch_label = batch_data_set["label"]
+            # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
+            num_base_diff = max(0, self.max_base_count - batch_input.shape[1])
+            timestep_padding = (num_base_diff, 0) if self.properties_json["padding"] == "pre" else (0, num_base_diff)
+            batch_input = np.pad(batch_input,
+                                 pad_width=((0, 0), timestep_padding, (0, 0)),
+                                 mode="constant")
+            batch_label = np.pad(batch_label,
+                                 pad_width=((0, 0), timestep_padding, (0, 0)),
+                                 mode="constant")
+            if self.max_base_count < batch_input.shape[1]:
+                if self.properties_json["padding"] == "post":
+                    batch_input = batch_input[:, :self.max_base_count, :]
+                    batch_label = batch_label[:, :self.max_base_count, :]
+                else:
+                    start_base = batch_input.shape[1] - self.max_base_count
+                    batch_input = batch_input[:, start_base:, :]
+                    batch_label = batch_label[:, start_base:, :]
             return batch_input, batch_label
 
     def on_epoch_end(self):
@@ -360,7 +395,7 @@ if __name__ == "__main__":
     parser.add_argument("--l1", type=float, help="L1 regularization rate.")
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
-    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="pre",
+    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="post",
                         help="Whether to pad timesteps before or after sequences. Only used for whole, batch, and "
                              "sequence training modes.")
     parser_args = parser.parse_args()
