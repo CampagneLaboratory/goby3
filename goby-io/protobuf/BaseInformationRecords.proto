@@ -75,7 +75,7 @@ message SampleInfo {
     /** The genotype at this base position, in this sample. In the format A/B where A,B are alleles (single bases or indels).
         Homozygotes are written for instance, A/A while A/T-- is a heterozygote genotype with one allele A another T--*[
         */
-    optional string trueGenotype = 2;
+    optional string trueGenotype = 5;
 }
 
 message CountInfo {
