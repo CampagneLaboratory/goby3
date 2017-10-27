@@ -4,10 +4,10 @@ import math
 import os
 import warnings
 
-from keras import backend
+from keras import backend, Input
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
 from keras.layers import Masking, LSTM, Bidirectional, Dropout, TimeDistributed, Dense, GRU, SimpleRNN, regularizers
-from keras.models import Sequential
+from keras.models import Model
 from keras.optimizers import RMSprop
 from keras.regularizers import l1_l2, l1, l2
 from keras.utils import Sequence
@@ -118,9 +118,9 @@ class BatchNumpyFileSequence(Sequence):
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
-                 implementation, regularizer, learning_rate, layer_type):
-    model = Sequential()
-    model.add(Masking(mask_value=0., input_shape=(max_base_count, max_feature_count)))
+                 implementation, regularizer, learning_rate, layer_type, use_metadata):
+    model_input = Input(shape=(max_base_count, max_feature_count), name="model_input")
+    model_masking = Masking(mask_value=0., input_shape=(max_base_count, max_feature_count))(model_input)
     if layer_type == "LSTM":
         lstm_fn = LSTM
     elif layer_type == "GRU":
@@ -131,19 +131,32 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
         raise Exception("SRU not added yet")
     else:
         raise Exception("Layer type not valid")
-    first_lstm_layer = lstm_fn(units=lstm_units, unroll=True, implementation=implementation,
-                               activity_regularizer=regularizer, return_sequences=True,
-                               input_shape=(max_base_count, max_feature_count))
-    model.add(Bidirectional(first_lstm_layer, merge_mode="concat") if use_bidirectional else first_lstm_layer)
+    first_lstm_layer_fn = lstm_fn(units=lstm_units, unroll=True, implementation=implementation,
+                                  activity_regularizer=regularizer, return_sequences=True,
+                                  input_shape=(max_base_count, max_feature_count))
+    first_lstm_layer = (Bidirectional(first_lstm_layer_fn, merge_mode="concat")(model_masking)
+                        if use_bidirectional
+                        else first_lstm_layer_fn(model_masking))
+    prev_lstm_layer = first_lstm_layer
     for _ in range(num_layers):
-        hidden_lstm_layer = lstm_fn(units=lstm_units, unroll=True, implementation=implementation,
-                                    activity_regularizer=regularizer, return_sequences=True,
-                                    input_shape=(max_base_count, lstm_units))
-        model.add(Bidirectional(hidden_lstm_layer, merge_mode="concat") if use_bidirectional else hidden_lstm_layer)
-    model.add(Dropout(0.5))
-    model.add(TimeDistributed(Dense(max_label_count, activation="softmax"), input_shape=(max_base_count, lstm_units)))
+        hidden_lstm_layer_fn = lstm_fn(units=lstm_units, unroll=True, implementation=implementation,
+                                       activity_regularizer=regularizer, return_sequences=True,
+                                       input_shape=(max_base_count, lstm_units))
+        hidden_lstm_layer = (Bidirectional(hidden_lstm_layer_fn, merge_mode="concat")(prev_lstm_layer)
+                             if use_bidirectional
+                             else hidden_lstm_layer_fn(prev_lstm_layer))
+        prev_lstm_layer = hidden_lstm_layer
+    dropout = Dropout(0.5)(prev_lstm_layer)
+    model_outputs = [TimeDistributed(Dense(max_label_count, activation="softmax"),
+                                     input_shape=(max_base_count, lstm_units), name="main_output")(dropout)]
+    loss_weights = [1.]
+    if use_metadata:
+        # Metadata output with 3 possible labels (ref, SNP, indel) and weight of 0
+        model_outputs.append(Dense(3, name="metadata_output"))
+        loss_weights.append(0.)
+    model = Model(inputs=model_input, outputs=model_outputs)
     optimizer = RMSprop(lr=learning_rate)
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['acc'])
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['acc'], loss_weights=loss_weights)
     print("Model summary:", model.summary())
     return model
 
@@ -193,6 +206,8 @@ def get_properties_json(path_to_directory):
 
 
 def main(args):
+    if args.training_mode not in frozenset(["batch-np", "sequence-np"]) and args.use_metadata:
+        raise Exception("Metadata only provided when data preprocessed by GenerateDatasetsFromSSI")
     backend.set_learning_phase(1)
     init = tf.global_variables_initializer()
 
@@ -271,6 +286,7 @@ def main(args):
                          implementation=implementation,
                          layer_type=args.layer_type,
                          learning_rate=args.learning_rate,
+                         use_metadata=args.use_metadata,
                          regularizer=reg)
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
     generator_training_modes = frozenset(["batch", "sequence", "batch-np", "sequence-np"])
@@ -398,5 +414,8 @@ if __name__ == "__main__":
     parser.add_argument("--padding", type=str, choices=["pre", "post"], default="post",
                         help="Whether to pad timesteps before or after sequences. Only used for whole, batch, and "
                              "sequence training modes.")
+    parser.add_argument("--use-metadata", dest="use_metadata", action="store_true",
+                        help="If true, add metadata output to model that records each base as SNP, indel, or ref.")
+
     parser_args = parser.parse_args()
     main(parser_args)
