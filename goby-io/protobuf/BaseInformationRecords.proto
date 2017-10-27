@@ -72,8 +72,10 @@ message SampleInfo {
      when true labels have been added (using add-true-genotypes.sh from variationanalysis).
      */
     optional bool isVariant = 4;
-
-
+    /** The genotype at this base position, in this sample. In the format A/B where A,B are alleles (single bases or indels).
+        Homozygotes are written for instance, A/A while A/T-- is a heterozygote genotype with one allele A another T--*[
+        */
+    optional string trueGenotype = 2;
 }
 
 message CountInfo {
@@ -145,9 +147,9 @@ message CountInfo {
     repeated NumberWithFrequency distancesToReadVariationsReverseStrand = 29;
 
     /** Number of bases between the base where the variation is observed and the start of the read. */
-    repeated NumberWithFrequency distanceToStartOfRead=31;
+    repeated NumberWithFrequency distanceToStartOfRead = 31;
     /** Number of bases between the base where the variation is observed and the end of the read. */
-    repeated NumberWithFrequency distanceToEndOfRead=32;
+    repeated NumberWithFrequency distanceToEndOfRead = 32;
 
     /** True iff the genotype is called in this sample. In other words, this field is true when the genotype caller believes
      that this genotype is present in the sample. */
@@ -156,7 +158,7 @@ message CountInfo {
     The index of the genotype in the sample count info array. Used when counts are sorted and we need to restore
     the original genotype order.
     */
-    optional uint32 gobyGenotypeIndex=40;
+    optional uint32 gobyGenotypeIndex = 40;
 }
 
 message NumberWithFrequency {
@@ -166,7 +168,7 @@ message NumberWithFrequency {
 
 message SomaticOutput {
 
-    required bool isSomatic=200;
+    required bool isSomatic = 200;
     /** Index of the reference sequence where this base is observed in the genome. */
     required uint32 reference_index = 1;
     /** Identifier for the reference sequence (typically chromosome name). */
