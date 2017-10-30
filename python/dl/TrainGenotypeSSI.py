@@ -48,7 +48,7 @@ def vectorize_generator(segment_info_generator, max_base_count, max_feature_coun
             segments_processed = 0
 
 
-def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None):
+def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
     curr_batch_num = 0
     if properties_json is None:
         properties_json = get_properties_json(np_batch_directory)
@@ -56,8 +56,11 @@ def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_js
     while True:
         with np.load("{}_{}.npz".format(batch_path_and_prefix,
                                         curr_batch_num % properties_json["total_batches_written"])) as batch_data_set:
+            batch_metadata = None
             batch_input = batch_data_set["input"]
             batch_label = batch_data_set["label"]
+            if add_metadata:
+                batch_metadata = batch_data_set["metadata"]
             # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
             num_base_diff = max(0, max_base_count - batch_input.shape[1])
             timestep_padding = (num_base_diff, 0) if properties_json["padding"] == "pre" else (0, num_base_diff)
@@ -67,20 +70,31 @@ def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_js
             batch_label = np.pad(batch_label,
                                  pad_width=((0, 0), timestep_padding, (0, 0)),
                                  mode="constant")
+            if add_metadata:
+                batch_metadata = np.pad(batch_metadata,
+                                        pad_width=((0, 0), timestep_padding, (0, 0)),
+                                        mode="constant")
             if max_base_count < batch_input.shape[1]:
                 if properties_json["padding"] == "post":
                     batch_input = batch_input[:, :max_base_count, :]
                     batch_label = batch_label[:, :max_base_count, :]
+                    if add_metadata:
+                        batch_metadata = batch_metadata[:, :max_base_count, :]
                 else:
                     start_base = batch_input.shape[1] - max_base_count
                     batch_input = batch_input[:, start_base:, :]
                     batch_label = batch_label[:, start_base:, :]
-            yield batch_input, batch_label
+                    if add_metadata:
+                        batch_metadata = batch_metadata[:, :max_base_count, :]
+            if add_metadata:
+                yield batch_input, batch_label, batch_metadata
+            else:
+                yield batch_input, batch_label
             curr_batch_num += 1
 
 
 class BatchNumpyFileSequence(Sequence):
-    def __init__(self, np_batch_directory, max_base_count, properties_json=None):
+    def __init__(self, np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
         if properties_json is None:
             properties_json = get_properties_json(np_batch_directory)
         self.properties_json = properties_json
@@ -118,7 +132,7 @@ class BatchNumpyFileSequence(Sequence):
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
-                 implementation, regularizer, learning_rate, layer_type, use_metadata):
+                 implementation, regularizer, learning_rate, layer_type, add_metadata=False):
     model_input = Input(shape=(max_base_count, max_feature_count), name="model_input")
     model_masking = Masking(mask_value=0., input_shape=(max_base_count, max_feature_count))(model_input)
     if layer_type == "LSTM":
@@ -150,7 +164,7 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     model_outputs = [TimeDistributed(Dense(max_label_count, activation="softmax"),
                                      input_shape=(max_base_count, lstm_units), name="main_output")(dropout)]
     loss_weights = [1.]
-    if use_metadata:
+    if add_metadata:
         # Metadata output with 3 possible labels (ref, SNP, indel) and weight of 0
         model_outputs.append(Dense(3, name="metadata_output"))
         loss_weights.append(0.)
@@ -286,7 +300,7 @@ def main(args):
                          implementation=implementation,
                          layer_type=args.layer_type,
                          learning_rate=args.learning_rate,
-                         use_metadata=args.use_metadata,
+                         add_metadata=args.use_metadata,
                          regularizer=reg)
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
     generator_training_modes = frozenset(["batch", "sequence", "batch-np", "sequence-np"])
