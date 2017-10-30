@@ -12,40 +12,8 @@ from keras.optimizers import RMSprop
 from keras.regularizers import l1_l2, l1, l2
 from keras.utils import Sequence
 
-from dl.GenerateDatasetsFromSSI import vectorize_segment_info
-from goby.SequenceSegmentInformation import SequenceSegmentInformationGenerator, SequenceSegmentInformationStreamGenerator
-from goby.pyjavaproperties import Properties
 import numpy as np
 import tensorflow as tf
-
-
-def vectorize(segment_info_generator, max_base_count, max_feature_count, max_label_count, padding="pre"):
-    feature_arrays = []
-    label_arrays = []
-    for segment_info in segment_info_generator:
-        feature_array, label_array = vectorize_segment_info(segment_info, max_base_count, max_feature_count,
-                                                            max_label_count, padding)
-        feature_arrays.append(feature_array)
-        label_arrays.append(label_array)
-    return np.array(feature_arrays), np.array(label_arrays)
-
-
-def vectorize_generator(segment_info_generator, max_base_count, max_feature_count, max_label_count, mini_batch_size,
-                        num_segments, padding="pre"):
-    feature_arrays = []
-    label_arrays = []
-    segments_processed = 0
-    for segment_info in segment_info_generator:
-        segments_processed += 1
-        feature_array, label_array = vectorize_segment_info(segment_info, max_base_count, max_feature_count,
-                                                            max_label_count, padding)
-        feature_arrays.append(feature_array)
-        label_arrays.append(label_array)
-        if len(feature_arrays) == mini_batch_size or segments_processed == num_segments:
-            yield np.array(feature_arrays), np.array(label_arrays)
-            feature_arrays = []
-            label_arrays = []
-            segments_processed = 0
 
 
 def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
@@ -56,11 +24,9 @@ def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_js
     while True:
         with np.load("{}_{}.npz".format(batch_path_and_prefix,
                                         curr_batch_num % properties_json["total_batches_written"])) as batch_data_set:
-            batch_metadata = None
             batch_input = batch_data_set["input"]
             batch_label = batch_data_set["label"]
-            if add_metadata:
-                batch_metadata = batch_data_set["metadata"]
+            batch_metadata = batch_data_set["metadata"]
             # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
             num_base_diff = max(0, max_base_count - batch_input.shape[1])
             timestep_padding = (num_base_diff, 0) if properties_json["padding"] == "pre" else (0, num_base_diff)
@@ -70,26 +36,20 @@ def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_js
             batch_label = np.pad(batch_label,
                                  pad_width=((0, 0), timestep_padding, (0, 0)),
                                  mode="constant")
-            if add_metadata:
-                batch_metadata = np.pad(batch_metadata,
-                                        pad_width=((0, 0), timestep_padding, (0, 0)),
-                                        mode="constant")
+            batch_metadata = np.pad(batch_metadata,
+                                    pad_width=((0, 0), timestep_padding, (0, 0)),
+                                    mode="constant")
             if max_base_count < batch_input.shape[1]:
                 if properties_json["padding"] == "post":
                     batch_input = batch_input[:, :max_base_count, :]
                     batch_label = batch_label[:, :max_base_count, :]
-                    if add_metadata:
-                        batch_metadata = batch_metadata[:, :max_base_count, :]
+                    batch_metadata = batch_metadata[:, :max_base_count, :]
                 else:
                     start_base = batch_input.shape[1] - max_base_count
                     batch_input = batch_input[:, start_base:, :]
                     batch_label = batch_label[:, start_base:, :]
-                    if add_metadata:
-                        batch_metadata = batch_metadata[:, :max_base_count, :]
-            if add_metadata:
-                yield batch_input, batch_label, batch_metadata
-            else:
-                yield batch_input, batch_label
+                    batch_metadata = batch_metadata[:, start_base:, :]
+            yield batch_input, batch_label, batch_metadata
             curr_batch_num += 1
 
 
@@ -108,6 +68,7 @@ class BatchNumpyFileSequence(Sequence):
         with np.load("{}_{}.npz".format(self.batch_path_and_prefix, index)) as batch_data_set:
             batch_input = batch_data_set["input"]
             batch_label = batch_data_set["label"]
+            batch_metadata = batch_data_set["metadata"]
             # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
             num_base_diff = max(0, self.max_base_count - batch_input.shape[1])
             timestep_padding = (num_base_diff, 0) if self.properties_json["padding"] == "pre" else (0, num_base_diff)
@@ -117,22 +78,27 @@ class BatchNumpyFileSequence(Sequence):
             batch_label = np.pad(batch_label,
                                  pad_width=((0, 0), timestep_padding, (0, 0)),
                                  mode="constant")
+            batch_metadata = np.pad(batch_metadata,
+                                    pad_width=((0, 0), timestep_padding, (0, 0)),
+                                    mode="constant")
             if self.max_base_count < batch_input.shape[1]:
                 if self.properties_json["padding"] == "post":
                     batch_input = batch_input[:, :self.max_base_count, :]
                     batch_label = batch_label[:, :self.max_base_count, :]
+                    batch_metadata = batch_metadata[:, :self.max_base_count, :]
                 else:
                     start_base = batch_input.shape[1] - self.max_base_count
                     batch_input = batch_input[:, start_base:, :]
                     batch_label = batch_label[:, start_base:, :]
-            return batch_input, batch_label
+                    batch_metadata = batch_metadata[:, start_base:, :]
+            return batch_input, batch_label, batch_metadata
 
     def on_epoch_end(self):
         pass
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
-                 implementation, regularizer, learning_rate, layer_type, add_metadata=False):
+                 implementation, regularizer, learning_rate, layer_type, add_metadata=True):
     model_input = Input(shape=(max_base_count, max_feature_count), name="model_input")
     model_masking = Masking(mask_value=0., input_shape=(max_base_count, max_feature_count))(model_input)
     if layer_type == "LSTM":
@@ -198,20 +164,6 @@ def create_callbacks(model_prefix, min_delta, use_tensorboard):
     return callbacks_list
 
 
-def train_model(training_input, training_label, val_input, val_label, model, callbacks, cpu_or_gpu, batch_size,
-                max_epochs, verbosity):
-    with tf.device(cpu_or_gpu):
-        print("Training...")
-        model.fit(x=training_input,
-                  y=training_label,
-                  validation_data=(val_input, val_label),
-                  batch_size=batch_size,
-                  verbose=verbosity,
-                  shuffle=True,
-                  epochs=max_epochs,
-                  callbacks=callbacks)
-
-
 def get_properties_json(path_to_directory):
     properties_json_path = os.path.join(path_to_directory, "properties.json")
     with open(properties_json_path, "r") as properties_json_file:
@@ -249,36 +201,18 @@ def main(args):
         reg = regularizers.get(l1(args.l1))
     elif args.l2 is not None:
         reg = regularizers.get(l2(args.l2))
-    input_properties_json = None
-    val_properties_json = None
-    if args.training_mode not in frozenset(["batch-np", "sequence-np"]):
-        with open("{}p".format(args.input), "r") as input_ssip:
-            input_properties = Properties()
-            input_properties.load(input_ssip)
-        with open("{}p".format(args.validation), "r") as val_ssip:
-            val_properties = Properties()
-            val_properties.load(val_ssip)
-        input_base_count = int(input_properties.getProperty("maxNumOfBases"))
-        input_feature_count = int(input_properties.getProperty("maxNumOfFeatures"))
-        input_label_count = int(input_properties.getProperty("maxNumOfLabels"))
-        val_feature_count = int(val_properties.getProperty("maxNumOfFeatures"))
-        val_label_count = int(val_properties.getProperty("maxNumOfLabels"))
-        input_num_segments = int(input_properties.getProperty("numSegments"))
-        val_num_segments = int(val_properties.getProperty("numSegments"))
-        input_mini_batch_size = args.input_mini_batch_size
-        val_mini_batch_size = args.val_mini_batch_size
-    else:
-        input_properties_json = get_properties_json(args.input)
-        val_properties_json = get_properties_json(args.validation)
-        input_base_count = input_properties_json["max_base_count"]
-        input_feature_count = input_properties_json["max_feature_count"]
-        input_label_count = input_properties_json["max_label_count"]
-        val_feature_count = val_properties_json["max_feature_count"]
-        val_label_count = val_properties_json["max_label_count"]
-        input_num_segments = input_properties_json["num_segments_written"]
-        val_num_segments = val_properties_json["num_segments_written"]
-        input_mini_batch_size = input_properties_json["mini_batch_size"]
-        val_mini_batch_size = val_properties_json["mini_batch_size"]
+
+    input_properties_json = get_properties_json(args.input)
+    val_properties_json = get_properties_json(args.validation)
+    input_base_count = input_properties_json["max_base_count"]
+    input_feature_count = input_properties_json["max_feature_count"]
+    input_label_count = input_properties_json["max_label_count"]
+    val_feature_count = val_properties_json["max_feature_count"]
+    val_label_count = val_properties_json["max_label_count"]
+    input_num_segments = input_properties_json["num_segments_written"]
+    val_num_segments = val_properties_json["num_segments_written"]
+    input_mini_batch_size = input_properties_json["mini_batch_size"]
+    val_mini_batch_size = val_properties_json["mini_batch_size"]
 
     max_base_count = input_base_count
     if input_feature_count != val_feature_count:
@@ -300,101 +234,48 @@ def main(args):
                          implementation=implementation,
                          layer_type=args.layer_type,
                          learning_rate=args.learning_rate,
-                         add_metadata=args.use_metadata,
                          regularizer=reg)
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
-    generator_training_modes = frozenset(["batch", "sequence", "batch-np", "sequence-np"])
 
-    if args.training_mode == "whole":
-        print("Vectorizing training data...")
-        training_input, training_label = vectorize(SequenceSegmentInformationGenerator(args.input),
-                                                   max_base_count=max_base_count,
-                                                   max_feature_count=max_feature_count,
-                                                   max_label_count=max_label_count,
-                                                   padding=args.padding)
-        print("Vectorizing validation data...")
-        val_input, val_label = vectorize(SequenceSegmentInformationGenerator(args.validation),
-                                         max_base_count=max_base_count,
-                                         max_feature_count=max_feature_count,
-                                         max_label_count=max_label_count,
-                                         padding=args.padding)
-        with tf.device(cpu_or_gpu):
-            train_model(training_input=training_input,
-                        training_label=training_label,
-                        val_input=val_input,
-                        val_label=val_label,
-                        batch_size=args.mini_batch_size,
-                        callbacks=callbacks,
-                        cpu_or_gpu=cpu_or_gpu,
-                        max_epochs=args.max_epochs,
-                        model=model,
-                        verbosity=args.verbosity)
-    elif args.training_mode in generator_training_modes:
-        if args.training_mode == "batch":
-            input_generator = vectorize_generator(SequenceSegmentInformationStreamGenerator(args.input),
-                                                  max_base_count=max_base_count,
-                                                  max_feature_count=max_feature_count,
-                                                  max_label_count=max_label_count,
-                                                  mini_batch_size=input_mini_batch_size,
-                                                  num_segments=input_num_segments,
-                                                  padding=args.padding)
-            val_generator = vectorize_generator(SequenceSegmentInformationStreamGenerator(args.validation),
-                                                max_base_count=max_base_count,
-                                                max_feature_count=max_feature_count,
-                                                max_label_count=max_label_count,
-                                                mini_batch_size=val_mini_batch_size,
-                                                num_segments=val_num_segments,
-                                                padding=args.padding)
-        elif args.training_mode == "sequence":
-            raise Exception("sequence mode not supported yet")
-        elif args.training_mode == "batch-np":
-            input_generator = batch_numpy_file_generator(args.input, max_base_count, input_properties_json)
-            val_generator = batch_numpy_file_generator(args.validation, max_base_count, val_properties_json)
-        elif args.training_mode == "sequence-np":
-            input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
-            val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
-        else:
-            raise Exception("Unrecognized training mode")
-        input_updates = math.ceil(input_num_segments / input_mini_batch_size)
-        val_updates = math.ceil(val_num_segments / val_mini_batch_size)
-        use_multiprocessing = args.parallel is not None
-        num_workers = args.parallel if args.parallel is not None else 1
-        with tf.device(cpu_or_gpu):
-            print("Training...")
-            model.fit_generator(generator=input_generator,
-                                steps_per_epoch=input_updates,
-                                validation_data=val_generator,
-                                validation_steps=val_updates,
-                                epochs=args.max_epochs,
-                                callbacks=callbacks,
-                                verbose=args.verbosity,
-                                use_multiprocessing=use_multiprocessing,
-                                workers=num_workers)
-
+    if args.training_mode == "batch-np":
+        input_generator = batch_numpy_file_generator(args.input, max_base_count, input_properties_json)
+        val_generator = batch_numpy_file_generator(args.validation, max_base_count, val_properties_json)
+    elif args.training_mode == "sequence-np":
+        input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
+        val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
     else:
         raise Exception("Unrecognized training mode")
+    input_updates = math.ceil(input_num_segments / input_mini_batch_size)
+    val_updates = math.ceil(val_num_segments / val_mini_batch_size)
+    use_multiprocessing = args.parallel is not None
+    num_workers = args.parallel if args.parallel is not None else 1
+    with tf.device(cpu_or_gpu):
+        print("Training...")
+        model.fit_generator(generator=input_generator,
+                            steps_per_epoch=input_updates,
+                            validation_data=val_generator,
+                            validation_steps=val_updates,
+                            epochs=args.max_epochs,
+                            callbacks=callbacks,
+                            verbose=args.verbosity,
+                            use_multiprocessing=use_multiprocessing,
+                            workers=num_workers)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--training-mode", type=str,
-                        choices=["whole", "batch", "sequence", "batch-np", "sequence-np"], required=True,
-                        help="Training mode- whole loads training and validation tensors into memory at once; "
-                             "batch creates training and validation tensors of size mini-batch-size using a generator; "
-                             "sequence behaves similarly to batch, but uses a keras.utils.Sequence object for "
-                             "multiprocessing; batch-np loads in numpy npz datasets generated using "
+                        choices=["batch-np", "sequence-np"], required=True,
+                        help="Training mode- batch-np loads in numpy npz datasets generated using "
                              "GenerateDatasetsFromSSI, with the directories specified by the "
-                             "--batch-training-directory and --batch-validation-directory parameters and creates "
+                             "--input and --validation parameters and creates "
                              "generators for each; sequence-np is similar to batch-np, but uses a "
                              "keras.utils.Sequence object.")
     parser.add_argument("-i", "--input", type=str, required=True,
-                        help="Either an SSI file with input segments if whole, batch, or sequence is used as the "
-                             "--training-mode, or a directory containing npz files generated using "
-                             "GenerateDatasetsFromSSI if batch_np or sequence_np is used.")
+                        help="Path to directory containing training npz files generated using GenerateDatasetsFromSSI.")
     parser.add_argument("-v", "--validation", type=str, required=True,
-                        help="Either an SSI file with validation segments if whole, batch, or sequence is used as the "
-                             "--training-mode, or a directory containing npz files generated using "
-                             "GenerateDatasetsFromSSI if batch_np or sequence_np is used.")
+                        help="Path to directory containing validation npz files generated using "
+                             "GenerateDatasetsFromSSI.")
     parser.add_argument("--bidirectional", dest="bidirectional", action="store_true",
                         help="When set, train a bidirectional LSTM.")
     parser.add_argument("--lstm-units", type=int, default=64, help="Number of LSTM units.")
@@ -415,21 +296,10 @@ if __name__ == "__main__":
                         help="When set, show operation placements on cpu/gpu devices.")
     parser.add_argument("--verbosity", type=int, default=1, choices=[0, 1, 2],
                         help="Level of verbosity, 0, not verbose, 1, progress bar, 2, one line per epoch.")
-    parser.add_argument("--input-mini-batch-size", type=int, default=128,
-                        help="Number of sequences to train on at a time. Larger values increase speed, "
-                             "but require more memory.")
-    parser.add_argument("--validation-mini-batch-size", type=int, default=128,
-                        help="Number of sequences to validate on at a time. Larger values increase speed, "
-                             "but require more memory.")
     parser.add_argument("--max-epochs", type=int, default=60, help="Maximum number of epochs to train for.")
     parser.add_argument("--l1", type=float, help="L1 regularization rate.")
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
-    parser.add_argument("--padding", type=str, choices=["pre", "post"], default="post",
-                        help="Whether to pad timesteps before or after sequences. Only used for whole, batch, and "
-                             "sequence training modes.")
-    parser.add_argument("--use-metadata", dest="use_metadata", action="store_true",
-                        help="If true, add metadata output to model that records each base as SNP, indel, or ref.")
 
     parser_args = parser.parse_args()
     main(parser_args)

@@ -25,15 +25,12 @@ def get_metadata_value(base):
                                                                                                  base.hasTrueIndel))
 
 
-def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_label_count, padding="pre",
-                           add_metadata=False):
+def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_label_count, padding="pre"):
     # Only look at first segment in sample for now
     sample = segment_info.sample[0]
     feature_array = []
     label_array = []
-    metadata_array = None
-    if add_metadata:
-        metadata_array = []
+    metadata_array = []
     for base in sample.base:
         feature_array.append(np.pad(np.array(list(base.features)), (0, max_feature_count - len(base.features)),
                                     mode='constant'))
@@ -42,35 +39,28 @@ def vectorize_segment_info(segment_info, max_base_count, max_feature_count, max_
         label_array.append(np.pad(np.array(labels_to_append),
                                   (0, max_label_count - len(labels_to_append)),
                                   mode='constant'))
-        if add_metadata:
-            metadata_array.append(get_metadata_value(base))
+        metadata_array.append(get_metadata_value(base))
 
     amount_to_pad = max(0, max_base_count - len(sample.base))
     timestep_padding = (amount_to_pad, 0) if padding == "pre" else (0, amount_to_pad)
     padding_shape = (timestep_padding, (0, 0))
     feature_array = np.pad(np.array(feature_array), padding_shape, mode='constant')
     label_array = np.pad(np.array(label_array), padding_shape, mode='constant')
-    if add_metadata:
-        metadata_array = np.pad(np.array(metadata_array), padding_shape, mode='constant')
+    metadata_array = np.pad(np.array(metadata_array), padding_shape, mode='constant')
     if max_base_count < len(sample.base):
         if padding == "post":
             feature_array = feature_array[:max_base_count, :]
             label_array = label_array[:max_base_count, :]
-            if add_metadata:
-                metadata_array = metadata_array[:max_base_count, :]
+            metadata_array = metadata_array[:max_base_count, :]
         else:
             start_base = feature_array.shape[1] - max_base_count
             feature_array = feature_array[start_base:, :]
             label_array = label_array[start_base:, :]
-            if add_metadata:
-                metadata_array = metadata_array[start_base:, :]
-    if add_metadata:
-        return feature_array, label_array, metadata_array
-    else:
-        return feature_array, label_array
+            metadata_array = metadata_array[start_base:, :]
+    return feature_array, label_array, metadata_array
 
 
-def minimal_vectorize_segment(segment_info, padding="pre", add_metadata=False):
+def minimal_vectorize_segment(segment_info, padding="pre"):
     num_bases = len(segment_info.sample[0].base)
     # Add 1 to labels because 0 reserved for padding/masking
     num_features_set, num_labels_set = map(frozenset,
@@ -81,11 +71,11 @@ def minimal_vectorize_segment(segment_info, padding="pre", add_metadata=False):
     num_features = max(num_features_set)
     num_labels = max(num_labels_set)
     return vectorize_segment_info(segment_info, num_bases, num_features, num_labels,
-                                  padding, add_metadata), feature_mismatch, label_mismatch
+                                  padding), feature_mismatch, label_mismatch
 
 
 def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segments, max_base_count, padding="pre",
-                            limit=None, add_metadata=False):
+                            limit=None):
     segments_processed_in_batch = 0
     segments_processed_total = 0
     feature_mismatch = False
@@ -99,11 +89,8 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
             segments_processed_in_batch += 1
             segments_processed_total += 1
             segment_info_data, segment_feature_mismatch, segment_label_mismatch = minimal_vectorize_segment(
-                segment_info, padding, add_metadata)
-            if add_metadata:
-                segment_input, segment_label, _ = segment_info_data
-            else:
-                segment_input, segment_label = segment_info_data
+                segment_info, padding)
+            segment_input, segment_label, _ = segment_info_data
             feature_mismatch |= segment_feature_mismatch
             label_mismatch |= segment_label_mismatch
             segment_num_bases, segment_num_features = segment_input.shape
@@ -117,15 +104,9 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
                 or (limit is not None and segments_processed_total == limit)):
             mini_batch_input_ndarray = []
             mini_batch_label_ndarray = []
-            mini_batch_metadata_ndarray = None
-            if add_metadata:
-                mini_batch_metadata_ndarray = []
+            mini_batch_metadata_ndarray = []
             for segment_info_data_batch in mini_batch_segment_data:
-                if add_metadata:
-                    segment_input_batch, segment_label_batch, segment_metadata_batch = segment_info_data_batch
-                else:
-                    segment_input_batch, segment_label_batch = segment_info_data_batch
-                    segment_metadata_batch = None
+                segment_input_batch, segment_label_batch, segment_metadata_batch = segment_info_data_batch
                 segment_num_bases_batch, segment_num_features_batch = segment_input_batch.shape
                 _, segment_num_labels_batch = segment_label_batch.shape
                 # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
@@ -144,31 +125,24 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
                 else:
                     segment_label_ndarray[:segment_num_bases_batch, 0] = 1.
                 mini_batch_label_ndarray.append(segment_label_ndarray)
-                if add_metadata:
-                    mini_batch_metadata_ndarray.append(np.pad(
-                        segment_metadata_batch,
-                        pad_width=(timestep_padding, (0, 0)),
-                        mode='constant'))
+                mini_batch_metadata_ndarray.append(np.pad(
+                    segment_metadata_batch,
+                    pad_width=(timestep_padding, (0, 0)),
+                    mode='constant'))
             mini_batch_input_ndarray = np.array(mini_batch_input_ndarray)
             mini_batch_label_ndarray = np.array(mini_batch_label_ndarray)
-            if add_metadata:
-                mini_batch_metadata_ndarray = np.array(mini_batch_metadata_ndarray)
+            mini_batch_metadata_ndarray = np.array(mini_batch_metadata_ndarray)
             if max_base_count < mini_batch_input_ndarray.shape[1]:
                 if padding == "post":
                     mini_batch_input_ndarray = mini_batch_input_ndarray[:, :max_base_count, :]
                     mini_batch_label_ndarray = mini_batch_label_ndarray[:, :max_base_count, :]
-                    if add_metadata:
-                        mini_batch_metadata_ndarray = mini_batch_metadata_ndarray[:, :max_base_count, :]
+                    mini_batch_metadata_ndarray = mini_batch_metadata_ndarray[:, :max_base_count, :]
                 else:
                     start_base = mini_batch_input_ndarray.shape[1] - max_base_count
                     mini_batch_input_ndarray = mini_batch_input_ndarray[:, start_base:, :]
                     mini_batch_label_ndarray = mini_batch_label_ndarray[:, start_base:, :]
-                    if add_metadata:
-                        mini_batch_metadata_ndarray = mini_batch_metadata_ndarray[:, start_base:, :]
-            if add_metadata:
-                mini_batch_data = (mini_batch_input_ndarray, mini_batch_label_ndarray, mini_batch_metadata_ndarray)
-            else:
-                mini_batch_data = (mini_batch_input_ndarray, mini_batch_label_ndarray)
+                    mini_batch_metadata_ndarray = mini_batch_metadata_ndarray[:, start_base:, :]
+            mini_batch_data = (mini_batch_input_ndarray, mini_batch_label_ndarray, mini_batch_metadata_ndarray)
             yield mini_batch_data, feature_mismatch, label_mismatch
             segments_processed_in_batch = 0
             mini_batch_segment_data = []
@@ -179,13 +153,9 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
             break
 
 
-def write_mini_batch_data(batch_input_to_write, batch_label_to_write, output_path, compress,
-                          batch_metadata_to_write=None):
+def write_mini_batch_data(batch_input_to_write, batch_label_to_write, batch_metadata_to_write, output_path, compress):
     save_fn = np.savez_compressed if compress else np.savez
-    if batch_metadata_to_write is not None:
-        save_fn(output_path, input=batch_input_to_write, label=batch_label_to_write, metadata=batch_metadata_to_write)
-    else:
-        save_fn(output_path, input=batch_input_to_write, label=batch_label_to_write)
+    save_fn(output_path, input=batch_input_to_write, label=batch_label_to_write, metadata=batch_metadata_to_write)
 
 
 def main(args):
@@ -205,19 +175,15 @@ def main(args):
     num_segments_written = 0
     for batch_idx, (batch_data_set, batch_feature_mismatch, batch_label_mismatch) in enumerate(vectorize_by_mini_batch(
             SequenceSegmentInformationGenerator(args.input), args.mini_batch_size, num_segments, max_base_count,
-            args.padding, args.limit, args.add_metadata)):
-        batch_metadata = None
-        if args.add_metadata:
-            batch_input, batch_label, batch_metadata = batch_data_set
-        else:
-            batch_input, batch_label = batch_data_set
+            args.padding, args.limit)):
+        batch_input, batch_label, batch_metadata = batch_data_set
         num_segments_written_in_batch = batch_input.shape[0]
         num_segments_written += num_segments_written_in_batch
         num_segments_in_last_data_set = num_segments_written_in_batch
         feature_mismatch |= batch_feature_mismatch
         label_mismatch |= batch_label_mismatch
         output_full_path = "{}_{}.npz".format(output_path_and_prefix, batch_idx)
-        write_mini_batch_data(batch_input, batch_label, output_full_path, args.compress, batch_metadata)
+        write_mini_batch_data(batch_input, batch_label, batch_metadata, output_full_path, args.compress)
         batches_written += 1
     output_json_path = os.path.join(args.output_dir, "properties.json")
     with open(output_json_path, "w") as output_json_file:
@@ -231,7 +197,6 @@ def main(args):
             "total_batches_written": batches_written,
             "batch_prefix": args.prefix,
             "padding": args.padding,
-            "metadata": args.add_metadata
         }, output_json_file, indent=2)
     if feature_mismatch:
         warnings.warn("Mismatched number of features in each base; training behavior will be undefined")
@@ -250,9 +215,6 @@ if __name__ == "__main__":
                         help="Number of segments to put in each numpy array.")
     parser.add_argument("--compress", dest="compress", action="store_true",
                         help="When set, compress npz files that are generated.")
-    parser.add_argument("--add-metadata", dest="add_metadata", action="store_true",
-                        help="When set, add metadata array for each segment info, containing information on"
-                             " SNP/indel/ref.")
     parser.add_argument("--padding", type=str, choices=["pre", "post"], default="post",
                         help="Whether to pad timesteps before or after sequences.")
     parser.add_argument("--limit", type=int, help="If present, only generate --limit segments.")

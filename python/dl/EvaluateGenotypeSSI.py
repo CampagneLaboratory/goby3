@@ -3,7 +3,7 @@ import argparse
 from keras.metrics import categorical_accuracy
 from keras.models import load_model
 
-from dl.TrainGenotypeSSI import BatchNumpyFileSequence, get_properties_json
+from dl.TrainGenotypeSSIDataset import BatchNumpyFileSequence, get_properties_json
 
 import numpy as np
 
