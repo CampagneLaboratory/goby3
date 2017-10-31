@@ -16,7 +16,7 @@ import numpy as np
 import tensorflow as tf
 
 
-def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
+def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None):
     curr_batch_num = 0
     if properties_json is None:
         properties_json = get_properties_json(np_batch_directory)
@@ -49,12 +49,12 @@ def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_js
                     batch_input = batch_input[:, start_base:, :]
                     batch_label = batch_label[:, start_base:, :]
                     batch_metadata = batch_metadata[:, start_base:, :]
-            yield batch_input, batch_label, batch_metadata
+            yield {"model_input": batch_input}, {"main_output": batch_label, "metadata_output": batch_metadata}
             curr_batch_num += 1
 
 
 class BatchNumpyFileSequence(Sequence):
-    def __init__(self, np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
+    def __init__(self, np_batch_directory, max_base_count, properties_json=None):
         if properties_json is None:
             properties_json = get_properties_json(np_batch_directory)
         self.properties_json = properties_json
@@ -91,7 +91,7 @@ class BatchNumpyFileSequence(Sequence):
                     batch_input = batch_input[:, start_base:, :]
                     batch_label = batch_label[:, start_base:, :]
                     batch_metadata = batch_metadata[:, start_base:, :]
-            return batch_input, batch_label, batch_metadata
+            return {"model_input": batch_input}, {"main_output": batch_label, "metadata_output": batch_metadata}
 
     def on_epoch_end(self):
         pass
