@@ -144,13 +144,13 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
 def create_callbacks(model_prefix, min_delta, use_tensorboard):
     callbacks_list = []
     filepath = model_prefix + "-weights-improvement-{epoch:02d}-{val_loss:.4f}.hdf5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(filepath, monitor='val_main_output_loss', verbose=1, save_best_only=True, mode='min')
     callbacks_list.append(checkpoint)
 
-    early_stopping = EarlyStopping(monitor="val_loss", patience=3, mode="min", min_delta=min_delta)
+    early_stopping = EarlyStopping(monitor="val_main_output_loss", patience=3, mode="min", min_delta=min_delta)
     callbacks_list.append(early_stopping)
 
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=2, mode="min", factor=0.2, min_lr=0.0001,
+    reduce_lr = ReduceLROnPlateau(monitor='val_main_output_loss', patience=2, mode="min", factor=0.2, min_lr=0.0001,
                                   cooldown=3, verbose=1)
     callbacks_list.append(reduce_lr)
 
