@@ -129,11 +129,11 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     dropout = Dropout(0.5)(prev_lstm_layer)
     model_outputs = [TimeDistributed(Dense(max_label_count, activation="softmax"),
                                      input_shape=(max_base_count, lstm_units), name="main_output")(dropout)]
-    loss_weights = [1.]
+    loss_weights = {"main_output": 1.}
     if add_metadata:
         # Metadata output with 3 possible labels (ref, SNP, indel) and weight of 0
         model_outputs.append(Dense(3, name="metadata_output")(dropout))
-        loss_weights.append(0.)
+        loss_weights["metadata_output"] = 0.
     model = Model(inputs=model_input, outputs=model_outputs)
     optimizer = RMSprop(lr=learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['acc'], loss_weights=loss_weights)
