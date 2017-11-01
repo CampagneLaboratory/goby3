@@ -186,18 +186,24 @@ def main(args):
         write_mini_batch_data(batch_input, batch_label, batch_metadata, output_full_path, args.compress)
         batches_written += 1
     output_json_path = os.path.join(args.output_dir, "properties.json")
+    properties = {
+        "max_base_count": max_base_count,
+        "max_feature_count": max_feature_count,
+        "max_label_count": max_label_count,
+        "num_segments_in_last_data_set": num_segments_in_last_data_set,
+        "mini_batch_size": args.mini_batch_size,
+        "num_segments_written": num_segments_written,
+        "total_batches_written": batches_written,
+        "batch_prefix": args.prefix,
+        "padding": args.padding,
+        "genotype.segment.label_plus_one.0": "<PAD>",
+    }
+    for label in range(1, max_label_count):
+        label_name_in = "genotype.segment.label.{}".format(label - 1)
+        label_name_out = "genotype.segment.label_plus_one.{}".format(label)
+        properties[label_name_out] = input_properties.getProperty(label_name_in)
     with open(output_json_path, "w") as output_json_file:
-        json.dump({
-            "max_base_count": max_base_count,
-            "max_feature_count": max_feature_count,
-            "max_label_count": max_label_count,
-            "num_segments_in_last_data_set": num_segments_in_last_data_set,
-            "mini_batch_size": args.mini_batch_size,
-            "num_segments_written": num_segments_written,
-            "total_batches_written": batches_written,
-            "batch_prefix": args.prefix,
-            "padding": args.padding,
-        }, output_json_file, indent=2)
+        json.dump(properties, output_json_file, indent=2)
     if feature_mismatch:
         warnings.warn("Mismatched number of features in each base; training behavior will be undefined")
     if label_mismatch:
