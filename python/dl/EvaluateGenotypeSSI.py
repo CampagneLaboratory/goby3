@@ -48,31 +48,27 @@ def eval_model(model_path, test_set_path):
         batch_input, batch_label_dict = test_data[data_idx]
         batch_label = batch_label_dict["main_output"]
         batch_metadata = batch_label_dict["metadata_output"]
-        batch_predictions, batch_predicted_metadata = model.predict_on_batch(batch_input)
+        batch_predictions, _ = model.predict_on_batch(batch_input)
         for segment_in_batch_idx in range(batch_predictions.shape[0]):
             segment_label_categorical = batch_label[segment_in_batch_idx]
             segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
             segment_metadata_categorical = batch_metadata[segment_in_batch_idx]
-            segment_predicted_metadata_categorical = batch_metadata[segment_in_batch_idx]
+            # segment_predicted_metadata_categorical = batch_predicted_metadata[segment_in_batch_idx]
             segment_label_with_padding = np.argmax(segment_label_categorical, axis=1)
             # Get true genotypes from these segment labels
             # Keep track of tp, fp, tn, and fn based on metadata ref, snp, indel, and calculate acc, prec, rec, and F1
             segment_prediction_with_padding = np.argmax(segment_prediction_categorical, axis=1)
             segment_metadata_with_padding = np.argmax(segment_metadata_categorical, axis=1)
-            segment_predicted_metadata_with_padding = np.argmax(segment_predicted_metadata_categorical, axis=1)
+            # segment_predicted_metadata_with_padding = np.argmax(segment_predicted_metadata_categorical, axis=1)
             # Only use positions where label != 0, as label 0 reserved for padding
             segment_label_non_padding_positions = segment_label_with_padding != 0
             segment_label = np.extract(segment_label_non_padding_positions, segment_label_with_padding)
             segment_prediction = np.extract(segment_label_non_padding_positions, segment_prediction_with_padding)
             segment_metadata = np.extract(segment_label_non_padding_positions, segment_metadata_with_padding)
-            segment_predicted_metadata = np.extract(segment_label_non_padding_positions,
-                                                    segment_predicted_metadata_with_padding)
-
-            # TODO: decide how to set base_metadata and base_predicted_metadata for both true labels and predictions
-            # Currently using true and predicted metadata value, but predicted metadata probably doesn't have any
-            # predictive value. However, not sure how would get predicted SNP by looking at actual genotype.
-            segment_true_genotype_label = [properties_json["genotype.segment.label_plus_one.{}".format(label)]
-                                           for label in segment_label]
+            # segment_predicted_metadata = np.extract(segment_label_non_padding_positions,
+            #                                         segment_predicted_metadata_with_padding)
+            # segment_true_genotype_label = [properties_json["genotype.segment.label_plus_one.{}".format(label)]
+            #                                for label in segment_label]
             segment_true_genotype_prediction = [properties_json["genotype.segment.label_plus_one.{}".format(label)]
                                                 for label in segment_prediction]
 
@@ -98,21 +94,23 @@ def eval_model(model_path, test_set_path):
                 else:
                     raise Exception("Unknown metadata value")
 
-                base_predicted_metadata_value = segment_predicted_metadata[base_idx]
-                if base_predicted_metadata_value == 0:
-                    base_predicted_metadata = Metadata.REF
-                    true_or_predicted_ref_at_base = True
-                    count_predicted_ref += 1
-                elif base_predicted_metadata_value == 1:
-                    base_predicted_metadata = Metadata.SNP
-                    true_or_predicted_snp_at_base = True
-                    count_predicted_snp += 1
-                elif base_predicted_metadata_value == 2:
+                # Check if prediction is for indel, SNP or ref based on true genotype corresponding to label
+                # If it contains a "-", prediction is indel
+                # If heterozygous, prediction is SNP
+                # Otherwise, is ref
+                base_true_genotype_prediction = segment_true_genotype_prediction[base_idx]
+                if "-" in base_true_genotype_prediction:
                     base_predicted_metadata = Metadata.INDEL
                     true_or_predicted_indel_at_base = True
                     count_predicted_indel += 1
+                elif len("".join(set(base_true_genotype_prediction))) > 1:
+                    base_predicted_metadata = Metadata.SNP
+                    true_or_predicted_snp_at_base = True
+                    count_predicted_snp += 1
                 else:
-                    raise Exception("Unknown metadata value")
+                    base_predicted_metadata = Metadata.REF
+                    true_or_predicted_ref_at_base = True
+                    count_predicted_ref += 1
 
                 if true_or_predicted_ref_at_base:
                     count_true_or_predicted_ref += 1
