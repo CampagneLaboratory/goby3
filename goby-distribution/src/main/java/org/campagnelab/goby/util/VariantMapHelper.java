@@ -3,6 +3,7 @@ package org.campagnelab.goby.util;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.io.BinIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,24 @@ public class VariantMapHelper {
         return null;
     }
 
+    /**
+     * Get all the variants for the chromosome .
+     *
+     * @param chrom
+     * @return
+     */
+    public ObjectIterator<Variant> getAllVariants(String chrom) {
+        return chMap.get(chrom).values().iterator();
+    }
+
+    /**
+     * Get all the chromosomes in the map.
+     *
+     * @return
+     */
+    public ObjectIterator<String> getAllChromosomes(String chrom) {
+        return chMap.keySet().iterator();
+    }
 
 }
 
