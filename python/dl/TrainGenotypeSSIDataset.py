@@ -16,43 +16,6 @@ import numpy as np
 import tensorflow as tf
 
 
-def batch_numpy_file_generator(np_batch_directory, max_base_count, properties_json=None):
-    curr_batch_num = 0
-    if properties_json is None:
-        properties_json = get_properties_json(np_batch_directory)
-    batch_path_and_prefix = os.path.join(np_batch_directory, properties_json["batch_prefix"])
-    while True:
-        with np.load("{}_{}.npz".format(batch_path_and_prefix,
-                                        curr_batch_num % properties_json["total_batches_written"])) as batch_data_set:
-            batch_input = batch_data_set["input"]
-            batch_label = batch_data_set["label"]
-            batch_metadata = batch_data_set["metadata"]
-            # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
-            num_base_diff = max(0, max_base_count - batch_input.shape[1])
-            timestep_padding = (num_base_diff, 0) if properties_json["padding"] == "pre" else (0, num_base_diff)
-            batch_input = np.pad(batch_input,
-                                 pad_width=((0, 0), timestep_padding, (0, 0)),
-                                 mode="constant")
-            batch_label = np.pad(batch_label,
-                                 pad_width=((0, 0), timestep_padding, (0, 0)),
-                                 mode="constant")
-            batch_metadata = np.pad(batch_metadata,
-                                    pad_width=((0, 0), timestep_padding, (0, 0)),
-                                    mode="constant")
-            if max_base_count < batch_input.shape[1]:
-                if properties_json["padding"] == "post":
-                    batch_input = batch_input[:, :max_base_count, :]
-                    batch_label = batch_label[:, :max_base_count, :]
-                    batch_metadata = batch_metadata[:, :max_base_count, :]
-                else:
-                    start_base = batch_input.shape[1] - max_base_count
-                    batch_input = batch_input[:, start_base:, :]
-                    batch_label = batch_label[:, start_base:, :]
-                    batch_metadata = batch_metadata[:, start_base:, :]
-            yield {"model_input": batch_input}, {"main_output": batch_label, "metadata_output": batch_metadata}
-            curr_batch_num += 1
-
-
 class BatchNumpyFileSequence(Sequence):
     def __init__(self, np_batch_directory, max_base_count, properties_json=None):
         if properties_json is None:
@@ -237,14 +200,9 @@ def main(args):
                          regularizer=reg)
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
 
-    if args.training_mode == "batch-np":
-        input_generator = batch_numpy_file_generator(args.input, max_base_count, input_properties_json)
-        val_generator = batch_numpy_file_generator(args.validation, max_base_count, val_properties_json)
-    elif args.training_mode == "sequence-np":
-        input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
-        val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
-    else:
-        raise Exception("Unrecognized training mode")
+    input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
+    val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
+
     input_updates = math.ceil(input_num_segments / input_mini_batch_size)
     val_updates = math.ceil(val_num_segments / val_mini_batch_size)
     use_multiprocessing = args.parallel is not None
@@ -264,13 +222,6 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--training-mode", type=str,
-                        choices=["batch-np", "sequence-np"], required=True,
-                        help="Training mode- batch-np loads in numpy npz datasets generated using "
-                             "GenerateDatasetsFromSSI, with the directories specified by the "
-                             "--input and --validation parameters and creates "
-                             "generators for each; sequence-np is similar to batch-np, but uses a "
-                             "keras.utils.Sequence object.")
     parser.add_argument("-i", "--input", type=str, required=True,
                         help="Path to directory containing training npz files generated using GenerateDatasetsFromSSI.")
     parser.add_argument("-v", "--validation", type=str, required=True,
