@@ -4,8 +4,9 @@ import math
 import os
 import warnings
 
+import time
 from keras import backend, Input
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard, Callback
 from keras.layers import Masking, LSTM, Bidirectional, Dropout, TimeDistributed, Dense, GRU, SimpleRNN, regularizers
 from keras.models import Model
 from keras.optimizers import RMSprop
@@ -14,6 +15,17 @@ from keras.utils import Sequence
 
 import numpy as np
 import tensorflow as tf
+
+from dl.EvaluateGenotypeSSI import ModelEvaluator
+
+
+class MetricLogger(Callback):
+    def __init__(self, val_data_path, log_path):
+        super().__init__()
+        self.model_evaluator = ModelEvaluator(val_data_path, log_path, write_header=True, log_epochs=True)
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.model_evaluator.eval_model(self.model, epoch)
 
 
 class BatchNumpyFileSequence(Sequence):
@@ -32,7 +44,6 @@ class BatchNumpyFileSequence(Sequence):
         with np.load("{}_{}.npz".format(self.batch_path_and_prefix, index)) as batch_data_set:
             batch_input = batch_data_set["input"]
             batch_label = batch_data_set["label"]
-            batch_metadata = batch_data_set["metadata"]
             # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
             num_base_diff = max(0, self.max_base_count - batch_input.shape[1])
             timestep_padding = (num_base_diff, 0) if self.properties_json["padding"] == "pre" else (0, num_base_diff)
@@ -40,7 +51,7 @@ class BatchNumpyFileSequence(Sequence):
             batch_label = self._pad_batch(batch_label, timestep_padding)
             batch_output = ({"model_input": batch_input}, {"main_output": batch_label})
             if self.add_metadata:
-                batch_metadata = self._pad_batch(batch_metadata, timestep_padding)
+                batch_metadata = self._pad_batch(batch_data_set["metadata"], timestep_padding)
                 return batch_output, batch_metadata
             else:
                 return batch_output
@@ -61,7 +72,7 @@ class BatchNumpyFileSequence(Sequence):
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
-                 implementation, regularizer, learning_rate, layer_type, add_metadata=True):
+                 implementation, regularizer, learning_rate, layer_type):
     model_input = Input(shape=(max_base_count, max_feature_count), name="model_input")
     model_masking = Masking(mask_value=0., input_shape=(max_base_count, max_feature_count))(model_input)
     if layer_type == "LSTM":
@@ -93,10 +104,6 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     model_outputs = [TimeDistributed(Dense(max_label_count, activation="softmax"),
                                      input_shape=(max_base_count, lstm_units), name="main_output")(dropout)]
     loss_weights = {"main_output": 1.}
-    if add_metadata:
-        # Metadata output with 3 possible labels (ref, SNP, indel) and weight of 0
-        model_outputs.append(Dense(3, name="metadata_output")(dropout))
-        loss_weights["metadata_output"] = 0.
     model = Model(inputs=model_input, outputs=model_outputs)
     optimizer = RMSprop(lr=learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['acc'], loss_weights=loss_weights)
@@ -104,7 +111,7 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     return model
 
 
-def create_callbacks(model_prefix, min_delta, use_tensorboard):
+def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, log_path):
     callbacks_list = []
     filepath = model_prefix + "-weights-improvement-{epoch:02d}-{val_loss:.4f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_main_output_loss', verbose=1, save_best_only=True, mode='min')
@@ -123,7 +130,7 @@ def create_callbacks(model_prefix, min_delta, use_tensorboard):
                                   embeddings_layer_names=None,
                                   embeddings_metadata=None)
         callbacks_list.append(tensorboard)
-
+    callbacks_list.append(MetricLogger(val_data_path, log_path))
     return callbacks_list
 
 
@@ -135,6 +142,13 @@ def get_properties_json(path_to_directory):
 
 
 def main(args):
+    if args.log_file is None:
+        log_file_path = "log_run_{}.csv".format(int(time.time()))
+    else:
+        log_file_path = args.log_file
+    if os.path.exists(log_file_path):
+        raise Exception("Log path for run should be new")
+
     backend.set_learning_phase(1)
     init = tf.global_variables_initializer()
 
@@ -196,7 +210,7 @@ def main(args):
                          layer_type=args.layer_type,
                          learning_rate=args.learning_rate,
                          regularizer=reg)
-    callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard)
+    callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard, args.validation, log_file_path)
 
     input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
     val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
@@ -249,6 +263,6 @@ if __name__ == "__main__":
     parser.add_argument("--l1", type=float, help="L1 regularization rate.")
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
-
+    parser.add_argument("-l", "--log-file", type=str, help="Path to log file to use. Should be new.")
     parser_args = parser.parse_args()
     main(parser_args)

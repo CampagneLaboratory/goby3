@@ -1,3 +1,4 @@
 import dl.GenerateDatasetsFromSSI
 import dl.TrainGenotypeSSIDataset
 import dl.TrainGenotypeSSIDirect
+import dl.EvaluateGenotypeSSI
