@@ -17,12 +17,13 @@ import tensorflow as tf
 
 
 class BatchNumpyFileSequence(Sequence):
-    def __init__(self, np_batch_directory, max_base_count, properties_json=None):
+    def __init__(self, np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
         if properties_json is None:
             properties_json = get_properties_json(np_batch_directory)
         self.properties_json = properties_json
         self.batch_path_and_prefix = os.path.join(np_batch_directory, self.properties_json["batch_prefix"])
         self.max_base_count = max_base_count
+        self.add_metadata = add_metadata
 
     def __len__(self):
         return self.properties_json["total_batches_written"]
@@ -35,26 +36,25 @@ class BatchNumpyFileSequence(Sequence):
             # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
             num_base_diff = max(0, self.max_base_count - batch_input.shape[1])
             timestep_padding = (num_base_diff, 0) if self.properties_json["padding"] == "pre" else (0, num_base_diff)
-            batch_input = np.pad(batch_input,
-                                 pad_width=((0, 0), timestep_padding, (0, 0)),
-                                 mode="constant")
-            batch_label = np.pad(batch_label,
-                                 pad_width=((0, 0), timestep_padding, (0, 0)),
-                                 mode="constant")
-            batch_metadata = np.pad(batch_metadata,
+            batch_input = self._pad_batch(batch_input, timestep_padding)
+            batch_label = self._pad_batch(batch_label, timestep_padding)
+            batch_output = ({"model_input": batch_input}, {"main_output": batch_label})
+            if self.add_metadata:
+                batch_metadata = self._pad_batch(batch_metadata, timestep_padding)
+                return batch_output, batch_metadata
+            else:
+                return batch_output
+
+    def _pad_batch(self, batch_array, timestep_padding):
+        batch_array_padded = np.pad(batch_array,
                                     pad_width=((0, 0), timestep_padding, (0, 0)),
                                     mode="constant")
-            if self.max_base_count < batch_input.shape[1]:
-                if self.properties_json["padding"] == "post":
-                    batch_input = batch_input[:, :self.max_base_count, :]
-                    batch_label = batch_label[:, :self.max_base_count, :]
-                    batch_metadata = batch_metadata[:, :self.max_base_count, :]
-                else:
-                    start_base = batch_input.shape[1] - self.max_base_count
-                    batch_input = batch_input[:, start_base:, :]
-                    batch_label = batch_label[:, start_base:, :]
-                    batch_metadata = batch_metadata[:, start_base:, :]
-            return {"model_input": batch_input}, {"main_output": batch_label, "metadata_output": batch_metadata}
+        if self.max_base_count < batch_array.shape[1]:
+            if self.properties_json["padding"] == "post":
+                return batch_array_padded[:, :self.max_base_count, :]
+            else:
+                start_base = batch_array.shape[1] - self.max_base_count
+                return batch_array_padded[:, start_base:, :]
 
     def on_epoch_end(self):
         pass
@@ -135,8 +135,6 @@ def get_properties_json(path_to_directory):
 
 
 def main(args):
-    if args.training_mode not in frozenset(["batch-np", "sequence-np"]) and args.use_metadata:
-        raise Exception("Metadata only provided when data preprocessed by GenerateDatasetsFromSSI")
     backend.set_learning_phase(1)
     init = tf.global_variables_initializer()
 
