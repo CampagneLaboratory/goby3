@@ -139,7 +139,7 @@ public class MessageChunksWriter {
      *                          was just appended.
      * @throws IOException if there was an error writing the entries
      */
-    public long writeAsNeeded(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder,
+    public synchronized  long writeAsNeeded(final com.google.protobuf.GeneratedMessage.Builder collectionBuilder,
                               final int multiplicity) {
         totalEntriesWritten += Math.max(1, multiplicity);
         if (++numAppended >= numEntriesPerChunk) {

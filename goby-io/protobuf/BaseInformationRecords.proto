@@ -76,6 +76,11 @@ message SampleInfo {
         Homozygotes are written for instance, A/A while A/T-- is a heterozygote genotype with one allele A another T--*[
         */
     optional string trueGenotype = 5;
+
+    /** The genotype before segment post-processing. Used for debugging post-processing of segment construction. */
+    optional string prePostProcessingGenotype=100;
+
+
 }
 
 message CountInfo {
@@ -159,6 +164,9 @@ message CountInfo {
     the original genotype order.
     */
     optional uint32 gobyGenotypeIndex = 40;
+
+    /** The offset used when creating the record copy during post-processing. Used for debugging post-processing of segment construction.  */
+    optional uint32 offset=101;
 }
 
 message NumberWithFrequency {

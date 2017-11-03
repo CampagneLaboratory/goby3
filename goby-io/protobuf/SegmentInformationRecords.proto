@@ -59,6 +59,12 @@ message Base {
     */
     repeated string trueLabel = 3;
 
+    /** The genotype before segment post-processing. */
+    optional string prePostProcessingGenotype=10;
+
+    /** The offset used when creating the record copy during post-processing. */
+    optional uint32 offset=11;
+
     /** True when the base contains some counts for indels. This does not mean that the base contains a true
         indel, but simply that it contains a potential indel.
     */
