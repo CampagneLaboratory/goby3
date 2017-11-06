@@ -66,7 +66,7 @@ public class VariantMapHelper {
      *
      * @return
      */
-    public ObjectIterator<String> getAllChromosomes(String chrom) {
+    public ObjectIterator<String> getAllChromosomes() {
         return chMap.keySet().iterator();
     }
 
