@@ -70,5 +70,13 @@ public class VariantMapHelper {
         return chMap.keySet().iterator();
     }
 
+    /**
+     * How many chromosomes in the map.
+     *
+     * @return
+     */
+    public int size() {
+        return chMap.keySet().size();
+    }
 }
 
