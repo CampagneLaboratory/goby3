@@ -1,5 +1,4 @@
 import argparse
-import json
 import math
 import os
 import warnings
@@ -11,12 +10,10 @@ from keras.layers import Masking, LSTM, Bidirectional, Dropout, TimeDistributed,
 from keras.models import Model
 from keras.optimizers import RMSprop
 from keras.regularizers import l1_l2, l1, l2
-from keras.utils import Sequence
 
-import numpy as np
 import tensorflow as tf
 
-from dl.EvaluateGenotypeSSI import ModelEvaluator
+from dl.SegmentGenotypingClassesFunctions import ModelEvaluator, get_properties_json, BatchNumpyFileSequence
 
 
 class MetricLogger(Callback):
@@ -26,49 +23,6 @@ class MetricLogger(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         self.model_evaluator.eval_model(self.model, epoch)
-
-
-class BatchNumpyFileSequence(Sequence):
-    def __init__(self, np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
-        if properties_json is None:
-            properties_json = get_properties_json(np_batch_directory)
-        self.properties_json = properties_json
-        self.batch_path_and_prefix = os.path.join(np_batch_directory, self.properties_json["batch_prefix"])
-        self.max_base_count = max_base_count
-        self.add_metadata = add_metadata
-
-    def __len__(self):
-        return self.properties_json["total_batches_written"]
-
-    def __getitem__(self, index):
-        with np.load("{}_{}.npz".format(self.batch_path_and_prefix, index)) as batch_data_set:
-            batch_input = batch_data_set["input"]
-            batch_label = batch_data_set["label"]
-            # Prepad timesteps, postpad features/labels (if there's a shape mismatch)
-            num_base_diff = max(0, self.max_base_count - batch_input.shape[1])
-            timestep_padding = (num_base_diff, 0) if self.properties_json["padding"] == "pre" else (0, num_base_diff)
-            batch_input = self._pad_batch(batch_input, timestep_padding)
-            batch_label = self._pad_batch(batch_label, timestep_padding)
-            batch_output = ({"model_input": batch_input}, {"main_output": batch_label})
-            if self.add_metadata:
-                batch_metadata = self._pad_batch(batch_data_set["metadata"], timestep_padding)
-                return batch_output, batch_metadata
-            else:
-                return batch_output
-
-    def _pad_batch(self, batch_array, timestep_padding):
-        batch_array_padded = np.pad(batch_array,
-                                    pad_width=((0, 0), timestep_padding, (0, 0)),
-                                    mode="constant")
-        if self.max_base_count < batch_array.shape[1]:
-            if self.properties_json["padding"] == "post":
-                return batch_array_padded[:, :self.max_base_count, :]
-            else:
-                start_base = batch_array.shape[1] - self.max_base_count
-                return batch_array_padded[:, start_base:, :]
-
-    def on_epoch_end(self):
-        pass
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
@@ -132,13 +86,6 @@ def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, lo
         callbacks_list.append(tensorboard)
     callbacks_list.append(MetricLogger(val_data_path, log_path))
     return callbacks_list
-
-
-def get_properties_json(path_to_directory):
-    properties_json_path = os.path.join(path_to_directory, "properties.json")
-    with open(properties_json_path, "r") as properties_json_file:
-        properties_json = json.load(properties_json_file)
-    return properties_json
 
 
 def main(args):
