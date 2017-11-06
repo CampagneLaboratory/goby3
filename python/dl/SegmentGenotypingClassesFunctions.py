@@ -67,10 +67,17 @@ class Metadata(Enum):
 
 
 class ModelEvaluator:
-    def __init__(self, test_data_path, log_path, write_header, log_epochs, max_base_count=None):
+    def __init__(self, test_data_path, log_path, write_header, log_epochs, max_base_count=None, main_model=None):
         self.properties_json = get_properties_json(test_data_path)
+        if main_model is not None:
+            self.main_model = ModelEvaluator._get_model(main_model)
+        else:
+            self.main_model = None
         if max_base_count is None:
-            max_base_count = self.properties_json["max_base_count"]
+            if self.main_model is not None and self.main_model.input_shape[1] is not None:
+                max_base_count = self.main_model.input_shape[1]
+            else:
+                max_base_count = self.properties_json["max_base_count"]
         self.test_data = BatchNumpyFileSequence(test_data_path, max_base_count,
                                                 self.properties_json, add_metadata=True)
         field_names = ["epoch"] if log_epochs else []
@@ -90,8 +97,13 @@ class ModelEvaluator:
         else:
             return model
 
-    def eval_model(self, model_to_eval, epoch=None):
-        model = ModelEvaluator._get_model(model_to_eval)
+    def eval_model(self, model_to_eval=None, epoch=None):
+        if self.main_model is not None:
+            model = self.main_model
+        elif model_to_eval is not None:
+            model = ModelEvaluator._get_model(model_to_eval)
+        else:
+            raise Exception("No model provided to evaluator")
         # Not using predict_generator here because difficult to reconstruct order of inputs,
         # see https://github.com/fchollet/keras/issues/5048
         # Using batch_prediction rather than predicting on each sample to potentially speed up predictions

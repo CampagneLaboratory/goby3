@@ -7,8 +7,8 @@ from dl.SegmentGenotypingClassesFunctions import ModelEvaluator
 def main(args):
     # Only write header if new file
     write_header = not os.path.isfile(args.log_path)
-    model_evaluator = ModelEvaluator(args.testing, args.log_path, write_header, log_epochs=False)
-    model_evaluator.eval_model(args.model)
+    model_evaluator = ModelEvaluator(args.testing, args.log_path, write_header, log_epochs=False, main_model=args.model)
+    model_evaluator.eval_model()
     model_evaluator.close_log()
 
 
