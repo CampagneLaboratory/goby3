@@ -50,10 +50,11 @@ class BatchNumpyFileSequence(Sequence):
                                     mode="constant")
         if self.max_base_count < batch_array.shape[1]:
             if self.properties_json["padding"] == "post":
-                return batch_array_padded[:, :self.max_base_count, :]
+                batch_array_padded = batch_array_padded[:, :self.max_base_count, :]
             else:
                 start_base = batch_array.shape[1] - self.max_base_count
-                return batch_array_padded[:, start_base:, :]
+                batch_array_padded = batch_array_padded[:, start_base:, :]
+        return batch_array_padded
 
     def on_epoch_end(self):
         pass
@@ -66,19 +67,21 @@ class Metadata(Enum):
 
 
 class ModelEvaluator:
-    def __init__(self, test_data_path, log_path, write_header, log_epochs):
+    def __init__(self, test_data_path, log_path, write_header, log_epochs, max_base_count=None):
         self.properties_json = get_properties_json(test_data_path)
-        self.test_data = BatchNumpyFileSequence(test_data_path, self.properties_json["max_base_count"],
-                                                self.properties_json)
+        if max_base_count is None:
+            max_base_count = self.properties_json["max_base_count"]
+        self.test_data = BatchNumpyFileSequence(test_data_path, max_base_count,
+                                                self.properties_json, add_metadata=True)
         field_names = ["epoch"] if log_epochs else []
         field_names += ["precision_ref", "precision_snp", "precision_indel", "recall_ref", "recall_snp", "recall_indel",
                         "f1_ref", "f1_snp", "f1_indel", "accuracy_overall", "accuracy_ref", "accuracy_snp",
                         "accuracy_indel", "true_or_predicted_ref", "true_or_predicted_snp", "true_or_predicted_indel",
                         "true_ref", "true_snp", "true_indel", "predicted_ref", "predicted_snp", "predicted_indel"]
-        with open(log_path, "a") as log_file:
-            self.log_writer = csv.DictWriter(log_file, fieldnames=field_names, quoting=csv.QUOTE_NONNUMERIC)
-            if write_header:
-                self.log_writer.writeheader()
+        self.log_file = open(log_path, "a")
+        self.log_writer = csv.DictWriter(self.log_file, fieldnames=field_names, quoting=csv.QUOTE_NONNUMERIC)
+        if write_header:
+            self.log_writer.writeheader()
 
     @staticmethod
     def _get_model(model):
@@ -116,9 +119,9 @@ class ModelEvaluator:
         fn_snp = 0
         fn_indel = 0
         for data_idx in range(len(self.test_data)):
-            batch_input, batch_label_dict = self.test_data[data_idx]
+            (batch_input_dict, batch_label_dict), batch_metadata = self.test_data[data_idx]
+            batch_input = batch_input_dict["model_input"]
             batch_label = batch_label_dict["main_output"]
-            batch_metadata = batch_label_dict["metadata_output"]
             # batch_predictions, _ = model.predict_on_batch(batch_input)
             batch_predictions = model.predict_on_batch(batch_input)
             for segment_in_batch_idx in range(batch_predictions.shape[0]):
@@ -227,13 +230,13 @@ class ModelEvaluator:
                     elif base_predicted_metadata == Metadata.INDEL and not base_metadata == Metadata.INDEL:
                         fp_indel += 1
 
-        precision_ref = tp_ref / (tp_ref + fp_ref)
-        precision_snp = tp_snp / (tp_snp + fp_snp)
-        precision_indel = tp_indel / (tp_indel + fp_indel)
+        precision_ref = np.divide(tp_ref, (tp_ref + fp_ref))
+        precision_snp = np.divide(tp_snp, (tp_snp + fp_snp))
+        precision_indel = np.divide(tp_indel, (tp_indel + fp_indel))
 
-        recall_ref = tp_ref / (tp_ref + fn_ref)
-        recall_snp = tp_snp / (tp_snp + fn_snp)
-        recall_indel = tp_indel / (tp_indel + fn_indel)
+        recall_ref = np.divide(tp_ref, (tp_ref + fn_ref))
+        recall_snp = np.divide(tp_snp, (tp_snp + fn_snp))
+        recall_indel = np.divide(tp_indel, (tp_indel + fn_indel))
 
         row_dict = {
             "precision_ref": precision_ref,
@@ -242,13 +245,13 @@ class ModelEvaluator:
             "recall_ref": recall_ref,
             "recall_snp": recall_snp,
             "recall_indel": recall_indel,
-            "f1_ref": (2 * precision_ref * recall_ref) / (precision_ref + recall_ref),
-            "f1_snp": (2 * precision_snp * recall_snp) / (precision_snp + recall_snp),
-            "f1_indel": (2 * precision_indel * recall_indel) / (precision_indel + recall_indel),
-            "accuracy_overall": correct_overall / count_overall,
-            "accuracy_ref": correct_ref / count_true_or_predicted_ref,
-            "accuracy_snp": correct_snp / count_true_or_predicted_snp,
-            "accuracy_indel": correct_indel / count_true_or_predicted_indel,
+            "f1_ref": np.divide(2 * precision_ref * recall_ref, precision_ref + recall_ref),
+            "f1_snp": np.divide(2 * precision_snp * recall_snp, precision_snp + recall_snp),
+            "f1_indel": np.divide(2 * precision_indel * recall_indel, precision_indel + recall_indel),
+            "accuracy_overall": np.divide(correct_overall, count_overall),
+            "accuracy_ref": np.divide(correct_ref, count_true_or_predicted_ref),
+            "accuracy_snp": np.divide(correct_snp, count_true_or_predicted_snp),
+            "accuracy_indel": np.divide(correct_indel, count_true_or_predicted_indel),
             "true_or_predicted_ref": count_true_or_predicted_ref,
             "true_or_predicted_snp": count_true_or_predicted_snp,
             "true_or_predicted_indel": count_true_or_predicted_indel,
@@ -262,3 +265,7 @@ class ModelEvaluator:
         if epoch is not None:
             row_dict["epoch"] = epoch
         self.log_writer.writerow(row_dict)
+        self.log_file.flush()
+
+    def close_log(self):
+        self.log_file.close()

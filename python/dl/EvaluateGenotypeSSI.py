@@ -9,6 +9,7 @@ def main(args):
     write_header = not os.path.isfile(args.log_path)
     model_evaluator = ModelEvaluator(args.testing, args.log_path, write_header, log_epochs=False)
     model_evaluator.eval_model(args.model)
+    model_evaluator.close_log()
 
 
 if __name__ == "__main__":

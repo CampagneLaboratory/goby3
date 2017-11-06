@@ -1,6 +1,7 @@
 import argparse
 import math
 import os
+import random
 import warnings
 
 import time
@@ -11,18 +12,23 @@ from keras.models import Model
 from keras.optimizers import RMSprop
 from keras.regularizers import l1_l2, l1, l2
 
+import numpy as np
 import tensorflow as tf
 
 from dl.SegmentGenotypingClassesFunctions import ModelEvaluator, get_properties_json, BatchNumpyFileSequence
 
 
 class MetricLogger(Callback):
-    def __init__(self, val_data_path, log_path):
+    def __init__(self, val_data_path, log_path, max_base_count):
         super().__init__()
-        self.model_evaluator = ModelEvaluator(val_data_path, log_path, write_header=True, log_epochs=True)
+        self.model_evaluator = ModelEvaluator(val_data_path, log_path, write_header=True, log_epochs=True,
+                                              max_base_count=max_base_count)
 
     def on_epoch_end(self, epoch, logs=None):
         self.model_evaluator.eval_model(self.model, epoch)
+
+    def on_train_end(self, logs=None):
+        self.model_evaluator.close_log()
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
@@ -65,16 +71,16 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     return model
 
 
-def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, log_path):
+def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, log_path, max_base_count):
     callbacks_list = []
     filepath = model_prefix + "-weights-improvement-{epoch:02d}-{val_loss:.4f}.hdf5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_main_output_loss', verbose=1, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
     callbacks_list.append(checkpoint)
 
-    early_stopping = EarlyStopping(monitor="val_main_output_loss", patience=3, mode="min", min_delta=min_delta)
+    early_stopping = EarlyStopping(monitor="val_loss", patience=3, mode="min", min_delta=min_delta)
     callbacks_list.append(early_stopping)
 
-    reduce_lr = ReduceLROnPlateau(monitor='val_main_output_loss', patience=2, mode="min", factor=0.2, min_lr=0.0001,
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=2, mode="min", factor=0.2, min_lr=0.0001,
                                   cooldown=3, verbose=1)
     callbacks_list.append(reduce_lr)
 
@@ -84,7 +90,7 @@ def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, lo
                                   embeddings_layer_names=None,
                                   embeddings_metadata=None)
         callbacks_list.append(tensorboard)
-    callbacks_list.append(MetricLogger(val_data_path, log_path))
+    callbacks_list.append(MetricLogger(val_data_path, log_path, max_base_count))
     return callbacks_list
 
 
@@ -95,6 +101,15 @@ def main(args):
         log_file_path = args.log_file
     if os.path.exists(log_file_path):
         raise Exception("Log path for run should be new")
+
+    if args.seed is None:
+        seed = int(time.time() + 36)
+    else:
+        seed = args.seed
+
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.set_random_seed(seed)
 
     backend.set_learning_phase(1)
     init = tf.global_variables_initializer()
@@ -157,7 +172,8 @@ def main(args):
                          layer_type=args.layer_type,
                          learning_rate=args.learning_rate,
                          regularizer=reg)
-    callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard, args.validation, log_file_path)
+    callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard, args.validation, log_file_path,
+                                 max_base_count)
 
     input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
     val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
@@ -211,5 +227,6 @@ if __name__ == "__main__":
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
     parser.add_argument("-l", "--log-file", type=str, help="Path to log file to use. Should be new.")
+    parser.add_argument("--seed", type=int, help="Random seed to use")
     parser_args = parser.parse_args()
     main(parser_args)
