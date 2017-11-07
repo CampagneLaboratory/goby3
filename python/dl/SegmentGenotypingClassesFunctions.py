@@ -86,7 +86,8 @@ class ModelEvaluator:
                         "accuracy_indel", "true_or_predicted_ref", "true_or_predicted_snp", "true_or_predicted_indel",
                         "true_ref", "true_snp", "true_indel", "predicted_ref", "predicted_snp", "predicted_indel"]
         self.log_file = open(log_path, "a")
-        self.log_writer = csv.DictWriter(self.log_file, fieldnames=field_names, quoting=csv.QUOTE_NONNUMERIC)
+        self.log_writer = csv.DictWriter(self.log_file, fieldnames=field_names, quoting=csv.QUOTE_NONNUMERIC,
+                                         delimiter="\t")
         if write_header:
             self.log_writer.writeheader()
 
