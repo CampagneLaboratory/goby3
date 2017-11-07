@@ -18,7 +18,7 @@ def get_metadata_value(base):
         return [1, 0, 0]
     elif base.isVariant and not base.hasTrueIndel:
         return [0, 1, 0]
-    elif base.isVariant and base.hasTrueIndel:
+    elif base.hasTrueIndel:
         return [0, 0, 1]
     else:
         raise Exception("Invalid isVariant {} and hasTrueIndel {} combination for a base".format(base.isVariant,
