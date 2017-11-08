@@ -5,11 +5,14 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Observer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Fabien Campagne
- *         Date: 1/26/13
- *         Time: 12:37 PM
+ * Date: 1/26/13
+ * Time: 12:37 PM
  */
 public class PositionToBasesMap<T> {
     private Int2ObjectAVLTreeMap<T> delegate = new Int2ObjectAVLTreeMap<T>();
@@ -72,14 +75,59 @@ public class PositionToBasesMap<T> {
         return delegate.entrySet();
     }
 
+    /**
+     * Get the position of the first base.
+     * @return
+     */
     public int firstPosition() {
         return sortedKeys.firstInt();
     }
 
     public void markIgnoredPosition(int position) {
-        ignoredPositions.put(position,true);
+        ignoredPositions.put(position, true);
     }
+
     public boolean isIgnoredPosition(int position) {
         return ignoredPositions.get(position);
+    }
+
+    /**
+     * Remove the first base.
+     */
+    public void removeFirst() {
+        if (sortedKeys.isEmpty()) return;
+        int keyToRemove = sortedKeys.firstInt();
+        sortedKeys.remove(keyToRemove);
+        delegate.remove(keyToRemove);
+        ignoredPositions.remove(keyToRemove);
+    }
+
+    public void removeUpTo(int intermediatePosition) {
+        final IntBidirectionalIterator iterator = sortedKeys.iterator();
+        while (iterator.hasNext()) {
+            int next =  iterator.next();
+            if (next<=intermediatePosition) {
+                remove(next);
+            }else {
+                break;
+            }
+
+        }
+    }
+
+    public int width() {
+        if (sortedKeys.isEmpty()) return 0;
+        return sortedKeys.lastInt()-sortedKeys.firstInt();
+    }
+    public void trimWidth(int startFlapLength, Consumer<Integer> processFunction) {
+        if (isEmpty()) return;
+        int firstPosition=firstPosition();
+        while (width()>startFlapLength*2 ) {
+            firstPosition=firstPosition();
+            processFunction.accept(firstPosition);
+            remove(firstPosition);
+
+
+        }
     }
 }

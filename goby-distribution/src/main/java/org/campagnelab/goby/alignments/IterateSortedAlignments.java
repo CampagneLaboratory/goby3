@@ -48,7 +48,7 @@ import java.util.function.Predicate;
  * only a subset of positions from each alignment. Since Goby 1.8.
  *
  * @author Fabien Campagne
- *         Date: Sept 3, 2010
+ * Date: Sept 3, 2010
  */
 public abstract class IterateSortedAlignments<T> {
     /**
@@ -87,7 +87,7 @@ public abstract class IterateSortedAlignments<T> {
      */
     protected int[] alignmentToGenomeTargetIndices;
     /**
-     * True when the iterator is visiting a window defined by startPostion, endPosition
+     * True when the iterator is visiting a window defined by startPosition, endPosition
      * on startReferenceIndex and endReferenceIndex.
      */
     protected boolean useWindow;
@@ -265,8 +265,8 @@ public abstract class IterateSortedAlignments<T> {
             if (StringUtils.isEmpty(startOffsetArgument) && StringUtils.isEmpty(endOffsetArgument)) {
                 sortedReaders = new ConcatSortedAlignmentReader(alignmentReaderFactory, false, basenames);
             } else {
-                assert  isValidOffsetArgument(startOffsetArgument) : "start offset must contain a coma or colon delimiter.";
-                assert  isValidOffsetArgument(endOffsetArgument) : "end offset must contain a coma delimiter.";
+                assert isValidOffsetArgument(startOffsetArgument) : "start offset must contain a coma or colon delimiter.";
+                assert isValidOffsetArgument(endOffsetArgument) : "end offset must contain a coma delimiter.";
 
                 final String[] startTokens = startOffsetArgument.split("[:,]");
                 final String[] endTokens = endOffsetArgument.split("[:,]");
@@ -327,13 +327,13 @@ public abstract class IterateSortedAlignments<T> {
         boolean first = true;
         ProgressLogger pg = new ProgressLogger(LOG);
         pg.displayFreeMemory = true;
-        pg.itemsName="aligned reads";
+        pg.itemsName = "aligned reads";
         pg.start();
 
         final AlignmentProcessorInterface realigner = alignmentProcessorFactory.create(sortedReaders);
 
         realigner.setGenome(getGenome(), sortedReaders.getTargetIdentifiers());
-        currentPosition=startPosition;
+        currentPosition = startPosition;
         while ((alignmentEntry = realigner.nextRealignedEntry(currentMinTargetIndex, currentPosition)) != null) {
 
             pg.lightUpdate();
@@ -341,7 +341,11 @@ public abstract class IterateSortedAlignments<T> {
             final int referenceIndex = alignmentEntry.getTargetIndex();
             if (lastTarget != -1 && referenceIndex != lastTarget) {
                 // we switch to a new reference. Cleanup any previous
-                processAllPreviousPositions(lastTarget, positionToBases);
+                final int previousTarget = lastTarget;
+                positionToBases.trimWidth(0, p -> {
+
+                    processPositions(previousTarget, p, positionToBases.get(p));
+                });
             }
             int queryLength = alignmentEntry.getQueryLength();
             assert queryLength != 0 : "queryLength should never be zero";
@@ -530,35 +534,29 @@ public abstract class IterateSortedAlignments<T> {
                 referencesToProcess.removeIf(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer value) {
-                        return value<referenceIndex;
+                        return value < referenceIndex;
                     }
                 });
 
                 // Not done, we now look for the next requested reference sequence:
                 currentMinTargetIndex = referencesToProcess.firstInt();
             }
-       //     System.out.println("STOP position="+currentPosition);
+            //     System.out.println("STOP position="+currentPosition);
         }
-        int minPos = Integer.MAX_VALUE;
-        int maxPos = Integer.MIN_VALUE;
+        final int cleanupTarget = lastTarget;
+        // flush all bases remaining to write:
+        positionToBases.trimWidth(0, p -> {
 
-        for (int pos : positionToBases.keySet()) {
-            minPos = Math.min(pos, minPos);
-            maxPos = Math.max(pos, maxPos);
-        }
-
-        for (int position = minPos; position <= maxPos; position++) {
-            processAndCleanup(lastTarget, position, positionToBases);
-        }
+            processPositions(cleanupTarget, p, positionToBases.get(p));
+        });
 
         sortedReaders.close();
         pg.stop();
     }
 
 
-
     protected boolean isValidOffsetArgument(String offsetArgument) {
-            return offsetArgument.contains(",") |offsetArgument.contains(":");
+        return offsetArgument.contains(",") | offsetArgument.contains(":");
     }
 
     private boolean isInsertionOrDeletion(Alignments.SequenceVariation var) {
@@ -627,61 +625,17 @@ public abstract class IterateSortedAlignments<T> {
     private void processAndCleanup(final int lastReferenceIndex,
                                    int lastPosition,
                                    final PositionToBasesMap<T> positionToBases) {
-        // indels can cause positions earlier than lastPosition to be in the map. This happens
-        // when an EIR is extended to the left before the current position. Output these first.
-        while ((!positionToBases.isEmpty())
-                && positionToBases.firstPosition() < lastPosition) {
-            int intermediatePosition = positionToBases.firstPosition();
-            processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
-            positionToBases.remove(intermediatePosition);
-            lastPosition=intermediatePosition;
-        }
-        for (int intermediatePosition = lastRemovedPosition + 1;
-             intermediatePosition <= lastPosition; intermediatePosition++) {
-
-            if (positionToBases.containsKey(intermediatePosition)) {
-
-                processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
-                positionToBases.remove(intermediatePosition);
-                lastPosition=intermediatePosition;
-
-            }
-
-        }
-
         lastRemovedPosition = lastPosition;
+
+        positionToBases.trimWidth(startFlapLength, p -> {
+
+            processPositions(lastReferenceIndex, p, positionToBases.get(p));
+
+        });
+
+
     }
 
-    /**
-     * Temporary position used for sorting in method processAllPreviousPositions.
-     */
-    IntArrayList tmpPositions = new IntArrayList();
-
-    /**
-     * Process positions on the previous target, which may still be in positionToBases. Note that this method is not
-     * re-entrant.
-     *
-     * @param lastReferenceIndex the last referenceIndex?
-     * @param positionToBases    positionToBases?
-     */
-    private void processAllPreviousPositions(final int lastReferenceIndex, final PositionToBasesMap positionToBases) {
-
-        tmpPositions.clear();
-        tmpPositions.addAll(positionToBases.keySet());
-        Collections.sort(tmpPositions);
-
-
-        for (final int intermediatePosition : tmpPositions) {
-            if (positionToBases.containsKey(intermediatePosition)) {
-                // TODO remove positionToBases from method signature:
-                processPositions(lastReferenceIndex, intermediatePosition, (T) positionToBases.get(intermediatePosition));
-                positionToBases.remove(intermediatePosition);
-                lastRemovedPosition = intermediatePosition;
-            }
-        }
-        positionToBases.clear();
-
-    }
 
     /**
      * Implement this call-back method to observe reference bases.
@@ -728,7 +682,8 @@ public abstract class IterateSortedAlignments<T> {
 
     /**
      * Implement this call-back method to observe a candidate indel that begins at startPosition.
-     *  @param positionToBases map from eir start positions to info about indels whose eir start at the location.
+     *
+     * @param positionToBases map from eir start positions to info about indels whose eir start at the location.
      * @param referenceIndex  The reference sequence where the indel candidate is observed.
      * @param startPosition   The position where the indel start, according to pair-wise sequence alignment (before eir calculation)
      * @param from            from bases (before eir calculation)
