@@ -625,7 +625,7 @@ public abstract class IterateSortedAlignments<T> {
     }
 
     private void processAndCleanup(final int lastReferenceIndex,
-                                   final int lastPosition,
+                                   int lastPosition,
                                    final PositionToBasesMap<T> positionToBases) {
         // indels can cause positions earlier than lastPosition to be in the map. This happens
         // when an EIR is extended to the left before the current position. Output these first.
@@ -634,6 +634,7 @@ public abstract class IterateSortedAlignments<T> {
             int intermediatePosition = positionToBases.firstPosition();
             processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
             positionToBases.remove(intermediatePosition);
+            lastPosition=intermediatePosition;
         }
         for (int intermediatePosition = lastRemovedPosition + 1;
              intermediatePosition <= lastPosition; intermediatePosition++) {
@@ -642,6 +643,8 @@ public abstract class IterateSortedAlignments<T> {
 
                 processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
                 positionToBases.remove(intermediatePosition);
+                lastPosition=intermediatePosition;
+
             }
 
         }
