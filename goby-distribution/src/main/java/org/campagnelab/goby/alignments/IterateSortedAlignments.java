@@ -341,11 +341,7 @@ public abstract class IterateSortedAlignments<T> {
             final int referenceIndex = alignmentEntry.getTargetIndex();
             if (lastTarget != -1 && referenceIndex != lastTarget) {
                 // we switch to a new reference. Cleanup any previous
-                final int previousTarget = lastTarget;
-                positionToBases.trimWidth(0, p -> {
-
-                    processPositions(previousTarget, p, positionToBases.get(p));
-                });
+                processAllPreviousPositions(lastTarget, positionToBases);
             }
             int queryLength = alignmentEntry.getQueryLength();
             assert queryLength != 0 : "queryLength should never be zero";
@@ -543,12 +539,17 @@ public abstract class IterateSortedAlignments<T> {
             }
             //     System.out.println("STOP position="+currentPosition);
         }
-        final int cleanupTarget = lastTarget;
-        // flush all bases remaining to write:
-        positionToBases.trimWidth(0, p -> {
+        int minPos = Integer.MAX_VALUE;
+        int maxPos = Integer.MIN_VALUE;
 
-            processPositions(cleanupTarget, p, positionToBases.get(p));
-        });
+        for (int pos : positionToBases.keySet()) {
+            minPos = Math.min(pos, minPos);
+            maxPos = Math.max(pos, maxPos);
+        }
+
+        for (int position = minPos; position <= maxPos; position++) {
+            processAndCleanup(lastTarget, position, positionToBases);
+        }
 
         sortedReaders.close();
         pg.stop();
@@ -625,17 +626,61 @@ public abstract class IterateSortedAlignments<T> {
     private void processAndCleanup(final int lastReferenceIndex,
                                    int lastPosition,
                                    final PositionToBasesMap<T> positionToBases) {
+        // indels can cause positions earlier than lastPosition to be in the map. This happens
+        // when an EIR is extended to the left before the current position. Output these first.
+        while ((!positionToBases.isEmpty())
+                && positionToBases.firstPosition() < lastPosition) {
+            int intermediatePosition = positionToBases.firstPosition();
+            processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
+            positionToBases.remove(intermediatePosition);
+            lastPosition=intermediatePosition;
+        }
+        for (int intermediatePosition = lastRemovedPosition + 1;
+             intermediatePosition <= lastPosition; intermediatePosition++) {
+
+            if (positionToBases.containsKey(intermediatePosition)) {
+
+                processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
+                positionToBases.remove(intermediatePosition);
+                lastPosition=intermediatePosition;
+
+            }
+
+        }
+
         lastRemovedPosition = lastPosition;
-
-        positionToBases.trimWidth(startFlapLength, p -> {
-
-            processPositions(lastReferenceIndex, p, positionToBases.get(p));
-
-        });
-
-
     }
 
+    /**
+     * Temporary position used for sorting in method processAllPreviousPositions.
+     */
+    IntArrayList tmpPositions = new IntArrayList();
+
+    /**
+     * Process positions on the previous target, which may still be in positionToBases. Note that this method is not
+     * re-entrant.
+     *
+     * @param lastReferenceIndex the last referenceIndex?
+     * @param positionToBases    positionToBases?
+     */
+    private void processAllPreviousPositions(final int lastReferenceIndex, final PositionToBasesMap positionToBases) {
+
+        tmpPositions.clear();
+        tmpPositions.addAll(positionToBases.keySet());
+        Collections.sort(tmpPositions);
+
+
+        for (final int intermediatePosition : tmpPositions) {
+            if (positionToBases.containsKey(intermediatePosition)) {
+                // TODO remove positionToBases from method signature:
+                processPositions(lastReferenceIndex, intermediatePosition, (T) positionToBases.get(intermediatePosition));
+                positionToBases.remove(intermediatePosition);
+                lastRemovedPosition = intermediatePosition;
+    }
+        }
+        positionToBases.clear();
+
+    }
 
     /**
      * Implement this call-back method to observe reference bases.
