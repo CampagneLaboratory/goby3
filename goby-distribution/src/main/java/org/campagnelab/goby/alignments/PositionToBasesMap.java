@@ -37,8 +37,8 @@ public class PositionToBasesMap<T> {
         return sortedKeys;
     }
 
-    public boolean containsKey(int k) {
-        return delegate.containsKey(k);
+    public boolean containsKey(int position) {
+        return sortedKeys.contains(position);
     }
 
     public int size() {

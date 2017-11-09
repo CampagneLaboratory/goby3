@@ -182,6 +182,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         if (encounteredSet.contains(position)) {
             //don't write duplicate records for the same position
             duplicatePositions++;
+            System.out.printf("Encountered duplicate position %s:%d%n",iterator.getReferenceId(referenceIndex), position);
             int skippedCounts = sampleCounts[0].getSumCounts();
             maxDupCount = Math.max(skippedCounts, maxDupCount);
             return;
@@ -281,7 +282,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public void close() {
         //    pgReadWrite.stop();
 
-        System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward");
+        System.out.println(duplicatePositions + " duplicate positions skipped (because of indel moved backward). This number should be zero!");
         System.out.println(indelsAdded + " indels added");
         System.out.println(emptyRefIdxsCounter + " records skipped due to -1 reference index");
         try {

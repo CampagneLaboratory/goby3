@@ -626,24 +626,19 @@ public abstract class IterateSortedAlignments<T> {
     private void processAndCleanup(final int lastReferenceIndex,
                                    int lastPosition,
                                    final PositionToBasesMap<T> positionToBases) {
-        // indels can cause positions earlier than lastPosition to be in the map. This happens
+        if (positionToBases.isEmpty()) return;
+
+         // indels can cause positions earlier than lastPosition to be in the map. This happens
         // when an EIR is extended to the left before the current position. Output these first.
+
+        int intermediatePosition;
         while ((!positionToBases.isEmpty())
-                && positionToBases.firstPosition() < lastPosition) {
-            int intermediatePosition = positionToBases.firstPosition();
-            processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
-            positionToBases.remove(intermediatePosition);
-            lastPosition=intermediatePosition;
-        }
-        for (int intermediatePosition = lastRemovedPosition + 1;
-             intermediatePosition <= lastPosition; intermediatePosition++) {
+                && (intermediatePosition = positionToBases.firstPosition()) <= lastPosition) {
 
             if (positionToBases.containsKey(intermediatePosition)) {
-
                 processPositions(lastReferenceIndex, intermediatePosition, positionToBases.get(intermediatePosition));
                 positionToBases.remove(intermediatePosition);
-                lastPosition=intermediatePosition;
-
+                lastPosition = Math.max(intermediatePosition, lastPosition);
             }
 
         }
@@ -672,13 +667,14 @@ public abstract class IterateSortedAlignments<T> {
 
         for (final int intermediatePosition : tmpPositions) {
             if (positionToBases.containsKey(intermediatePosition)) {
-                // TODO remove positionToBases from method signature:
+
                 processPositions(lastReferenceIndex, intermediatePosition, (T) positionToBases.get(intermediatePosition));
                 positionToBases.remove(intermediatePosition);
                 lastRemovedPosition = intermediatePosition;
-    }
+            }
         }
         positionToBases.clear();
+        lastRemovedPosition=-1;
 
     }
 

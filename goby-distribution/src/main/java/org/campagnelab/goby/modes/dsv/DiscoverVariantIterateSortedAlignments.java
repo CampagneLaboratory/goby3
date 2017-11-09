@@ -251,6 +251,7 @@ public class DiscoverVariantIterateSortedAlignments extends IterateSortedAlignme
     public void processPositions(final int referenceIndex,
                                  final int position,
                                  final DiscoverVariantPositionData list) {
+        if (list.size()==0) return;
         int sumVariantCounts = 0;
         //   System.out.printf("target=%s position=%d list:%d%n",referenceIndex, position, list.size());
         if (referenceIndex != previousReference && genome != null) {
