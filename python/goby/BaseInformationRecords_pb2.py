@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='BaseInformationRecords.proto',
   package='org.campagnelab.dl.varanalysis.protobuf',
   syntax='proto2',
-  serialized_pb=_b('\n\x1c\x42\x61seInformationRecords.proto\x12\'org.campagnelab.dl.varanalysis.protobuf\"f\n\x19\x42\x61seInformationCollection\x12I\n\x07records\x18\x01 \x03(\x0b\x32\x38.org.campagnelab.dl.varanalysis.protobuf.BaseInformation\"\xd6\x02\n\x0f\x42\x61seInformation\x12\x17\n\x0freference_index\x18\x01 \x02(\r\x12\x14\n\x0creference_id\x18\n \x01(\t\x12\x10\n\x08position\x18\x02 \x02(\r\x12\x0f\n\x07mutated\x18\x03 \x01(\x08\x12\x13\n\x0bmutatedBase\x18\x04 \x01(\t\x12\x1a\n\x12indexOfMutatedBase\x18\x07 \x01(\r\x12\x1b\n\x13\x66requencyOfMutation\x18\x06 \x01(\x02\x12\x15\n\rreferenceBase\x18\x05 \x01(\t\x12\x44\n\x07samples\x18\x08 \x03(\x0b\x32\x33.org.campagnelab.dl.varanalysis.protobuf.SampleInfo\x12\x14\n\x0ctrueGenotype\x18\t \x01(\t\x12\x10\n\x08trueFrom\x18\x0b \x01(\t\x12\x1e\n\x16genomicSequenceContext\x18\x0f \x01(\t\"\xc6\x01\n\nSampleInfo\x12\x42\n\x06\x63ounts\x18\x01 \x03(\x0b\x32\x32.org.campagnelab.dl.varanalysis.protobuf.CountInfo\x12\x0f\n\x07isTumor\x18\x02 \x01(\x08\x12\x17\n\x0f\x66ormattedCounts\x18\x03 \x01(\t\x12\x11\n\tisVariant\x18\x04 \x01(\x08\x12\x14\n\x0ctrueGenotype\x18\x05 \x01(\t\x12!\n\x19prePostProcessingGenotype\x18\x64 \x01(\t\"\xd8\r\n\tCountInfo\x12\x18\n\x10matchesReference\x18\x01 \x02(\x08\x12\x14\n\x0c\x66romSequence\x18\x02 \x02(\t\x12\x12\n\ntoSequence\x18\x03 \x02(\t\x12\"\n\x1agenotypeCountForwardStrand\x18\x04 \x02(\r\x12\"\n\x1agenotypeCountReverseStrand\x18\x05 \x02(\r\x12\x0f\n\x07isIndel\x18\x0f \x01(\x08\x12`\n\x1aqualityScoresForwardStrand\x18\x10 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12`\n\x1aqualityScoresReverseStrand\x18\x11 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12^\n\x18readIndicesForwardStrand\x18\x12 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12^\n\x18readIndicesReverseStrand\x18\x13 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12\x65\n\x1freadMappingQualityForwardStrand\x18\x15 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12\x65\n\x1freadMappingQualityReverseStrand\x18\x16 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Z\n\x14numVariationsInReads\x18\x17 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Q\n\x0binsertSizes\x18\x18 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Z\n\x14targetAlignedLengths\x18\x19 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Y\n\x13queryAlignedLengths\x18\x1a \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12T\n\x0equeryPositions\x18\x1e \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12O\n\tpairFlags\x18\x1b \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12l\n&distancesToReadVariationsForwardStrand\x18\x1c \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12l\n&distancesToReadVariationsReverseStrand\x18\x1d \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12[\n\x15\x64istanceToStartOfRead\x18\x1f \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Y\n\x13\x64istanceToEndOfRead\x18  \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12\x10\n\x08isCalled\x18\x14 \x01(\x08\x12\x19\n\x11gobyGenotypeIndex\x18( \x01(\r\x12\x0e\n\x06offset\x18\x65 \x01(\r\"8\n\x13NumberWithFrequency\x12\x0e\n\x06number\x18\x01 \x02(\x05\x12\x11\n\tfrequency\x18\x02 \x02(\r\"\xc9\x01\n\rSomaticOutput\x12\x12\n\tisSomatic\x18\xc8\x01 \x02(\x08\x12\x17\n\x0freference_index\x18\x01 \x02(\r\x12\x14\n\x0creference_id\x18\n \x01(\t\x12\x10\n\x08position\x18\x02 \x02(\r\x12\x13\n\x0bmutatedBase\x18\x04 \x01(\t\x12\x1a\n\x12indexOfMutatedBase\x18\x07 \x01(\r\x12\x1b\n\x13\x66requencyOfMutation\x18\x06 \x01(\x02\x12\x15\n\rreferenceBase\x18\x05 \x01(\tB+\n\'org.campagnelab.dl.varanalysis.protobufH\x01')
+  serialized_pb=_b('\n\x1c\x42\x61seInformationRecords.proto\x12\'org.campagnelab.dl.varanalysis.protobuf\"f\n\x19\x42\x61seInformationCollection\x12I\n\x07records\x18\x01 \x03(\x0b\x32\x38.org.campagnelab.dl.varanalysis.protobuf.BaseInformation\"\xe7\x02\n\x0f\x42\x61seInformation\x12\x17\n\x0freference_index\x18\x01 \x02(\r\x12\x14\n\x0creference_id\x18\n \x01(\t\x12\x10\n\x08position\x18\x02 \x02(\r\x12\x0f\n\x07mutated\x18\x03 \x01(\x08\x12\x13\n\x0bmutatedBase\x18\x04 \x01(\t\x12\x1a\n\x12indexOfMutatedBase\x18\x07 \x01(\r\x12\x1b\n\x13\x66requencyOfMutation\x18\x06 \x01(\x02\x12\x15\n\rreferenceBase\x18\x05 \x01(\t\x12\x44\n\x07samples\x18\x08 \x03(\x0b\x32\x33.org.campagnelab.dl.varanalysis.protobuf.SampleInfo\x12\x14\n\x0ctrueGenotype\x18\t \x01(\t\x12\x10\n\x08trueFrom\x18\x0b \x01(\t\x12\x1e\n\x16genomicSequenceContext\x18\x0f \x01(\t\x12\x0f\n\x07indices\x18\x10 \x03(\r\"\xd7\x01\n\nSampleInfo\x12\x42\n\x06\x63ounts\x18\x01 \x03(\x0b\x32\x32.org.campagnelab.dl.varanalysis.protobuf.CountInfo\x12\x0f\n\x07isTumor\x18\x02 \x01(\x08\x12\x17\n\x0f\x66ormattedCounts\x18\x03 \x01(\t\x12\x11\n\tisVariant\x18\x04 \x01(\x08\x12\x14\n\x0ctrueGenotype\x18\x05 \x01(\t\x12!\n\x19prePostProcessingGenotype\x18\x64 \x01(\t\x12\x0f\n\x07indices\x18\t \x03(\r\"\xd8\r\n\tCountInfo\x12\x18\n\x10matchesReference\x18\x01 \x02(\x08\x12\x14\n\x0c\x66romSequence\x18\x02 \x02(\t\x12\x12\n\ntoSequence\x18\x03 \x02(\t\x12\"\n\x1agenotypeCountForwardStrand\x18\x04 \x02(\r\x12\"\n\x1agenotypeCountReverseStrand\x18\x05 \x02(\r\x12\x0f\n\x07isIndel\x18\x0f \x01(\x08\x12`\n\x1aqualityScoresForwardStrand\x18\x10 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12`\n\x1aqualityScoresReverseStrand\x18\x11 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12^\n\x18readIndicesForwardStrand\x18\x12 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12^\n\x18readIndicesReverseStrand\x18\x13 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12\x65\n\x1freadMappingQualityForwardStrand\x18\x15 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12\x65\n\x1freadMappingQualityReverseStrand\x18\x16 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Z\n\x14numVariationsInReads\x18\x17 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Q\n\x0binsertSizes\x18\x18 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Z\n\x14targetAlignedLengths\x18\x19 \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Y\n\x13queryAlignedLengths\x18\x1a \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12T\n\x0equeryPositions\x18\x1e \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12O\n\tpairFlags\x18\x1b \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12l\n&distancesToReadVariationsForwardStrand\x18\x1c \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12l\n&distancesToReadVariationsReverseStrand\x18\x1d \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12[\n\x15\x64istanceToStartOfRead\x18\x1f \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12Y\n\x13\x64istanceToEndOfRead\x18  \x03(\x0b\x32<.org.campagnelab.dl.varanalysis.protobuf.NumberWithFrequency\x12\x10\n\x08isCalled\x18\x14 \x01(\x08\x12\x19\n\x11gobyGenotypeIndex\x18( \x01(\r\x12\x0e\n\x06offset\x18\x65 \x01(\r\"8\n\x13NumberWithFrequency\x12\x0e\n\x06number\x18\x01 \x02(\x05\x12\x11\n\tfrequency\x18\x02 \x02(\r\"\xc9\x01\n\rSomaticOutput\x12\x12\n\tisSomatic\x18\xc8\x01 \x02(\x08\x12\x17\n\x0freference_index\x18\x01 \x02(\r\x12\x14\n\x0creference_id\x18\n \x01(\t\x12\x10\n\x08position\x18\x02 \x02(\r\x12\x13\n\x0bmutatedBase\x18\x04 \x01(\t\x12\x1a\n\x12indexOfMutatedBase\x18\x07 \x01(\r\x12\x1b\n\x13\x66requencyOfMutation\x18\x06 \x01(\x02\x12\x15\n\rreferenceBase\x18\x05 \x01(\tB+\n\'org.campagnelab.dl.varanalysis.protobufH\x01')
 )
 
 
@@ -147,6 +147,13 @@ _BASEINFORMATION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='indices', full_name='org.campagnelab.dl.varanalysis.protobuf.BaseInformation.indices', index=12,
+      number=16, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -160,7 +167,7 @@ _BASEINFORMATION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=178,
-  serialized_end=520,
+  serialized_end=537,
 )
 
 
@@ -213,6 +220,13 @@ _SAMPLEINFO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='indices', full_name='org.campagnelab.dl.varanalysis.protobuf.SampleInfo.indices', index=6,
+      number=9, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -225,8 +239,8 @@ _SAMPLEINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=523,
-  serialized_end=721,
+  serialized_start=540,
+  serialized_end=755,
 )
 
 
@@ -424,8 +438,8 @@ _COUNTINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=724,
-  serialized_end=2476,
+  serialized_start=758,
+  serialized_end=2510,
 )
 
 
@@ -462,8 +476,8 @@ _NUMBERWITHFREQUENCY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2478,
-  serialized_end=2534,
+  serialized_start=2512,
+  serialized_end=2568,
 )
 
 
@@ -542,8 +556,8 @@ _SOMATICOUTPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2537,
-  serialized_end=2738,
+  serialized_start=2571,
+  serialized_end=2772,
 )
 
 _BASEINFORMATIONCOLLECTION.fields_by_name['records'].message_type = _BASEINFORMATION

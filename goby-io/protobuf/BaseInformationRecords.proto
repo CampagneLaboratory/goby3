@@ -53,6 +53,9 @@ message BaseInformation {
     /** Genomic context centered on the base: bases around the base. If 11 bases are stored, 5 bases of context are
     stored on either side. */
     optional string genomicSequenceContext = 15;
+
+    /** gobyGenotypeIndex corresponding to each allele of the true genotype **/
+    repeated uint32 indices = 16;
 }
 
 /**
@@ -77,8 +80,11 @@ message SampleInfo {
         */
     optional string trueGenotype = 5;
 
-    /** The genotype before segment post-processing. Used for debugging post-processing of segment construction. */
+    /** The genotype before segment post-processing. Used for debugging post-processing of segment construction. **/
     optional string prePostProcessingGenotype=100;
+
+    /** gobyGenotypeIndex corresponding to each allele of the true genotype **/
+    repeated uint32 indices = 9;
 
 
 }
