@@ -88,6 +88,13 @@ def vectorize_by_mini_batch(segment_info_generator, mini_batch_size, num_segment
         if limit is None or segments_processed_total < limit:
             segments_processed_in_batch += 1
             segments_processed_total += 1
+            for base_idx in range(len(segment_info.sample[0].base)):
+                if len(segment_info.sample[0].base[base_idx].features) == 0:
+                    continue
+            if len(segment_info.sample) == 0:
+                continue
+            if len(segment_info.sample[0].base) == 0:
+                continue
             segment_info_data, segment_feature_mismatch, segment_label_mismatch = minimal_vectorize_segment(
                 segment_info, padding)
             segment_input, segment_label, _ = segment_info_data
