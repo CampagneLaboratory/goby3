@@ -54,8 +54,8 @@ message BaseInformation {
     stored on either side. */
     optional string genomicSequenceContext = 15;
 
-    /** gobyGenotypeIndex corresponding to each allele of the true genotype **/
-    repeated uint32 indices = 16;
+    /** gobyGenotypeIndex corresponding to each called allele of the true genotype **/
+    repeated uint32 calledCountIndices = 16;
 }
 
 /**
@@ -83,8 +83,8 @@ message SampleInfo {
     /** The genotype before segment post-processing. Used for debugging post-processing of segment construction. **/
     optional string prePostProcessingGenotype=100;
 
-    /** gobyGenotypeIndex corresponding to each allele of the true genotype **/
-    repeated uint32 indices = 9;
+    /** gobyGenotypeIndex corresponding to each called allele of the true genotype **/
+    repeated uint32 calledCountIndices = 9;
 
 
 }
