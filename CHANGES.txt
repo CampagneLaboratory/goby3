@@ -1,3 +1,12 @@
+3.3.0
+ - Substantially reduced memory utilization for discover-sequence-variant (all modes).
+ - discover-sequence-variant could in some rare cases output the same base twice (when indels were extending prior to
+   the beginning of the read after equivalent indel region calculation). This fix improved indel performance when
+   training models with variationanalysis 1.3.3+.
+ - Initial work to develop[ models for genomic segments (see .ssi format and consurrent work in variationanalysis).
+   This is work in progress. Protobuf schema is in goby-io/protobuf/SegmentInformationRecords.proto
+   Models are developed in parallel with Keras (in goby3/python/dl) and DL4J (in variationanalysis).
+ - Updated genotyping model to state of the art (models/genotyping/1510204519948/, see evaluation results in the folder)
 3.2.7
  - Somatic output format: report predicted somatic allele in VCF.
  - Variant.FromTo: defined SerializeID. This requires regenerating varmaps.

@@ -69,7 +69,7 @@ public class GenotypesOutputFormat implements SequenceVariationOutputFormat {
 
     @RegisterThis
     public static final DynamicOptionClient doc = new DynamicOptionClient(GenotypesOutputFormat.class,
-            "model-path:string, path to a variationanalysis deep learning model to call genotypes:${GOBY_HOME}/models/genotyping/1495043324474/bestscore-ComputationGraph.bin",
+            "model-path:string, path to a variationanalysis deep learning model to call genotypes:${GOBY_HOME}/models/genotyping/1510204519948/bestscore-ComputationGraph.bin",
             "minimum-p:float, minimum probability in any sample to report a genotype.:0.0",
             "stringent-p:float, minimum probability in all samples to report a genotype.:0.0"
     );
