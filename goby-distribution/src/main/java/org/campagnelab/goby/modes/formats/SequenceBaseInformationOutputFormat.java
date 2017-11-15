@@ -76,7 +76,8 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
     public static final DynamicOptionClient doc = new DynamicOptionClient(SequenceBaseInformationOutputFormat.class,
             "sampling-rate:float, ratio of sites to write to output. The default writes all sites. Use 0.1 to sample 10% of sites.:1.0",
             "random-seed:long, random seed used for sampling sites.:2390239",
-            "true-genotype-map:string, filename for the true genotype map (.varmap), produced by vcf-to-map.:nil",
+            "true-genotype-map:string, filename for the true genotype map (.varmap), produced by vcf-to-map.:" +
+                    "true-genotype-map=GM_12878_gatk_realigned-2017-11-15.varmap",
             "sample-index:int, index of the sample to annotate (needed when map is provided).:0",
             "true-label-annotator:string, classname for the true genotype label annotator. The implementation is provided by " +
                     "the variationanalysis project's genotype.jar:org.campagnelab.dl.genotype.helpers.AddTrueGenotypeHelper",
@@ -286,7 +287,7 @@ public class SequenceBaseInformationOutputFormat implements SequenceVariationOut
         System.out.println(indelsAdded + " indels added");
         System.out.println(emptyRefIdxsCounter + " records skipped due to -1 reference index");
         try {
-            if (withGenotypeMap) {
+            if (withGenotypeMap && addTrueGenotypeHelper!=null) {
                 sbiWriter.setCustomProperties(addTrueGenotypeHelper.getStatProperties());
                 addTrueGenotypeHelper.printStats();
 

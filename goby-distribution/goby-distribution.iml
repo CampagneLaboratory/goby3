@@ -12,6 +12,16 @@
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="variationanalysis" level="project" />
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <ANNOTATIONS>
+          <root url="jar://$MODULE_DIR$/../goby-spi/target/goby-spi-3.3.1-SNAPSHOT.jar!/" />
+        </ANNOTATIONS>
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.google.guava:guava:r08" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.12" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
