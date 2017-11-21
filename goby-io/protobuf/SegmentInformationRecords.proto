@@ -85,6 +85,11 @@ message Base {
     */
     optional string formattedCounts=9;
 
+    /*
+        The position of this base.
+    */
+    optional ReferencePosition postion = 12;
+
 }
 
 /**
