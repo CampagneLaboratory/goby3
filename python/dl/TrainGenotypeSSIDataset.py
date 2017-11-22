@@ -175,8 +175,8 @@ def main(args):
     callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard, args.validation, log_file_path,
                                  max_base_count)
 
-    input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json)
-    val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json)
+    input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json, array_type='train')
+    val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json, array_type='train')
 
     input_updates = math.ceil(input_num_segments / input_mini_batch_size)
     val_updates = math.ceil(val_num_segments / val_mini_batch_size)

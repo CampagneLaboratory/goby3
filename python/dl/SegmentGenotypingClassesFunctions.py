@@ -17,13 +17,16 @@ def get_properties_json(path_to_directory):
 
 
 class BatchNumpyFileSequence(Sequence):
-    def __init__(self, np_batch_directory, max_base_count, properties_json=None, add_metadata=False):
+    def __init__(self, np_batch_directory, max_base_count, properties_json=None, array_type='train'):
         if properties_json is None:
             properties_json = get_properties_json(np_batch_directory)
         self.properties_json = properties_json
         self.batch_path_and_prefix = os.path.join(np_batch_directory, self.properties_json["batch_prefix"])
         self.max_base_count = max_base_count
-        self.add_metadata = add_metadata
+        if array_type not in ['train', 'vcf', 'eval']:
+            self.array_type = 'train'
+        else:
+            self.array_type = array_type
 
     def __len__(self):
         return self.properties_json["total_batches_written"]
@@ -38,22 +41,34 @@ class BatchNumpyFileSequence(Sequence):
             batch_input = self._pad_batch(batch_input, timestep_padding)
             batch_label = self._pad_batch(batch_label, timestep_padding)
             batch_output = ({"model_input": batch_input}, {"main_output": batch_label})
-            if self.add_metadata:
-                batch_metadata = self._pad_batch(batch_data_set["metadata"], timestep_padding)
+            if self.array_type == 'vcf':
+                batch_ref = self._pad_batch(batch_data_set["ref"], timestep_padding, pad_3d=False)
+                batch_location = self._pad_batch(batch_data_set["location"], timestep_padding, pad_3d=False)
+                batch_chromosome = batch_data_set["chromosome"]
+                return batch_output, batch_ref, batch_location, batch_chromosome
+            elif self.array_type == 'eval':
+                batch_metadata = self._pad_batch(batch_data_set["metadata"], timestep_padding, pad_3d=False)
                 return batch_output, batch_metadata
             else:
                 return batch_output
 
-    def _pad_batch(self, batch_array, timestep_padding):
+    def _pad_batch(self, batch_array, timestep_padding, pad_3d=True):
+        pad_width = ((0, 0), timestep_padding, (0, 0)) if pad_3d else ((0, 0), timestep_padding)
         batch_array_padded = np.pad(batch_array,
-                                    pad_width=((0, 0), timestep_padding, (0, 0)),
+                                    pad_width=pad_width,
                                     mode="constant")
         if self.max_base_count < batch_array.shape[1]:
             if self.properties_json["padding"] == "post":
-                batch_array_padded = batch_array_padded[:, :self.max_base_count, :]
+                if pad_3d:
+                    batch_array_padded = batch_array_padded[:, :self.max_base_count, :]
+                else:
+                    batch_array_padded = batch_array_padded[:, :self.max_base_count]
             else:
                 start_base = batch_array.shape[1] - self.max_base_count
-                batch_array_padded = batch_array_padded[:, start_base:, :]
+                if pad_3d:
+                    batch_array_padded = batch_array_padded[:, start_base:, :]
+                else:
+                    batch_array_padded = batch_array_padded[:, start_base:]
         return batch_array_padded
 
     def on_epoch_end(self):
@@ -79,7 +94,7 @@ class ModelEvaluator:
             else:
                 max_base_count = self.properties_json["max_base_count"]
         self.test_data = BatchNumpyFileSequence(test_data_path, max_base_count,
-                                                self.properties_json, add_metadata=True)
+                                                self.properties_json, array_type='eval')
         field_names = ["epoch"] if log_epochs else []
         field_names += ["precision_ref", "precision_snp", "precision_indel", "recall_ref", "recall_snp", "recall_indel",
                         "f1_ref", "f1_snp", "f1_indel", "accuracy_overall", "accuracy_ref", "accuracy_snp",
@@ -140,13 +155,12 @@ class ModelEvaluator:
             for segment_in_batch_idx in range(batch_predictions.shape[0]):
                 segment_label_categorical = batch_label[segment_in_batch_idx]
                 segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
-                segment_metadata_categorical = batch_metadata[segment_in_batch_idx]
+                segment_metadata_with_padding = batch_metadata[segment_in_batch_idx]
                 # segment_predicted_metadata_categorical = batch_predicted_metadata[segment_in_batch_idx]
                 segment_label_with_padding = np.argmax(segment_label_categorical, axis=1)
                 # Get true genotypes from these segment labels
                 # Keep track of tp, fp, tn, and fn based on metadata ref, snp, indel, and calculate acc, prec, rec, F1
                 segment_prediction_with_padding = np.argmax(segment_prediction_categorical, axis=1)
-                segment_metadata_with_padding = np.argmax(segment_metadata_categorical, axis=1)
                 # segment_predicted_metadata_with_padding = np.argmax(segment_predicted_metadata_categorical, axis=1)
                 # Only use positions where label != 0, as label 0 reserved for padding
                 segment_label_non_padding_positions = segment_label_with_padding != 0
