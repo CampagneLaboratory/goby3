@@ -88,7 +88,7 @@ message Base {
     /*
         The position of this base.
     */
-    optional ReferencePosition postion = 12;
+    optional ReferencePosition position = 12;
 
 }
 
