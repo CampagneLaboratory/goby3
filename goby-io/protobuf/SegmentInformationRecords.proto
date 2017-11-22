@@ -85,10 +85,10 @@ message Base {
     */
     optional string formattedCounts=9;
 
-    /*
-        The position of this base.
+    /**
+        The location of this base.
     */
-    optional ReferencePosition position = 12;
+    optional uint32 location = 12;
 
 }
 
