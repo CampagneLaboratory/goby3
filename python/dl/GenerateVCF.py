@@ -4,17 +4,15 @@ import os
 
 from keras.models import load_model
 
-from dl.SegmentGenotypingClassesFunctions import get_properties_json, BatchNumpyFileSequence, Metadata
+from dl.SegmentGenotypingClassesFunctions import get_properties_json, BatchNumpyFileSequence
 
 import numpy as np
 
 vcf_header = ("##fileformat=VCFv4.1\n"
-              "##fileContents={}\n"
               "##GobyPython={}\n"
               "##modelPath={}\n"
-              "##modelPrefix={}\n")
-
-vcf_format = ("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
+              "##modelPrefix={}\n"
+              "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
               "##FORMAT=<ID=MC,Number=1,Type=String,Description=\"Model Calls.\">\n"
               "##FORMAT=<ID=P,Number=1,Type=Float,Description=\"Model proability.\">\n")
 
@@ -36,21 +34,11 @@ def main(args):
         os.makedirs(prefix_dir, exist_ok=True)
     prefix = os.path.splitext(os.path.basename(args.prefix))[0]
     prefix = os.path.join(prefix_dir, prefix)
-    with open(
-            "{}_snps.vcf".format(prefix), "w") as snp_vcf_file, open(
-            "{}_snps.bed".format(prefix), "w") as snp_bed_file, open(
-            "{}_indels.vcf".format(prefix), "w") as indel_vcf_file, open(
-            "{}_indels.bed".format(prefix), "w") as indel_bed_file:
-        snp_vcf_file.write(vcf_header.format("snps", args.version, args.model, _get_basename(args.model)))
-        snp_vcf_file.write(vcf_format)
-        snp_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-        snp_vcf_writer = csv.DictWriter(snp_vcf_file, fieldnames=vcf_fields, delimiter="\t")
-        snp_bed_writer = csv.DictWriter(snp_bed_file, fieldnames=bed_fields, delimiter="\t")
-        indel_vcf_file.write(vcf_header.format("indels", args.version, args.model, _get_basename(args.model)))
-        indel_vcf_file.write(vcf_format)
-        indel_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-        indel_vcf_writer = csv.DictWriter(indel_vcf_file, fieldnames=vcf_fields, delimiter="\t")
-        indel_bed_writer = csv.DictWriter(indel_bed_file, fieldnames=bed_fields, delimiter="\t")
+    with open("{}.vcf".format(prefix), "w") as vcf_file, open("{}.bed".format(prefix), "w") as bed_file:
+        vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model)))
+        vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+        vcf_writer = csv.DictWriter(vcf_file, fieldnames=vcf_fields, delimiter="\t")
+        bed_writer = csv.DictWriter(bed_file, fieldnames=bed_fields, delimiter="\t")
         vcf_location = None
         vcf_chromosome = None
         vcf_ref_bases = []
@@ -98,10 +86,8 @@ def main(args):
                                        vcf_ref_bases=vcf_ref_bases,
                                        vcf_predictions=vcf_predictions,
                                        vcf_probabilities=vcf_probabilities,
-                                       snp_vcf_writer=snp_vcf_writer,
-                                       snp_bed_writer=snp_bed_writer,
-                                       indel_vcf_writer=indel_vcf_writer,
-                                       indel_bed_writer=indel_bed_writer,
+                                       vcf_writer=vcf_writer,
+                                       bed_writer=bed_writer,
                                        dataset_field=dataset_field)
                         vcf_location = base_location
                         vcf_chromosome = segment_chromosome
@@ -114,17 +100,13 @@ def main(args):
                                vcf_ref_bases=vcf_ref_bases,
                                vcf_predictions=vcf_predictions,
                                vcf_probabilities=vcf_probabilities,
-                               snp_vcf_writer=snp_vcf_writer,
-                               snp_bed_writer=snp_bed_writer,
-                               indel_vcf_writer=indel_vcf_writer,
-                               indel_bed_writer=indel_bed_writer,
+                               vcf_writer=vcf_writer,
+                               bed_writer=bed_writer,
                                dataset_field=dataset_field)
 
 
-def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, snp_vcf_writer,
-                   snp_bed_writer, indel_vcf_writer, indel_bed_writer, dataset_field):
-    def indel_condition(vcf_alleles):
-        return len(list(filter(lambda a: len(a) > 1, vcf_alleles))) > 0
+def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, vcf_writer,
+                   bed_writer, dataset_field):
     vcf_ref = "".join(vcf_ref_bases)
     vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_predictions)))]
     vcf_alts = set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles))
@@ -136,9 +118,6 @@ def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions,
     vcf_gt = [vcf_possible_alleles.index(allele) for allele in vcf_unique_predicted_alleles]
     vcf_mc = [vcf_possible_alleles[allele_idx] for allele_idx in vcf_gt]
     vcf_model_probability = np.mean(vcf_probabilities)
-    is_indel = indel_condition(vcf_possible_alleles)
-    vcf_writer = indel_vcf_writer if is_indel else snp_vcf_writer
-    bed_writer = indel_bed_writer if is_indel else snp_bed_writer
     vcf_entry = {
         "CHROM": vcf_chromosome,
         "POS": vcf_location + 1,
