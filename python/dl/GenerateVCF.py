@@ -9,10 +9,12 @@ from dl.SegmentGenotypingClassesFunctions import get_properties_json, BatchNumpy
 import numpy as np
 
 vcf_header = ("##fileformat=VCFv4.1\n"
+              "##fileContents={}\n"
               "##GobyPython={}\n"
               "##modelPath={}\n"
-              "##modelPrefix={}\n"
-              "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
+              "##modelPrefix={}\n")
+
+vcf_format = ("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
               "##FORMAT=<ID=MC,Number=1,Type=String,Description=\"Model Calls.\">\n"
               "##FORMAT=<ID=P,Number=1,Type=Float,Description=\"Model proability.\">\n")
 
@@ -29,18 +31,40 @@ def main(args):
     dataset_field = _get_basename(args.testing)
     vcf_fields = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", dataset_field]
     bed_fields = ["chrom", "start", "end"]
-    prefix = os.path.splitext(args.prefix)[0]
-    with open("{}.vcf".format(prefix), "w") as vcf_file, open("{}.bed".format(prefix), "w") as bed_file:
-        vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model)))
-        vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-        vcf_writer = csv.DictWriter(vcf_file, fieldnames=vcf_fields, delimiter="\t")
-        bed_writer = csv.DictWriter(bed_file, fieldnames=bed_fields, delimiter="\t")
+    prefix_dir = os.path.dirname(args.prefix)
+    if prefix_dir:
+        os.makedirs(prefix_dir, exist_ok=True)
+    prefix = os.path.splitext(os.path.basename(args.prefix))[0]
+    prefix = os.path.join(prefix_dir, prefix)
+    with open(
+            "{}_snps.vcf".format(prefix), "w") as snp_vcf_file, open(
+            "{}_snps.bed".format(prefix), "w") as snp_bed_file, open(
+            "{}_indels.vcf".format(prefix), "w") as indel_vcf_file, open(
+            "{}_indels.bed".format(prefix), "w") as indel_bed_file:
+        snp_vcf_file.write(vcf_header.format("snps", args.version, args.model, _get_basename(args.model)))
+        snp_vcf_file.write(vcf_format)
+        snp_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+        snp_vcf_writer = csv.DictWriter(snp_vcf_file, fieldnames=vcf_fields, delimiter="\t")
+        snp_bed_writer = csv.DictWriter(snp_bed_file, fieldnames=bed_fields, delimiter="\t")
+        indel_vcf_file.write(vcf_header.format("indels", args.version, args.model, _get_basename(args.model)))
+        indel_vcf_file.write(vcf_format)
+        indel_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+        indel_vcf_writer = csv.DictWriter(indel_vcf_file, fieldnames=vcf_fields, delimiter="\t")
+        indel_bed_writer = csv.DictWriter(indel_bed_file, fieldnames=bed_fields, delimiter="\t")
+        vcf_location = None
+        vcf_chromosome = None
+        vcf_ref_bases = []
+        vcf_predictions = []
+        vcf_probabilities = []
         for data_idx in range(len(test_data)):
+            if data_idx % 20 == 0:
+                print("Evaluating batch {} of {}...".format(data_idx, len(test_data)))
             (batch_input_dict, batch_label_dict), batch_ref, batch_location, batch_chromosome = test_data[data_idx]
             batch_input = batch_input_dict["model_input"]
             batch_label = batch_label_dict["main_output"]
             batch_predictions = model.predict_on_batch(batch_input)
             for segment_in_batch_idx in range(batch_predictions.shape[0]):
+                segment_chromosome = batch_chromosome[segment_in_batch_idx][0]
                 segment_label_categorical = batch_label[segment_in_batch_idx]
                 segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
                 segment_ref_with_padding = batch_ref[segment_in_batch_idx]
@@ -52,48 +76,90 @@ def main(args):
                 segment_prediction = np.extract(segment_label_non_padding_positions, segment_prediction_with_padding)
                 segment_model_probabilities = np.extract(segment_label_non_padding_positions,
                                                          segment_model_probabilities_with_padding)
-                segment_ref = "".join(np.extract(
-                    segment_label_non_padding_positions, segment_ref_with_padding).tolist())
+                segment_ref = np.extract(segment_label_non_padding_positions, segment_ref_with_padding)
                 segment_true_genotype_prediction = [
                     properties_json["genotype.segment.label_plus_one.{}".format(label)]
                     for label in segment_prediction
                 ]
-                segment_predicted_alleles = ["".join(bases) for bases in
-                                             list(zip(*map(list, segment_true_genotype_prediction)))]
-                segment_alts = set(filter(lambda x: x != segment_ref, segment_predicted_alleles))
-                segment_possible_alleles = [segment_ref] + list(segment_alts)
-                segment_unique_predicted_alleles = []
-                for allele in segment_predicted_alleles:
-                    if allele not in segment_unique_predicted_alleles:
-                        segment_unique_predicted_alleles.append(allele)
-                segment_gt = [segment_possible_alleles.index(segment_allele)
-                              for segment_allele in segment_unique_predicted_alleles]
-                segment_mc = [segment_possible_alleles[allele_idx] for allele_idx in segment_gt]
-                segment_chromosome = batch_chromosome[segment_in_batch_idx]
-                segment_location = batch_location[segment_in_batch_idx]
-                segment_model_probability = np.mean(segment_model_probabilities)
-                if len(segment_ref) == 1:
-                    segment_vcf_entry = {
-                        "CHROM": segment_chromosome[0],
-                        "POS": segment_location[0] + 1,
-                        "ID": ".",
-                        "REF": segment_ref,
-                        "ALT": ",".join(segment_alts) if len(segment_alts) > 0 else ".",
-                        "QUAL": ".",
-                        "FILTER": ".",
-                        "INFO": ".",
-                        "FORMAT": "GT:MC:P",
-                        dataset_field: "{}:{}:{}".format("/".join(map(str, segment_gt)),
-                                                         "/".join(segment_mc),
-                                                         segment_model_probability),
-                    }
-                    vcf_writer.writerow(segment_vcf_entry)
-                    segment_bed_entry = {
-                        "chrom": segment_chromosome[0],
-                        "start": segment_location[0],
-                        "end": segment_location[0] + 1,
-                    }
-                    bed_writer.writerow(segment_bed_entry)
+                segment_locations = np.extract(segment_label_non_padding_positions,
+                                               batch_location[segment_in_batch_idx])
+                if vcf_location is None:
+                    vcf_location = segment_locations[0]
+                    vcf_chromosome = segment_chromosome
+                for base_idx in range(len(segment_ref)):
+                    base_location = segment_locations[base_idx]
+                    if base_location == vcf_location:
+                        vcf_ref_bases.append(segment_ref[base_idx])
+                        vcf_predictions.append(segment_true_genotype_prediction[base_idx])
+                        vcf_probabilities.append(segment_model_probabilities[base_idx])
+                    else:
+                        write_vcf_line(vcf_location=vcf_location,
+                                       vcf_chromosome=vcf_chromosome,
+                                       vcf_ref_bases=vcf_ref_bases,
+                                       vcf_predictions=vcf_predictions,
+                                       vcf_probabilities=vcf_probabilities,
+                                       snp_vcf_writer=snp_vcf_writer,
+                                       snp_bed_writer=snp_bed_writer,
+                                       indel_vcf_writer=indel_vcf_writer,
+                                       indel_bed_writer=indel_bed_writer,
+                                       dataset_field=dataset_field)
+                        vcf_location = base_location
+                        vcf_chromosome = segment_chromosome
+                        vcf_ref_bases = [segment_ref[base_idx]]
+                        vcf_predictions = [segment_true_genotype_prediction[base_idx]]
+                        vcf_probabilities = [segment_model_probabilities[base_idx]]
+            if len(vcf_ref_bases) > 0:
+                write_vcf_line(vcf_location=vcf_location,
+                               vcf_chromosome=vcf_chromosome,
+                               vcf_ref_bases=vcf_ref_bases,
+                               vcf_predictions=vcf_predictions,
+                               vcf_probabilities=vcf_probabilities,
+                               snp_vcf_writer=snp_vcf_writer,
+                               snp_bed_writer=snp_bed_writer,
+                               indel_vcf_writer=indel_vcf_writer,
+                               indel_bed_writer=indel_bed_writer,
+                               dataset_field=dataset_field)
+
+
+def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, snp_vcf_writer,
+                   snp_bed_writer, indel_vcf_writer, indel_bed_writer, dataset_field):
+    def indel_condition(vcf_alleles):
+        return len(list(filter(lambda a: len(a) > 1, vcf_alleles))) > 0
+    vcf_ref = "".join(vcf_ref_bases)
+    vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_predictions)))]
+    vcf_alts = set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles))
+    vcf_possible_alleles = [vcf_ref] + list(vcf_alts)
+    vcf_unique_predicted_alleles = []
+    for allele in vcf_predicted_alleles:
+        if allele not in vcf_unique_predicted_alleles:
+            vcf_unique_predicted_alleles.append(allele)
+    vcf_gt = [vcf_possible_alleles.index(allele) for allele in vcf_unique_predicted_alleles]
+    vcf_mc = [vcf_possible_alleles[allele_idx] for allele_idx in vcf_gt]
+    vcf_model_probability = np.mean(vcf_probabilities)
+    is_indel = indel_condition(vcf_possible_alleles)
+    vcf_writer = indel_vcf_writer if is_indel else snp_vcf_writer
+    bed_writer = indel_bed_writer if is_indel else snp_bed_writer
+    vcf_entry = {
+        "CHROM": vcf_chromosome,
+        "POS": vcf_location + 1,
+        "ID": ".",
+        "REF": vcf_ref,
+        "ALT": ",".join(vcf_alts) if len(vcf_alts) > 0 else ".",
+        "QUAL": ".",
+        "FILTER": ".",
+        "INFO": ".",
+        "FORMAT": "GT:MC:P",
+        dataset_field: "{}:{}:{}".format("/".join(map(str, vcf_gt)),
+                                         "/".join(vcf_mc),
+                                         vcf_model_probability),
+    }
+    vcf_writer.writerow(vcf_entry)
+    bed_entry = {
+        "chrom": vcf_chromosome,
+        "start": vcf_location,
+        "end": vcf_location + 1,
+    }
+    bed_writer.writerow(bed_entry)
 
 
 if __name__ == "__main__":
