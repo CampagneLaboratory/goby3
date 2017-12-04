@@ -5,6 +5,7 @@ import org.campagnelab.dl.varanalysis.protobuf.BaseInformationRecords;
 import org.campagnelab.goby.util.Variant;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -26,16 +27,20 @@ public class FormatIndelVCF {
 
     public Object2ObjectMap<String, String> mapBeforeAfter = new Object2ObjectArrayMap<>();
 
-    public FormatIndelVCF(final String from, final Set<String> to, char refBase) {
+    public FormatIndelVCF(final String from, Set<String> to, char refBase) {
 
         //step 1. extend ref or snp to include remainder ref string
+        Set<String> toRemove = new HashSet<>();
+        Set<String> toAdd = new HashSet<>();
         for (final String alt : to) {
             if (alt.length() == 1) {
-                to.remove(alt);
+                toRemove.add(alt);
                 String refOrSnp = alt + (from.length() > 1 ? from.substring(1, from.length()) : "");
-                to.add(refOrSnp);
+                toAdd.add(refOrSnp);
             }
         }
+        to.removeAll(toRemove);
+        to.addAll(toAdd);
         //find newlen for step 2
         int newLen = 1;
         int maxLen = -1;
