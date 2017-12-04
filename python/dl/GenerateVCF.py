@@ -37,8 +37,8 @@ def main(args):
     with open("{}.vcf".format(prefix), "w") as vcf_file, open("{}.bed".format(prefix), "w") as bed_file:
         vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model)))
         vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-        vcf_writer = csv.DictWriter(vcf_file, fieldnames=vcf_fields, delimiter="\t")
-        bed_writer = csv.DictWriter(bed_file, fieldnames=bed_fields, delimiter="\t")
+        vcf_writer = csv.DictWriter(vcf_file, fieldnames=vcf_fields, delimiter="\t", lineterminator="\n")
+        bed_writer = csv.DictWriter(bed_file, fieldnames=bed_fields, delimiter="\t", lineterminator="\n")
         vcf_location = None
         vcf_chromosome = None
         vcf_ref_bases = []
@@ -109,8 +109,11 @@ def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions,
                    bed_writer, dataset_field):
     vcf_ref = "".join(vcf_ref_bases)
     vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_predictions)))]
-    vcf_alts = set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles))
-    vcf_possible_alleles = [vcf_ref] + list(vcf_alts)
+    vcf_ref, vcf_predicted_alleles = trim_indels(vcf_ref, vcf_predicted_alleles)
+    vcf_alts = list(set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles)))
+    vcf_max_len = max(map(len, vcf_alts)) if vcf_alts else 0
+    vcf_max_len = max(vcf_max_len, len(vcf_ref))
+    vcf_possible_alleles = [vcf_ref] + vcf_alts
     vcf_unique_predicted_alleles = []
     for allele in vcf_predicted_alleles:
         if allele not in vcf_unique_predicted_alleles:
@@ -136,9 +139,33 @@ def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions,
     bed_entry = {
         "chrom": vcf_chromosome,
         "start": vcf_location,
-        "end": vcf_location + 1,
+        "end": vcf_location + vcf_max_len,
     }
     bed_writer.writerow(bed_entry)
+
+
+def trim_indels(ref, predicted_alleles):
+    """
+    Properly format indels for inclusion in VCF files
+    1. trim all alleles to index of last dash any allele,
+    IE: from: GTAC to: G--C,G-AC -> from: GTA to: G--,G-A
+    2. delete dashes
+    IE: from: GTA to: G--,G-A -> from: GTA to: G,GA
+    Based on FormatIndelVCF from VariationAnalysis project
+    :param ref: reference allele
+    :param predicted_alleles: list of predicted alleles
+    :return: ref, alts
+    """
+    last_del_index = ref.rfind("-") + 1
+    for predicted_allele in predicted_alleles:
+        allele_del_index = predicted_allele.rfind("-") + 1
+        if allele_del_index > last_del_index:
+            last_del_index = allele_del_index
+    if last_del_index == 0:
+        return ref, predicted_alleles
+    ref = ref[:last_del_index].replace("-", "")
+    predicted_alleles = [predicted_allele[:last_del_index].replace("-", "") for predicted_allele in predicted_alleles]
+    return ref, predicted_alleles
 
 
 if __name__ == "__main__":
