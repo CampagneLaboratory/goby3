@@ -12,6 +12,8 @@ vcf_header = ("##fileformat=VCFv4.1\n"
               "##GobyPython={}\n"
               "##modelPath={}\n"
               "##modelPrefix={}\n"
+              "##datasetPath={}\n"
+              "##datasetPrefix={}\n"
               "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
               "##FORMAT=<ID=MC,Number=1,Type=String,Description=\"Model Calls.\">\n"
               "##FORMAT=<ID=P,Number=1,Type=Float,Description=\"Model proability.\">\n")
@@ -26,8 +28,8 @@ def main(args):
     model = load_model(args.model)
     max_base_count = model.input_shape[1]
     test_data = BatchNumpyFileSequence(args.testing, max_base_count, properties_json, array_type='vcf')
-    dataset_field = _get_basename(args.testing)
-    vcf_fields = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", dataset_field]
+    vcf_fields = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT",
+                  properties_json["batch_prefix"]]
     bed_fields = ["chrom", "start", "end"]
     prefix_dir = os.path.dirname(args.prefix)
     if prefix_dir:
@@ -35,7 +37,8 @@ def main(args):
     prefix = os.path.splitext(os.path.basename(args.prefix))[0]
     prefix = os.path.join(prefix_dir, prefix)
     with open("{}.vcf".format(prefix), "w") as vcf_file, open("{}.bed".format(prefix), "w") as bed_file:
-        vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model)))
+        vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
+                                         properties_json["batch_prefix"]))
         vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
         vcf_writer = csv.DictWriter(vcf_file, fieldnames=vcf_fields, delimiter="\t", lineterminator="\n")
         bed_writer = csv.DictWriter(bed_file, fieldnames=bed_fields, delimiter="\t", lineterminator="\n")
@@ -88,7 +91,7 @@ def main(args):
                                        vcf_probabilities=vcf_probabilities,
                                        vcf_writer=vcf_writer,
                                        bed_writer=bed_writer,
-                                       dataset_field=dataset_field)
+                                       dataset_field=properties_json["batch_prefix"])
                         vcf_location = base_location
                         vcf_chromosome = segment_chromosome
                         vcf_ref_bases = [segment_ref[base_idx]]
@@ -102,7 +105,7 @@ def main(args):
                                vcf_probabilities=vcf_probabilities,
                                vcf_writer=vcf_writer,
                                bed_writer=bed_writer,
-                               dataset_field=dataset_field)
+                               dataset_field=properties_json["batch_prefix"])
 
 
 def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, vcf_writer,
