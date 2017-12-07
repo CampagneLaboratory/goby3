@@ -112,7 +112,7 @@ def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions,
                    bed_writer, dataset_field):
     vcf_ref = "".join(vcf_ref_bases)
     vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_predictions)))]
-    vcf_ref, vcf_predicted_alleles = trim_indels(vcf_ref, vcf_predicted_alleles)
+    vcf_ref, vcf_predicted_alleles = _trim_indels(vcf_ref, vcf_predicted_alleles)
     vcf_alts = list(set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles)))
     vcf_max_len = max(map(len, vcf_alts)) if vcf_alts else 0
     vcf_max_len = max(vcf_max_len, len(vcf_ref))
@@ -129,7 +129,7 @@ def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions,
         "POS": vcf_location + 1,
         "ID": ".",
         "REF": vcf_ref,
-        "ALT": ",".join(vcf_alts) if len(vcf_alts) > 0 else ".",
+        "ALT": _format_alts(vcf_alts),
         "QUAL": ".",
         "FILTER": ".",
         "INFO": ".",
@@ -147,7 +147,7 @@ def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions,
     bed_writer.writerow(bed_entry)
 
 
-def trim_indels(ref, predicted_alleles):
+def _trim_indels(ref, predicted_alleles):
     """
     Properly format indels for inclusion in VCF files
     1. trim all alleles to index of last dash any allele,
@@ -169,6 +169,15 @@ def trim_indels(ref, predicted_alleles):
     ref = ref[:last_del_index].replace("-", "")
     predicted_alleles = [predicted_allele[:last_del_index].replace("-", "") for predicted_allele in predicted_alleles]
     return ref, predicted_alleles
+
+
+def _format_alts(alts):
+    # Only select non-empty alts
+    valid_alts = list(filter(lambda alt: alt, alts))
+    if len(valid_alts) > 0:
+        return ",".join(valid_alts)
+    else:
+        return "."
 
 
 if __name__ == "__main__":
