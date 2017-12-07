@@ -27,7 +27,7 @@ if [ -e configure.sh ]; then
 fi
 
 NUM_ARGS="$#"
-NUM_ARGS_EXPECTED=NUM_ARGS
+NUM_ARGS_EXPECTED="${NUM_ARGS}"
 
 if [ -z "${OUTPUT_PREFIX+set}" ]; then
     NUM_ARGS_EXPECTED=3
@@ -37,7 +37,7 @@ if [ "${NUM_ARGS}" == 3 ]; then
     unset OUTPUT_PREFIX
 fi
 
-if [ "${NUM_ARGS}" != ${NUM_ARGS_EXPECTED} ] || [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+if [ ${NUM_ARGS} != ${NUM_ARGS_EXPECTED} ] || [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     echo "Usage: evaluate-genotypes-ssi-keras.sh [model-path test-dir-path output-prefix]"
     echo "The env variables GOLD_STANDARD_VCF_SNP_GZ GOLD_STANDARD_VCF_INDEL_GZ and GOLD_STANDARD_CONFIDENT_REGIONS_BED_GZ can be used to change the VCFs and confident region bed."
     echo "The first run downloads these files from the Genome in a Bottle for sample NA12878 when the variables are not defined."
