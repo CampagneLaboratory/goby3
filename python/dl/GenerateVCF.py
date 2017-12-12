@@ -1,6 +1,7 @@
 import argparse
 import csv
 import os
+from collections import namedtuple
 
 from keras.models import load_model
 
@@ -14,105 +15,95 @@ vcf_header = ("##fileformat=VCFv4.1\n"
               "##modelPrefix={}\n"
               "##datasetPath={}\n"
               "##datasetPrefix={}\n"
+              "##indelsTrimmed={}\n"
               "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
               "##FORMAT=<ID=MC,Number=1,Type=String,Description=\"Model Calls.\">\n"
               "##FORMAT=<ID=P,Number=1,Type=Float,Description=\"Model proability.\">\n")
+
+Vcf = namedtuple("Vcf", ["vcf_writer", "bed_writer", "trim_indels"])
 
 
 def _get_basename(path):
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def main(args):
-    properties_json = get_properties_json(args.testing)
-    model = load_model(args.model)
-    max_base_count = model.input_shape[1]
-    test_data = BatchNumpyFileSequence(args.testing, max_base_count, properties_json, array_type='vcf')
-    vcf_fields = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT",
-                  properties_json["batch_prefix"]]
-    bed_fields = ["chrom", "start", "end"]
-    prefix_dir = os.path.dirname(args.prefix)
-    if prefix_dir:
-        os.makedirs(prefix_dir, exist_ok=True)
-    prefix = os.path.splitext(os.path.basename(args.prefix))[0]
-    prefix = os.path.join(prefix_dir, prefix)
-    with open("{}.vcf".format(prefix), "w") as vcf_file, open("{}.bed".format(prefix), "w") as bed_file:
-        vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
-                                         properties_json["batch_prefix"]))
-        vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-        vcf_writer = csv.DictWriter(vcf_file, fieldnames=vcf_fields, delimiter="\t", lineterminator="\n")
-        bed_writer = csv.DictWriter(bed_file, fieldnames=bed_fields, delimiter="\t", lineterminator="\n")
-        vcf_location = None
-        vcf_chromosome = None
-        vcf_ref_bases = []
-        vcf_predictions = []
-        vcf_probabilities = []
-        for data_idx in range(len(test_data)):
-            if data_idx % 20 == 0:
-                print("Evaluating batch {} of {}...".format(data_idx, len(test_data)))
-            (batch_input_dict, batch_label_dict), batch_ref, batch_location, batch_chromosome = test_data[data_idx]
-            batch_input = batch_input_dict["model_input"]
-            batch_label = batch_label_dict["main_output"]
-            batch_predictions = model.predict_on_batch(batch_input)
-            for segment_in_batch_idx in range(batch_predictions.shape[0]):
-                segment_chromosome = batch_chromosome[segment_in_batch_idx][0]
-                segment_label_categorical = batch_label[segment_in_batch_idx]
-                segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
-                segment_ref_with_padding = batch_ref[segment_in_batch_idx]
-                segment_label_with_padding = np.argmax(segment_label_categorical, axis=1)
-                segment_prediction_with_padding = np.argmax(segment_prediction_categorical, axis=1)
-                segment_model_probabilities_with_padding = np.max(segment_prediction_categorical, axis=1)
-                # Only use positions where label != 0, as label 0 reserved for padding
-                segment_label_non_padding_positions = segment_label_with_padding != 0
-                segment_prediction = np.extract(segment_label_non_padding_positions, segment_prediction_with_padding)
-                segment_model_probabilities = np.extract(segment_label_non_padding_positions,
-                                                         segment_model_probabilities_with_padding)
-                segment_ref = np.extract(segment_label_non_padding_positions, segment_ref_with_padding)
-                segment_true_genotype_prediction = [
-                    properties_json["genotype.segment.label_plus_one.{}".format(label)]
-                    for label in segment_prediction
-                ]
-                segment_locations = np.extract(segment_label_non_padding_positions,
-                                               batch_location[segment_in_batch_idx])
-                if vcf_location is None:
-                    vcf_location = segment_locations[0]
+def _write_vcf_files(model, properties_json, test_data, *vcfs):
+    vcf_location = None
+    vcf_chromosome = None
+    vcf_ref_bases = []
+    vcf_predictions = []
+    vcf_probabilities = []
+    for data_idx in range(len(test_data)):
+        if data_idx % 20 == 0:
+            print("Evaluating batch {} of {}...".format(data_idx, len(test_data)))
+        (batch_input_dict, batch_label_dict), batch_ref, batch_location, batch_chromosome = test_data[data_idx]
+        batch_input = batch_input_dict["model_input"]
+        batch_label = batch_label_dict["main_output"]
+        batch_predictions = model.predict_on_batch(batch_input)
+        for segment_in_batch_idx in range(batch_predictions.shape[0]):
+            segment_chromosome = batch_chromosome[segment_in_batch_idx][0]
+            segment_label_categorical = batch_label[segment_in_batch_idx]
+            segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
+            segment_ref_with_padding = batch_ref[segment_in_batch_idx]
+            segment_label_with_padding = np.argmax(segment_label_categorical, axis=1)
+            segment_prediction_with_padding = np.argmax(segment_prediction_categorical, axis=1)
+            segment_model_probabilities_with_padding = np.max(segment_prediction_categorical, axis=1)
+            # Only use positions where label != 0, as label 0 reserved for padding
+            segment_label_non_padding_positions = segment_label_with_padding != 0
+            segment_prediction = np.extract(segment_label_non_padding_positions, segment_prediction_with_padding)
+            segment_model_probabilities = np.extract(segment_label_non_padding_positions,
+                                                     segment_model_probabilities_with_padding)
+            segment_ref = np.extract(segment_label_non_padding_positions, segment_ref_with_padding)
+            segment_true_genotype_prediction = [
+                properties_json["genotype.segment.label_plus_one.{}".format(label)]
+                for label in segment_prediction
+            ]
+            segment_locations = np.extract(segment_label_non_padding_positions,
+                                           batch_location[segment_in_batch_idx])
+            if vcf_location is None:
+                vcf_location = segment_locations[0]
+                vcf_chromosome = segment_chromosome
+            for base_idx in range(len(segment_ref)):
+                base_location = segment_locations[base_idx]
+                if base_location > vcf_location + 1:
+                    for vcf in vcfs:
+                        _write_vcf_line(vcf_location=vcf_location,
+                                        vcf_chromosome=vcf_chromosome,
+                                        vcf_ref_bases=vcf_ref_bases,
+                                        vcf_predictions=vcf_predictions,
+                                        vcf_probabilities=vcf_probabilities,
+                                        vcf_writer=vcf.vcf_writer,
+                                        bed_writer=vcf.bed_writer,
+                                        dataset_field=properties_json["batch_prefix"],
+                                        trim_indels=vcf.trim_indels)
+                    vcf_location = base_location
                     vcf_chromosome = segment_chromosome
-                for base_idx in range(len(segment_ref)):
-                    base_location = segment_locations[base_idx]
-                    if base_location == vcf_location:
-                        vcf_ref_bases.append(segment_ref[base_idx])
-                        vcf_predictions.append(segment_true_genotype_prediction[base_idx])
-                        vcf_probabilities.append(segment_model_probabilities[base_idx])
-                    else:
-                        write_vcf_line(vcf_location=vcf_location,
-                                       vcf_chromosome=vcf_chromosome,
-                                       vcf_ref_bases=vcf_ref_bases,
-                                       vcf_predictions=vcf_predictions,
-                                       vcf_probabilities=vcf_probabilities,
-                                       vcf_writer=vcf_writer,
-                                       bed_writer=bed_writer,
-                                       dataset_field=properties_json["batch_prefix"])
-                        vcf_location = base_location
-                        vcf_chromosome = segment_chromosome
-                        vcf_ref_bases = [segment_ref[base_idx]]
-                        vcf_predictions = [segment_true_genotype_prediction[base_idx]]
-                        vcf_probabilities = [segment_model_probabilities[base_idx]]
-            if len(vcf_ref_bases) > 0:
-                write_vcf_line(vcf_location=vcf_location,
-                               vcf_chromosome=vcf_chromosome,
-                               vcf_ref_bases=vcf_ref_bases,
-                               vcf_predictions=vcf_predictions,
-                               vcf_probabilities=vcf_probabilities,
-                               vcf_writer=vcf_writer,
-                               bed_writer=bed_writer,
-                               dataset_field=properties_json["batch_prefix"])
+                    vcf_ref_bases = [segment_ref[base_idx]]
+                    vcf_predictions = [segment_true_genotype_prediction[base_idx]]
+                    vcf_probabilities = [segment_model_probabilities[base_idx]]
+                else:
+                    vcf_ref_bases.append(segment_ref[base_idx])
+                    vcf_predictions.append(segment_true_genotype_prediction[base_idx])
+                    vcf_probabilities.append(segment_model_probabilities[base_idx])
+        if len(vcf_ref_bases) > 0:
+            for vcf in vcfs:
+                _write_vcf_line(vcf_location=vcf_location,
+                                vcf_chromosome=vcf_chromosome,
+                                vcf_ref_bases=vcf_ref_bases,
+                                vcf_predictions=vcf_predictions,
+                                vcf_probabilities=vcf_probabilities,
+                                vcf_writer=vcf.vcf_writer,
+                                bed_writer=vcf.bed_writer,
+                                dataset_field=properties_json["batch_prefix"],
+                                trim_indels=vcf.trim_indels)
 
 
-def write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, vcf_writer,
-                   bed_writer, dataset_field):
+def _write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, vcf_writer,
+                    bed_writer, dataset_field, trim_indels=True):
     vcf_ref = "".join(vcf_ref_bases)
     vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_predictions)))]
-    vcf_ref, vcf_predicted_alleles = _trim_indels(vcf_ref, vcf_predicted_alleles)
+    if trim_indels:
+        vcf_ref, vcf_predicted_alleles = _trim_indels(vcf_ref, vcf_predicted_alleles)
     vcf_alts = list(set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles)))
     vcf_max_len = max(map(len, vcf_alts)) if vcf_alts else 0
     vcf_max_len = max(vcf_max_len, len(vcf_ref))
@@ -180,6 +171,48 @@ def _format_alts(alts):
         return "."
 
 
+def main(args):
+    properties_json_to_use = get_properties_json(args.testing)
+    model_to_use = load_model(args.model)
+    max_base_count = model_to_use.input_shape[1]
+    test_data_to_use = BatchNumpyFileSequence(args.testing, max_base_count, properties_json_to_use, array_type='vcf')
+    vcf_fields = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT",
+                  properties_json_to_use["batch_prefix"]]
+    bed_fields = ["chrom", "start", "end"]
+    prefix_dir = os.path.dirname(args.prefix)
+    if prefix_dir:
+        os.makedirs(prefix_dir, exist_ok=True)
+    prefix = os.path.splitext(os.path.basename(args.prefix))[0]
+    prefix = os.path.join(prefix_dir, prefix)
+    trimmed_vcf_file = open("{}.vcf".format(prefix), "w")
+    trimmed_bed_file = open("{}.bed".format(prefix), "w")
+    trimmed_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
+                                             properties_json_to_use["batch_prefix"], True))
+    trimmed_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+    trimmed_vcf_writer = csv.DictWriter(trimmed_vcf_file, fieldnames=vcf_fields, delimiter="\t", lineterminator="\n")
+    trimmed_bed_writer = csv.DictWriter(trimmed_bed_file, fieldnames=bed_fields, delimiter="\t", lineterminator="\n")
+    vcfs_to_write = [Vcf(vcf_writer=trimmed_vcf_writer, bed_writer=trimmed_bed_writer, trim_indels=True)]
+    untrimmed_vcf_file = None
+    untrimmed_bed_file = None
+    if args.generate_original_vcf:
+        untrimmed_vcf_file = open("{}_untrimmed.vcf".format(prefix), "w")
+        untrimmed_bed_file = open("{}_untrimmed.bed".format(prefix), "w")
+        untrimmed_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
+                                                   properties_json_to_use["batch_prefix"], False))
+        untrimmed_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+        untrimmed_vcf_writer = csv.DictWriter(untrimmed_vcf_file, fieldnames=vcf_fields, delimiter="\t",
+                                              lineterminator="\n")
+        untrimmed_bed_writer = csv.DictWriter(untrimmed_bed_file, fieldnames=bed_fields, delimiter="\t",
+                                              lineterminator="\n")
+        vcfs_to_write.append(Vcf(vcf_writer=untrimmed_vcf_writer, bed_writer=untrimmed_bed_writer, trim_indels=False))
+    _write_vcf_files(model_to_use, properties_json_to_use, test_data_to_use, *vcfs_to_write)
+    trimmed_vcf_file.close()
+    trimmed_bed_file.close()
+    if args.generate_original_vcf:
+        untrimmed_vcf_file.close()
+        untrimmed_bed_file.close()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--model", type=str, required=True, help="Path to model to evaluate.")
@@ -188,5 +221,8 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--prefix", type=str, required=True,
                         help="Prefix for generated VCF and BED files.")
     parser.add_argument("--version", type=str, help="Version of goby being used", default="1.4.1-SNAPSHOT")
+    parser.add_argument("--generate-original-vcf", action="store_true", dest="generate_original_vcf",
+                        help="If present, generate separate file at <prefix>-original.{vcf|bed} representing the"
+                             "original calls made by the model, before any reformatting to handle indels")
     parser_args = parser.parse_args()
     main(parser_args)

@@ -33,6 +33,10 @@ if [ -z "${OUTPUT_PREFIX+set}" ]; then
     NUM_ARGS_EXPECTED=3
 fi
 
+if [ -z "${NO_OUTPUT_UNTRIMMED+set}" ]; then
+    OUTPUT_UNTRIMMED=true
+fi
+
 if [ "${NUM_ARGS}" == 3 ]; then
     unset OUTPUT_PREFIX
 fi
@@ -108,12 +112,14 @@ fi
 
 if [ -z "${OUTPUT_PREFIX+set}" ]; then
     echo "OUTPUT_PREFIX not defined. Running GenerateVCF first..."
-    arg_string="--model "$1" --testing "$2" --prefix "$3""
+    arg_string="goby-python-with-path.sh dl/GenerateVCF.py --model "$1" --testing "$2" --prefix "$3""
     if [ -n "${GOBY_VERSION}" ]; then
-        goby-python-with-path.sh dl/GenerateVCF.py --model "$1" --testing "$2" --prefix "$3" --version ${GOBY_VERSION}
-    else
-        goby-python-with-path.sh dl/GenerateVCF.py --model "$1" --testing "$2" --prefix "$3"
+        arg_string=""${arg_string}" --version "${GOBY_VERSION}""
     fi
+    if [ -n "${OUTPUT_UNTRIMMED}" ]; then
+        arg_string=""${arg_string}" --generate-original-vcf"
+    fi
+    eval ${arg_string}
     dieIfError "Failed to generate VCF with arguments $*"
     echo "Evaluation with rtg vcfeval starting.."
     OUTPUT_PREFIX="$3"
