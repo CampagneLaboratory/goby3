@@ -28,11 +28,7 @@ def _get_basename(path):
 
 
 def _write_vcf_files(model, properties_json, test_data, *vcfs):
-    vcf_location = None
-    vcf_chromosome = None
-    vcf_ref_bases = []
-    vcf_predictions = []
-    vcf_probabilities = []
+
     for data_idx in range(len(test_data)):
         if data_idx % 20 == 0:
             print("Evaluating batch {} of {}...".format(data_idx, len(test_data)))
@@ -41,6 +37,11 @@ def _write_vcf_files(model, properties_json, test_data, *vcfs):
         batch_label = batch_label_dict["main_output"]
         batch_predictions = model.predict_on_batch(batch_input)
         for segment_in_batch_idx in range(batch_predictions.shape[0]):
+            vcf_location = None
+            vcf_chromosome = None
+            vcf_ref_bases = []
+            vcf_predictions = []
+            vcf_probabilities = []
             segment_chromosome = batch_chromosome[segment_in_batch_idx][0]
             segment_label_categorical = batch_label[segment_in_batch_idx]
             segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
@@ -85,17 +86,17 @@ def _write_vcf_files(model, properties_json, test_data, *vcfs):
                     vcf_ref_bases.append(segment_ref[base_idx])
                     vcf_predictions.append(segment_true_genotype_prediction[base_idx])
                     vcf_probabilities.append(segment_model_probabilities[base_idx])
-        if len(vcf_ref_bases) > 0:
-            for vcf in vcfs:
-                _write_vcf_line(vcf_location=vcf_location,
-                                vcf_chromosome=vcf_chromosome,
-                                vcf_ref_bases=vcf_ref_bases,
-                                vcf_predictions=vcf_predictions,
-                                vcf_probabilities=vcf_probabilities,
-                                vcf_writer=vcf.vcf_writer,
-                                bed_writer=vcf.bed_writer,
-                                dataset_field=properties_json["batch_prefix"],
-                                trim_indels=vcf.trim_indels)
+            if len(vcf_ref_bases) > 0:
+                for vcf in vcfs:
+                    _write_vcf_line(vcf_location=vcf_location,
+                                    vcf_chromosome=vcf_chromosome,
+                                    vcf_ref_bases=vcf_ref_bases,
+                                    vcf_predictions=vcf_predictions,
+                                    vcf_probabilities=vcf_probabilities,
+                                    vcf_writer=vcf.vcf_writer,
+                                    bed_writer=vcf.bed_writer,
+                                    dataset_field=properties_json["batch_prefix"],
+                                    trim_indels=vcf.trim_indels)
 
 
 def _write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, vcf_writer,
