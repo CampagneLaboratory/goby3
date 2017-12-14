@@ -23,12 +23,66 @@ vcf_header = ("##fileformat=VCFv4.1\n"
 Vcf = namedtuple("Vcf", ["vcf_writer", "bed_writer", "trim_indels"])
 
 
+class VcfLine:
+    # TODO: Avoid duplication b/w __init__ and clear- call __init__ from clear, call clear from __init__, other way
+    def __init__(self):
+        self.is_indel = False
+        self.last_base_location = 0
+        self.last_gap_location = 0
+        self.vcf_location = None
+        self.vcf_ref_bases = []
+        self.vcf_predictions = []
+        self.vcf_probabilities = []
+        self.vcf_chromosome = None
+
+    def clear(self):
+        self.is_indel = False
+        self.last_base_location = 0
+        self.last_gap_location = 0
+        self.vcf_location = None
+        self.vcf_ref_bases = []
+        self.vcf_predictions = []
+        self.vcf_probabilities = []
+        self.vcf_chromosome = None
+
+    def add_base(self, segment_ref_base, segment_prediction_base, segment_probability_base, segment_location_base,
+                 segment_chromosome):
+        if self.vcf_location is None:
+            self.vcf_location = segment_location_base
+        if self.vcf_chromosome is None:
+            self.vcf_chromosome = segment_chromosome
+        else:
+            if self.vcf_chromosome != segment_chromosome:
+                raise ValueError("VCF lines should have same chromosome")
+        if "-" in segment_prediction_base:
+            self.is_indel = True
+            self.last_gap_location = segment_location_base
+        self.last_base_location = segment_location_base
+        self.vcf_ref_bases.append(segment_ref_base)
+        self.vcf_predictions.append(segment_prediction_base)
+        self.vcf_probabilities.append(segment_probability_base)
+
+    def is_empty(self):
+        return self.vcf_location is None
+
+    def need_to_flush(self, segment_next_location):
+        if self.is_empty():
+            return False
+        if not self.is_indel:
+            return self.last_base_location != segment_next_location
+        else:
+            if self.last_base_location == self.last_gap_location:
+                return False
+            else:
+                return self.last_base_location != segment_next_location
+
+
 def _get_basename(path):
     return os.path.splitext(os.path.basename(path))[0]
 
 
 def _write_vcf_files(model, properties_json, test_data, *vcfs):
-
+    vcf_line = VcfLine()
     for data_idx in range(len(test_data)):
         if data_idx % 20 == 0:
             print("Evaluating batch {} of {}...".format(data_idx, len(test_data)))
@@ -37,11 +91,6 @@ def _write_vcf_files(model, properties_json, test_data, *vcfs):
         batch_label = batch_label_dict["main_output"]
         batch_predictions = model.predict_on_batch(batch_input)
         for segment_in_batch_idx in range(batch_predictions.shape[0]):
-            vcf_location = None
-            vcf_chromosome = None
-            vcf_ref_bases = []
-            vcf_predictions = []
-            vcf_probabilities = []
             segment_chromosome = batch_chromosome[segment_in_batch_idx][0]
             segment_label_categorical = batch_label[segment_in_batch_idx]
             segment_prediction_categorical = batch_predictions[segment_in_batch_idx]
@@ -61,48 +110,37 @@ def _write_vcf_files(model, properties_json, test_data, *vcfs):
             ]
             segment_locations = np.extract(segment_label_non_padding_positions,
                                            batch_location[segment_in_batch_idx])
-            if vcf_location is None:
-                vcf_location = segment_locations[0]
-                vcf_chromosome = segment_chromosome
             for base_idx in range(len(segment_ref)):
                 base_location = segment_locations[base_idx]
-                if base_location > vcf_location + 1:
+                base_ref = segment_ref[base_idx]
+                base_prediction = segment_true_genotype_prediction[base_idx]
+                base_probability = segment_model_probabilities[base_idx]
+                if vcf_line.need_to_flush(base_location):
                     for vcf in vcfs:
-                        _write_vcf_line(vcf_location=vcf_location,
-                                        vcf_chromosome=vcf_chromosome,
-                                        vcf_ref_bases=vcf_ref_bases,
-                                        vcf_predictions=vcf_predictions,
-                                        vcf_probabilities=vcf_probabilities,
+                        _write_vcf_line(vcf_line=vcf_line,
                                         vcf_writer=vcf.vcf_writer,
                                         bed_writer=vcf.bed_writer,
                                         dataset_field=properties_json["batch_prefix"],
                                         trim_indels=vcf.trim_indels)
-                    vcf_location = base_location
-                    vcf_chromosome = segment_chromosome
-                    vcf_ref_bases = [segment_ref[base_idx]]
-                    vcf_predictions = [segment_true_genotype_prediction[base_idx]]
-                    vcf_probabilities = [segment_model_probabilities[base_idx]]
-                else:
-                    vcf_ref_bases.append(segment_ref[base_idx])
-                    vcf_predictions.append(segment_true_genotype_prediction[base_idx])
-                    vcf_probabilities.append(segment_model_probabilities[base_idx])
-            if len(vcf_ref_bases) > 0:
+                    vcf_line.clear()
+                vcf_line.add_base(segment_ref_base=base_ref,
+                                  segment_prediction_base=base_prediction,
+                                  segment_probability_base=base_probability,
+                                  segment_location_base=base_location,
+                                  segment_chromosome=segment_chromosome)
+            if not vcf_line.is_empty():
                 for vcf in vcfs:
-                    _write_vcf_line(vcf_location=vcf_location,
-                                    vcf_chromosome=vcf_chromosome,
-                                    vcf_ref_bases=vcf_ref_bases,
-                                    vcf_predictions=vcf_predictions,
-                                    vcf_probabilities=vcf_probabilities,
+                    _write_vcf_line(vcf_line=vcf_line,
                                     vcf_writer=vcf.vcf_writer,
                                     bed_writer=vcf.bed_writer,
                                     dataset_field=properties_json["batch_prefix"],
                                     trim_indels=vcf.trim_indels)
+                vcf_line.clear()
 
 
-def _write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions, vcf_probabilities, vcf_writer,
-                    bed_writer, dataset_field, trim_indels=True):
-    vcf_ref = "".join(vcf_ref_bases)
-    vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_predictions)))]
+def _write_vcf_line(vcf_line, vcf_writer, bed_writer, dataset_field, trim_indels=True):
+    vcf_ref = "".join(vcf_line.vcf_ref_bases)
+    vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_line.vcf_predictions)))]
     if trim_indels:
         vcf_ref, vcf_predicted_alleles = _trim_indels(vcf_ref, vcf_predicted_alleles)
     vcf_alts = list(set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles)))
@@ -115,10 +153,10 @@ def _write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions
             vcf_unique_predicted_alleles.append(allele)
     vcf_gt = [vcf_possible_alleles.index(allele) for allele in vcf_unique_predicted_alleles]
     vcf_mc = [vcf_possible_alleles[allele_idx] for allele_idx in vcf_gt]
-    vcf_model_probability = np.mean(vcf_probabilities)
+    vcf_model_probability = np.mean(vcf_line.vcf_probabilities)
     vcf_entry = {
-        "CHROM": vcf_chromosome,
-        "POS": vcf_location + 1,
+        "CHROM": vcf_line.vcf_chromosome,
+        "POS": vcf_line.vcf_location + 1,
         "ID": ".",
         "REF": vcf_ref,
         "ALT": _format_alts(vcf_alts),
@@ -132,9 +170,9 @@ def _write_vcf_line(vcf_location, vcf_chromosome, vcf_ref_bases, vcf_predictions
     }
     vcf_writer.writerow(vcf_entry)
     bed_entry = {
-        "chrom": vcf_chromosome,
-        "start": vcf_location,
-        "end": vcf_location + vcf_max_len,
+        "chrom": vcf_line.vcf_chromosome,
+        "start": vcf_line.vcf_location,
+        "end": vcf_line.vcf_location + vcf_max_len,
     }
     bed_writer.writerow(bed_entry)
 
