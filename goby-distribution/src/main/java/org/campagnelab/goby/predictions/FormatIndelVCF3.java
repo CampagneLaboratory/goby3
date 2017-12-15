@@ -54,11 +54,11 @@ public class FormatIndelVCF3 {
         int trimLength = 0;
         for (int i = maxLen - 1; i >= 0; i--) {
             bases.clear();
-            bases.add(i <= from.length() ? from.charAt(i) : '-');
+            bases.add(i < from.length() ? from.charAt(i) : '-');
 
             for (final String alt : to) {
 
-                bases.add(i <= alt.length() ? alt.charAt(i) : '-');
+                bases.add(i < alt.length() ? alt.charAt(i) : '-');
             }
             if (bases.size() == 1) {
                 // only a single base in suffix:
