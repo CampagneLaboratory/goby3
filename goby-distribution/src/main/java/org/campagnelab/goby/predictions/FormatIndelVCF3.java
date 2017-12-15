@@ -43,9 +43,6 @@ public class FormatIndelVCF3 {
         to.removeAll(toRemove);
         to.addAll(toAdd);
         //find longest common suffix
-
-
-
         int maxLen = -1;
         for (final String alt : to) {
             if (alt.length() > maxLen) {
@@ -54,22 +51,24 @@ public class FormatIndelVCF3 {
         }
         maxLen = Math.max(maxLen, from.length());
 
-        int trimLength=0;
-        for (int i = maxLen-1; i >= 0; i--) {
+        int trimLength = 0;
+        for (int i = maxLen - 1; i >= 0; i--) {
             bases.clear();
-            bases.add(from.charAt(i));
+            bases.add(i <= from.length() ? from.charAt(i) : '-');
+
             for (final String alt : to) {
-                bases.add(alt.charAt(i));
+
+                bases.add(i <= alt.length() ? alt.charAt(i) : '-');
             }
-            if (bases.size()==1) {
+            if (bases.size() == 1) {
                 // only a single base in suffix:
                 trimLength++;
-            }else{
+            } else {
                 // no longer a common suffix
                 break;
             }
         }
-        String postfix = trimLength>0&& trimLength<from.length() ? from.substring(maxLen-trimLength, from.length()) : "";
+        String postfix = trimLength > 0 && trimLength < from.length() ? from.substring(maxLen - trimLength, from.length()) : "";
 
         //apply step 2 and 3
         String newRef = trimPostfix(from, postfix);
