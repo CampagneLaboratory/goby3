@@ -222,15 +222,20 @@ def _trim_indels(ref, predicted_alleles):
     :param predicted_alleles: list of predicted alleles
     :return: ref, alts
     """
-    last_del_index = ref.rfind("-") + 1
-    for predicted_allele in predicted_alleles:
-        allele_del_index = predicted_allele.rfind("-") + 1
-        if allele_del_index > last_del_index:
-            last_del_index = allele_del_index
-    if last_del_index == 0:
-        return ref, predicted_alleles
-    ref = ref[:last_del_index].replace("-", "")
-    predicted_alleles = [predicted_allele[:last_del_index].replace("-", "") for predicted_allele in predicted_alleles]
+    last_suffix_index = len(ref)
+    for suffix_index in range(len(ref) - 1, 0, -1):
+        ref_pred = ref[suffix_index]
+        found_last_suffix_index = False
+        for predicted_allele in predicted_alleles:
+            if predicted_allele[suffix_index] != ref_pred:
+                found_last_suffix_index = True
+                break
+        if found_last_suffix_index:
+            last_suffix_index = suffix_index + 1
+            break
+    ref = ref[:last_suffix_index].replace("-", "")
+    predicted_alleles = [predicted_allele[:last_suffix_index].replace("-", "")
+                         for predicted_allele in predicted_alleles]
     return ref, predicted_alleles
 
 
