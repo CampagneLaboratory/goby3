@@ -33,8 +33,12 @@ if [ -z "${OUTPUT_PREFIX+set}" ]; then
     NUM_ARGS_EXPECTED=3
 fi
 
-if [ -z "${NO_OUTPUT_UNTRIMMED+set}" ]; then
-    OUTPUT_UNTRIMMED=true
+if [ -z "${NO_OUTPUT_ORIGINAL+set}" ]; then
+    OUTPUT_ORIGINAL=true
+fi
+
+if [ -z "${NO_OUTPUT_ERROR+set}" ]; then
+    OUTPUT_ERROR=true
 fi
 
 if [ "${NUM_ARGS}" == 3 ]; then
@@ -116,8 +120,11 @@ if [ -z "${OUTPUT_PREFIX+set}" ]; then
     if [ -n "${GOBY_VERSION}" ]; then
         arg_string=""${arg_string}" --version "${GOBY_VERSION}""
     fi
-    if [ -n "${OUTPUT_UNTRIMMED}" ]; then
+    if [ -n "${OUTPUT_ORIGINAL}" ]; then
         arg_string=""${arg_string}" --generate-original-vcf"
+    fi
+    if [ -n "${OUTPUT_ERROR}" ]; then
+        arg_string=""${arg_string}" --generate-error-vcf"
     fi
     eval ${arg_string}
     dieIfError "Failed to generate VCF with arguments $*"
