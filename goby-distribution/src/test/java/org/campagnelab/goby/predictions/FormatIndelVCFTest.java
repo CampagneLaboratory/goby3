@@ -175,4 +175,17 @@ public class FormatIndelVCFTest {
         assertTrue(format.toVCF.contains("ATTTT"));
         assertTrue(format.toVCF.contains("ATTA"));
     }
+    @Test
+    public void formatIndelVCF10() throws Exception {
+
+        String from = "A-T";
+        Set<String> to = new ObjectArraySet<>();
+        to.add("ATTTT");
+        to.add("A-TTA");
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to,'G');
+        assertEquals("AT",format.fromVCF);
+        assertEquals(2,format.toVCF.size());
+        assertTrue(format.toVCF.contains("ATTTT"));
+        assertTrue(format.toVCF.contains("ATTA"));
+    }
 }
