@@ -20,7 +20,10 @@ vcf_header = ("##fileformat=VCFv4.1\n"
               "##FORMAT=<ID=MC,Number=1,Type=String,Description=\"Model Calls.\">\n"
               "##FORMAT=<ID=P,Number=1,Type=Float,Description=\"Model proability.\">\n")
 
-Vcf = namedtuple("Vcf", ["vcf_writer", "bed_writer", "trim_indels"])
+VcfOutputWriter = namedtuple("VcfOutputWriter", ["vcf_writer", "bed_writer"])
+
+VcfOutputLine = namedtuple("VcfLine", ["vcf_ref", "vcf_alts", "vcf_gt", "vcf_mc", "vcf_model_probability",
+                                       "vcf_max_len"])
 
 
 class VcfLine:
@@ -81,7 +84,7 @@ def _get_basename(path):
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def _write_vcf_files(model, properties_json, test_data, *vcfs):
+def _write_vcf_files(model, properties_json, test_data, **vcf_output_writers):
     vcf_line = VcfLine()
     for data_idx in range(len(test_data)):
         if data_idx % 20 == 0:
@@ -116,12 +119,9 @@ def _write_vcf_files(model, properties_json, test_data, *vcfs):
                 base_prediction = segment_true_genotype_prediction[base_idx]
                 base_probability = segment_model_probabilities[base_idx]
                 if vcf_line.need_to_flush(base_location):
-                    for vcf in vcfs:
-                        _write_vcf_line(vcf_line=vcf_line,
-                                        vcf_writer=vcf.vcf_writer,
-                                        bed_writer=vcf.bed_writer,
-                                        dataset_field=properties_json["batch_prefix"],
-                                        trim_indels=vcf.trim_indels)
+                    _write_vcf_line(vcf_line=vcf_line,
+                                    dataset_field=properties_json["batch_prefix"],
+                                    **vcf_output_writers)
                     vcf_line.clear()
                 vcf_line.add_base(segment_ref_base=base_ref,
                                   segment_prediction_base=base_prediction,
@@ -129,18 +129,13 @@ def _write_vcf_files(model, properties_json, test_data, *vcfs):
                                   segment_location_base=base_location,
                                   segment_chromosome=segment_chromosome)
             if not vcf_line.is_empty():
-                for vcf in vcfs:
-                    _write_vcf_line(vcf_line=vcf_line,
-                                    vcf_writer=vcf.vcf_writer,
-                                    bed_writer=vcf.bed_writer,
-                                    dataset_field=properties_json["batch_prefix"],
-                                    trim_indels=vcf.trim_indels)
+                _write_vcf_line(vcf_line=vcf_line,
+                                dataset_field=properties_json["batch_prefix"],
+                                **vcf_output_writers)
                 vcf_line.clear()
 
 
-def _write_vcf_line(vcf_line, vcf_writer, bed_writer, dataset_field, trim_indels=True):
-    vcf_ref = "".join(vcf_line.vcf_ref_bases)
-    vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_line.vcf_predictions)))]
+def _generate_vcf_output_line(vcf_ref, vcf_predicted_alleles, vcf_line, trim_indels):
     if trim_indels:
         vcf_ref, vcf_predicted_alleles = _trim_indels(vcf_ref, vcf_predicted_alleles)
     vcf_alts = list(set(filter(lambda x: x != vcf_ref, vcf_predicted_alleles)))
@@ -154,27 +149,65 @@ def _write_vcf_line(vcf_line, vcf_writer, bed_writer, dataset_field, trim_indels
     vcf_gt = [vcf_possible_alleles.index(allele) for allele in vcf_unique_predicted_alleles]
     vcf_mc = [vcf_possible_alleles[allele_idx] for allele_idx in vcf_gt]
     vcf_model_probability = np.mean(vcf_line.vcf_probabilities)
+    return VcfOutputLine(vcf_ref=vcf_ref, vcf_alts=vcf_alts, vcf_gt=vcf_gt, vcf_mc=vcf_mc,
+                         vcf_model_probability=vcf_model_probability, vcf_max_len=vcf_max_len)
+
+
+def _invalid_entry(formatted_ref, formatted_alts, gt):
+    invalid_ref = formatted_ref == "." and 0 in gt
+    invalid_alts = formatted_alts == "." and (1 in gt or 2 in gt)
+    return invalid_ref or invalid_alts
+
+
+def _generate_vcf_entries(vcf_output_line, vcf_line, dataset_field):
+    formatted_ref = _format_alleles(vcf_output_line.vcf_ref)
+    formatted_alts = _format_alleles(*vcf_output_line.vcf_alts)
+    invalid_entry = _invalid_entry(formatted_ref, formatted_alts, vcf_output_line.vcf_gt)
     vcf_entry = {
         "CHROM": vcf_line.vcf_chromosome,
         "POS": vcf_line.vcf_location + 1,
         "ID": ".",
-        "REF": vcf_ref,
-        "ALT": _format_alts(vcf_alts),
+        "REF": vcf_output_line.vcf_ref,
+        "ALT": formatted_alts,
         "QUAL": ".",
         "FILTER": ".",
         "INFO": ".",
         "FORMAT": "GT:MC:P",
-        dataset_field: "{}:{}:{}".format("/".join(map(str, vcf_gt)),
-                                         "/".join(vcf_mc),
-                                         vcf_model_probability),
+        dataset_field: "{}:{}:{}".format("/".join(map(str, vcf_output_line.vcf_gt)),
+                                         "/".join(vcf_output_line.vcf_mc),
+                                         vcf_output_line.vcf_model_probability),
     }
-    vcf_writer.writerow(vcf_entry)
     bed_entry = {
         "chrom": vcf_line.vcf_chromosome,
         "start": vcf_line.vcf_location,
-        "end": vcf_line.vcf_location + vcf_max_len,
+        "end": vcf_line.vcf_location + vcf_output_line.vcf_max_len,
     }
-    bed_writer.writerow(bed_entry)
+    return vcf_entry, bed_entry, invalid_entry
+
+
+def _write_vcf_line(vcf_line, dataset_field, regular_vcf_output_writer, original_vcf_output_writer=None,
+                    error_vcf_output_writer=None):
+    vcf_ref = "".join(vcf_line.vcf_ref_bases)
+    vcf_predicted_alleles = ["".join(bases) for bases in list(zip(*map(list, vcf_line.vcf_predictions)))]
+    regular_vcf_output_line = _generate_vcf_output_line(vcf_ref, vcf_predicted_alleles, vcf_line, trim_indels=True)
+    regular_entry = _generate_vcf_entries(regular_vcf_output_line, vcf_line, dataset_field)
+    regular_vcf_entry, regular_bed_entry, invalid_entry = regular_entry
+    if not invalid_entry:
+        regular_vcf_output_writer.vcf_writer.writerow(regular_vcf_entry)
+        regular_vcf_output_writer.bed_writer.writerow(regular_bed_entry)
+    if original_vcf_output_writer is not None or error_vcf_output_writer is not None:
+        original_vcf_output_line = _generate_vcf_output_line(vcf_ref, vcf_predicted_alleles, vcf_line,
+                                                             trim_indels=False)
+        original_entry = _generate_vcf_entries(original_vcf_output_line, vcf_line, dataset_field)
+        original_vcf_entry, original_bed_entry, _ = original_entry
+        if original_vcf_output_writer is not None:
+            if not invalid_entry:
+                original_vcf_output_writer.vcf_writer.writerow(original_vcf_entry)
+                original_vcf_output_writer.bed_writer.writerow(original_bed_entry)
+            else:
+                if error_vcf_output_writer is not None:
+                    error_vcf_output_writer.vcf_writer.writerow(original_vcf_entry)
+                    error_vcf_output_writer.bed_writer.writerow(original_bed_entry)
 
 
 def _trim_indels(ref, predicted_alleles):
@@ -201,11 +234,11 @@ def _trim_indels(ref, predicted_alleles):
     return ref, predicted_alleles
 
 
-def _format_alts(alts):
+def _format_alleles(*alleles):
     # Only select non-empty alts
-    valid_alts = list(filter(lambda alt: alt, alts))
-    if len(valid_alts) > 0:
-        return ",".join(valid_alts)
+    valid_alleles = list(filter(lambda allele: allele, alleles))
+    if len(valid_alleles) > 0:
+        return ",".join(valid_alleles)
     else:
         return "."
 
@@ -223,33 +256,54 @@ def main(args):
         os.makedirs(prefix_dir, exist_ok=True)
     prefix = os.path.splitext(os.path.basename(args.prefix))[0]
     prefix = os.path.join(prefix_dir, prefix)
-    trimmed_vcf_file = open("{}.vcf".format(prefix), "w")
-    trimmed_bed_file = open("{}.bed".format(prefix), "w")
-    trimmed_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
+    regular_vcf_file = open("{}.vcf".format(prefix), "w")
+    regular_bed_file = open("{}.bed".format(prefix), "w")
+    regular_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
                                              properties_json_to_use["batch_prefix"], True))
-    trimmed_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-    trimmed_vcf_writer = csv.DictWriter(trimmed_vcf_file, fieldnames=vcf_fields, delimiter="\t", lineterminator="\n")
-    trimmed_bed_writer = csv.DictWriter(trimmed_bed_file, fieldnames=bed_fields, delimiter="\t", lineterminator="\n")
-    vcfs_to_write = [Vcf(vcf_writer=trimmed_vcf_writer, bed_writer=trimmed_bed_writer, trim_indels=True)]
-    untrimmed_vcf_file = None
-    untrimmed_bed_file = None
+    regular_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+    regular_vcf_writer = csv.DictWriter(regular_vcf_file, fieldnames=vcf_fields, delimiter="\t", lineterminator="\n")
+    regular_bed_writer = csv.DictWriter(regular_bed_file, fieldnames=bed_fields, delimiter="\t", lineterminator="\n")
+    regular_vcf_output_writer = VcfOutputWriter(vcf_writer=regular_vcf_writer, bed_writer=regular_bed_writer)
+    original_vcf_file = None
+    original_bed_file = None
+    original_vcf_output_writer = None
     if args.generate_original_vcf:
-        untrimmed_vcf_file = open("{}_untrimmed.vcf".format(prefix), "w")
-        untrimmed_bed_file = open("{}_untrimmed.bed".format(prefix), "w")
-        untrimmed_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
-                                                   properties_json_to_use["batch_prefix"], False))
-        untrimmed_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
-        untrimmed_vcf_writer = csv.DictWriter(untrimmed_vcf_file, fieldnames=vcf_fields, delimiter="\t",
-                                              lineterminator="\n")
-        untrimmed_bed_writer = csv.DictWriter(untrimmed_bed_file, fieldnames=bed_fields, delimiter="\t",
-                                              lineterminator="\n")
-        vcfs_to_write.append(Vcf(vcf_writer=untrimmed_vcf_writer, bed_writer=untrimmed_bed_writer, trim_indels=False))
-    _write_vcf_files(model_to_use, properties_json_to_use, test_data_to_use, *vcfs_to_write)
-    trimmed_vcf_file.close()
-    trimmed_bed_file.close()
+        original_vcf_file = open("{}_original.vcf".format(prefix), "w")
+        original_bed_file = open("{}_original.bed".format(prefix), "w")
+        original_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
+                                                  properties_json_to_use["batch_prefix"], False))
+        original_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+        original_vcf_writer = csv.DictWriter(original_vcf_file, fieldnames=vcf_fields, delimiter="\t",
+                                             lineterminator="\n")
+        original_bed_writer = csv.DictWriter(original_bed_file, fieldnames=bed_fields, delimiter="\t",
+                                             lineterminator="\n")
+        original_vcf_output_writer = VcfOutputWriter(vcf_writer=original_vcf_writer, bed_writer=original_bed_writer)
+    error_vcf_file = None
+    error_bed_file = None
+    error_vcf_output_writer = None
+    if args.generate_error_vcf:
+        error_vcf_file = open("{}_error.vcf".format(prefix), "w")
+        error_bed_file = open("{}_error.bed".format(prefix), "w")
+        error_vcf_file.write(vcf_header.format(args.version, args.model, _get_basename(args.model), args.testing,
+                                               properties_json_to_use["batch_prefix"], False))
+        error_vcf_file.write("#{}\n".format("\t".join(vcf_fields)))
+        error_vcf_writer = csv.DictWriter(error_vcf_file, fieldnames=vcf_fields, delimiter="\t",
+                                          lineterminator="\n")
+        error_bed_writer = csv.DictWriter(error_bed_file, fieldnames=bed_fields, delimiter="\t",
+                                          lineterminator="\n")
+        error_vcf_output_writer = VcfOutputWriter(vcf_writer=error_vcf_writer, bed_writer=error_bed_writer)
+    _write_vcf_files(model_to_use, properties_json_to_use, test_data_to_use,
+                     regular_vcf_output_writer=regular_vcf_output_writer,
+                     original_vcf_output_writer=original_vcf_output_writer,
+                     error_vcf_output_writer=error_vcf_output_writer)
+    regular_vcf_file.close()
+    regular_bed_file.close()
     if args.generate_original_vcf:
-        untrimmed_vcf_file.close()
-        untrimmed_bed_file.close()
+        original_vcf_file.close()
+        original_bed_file.close()
+    if args.generate_error_vcf:
+        error_vcf_file.close()
+        error_bed_file.close()
 
 
 if __name__ == "__main__":
@@ -261,7 +315,10 @@ if __name__ == "__main__":
                         help="Prefix for generated VCF and BED files.")
     parser.add_argument("--version", type=str, help="Version of goby being used", default="1.4.1-SNAPSHOT")
     parser.add_argument("--generate-original-vcf", action="store_true", dest="generate_original_vcf",
-                        help="If present, generate separate file at <prefix>-original.{vcf|bed} representing the"
+                        help="If present, generate separate file at <prefix>_original.{vcf|bed} representing the "
                              "original calls made by the model, before any reformatting to handle indels")
+    parser.add_argument("--generate-error-vcf", action="store_true", dest="generate_error_vcf",
+                        help="If present, generate seprate file at <prefix>_error.{vcf|bed} with any calls that are "
+                             "malformed for the VCF specification.")
     parser_args = parser.parse_args()
     main(parser_args)
