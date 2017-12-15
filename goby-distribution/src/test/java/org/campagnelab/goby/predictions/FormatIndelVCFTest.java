@@ -48,7 +48,7 @@ public class FormatIndelVCFTest {
         Set<String> to = new ObjectArraySet<>();
         to.add("G--C");
         to.add("G-AC");
-        FormatIndelVCF format = new FormatIndelVCF(from,to,'G');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to,'G');
         assertEquals("GTA",format.fromVCF);
         assertEquals(2,format.toVCF.size());
         assertTrue(format.toVCF.contains("G"));
@@ -62,7 +62,7 @@ public class FormatIndelVCFTest {
         Set<String> to = new ObjectArraySet<>();
         to.add("T");
         to.add("T-G");
-        FormatIndelVCF format = new FormatIndelVCF(from,to, 'T');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to, 'T');
         assertEquals("TG",format.fromVCF);
         assertEquals(2,format.toVCF.size());
         assertTrue(format.toVCF.contains("TG"));
@@ -76,7 +76,7 @@ public class FormatIndelVCFTest {
         Set<String> to = new ObjectArraySet<>();
         to.add("A");
         to.add("T");
-        FormatIndelVCF format = new FormatIndelVCF(from,to, 'A');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to, 'A');
         assertEquals("A",format.fromVCF);
         assertEquals(2,format.toVCF.size());
         assertTrue(format.toVCF.contains("A"));
@@ -89,7 +89,7 @@ public class FormatIndelVCFTest {
         String from = "A";
         Set<String> to = new ObjectArraySet<>();
         to.add("A");
-        FormatIndelVCF format = new FormatIndelVCF(from,to, 'A');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to, 'A');
         assertEquals("A",format.fromVCF);
         assertEquals(1,format.toVCF.size());
         assertTrue(format.toVCF.contains("A"));
@@ -103,7 +103,7 @@ public class FormatIndelVCFTest {
         Set<String> to = new ObjectArraySet<>();
         to.add("T");
         to.add("GTC");
-        FormatIndelVCF format = new FormatIndelVCF(from,to, 'G');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to, 'G');
         assertEquals("G",format.fromVCF);
         assertEquals(2,format.toVCF.size());
         assertTrue(format.toVCF.contains("T"));
@@ -120,7 +120,7 @@ public class FormatIndelVCFTest {
         Set<String> to = new ObjectArraySet<>();
         to.add("T");
         to.add("G-C");
-        FormatIndelVCF format = new FormatIndelVCF(from,to, 'G');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to, 'G');
         assertEquals("GA",format.fromVCF);
         assertEquals(2,format.toVCF.size());
         assertTrue(format.toVCF.contains("TA"));
@@ -138,7 +138,7 @@ public class FormatIndelVCFTest {
         Set<String> to = new ObjectArraySet<>();
         to.add("A");
         to.add("C");
-        FormatIndelVCF format = new FormatIndelVCF(from,to, 'A');
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to, 'A');
         assertEquals("A",format.fromVCF);
         assertEquals(2,format.toVCF.size());
         assertTrue(format.toVCF.contains("A"));
@@ -159,5 +159,33 @@ public class FormatIndelVCFTest {
         assertTrue(format.toVCF.contains("CCCAT"));
         assertTrue(format.toVCF.contains("CCCATCCATCATC"));
 
+    }
+
+    @Test
+    public void formatIndelVCF9() throws Exception {
+
+
+        String from = "A-TTA";
+        Set<String> to = new ObjectArraySet<>();
+        to.add("ATTTT");
+        to.add("A-TTA");
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to,'G');
+        assertEquals("ATTA",format.fromVCF);
+        assertEquals(2,format.toVCF.size());
+        assertTrue(format.toVCF.contains("ATTTT"));
+        assertTrue(format.toVCF.contains("ATTA"));
+    }
+    @Test
+    public void formatIndelVCF10() throws Exception {
+
+        String from = "A-T";
+        Set<String> to = new ObjectArraySet<>();
+        to.add("ATTTT");
+        to.add("A-TTA");
+        FormatIndelVCF3 format = new FormatIndelVCF3(from,to,'G');
+        assertEquals("AT",format.fromVCF);
+        assertEquals(2,format.toVCF.size());
+        assertTrue(format.toVCF.contains("ATTTT"));
+        assertTrue(format.toVCF.contains("ATTA"));
     }
 }
