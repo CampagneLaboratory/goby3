@@ -32,7 +32,7 @@ class MetricLogger(Callback):
 
 
 def create_model(num_layers, max_base_count, max_feature_count, max_label_count, use_bidirectional, lstm_units,
-                 implementation, regularizer, learning_rate, layer_type):
+                 implementation, regularizer, learning_rate, layer_type, no_dropout):
     model_input = Input(shape=(max_base_count, max_feature_count), name="model_input")
     model_masking = Masking(mask_value=0., input_shape=(max_base_count, max_feature_count))(model_input)
     if layer_type == "LSTM":
@@ -60,9 +60,10 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
                              if use_bidirectional
                              else hidden_lstm_layer_fn(prev_lstm_layer))
         prev_lstm_layer = hidden_lstm_layer
-    dropout = Dropout(0.5)(prev_lstm_layer)
+    if not no_dropout:
+        prev_lstm_layer = Dropout(0.5)(prev_lstm_layer)
     model_outputs = [TimeDistributed(Dense(max_label_count, activation="softmax"),
-                                     input_shape=(max_base_count, lstm_units), name="main_output")(dropout)]
+                                     input_shape=(max_base_count, lstm_units), name="main_output")(prev_lstm_layer)]
     loss_weights = {"main_output": 1.}
     model = Model(inputs=model_input, outputs=model_outputs)
     optimizer = RMSprop(lr=learning_rate)
@@ -71,7 +72,7 @@ def create_model(num_layers, max_base_count, max_feature_count, max_label_count,
     return model
 
 
-def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, log_path, max_base_count):
+def create_callbacks(model_prefix, min_delta, use_tensorboard, log_metrics, val_data_path, log_path, max_base_count):
     callbacks_list = []
     filepath = model_prefix + "-weights-improvement-{epoch:02d}-{val_loss:.4f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
@@ -90,17 +91,23 @@ def create_callbacks(model_prefix, min_delta, use_tensorboard, val_data_path, lo
                                   embeddings_layer_names=None,
                                   embeddings_metadata=None)
         callbacks_list.append(tensorboard)
-    callbacks_list.append(MetricLogger(val_data_path, log_path, max_base_count))
+    if log_metrics:
+        if log_path is None:
+            raise ValueError("--log-file undefined when --log-metrics set")
+        else:
+            callbacks_list.append(MetricLogger(val_data_path, log_path, max_base_count))
     return callbacks_list
 
 
 def main(args):
-    if args.log_file is None:
-        log_file_path = "log_run_{}.csv".format(int(time.time()))
-    else:
-        log_file_path = args.log_file
-    if os.path.exists(log_file_path):
-        raise Exception("Log path for run should be new")
+    log_file_path = None
+    if args.log_metrics:
+        if args.log_file is None:
+            log_file_path = "log_run_{}.csv".format(int(time.time()))
+        else:
+            log_file_path = args.log_file
+        if os.path.exists(log_file_path):
+            raise Exception("Log path for run should be new")
 
     if args.seed is None:
         seed = int(time.time() + 36)
@@ -171,9 +178,10 @@ def main(args):
                          implementation=implementation,
                          layer_type=args.layer_type,
                          learning_rate=args.learning_rate,
-                         regularizer=reg)
-    callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard, args.validation, log_file_path,
-                                 max_base_count)
+                         regularizer=reg,
+                         no_dropout=args.no_dropout)
+    callbacks = create_callbacks(args.model_prefix, args.min_delta, args.tensorboard, args.log_metrics,
+                                 args.validation, log_file_path, max_base_count)
 
     input_generator = BatchNumpyFileSequence(args.input, max_base_count, input_properties_json, array_type='train')
     val_generator = BatchNumpyFileSequence(args.validation, max_base_count, val_properties_json, array_type='train')
@@ -218,6 +226,10 @@ if __name__ == "__main__":
     parser.add_argument("--min-delta", type=float, default=0, help="Minimum delta for loss improvement in each epoch.")
     parser.add_argument("--tensorboard", dest="tensorboard", action="store_true",
                         help="When set, use an interactive session and monitor on tensorboard.")
+    parser.add_argument("--log-metrics", dest="log_metrics", action="store_true",
+                        help="When set, output a log CSV file containing metric estimates (i.e. precision, recall, F1) "
+                             "for SNPs, refs, and indels. Potentially useful for debugging, but "
+                             "evaluate-genotypes-ssi-keras provides a more standardized means of evaluation.")
     parser.add_argument("--show-mappings", dest="show_mappings", action="store_true",
                         help="When set, show operation placements on cpu/gpu devices.")
     parser.add_argument("--verbosity", type=int, default=1, choices=[0, 1, 2],
@@ -225,8 +237,11 @@ if __name__ == "__main__":
     parser.add_argument("--max-epochs", type=int, default=60, help="Maximum number of epochs to train for.")
     parser.add_argument("--l1", type=float, help="L1 regularization rate.")
     parser.add_argument("--l2", type=float, help="L2 regularization rate.")
+    parser.add_argument("--no-dropout", dest="no_dropout", action="store_true",
+                        help="When set, doesn't add dropout layer")
     parser.add_argument("--parallel", type=int, help="Run training in parallel, with n workers.")
-    parser.add_argument("-l", "--log-file", type=str, help="Path to log file to use. Should be new.")
+    parser.add_argument("-l", "--log-file", type=str,
+                        help="Path to log file to use. Should be new. Only used when --log-metrics is set.")
     parser.add_argument("--seed", type=int, help="Random seed to use")
     parser_args = parser.parse_args()
     main(parser_args)
