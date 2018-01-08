@@ -1,3 +1,6 @@
+3.3.1
+ - Fixed alignment concat where results could be truncated if several empty slices followed one another (e.g., if concat
+ A,B,C and A and B are empty, goby ca could yield an empty alignment, completely omiting alignments in part C.)
 3.3.0
  - Substantially reduced memory utilization for discover-sequence-variant (all modes).
  - discover-sequence-variant could in some rare cases output the same base twice (when indels were extending prior to
