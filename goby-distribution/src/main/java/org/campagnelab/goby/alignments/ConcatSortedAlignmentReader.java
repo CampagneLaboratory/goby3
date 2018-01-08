@@ -181,7 +181,7 @@ public class ConcatSortedAlignmentReader extends ConcatAlignmentReader {
             }
         }
         // populate the heap with the next entry at or past the skipTo position:
-        for (final int readerIndex : readersWithMoreEntries) {
+        for (final int readerIndex : readersWithMoreEntries.toIntArray()) {
 
             if (!nextLoadedForReader[readerIndex]) {
                 // the reader at position readerIndex was used in the previous next
