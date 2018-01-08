@@ -139,7 +139,7 @@ public class HTSJDKReaderImpl implements AlignmentReader {
         boolean indexFileExists = indexFile.exists();
         SamReaderFactory readerFactory = SamReaderFactory.make();
 
-        readerFactory.validationStringency(ValidationStringency.LENIENT);
+        readerFactory.validationStringency(ValidationStringency.SILENT);
 
         parser = indexFileExists ? readerFactory.open(new File(filename)) :  readerFactory.open( SamInputResource.of(stream));
         targetIds = new IndexedIdentifier();
