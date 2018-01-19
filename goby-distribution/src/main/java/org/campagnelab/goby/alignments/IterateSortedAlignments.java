@@ -333,7 +333,7 @@ public abstract class IterateSortedAlignments<T> {
         final AlignmentProcessorInterface realigner = alignmentProcessorFactory.create(sortedReaders);
 
         realigner.setGenome(getGenome(), sortedReaders.getTargetIdentifiers());
-        currentPosition = startPosition;
+        currentPosition = Math.max(0, startPosition - startFlapLength);
         while ((alignmentEntry = realigner.nextRealignedEntry(currentMinTargetIndex, currentPosition)) != null) {
 
             pg.lightUpdate();
