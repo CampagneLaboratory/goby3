@@ -11,6 +11,7 @@ class VectorPropertiesReader:
             self.file_type = self.vector_properties["fileType"]
             self.samples = self.vector_properties["samples"]
             self.vectors = self.vector_properties["vectors"]
+            self.num_records = self.vector_properties["numRecords"]
 
     def get_version_number(self):
         return self.major_version, self.minor_version
@@ -42,6 +43,9 @@ class VectorPropertiesReader:
     def get_vector_dimensions_idx(self, idx):
         return self.vectors[idx]["vectorDimension"]
 
+    def get_num_records(self):
+        return self.num_records
+
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
@@ -56,5 +60,3 @@ if __name__ == "__main__":
     print("Vector 0 name: {}".format(vec_properties_reader.get_vector_name_idx(0)))
     print("Vector 0 type: {}".format(vec_properties_reader.get_vector_type_idx(0)))
     print("Vector 0 dim: {}".format(vec_properties_reader.get_vector_dimensions_idx(0)))
-
-
