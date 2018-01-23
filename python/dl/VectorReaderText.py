@@ -14,9 +14,9 @@ class VectorReaderText(VectorReader):
         curr_example_vector_lines = []
         for line in self.vector_fp:
             line_split = line.strip().split()
-            line_example_id = int(line_split[1])
-            sample_id = int(line_split[0])
-            vector_id = int(line_split[2])
+            line_example_id = np.uint32(line_split[1])
+            sample_id = np.uint32(line_split[0])
+            vector_id = np.uint32(line_split[2])
             vector_elements = np.array(line_split[3:], dtype=np.float32)
             if curr_example_id is None:
                 curr_example_id = line_example_id
