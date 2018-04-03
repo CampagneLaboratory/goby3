@@ -62,6 +62,7 @@ public class SequenceBaseInformationWriter implements Closeable {
         ACCUMULATORS.add(new StatAccumulatorDistanceToEndOfRead());
         ACCUMULATORS.add(new CommitPropertiesStatAccumulator("goby-framework"));
         ACCUMULATORS.add(new CommitPropertiesStatAccumulator("variation-analysis"));
+        ACCUMULATORS.add(new ReferenceIdStatAccumulator());
 
         // NB: must modify accumulator in static methods below as well.
     }
