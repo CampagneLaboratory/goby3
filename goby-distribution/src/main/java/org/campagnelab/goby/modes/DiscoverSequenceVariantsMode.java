@@ -502,23 +502,34 @@ public class DiscoverSequenceVariantsMode extends AbstractGobyMode {
 
     public static AlignmentProcessorFactory configureProcessor(JSAPResult jsapResult) {
         final AlignmentProcessorNames processorName = AlignmentProcessorNames.valueOf(jsapResult.getString("processor").toUpperCase());
-        AlignmentProcessorFactory realignmentFactory;
-        switch (processorName) {
-            case REALIGN_NEAR_INDELS:
-                realignmentFactory = new AlignmentProcessorFactory() {
-                    public AlignmentProcessorInterface create(final ConcatSortedAlignmentReader sortedReaders) {
-                        return new LocalSortProcessor(new RealignmentProcessor(sortedReaders));
-                    }
-                };
 
-                break;
-            case NONE:
-            default:
-                System.err.println("Using processor NONE");
-                realignmentFactory = new DefaultAlignmentProcessorFactory();
-
+        float keepRate = jsapResult.getFloat("downsampling-rate", 1.0f);
+        if (keepRate<0.0f || keepRate>1.0f){
+            System.err.println("--downsampling-rate must be a float between zero and one.");
+            System.exit(1);
         }
-        return realignmentFactory;
+        if (keepRate < 1.0f) {
+            // install a downsampling processor
+            if (processorName != AlignmentProcessorNames.NONE) {
+                System.out.println("Downsampling is not compatible with custom processors.");
+                System.exit(1);
+            }
+            return sortedReaders -> new DownsamplerProcessor(sortedReaders, keepRate);
+        } else {
+            AlignmentProcessorFactory realignmentFactory;
+            switch (processorName) {
+                case REALIGN_NEAR_INDELS:
+                    realignmentFactory = sortedReaders -> new LocalSortProcessor(new RealignmentProcessor(sortedReaders));
+
+                    break;
+                case NONE:
+                default:
+                    System.err.println("Using processor NONE");
+                    realignmentFactory = new DefaultAlignmentProcessorFactory();
+
+            }
+            return realignmentFactory;
+        }
     }
 
     private void stopWhenDefaultGroupOptions() {

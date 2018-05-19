@@ -280,5 +280,19 @@
                 provide at least one line per sample in the input.
             </help>
         </flaggedOption>
+        <flaggedOption>
+                    <id>downsampling-rate</id>
+
+                    <longFlag>downsampling-rate</longFlag>
+                    <stringParser>
+                                    <classname>FloatStringParser</classname>
+                    </stringParser>
+                    <required>false</required>
+                    <defaults>
+                    <string>1.0</string>
+            </defaults>
+                    <help>A rate for down-sampling the aligned reads. Cannot be used with indel realignment. A value of 0.1 will result in keeping approximately 10% of the aligned reads. A value of 1.0 would keep all reads.
+                    </help>
+                </flaggedOption>
     </parameters>
 </jsap>
